@@ -19,6 +19,8 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
+from powershell_analyzer_contract import AnalyzerContractError, repo_relative_input_path
+
 SCHEMA_VERSION = "dcoir_powershell_surface_inventory_v1"
 ISSUE_NUMBER = 261
 DEFAULT_JSON_OUTPUT = Path("project_sources/collector/powershell_surface_inventory.json")
@@ -264,7 +266,7 @@ def workflow_yaml_shape_error(repo_root: Path, rel: str) -> str | None:
 def path_resolves_inside_repo(path: Path, repo_root: Path) -> bool:
     try:
         path.resolve().relative_to(repo_root.resolve())
-    except (OSError, ValueError):
+    except (OSError, RuntimeError, ValueError):
         return False
     return True
 
@@ -1586,7 +1588,7 @@ def normalize_changed_files(values: list[str], repo_root: Path) -> list[str]:
         candidate = root / Path(slash_path)
         try:
             repo_relative = candidate.resolve().relative_to(root)
-        except ValueError as exc:
+        except (OSError, RuntimeError, ValueError) as exc:
             raise ValueError(f"Changed-file input resolves outside repo root: {value}") from exc
         rel = repo_relative.as_posix()
         if not rel or rel == ".":
@@ -1596,8 +1598,11 @@ def normalize_changed_files(values: list[str], repo_root: Path) -> list[str]:
 
 def load_changed_files_from(path: Path) -> list[str]:
     if not path.is_file():
-        raise FileNotFoundError(f"Changed-files input is missing: {path}")
-    records = path.read_text(encoding="utf-8").splitlines()
+        raise ValueError(f"Changed-files input is missing: {path}")
+    try:
+        records = path.read_text(encoding="utf-8").splitlines()
+    except OSError as exc:
+        raise ValueError(f"Changed-files input could not be read: {path}: {exc}") from exc
     return records if records else [""]
 
 def load_manifest(repo_root: Path) -> dict[str, Any] | None:
@@ -1648,7 +1653,7 @@ def normalize_manifest_surface_path(value: str, repo_root: Path, field_name: str
     root = repo_root.resolve()
     try:
         rel = (root / path).resolve().relative_to(root).as_posix()
-    except ValueError:
+    except (OSError, RuntimeError, ValueError):
         return None, f"Collector runtime manifest {field_name} resolves outside repo root: {value}"
     if not rel or rel == ".":
         return None, f"Collector runtime manifest {field_name} must name a file under repo root: {value}"
@@ -1799,6 +1804,15 @@ def load_json_file(path: Path) -> Any:
         raise ValueError(f"JSON file is missing: {path}") from exc
     except json.JSONDecodeError as exc:
         raise ValueError(f"Invalid JSON in {path}: {exc}") from exc
+    except OSError as exc:
+        raise ValueError(f"JSON file could not be read: {path}: {exc}") from exc
+
+
+def repo_relative_cli_path(repo_root: Path, value: str | Path, label: str) -> Path:
+    try:
+        return repo_relative_input_path(repo_root, value, label)
+    except AnalyzerContractError as exc:
+        raise ValueError(str(exc)) from exc
 
 
 def summarize(surfaces: list[dict[str, Any]]) -> dict[str, Any]:
@@ -2195,13 +2209,31 @@ def render_markdown(inventory: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
-def write_outputs(repo_root: Path, inventory: dict[str, Any], json_output: Path, markdown_output: Path) -> None:
-    json_path = repo_root / json_output
-    markdown_path = repo_root / markdown_output
-    json_path.parent.mkdir(parents=True, exist_ok=True)
-    markdown_path.parent.mkdir(parents=True, exist_ok=True)
-    json_path.write_text(json.dumps(inventory, indent=2) + "\n", encoding="utf-8")
-    markdown_path.write_text(render_markdown(inventory), encoding="utf-8")
+def write_outputs(repo_root: Path, inventory: dict[str, Any], json_output: Path, markdown_output: Path) -> list[str]:
+    errors: list[str] = []
+    try:
+        json_path = repo_relative_cli_path(repo_root, json_output, "PowerShell surface inventory JSON report output path")
+        markdown_path = repo_relative_cli_path(
+            repo_root,
+            markdown_output,
+            "PowerShell surface inventory Markdown report output path",
+        )
+    except ValueError as exc:
+        return [str(exc)]
+    if json_path == markdown_path:
+        return ["PowerShell surface inventory JSON and Markdown report output paths must be different"]
+    try:
+        json_path.parent.mkdir(parents=True, exist_ok=True)
+        json_path.write_text(json.dumps(inventory, indent=2) + "\n", encoding="utf-8")
+    except OSError as exc:
+        errors.append(f"PowerShell surface inventory report write failure: {json_path}: {exc}")
+        return errors
+    try:
+        markdown_path.parent.mkdir(parents=True, exist_ok=True)
+        markdown_path.write_text(render_markdown(inventory), encoding="utf-8")
+    except OSError as exc:
+        errors.append(f"PowerShell surface inventory report write failure: {markdown_path}: {exc}")
+    return errors
 
 
 def parse_args() -> argparse.Namespace:
@@ -2222,15 +2254,43 @@ def main() -> int:
     repo_root = Path(args.repo_root).resolve()
     json_output = Path(args.json_output)
     markdown_output = Path(args.markdown_output)
+    input_errors: list[str] = []
 
     changed_files: list[str] | None = None
     if args.changed_file or args.changed_files_from:
         changed_files = list(args.changed_file)
         if args.changed_files_from:
-            changed_files.extend(load_changed_files_from(Path(args.changed_files_from)))
+            try:
+                changed_files.extend(
+                    load_changed_files_from(
+                        repo_relative_cli_path(
+                            repo_root,
+                            args.changed_files_from,
+                            "PowerShell surface inventory changed-files input path",
+                        )
+                    )
+                )
+            except ValueError as exc:
+                input_errors.append(str(exc))
 
-    baseline = load_json_file(Path(args.baseline_json)) if args.baseline_json else None
-    shrink_exceptions = load_shrink_exceptions(Path(args.shrink_exception_json) if args.shrink_exception_json else None)
+    baseline = None
+    shrink_exceptions: dict[str, str] = {}
+    try:
+        baseline = (
+            load_json_file(repo_relative_cli_path(repo_root, args.baseline_json, "PowerShell surface inventory baseline path"))
+            if args.baseline_json
+            else None
+        )
+    except ValueError as exc:
+        input_errors.append(str(exc))
+    try:
+        shrink_exceptions = load_shrink_exceptions(
+            repo_relative_cli_path(repo_root, args.shrink_exception_json, "PowerShell surface inventory shrink exception path")
+            if args.shrink_exception_json
+            else None
+        )
+    except ValueError as exc:
+        input_errors.append(str(exc))
     inventory = build_inventory(
         repo_root=repo_root,
         changed_files=changed_files,
@@ -2239,9 +2299,19 @@ def main() -> int:
         json_output=json_output,
         markdown_output=markdown_output,
     )
+    if input_errors:
+        inventory["validation"]["errors"] = input_errors + inventory["validation"]["errors"]
+        inventory["validation"]["success"] = False
 
     if not args.no_write:
-        write_outputs(repo_root, inventory, json_output, markdown_output)
+        output_errors = write_outputs(repo_root, inventory, json_output, markdown_output)
+        if output_errors:
+            inventory["validation"]["errors"].extend(output_errors)
+            inventory["validation"]["success"] = False
+            rewrite_errors = write_outputs(repo_root, inventory, json_output, markdown_output)
+            for error in rewrite_errors:
+                if error not in inventory["validation"]["errors"]:
+                    inventory["validation"]["errors"].append(error)
     print(json.dumps(inventory["summary"], indent=2))
     if inventory["validation"]["errors"]:
         for error in inventory["validation"]["errors"]:

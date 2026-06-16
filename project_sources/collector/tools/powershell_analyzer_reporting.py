@@ -13,6 +13,7 @@ from powershell_analyzer_contract import (
     REQUIRED_POLICY_RULES,
     SCHEMA_VERSION,
     AnalyzerContractError,
+    repo_relative_input_path,
     safe_relpath,
     sha256_file,
 )
@@ -95,8 +96,10 @@ def render_markdown(report: dict[str, Any]) -> str:
 
 
 def write_outputs(repo_root: Path, report: dict[str, Any], json_output: Path, markdown_output: Path) -> None:
-    json_path = repo_root / json_output
-    markdown_path = repo_root / markdown_output
+    json_path = repo_relative_input_path(repo_root, json_output, "JSON report output path")
+    markdown_path = repo_relative_input_path(repo_root, markdown_output, "Markdown report output path")
+    if json_path == markdown_path:
+        raise AnalyzerContractError("JSON and Markdown report output paths must be different")
     try:
         json_path.parent.mkdir(parents=True, exist_ok=True)
         markdown_path.parent.mkdir(parents=True, exist_ok=True)
@@ -114,13 +117,40 @@ def empty_report(
     *,
     args: argparse.Namespace,
     repo_root: Path,
-    inventory_path: Path,
-    settings_path: Path,
+    inventory_path: Path | None,
+    settings_path: Path | None,
+    baseline_path: Path | None = None,
     json_output: Path,
     markdown_output: Path,
     errors: list[str],
     warnings: list[str],
 ) -> dict[str, Any]:
+    settings_metadata = {
+        "path": safe_relpath(settings_path, repo_root) if settings_path is not None else str(args.settings),
+        "accepted": settings_path is not None,
+        "sha256": sha256_file(settings_path)
+        if settings_path is not None and settings_path.exists() and settings_path.is_file()
+        else None,
+        "required_rules": sorted(REQUIRED_POLICY_RULES),
+        "active_severities": [],
+        "active_include_rules": [],
+        "active_rule_keys": [],
+        "warnings": [],
+        "exclusions_declared": False,
+    }
+    inventory_metadata = {
+        "path": safe_relpath(inventory_path, repo_root) if inventory_path is not None else str(args.inventory),
+        "accepted": inventory_path is not None,
+        "schema_version": None,
+        "sha256": sha256_file(inventory_path)
+        if inventory_path is not None and inventory_path.exists() and inventory_path.is_file()
+        else None,
+        "inventory_total_surfaces": None,
+    }
+    baseline_info = baseline_metadata(None, baseline_path, repo_root)
+    if args.baseline_json:
+        baseline_info["path"] = safe_relpath(baseline_path, repo_root) if baseline_path is not None else str(args.baseline_json)
+        baseline_info["accepted"] = baseline_path is not None
     return {
         "schema_version": SCHEMA_VERSION,
         "issue": ISSUE_NUMBER,
@@ -137,23 +167,9 @@ def empty_report(
             "minimum_version": args.minimum_powershell_version,
             "observed_versions": [],
         },
-        "settings": {
-            "path": safe_relpath(settings_path, repo_root),
-            "sha256": sha256_file(settings_path) if settings_path.exists() and settings_path.is_file() else None,
-            "required_rules": sorted(REQUIRED_POLICY_RULES),
-            "active_severities": [],
-            "active_include_rules": [],
-            "active_rule_keys": [],
-            "warnings": [],
-            "exclusions_declared": False,
-        },
-        "inventory": {
-            "path": safe_relpath(inventory_path, repo_root),
-            "schema_version": None,
-            "sha256": sha256_file(inventory_path) if inventory_path.exists() and inventory_path.is_file() else None,
-            "inventory_total_surfaces": None,
-        },
-        "baseline": baseline_metadata(None, Path(args.baseline_json).resolve() if args.baseline_json else None, repo_root),
+        "settings": settings_metadata,
+        "inventory": inventory_metadata,
+        "baseline": baseline_info,
         "summary": {
             "target_count": 0,
             "analyzed_count": 0,

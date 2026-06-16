@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import io
+import json
 import tempfile
 import unittest
 import unittest.mock
@@ -985,6 +987,168 @@ class PowerShellSurfaceInventoryTests(unittest.TestCase):
             result = inventory.build_inventory(Path(temp), baseline=baseline)
         self.assertFalse(result["validation"]["success"])
         self.assertTrue(any("unexpectedly shrank" in error for error in result["validation"]["errors"]))
+
+    def test_baseline_and_shrink_exception_paths_must_stay_inside_repo_before_read(self) -> None:
+        scenarios = [
+            ("--baseline-json", "ABSOLUTE_BASELINE", "PowerShell surface inventory baseline path"),
+            ("--shrink-exception-json", "../outside-shrink-exception.json", "PowerShell surface inventory shrink exception path"),
+        ]
+        for arg_name, unsafe_value, expected_label in scenarios:
+            with self.subTest(arg_name=arg_name):
+                with self.make_minimal_repo() as temp:
+                    root = Path(temp).resolve()
+                    outside_name = "outside-shrink-evidence.json"
+                    if unsafe_value.startswith("../"):
+                        outside_name = unsafe_value.removeprefix("../")
+                    outside = root.parent / outside_name
+                    write(outside, "{not-json")
+                    if unsafe_value == "ABSOLUTE_BASELINE":
+                        unsafe_value = outside.as_posix()
+                    argv = [
+                        "build_powershell_surface_inventory.py",
+                        "--repo-root",
+                        str(root),
+                        "--no-write",
+                        arg_name,
+                        unsafe_value,
+                    ]
+                    with unittest.mock.patch.object(sys, "argv", argv), unittest.mock.patch(
+                        "sys.stderr",
+                        new_callable=io.StringIO,
+                    ) as stderr:
+                        rc = inventory.main()
+
+                self.assertEqual(rc, 1)
+                self.assertIn(f"{expected_label} must be a repo-relative path without traversal", stderr.getvalue())
+                self.assertNotIn("Invalid JSON", stderr.getvalue())
+
+    def test_changed_files_from_path_must_stay_inside_repo_before_read(self) -> None:
+        scenarios = [
+            ("absolute", "ABSOLUTE_CHANGED_FILES"),
+            ("traversal", "../outside-changed-files.txt"),
+        ]
+        for name, unsafe_value in scenarios:
+            with self.subTest(name=name):
+                with self.make_minimal_repo() as temp:
+                    root = Path(temp).resolve()
+                    outside_name = "outside-changed-files.txt"
+                    if unsafe_value.startswith("../"):
+                        outside_name = unsafe_value.removeprefix("../")
+                    outside = root.parent / outside_name
+                    write(outside, "\n")
+                    if unsafe_value == "ABSOLUTE_CHANGED_FILES":
+                        unsafe_value = outside.as_posix()
+                    argv = [
+                        "build_powershell_surface_inventory.py",
+                        "--repo-root",
+                        str(root),
+                        "--no-write",
+                        "--changed-files-from",
+                        unsafe_value,
+                    ]
+                    with unittest.mock.patch.object(sys, "argv", argv), unittest.mock.patch(
+                        "sys.stderr",
+                        new_callable=io.StringIO,
+                    ) as stderr:
+                        rc = inventory.main()
+
+                self.assertEqual(rc, 1)
+                self.assertIn(
+                    "PowerShell surface inventory changed-files input path must be a repo-relative path without traversal",
+                    stderr.getvalue(),
+                )
+                self.assertNotIn("Changed-file input must not be blank", stderr.getvalue())
+
+    def test_missing_changed_files_from_fails_closed(self) -> None:
+        with self.make_minimal_repo() as temp:
+            root = Path(temp).resolve()
+            argv = [
+                "build_powershell_surface_inventory.py",
+                "--repo-root",
+                str(root),
+                "--no-write",
+                "--changed-files-from",
+                "missing-changed-files.txt",
+            ]
+            with unittest.mock.patch.object(sys, "argv", argv), unittest.mock.patch(
+                "sys.stderr",
+                new_callable=io.StringIO,
+            ) as stderr:
+                rc = inventory.main()
+
+        self.assertEqual(rc, 1)
+        self.assertIn("Changed-files input is missing", stderr.getvalue())
+
+    def test_report_output_paths_must_stay_inside_repo(self) -> None:
+        scenarios = [
+            (
+                "json traversal",
+                Path("../outside-inventory-report.json"),
+                Path("inventory-report.md"),
+                "PowerShell surface inventory JSON report output path",
+                "outside-inventory-report.json",
+            ),
+            (
+                "markdown absolute",
+                Path("inventory-report.json"),
+                "ABSOLUTE_MARKDOWN",
+                "PowerShell surface inventory Markdown report output path",
+                "outside-inventory-report.md",
+            ),
+        ]
+        for name, json_output, markdown_output, expected_label, outside_name in scenarios:
+            with self.subTest(name=name):
+                with self.make_minimal_repo() as temp:
+                    root = Path(temp).resolve()
+                    outside = root.parent / outside_name
+                    outside.unlink(missing_ok=True)
+                    if markdown_output == "ABSOLUTE_MARKDOWN":
+                        markdown_output = outside
+                    result = inventory.build_inventory(root)
+                    errors = inventory.write_outputs(root, result, Path(json_output), Path(markdown_output))
+
+                self.assertTrue(
+                    any(f"{expected_label} must be a repo-relative path without traversal" in error for error in errors),
+                    errors,
+                )
+                self.assertFalse(outside.exists())
+
+    def test_cli_rewrites_json_as_failed_when_markdown_write_fails(self) -> None:
+        with self.make_minimal_repo() as temp:
+            root = Path(temp).resolve()
+            (root / "markdown-output-as-directory").mkdir()
+            argv = [
+                "build_powershell_surface_inventory.py",
+                "--repo-root",
+                str(root),
+                "--json-output",
+                "report.json",
+                "--markdown-output",
+                "markdown-output-as-directory",
+            ]
+            with unittest.mock.patch.object(sys, "argv", argv), unittest.mock.patch(
+                "sys.stderr",
+                new_callable=io.StringIO,
+            ):
+                rc = inventory.main()
+            written = json.loads((root / "report.json").read_text(encoding="utf-8"))
+
+        self.assertEqual(rc, 1)
+        self.assertFalse(written["validation"]["success"])
+        self.assertTrue(
+            any("PowerShell surface inventory report write failure" in error for error in written["validation"]["errors"])
+        )
+
+    def test_report_output_paths_must_not_alias(self) -> None:
+        with self.make_minimal_repo() as temp:
+            root = Path(temp).resolve()
+            result = inventory.build_inventory(root)
+            errors = inventory.write_outputs(root, result, Path("same-report"), Path("same-report"))
+
+        self.assertTrue(
+            any("PowerShell surface inventory JSON and Markdown report output paths must be different" in error for error in errors),
+            errors,
+        )
 
     def test_changed_manifest_invalid_json_fails(self) -> None:
         with self.make_minimal_repo() as temp:

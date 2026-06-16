@@ -104,8 +104,47 @@ def write_json(path: Path, data: dict[str, Any]) -> None:
 def safe_repo_path(path: Path, repo_root: Path) -> str:
     try:
         return path.resolve().relative_to(repo_root.resolve()).as_posix()
-    except ValueError:
+    except (OSError, RuntimeError, ValueError):
         return path.as_posix()
+
+
+def write_outputs(repo_root: Path, report: dict[str, Any], json_output: Path, markdown_output: Path) -> list[str]:
+    errors: list[str] = []
+    json_path, _json_repo_path, json_error = resolve_repo_input_path(
+        json_output.as_posix(),
+        repo_root,
+        "PowerShell engine/Pester boundary JSON report output",
+    )
+    markdown_path, _markdown_repo_path, markdown_error = resolve_repo_input_path(
+        markdown_output.as_posix(),
+        repo_root,
+        "PowerShell engine/Pester boundary Markdown report output",
+    )
+    if json_error:
+        errors.append(f"PowerShell engine/Pester boundary JSON report output {json_error}: {json_output.as_posix()}")
+    if markdown_error:
+        errors.append(f"PowerShell engine/Pester boundary Markdown report output {markdown_error}: {markdown_output.as_posix()}")
+    if json_path is not None and markdown_path is not None:
+        try:
+            if json_path.resolve() == markdown_path.resolve():
+                errors.append("PowerShell engine/Pester boundary JSON and Markdown report output paths must be different")
+        except (OSError, RuntimeError):
+            errors.append("PowerShell engine/Pester boundary report output paths must resolve inside the repository root")
+    if errors:
+        return errors
+    outputs = [
+        (json_path, json.dumps(report, indent=2, sort_keys=True) + "\n"),
+        (markdown_path, build_markdown(report)),
+    ]
+    for path, content in outputs:
+        if path is None:
+            continue
+        try:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(content, encoding="utf-8")
+        except OSError as exc:
+            errors.append(f"PowerShell engine/Pester boundary report write failure: {safe_repo_path(path, repo_root)}: {exc}")
+    return errors
 
 
 def has_text(value: Any) -> bool:
@@ -301,7 +340,7 @@ def resolve_repo_input_path(value: str, repo_root: Path, label: str) -> tuple[Pa
     candidate = repo_root.joinpath(*parts)
     try:
         candidate.resolve().relative_to(repo_root.resolve())
-    except (OSError, ValueError):
+    except (OSError, RuntimeError, ValueError):
         return None, slash_path, f"{label} path must resolve inside the repository root"
     return candidate, slash_path, None
 
@@ -659,11 +698,16 @@ def main(argv: list[str] | None = None) -> int:
     report, errors, _warnings = build_report(args)
     repo_root = Path(args.repo_root).resolve()
     if not args.no_write:
-        write_json(repo_root / args.json_output, report)
-        markdown = build_markdown(report)
-        markdown_path = repo_root / args.markdown_output
-        markdown_path.parent.mkdir(parents=True, exist_ok=True)
-        markdown_path.write_text(markdown, encoding="utf-8")
+        output_errors = write_outputs(repo_root, report, Path(args.json_output), Path(args.markdown_output))
+        if output_errors:
+            errors.extend(output_errors)
+            report["validation"]["success"] = False
+            report["validation"]["errors"] = errors
+            rewrite_errors = write_outputs(repo_root, report, Path(args.json_output), Path(args.markdown_output))
+            for error in rewrite_errors:
+                if error not in errors:
+                    errors.append(error)
+            report["validation"]["errors"] = errors
     if errors:
         for error in errors:
             print(f"ERROR: {error}", file=sys.stderr)

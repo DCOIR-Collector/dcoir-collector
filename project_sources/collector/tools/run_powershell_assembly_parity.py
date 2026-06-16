@@ -60,6 +60,8 @@ def read_json(path: Path, label: str) -> Any:
         raise AssemblyParityError(f"{label} missing: {path}") from exc
     except json.JSONDecodeError as exc:
         raise AssemblyParityError(f"{label} invalid JSON: {path}: {exc}") from exc
+    except OSError as exc:
+        raise AssemblyParityError(f"{label} could not be read: {path}: {exc}") from exc
 
 
 def sha256_text(value: str) -> str:
@@ -81,7 +83,7 @@ def relpath(path: Path, repo_root: Path) -> str:
 def path_resolves_inside_repo(path: Path, repo_root: Path) -> bool:
     try:
         path.resolve().relative_to(repo_root.resolve())
-    except (OSError, ValueError):
+    except (OSError, RuntimeError, ValueError):
         return False
     return True
 
@@ -96,7 +98,7 @@ def path_is_dir_inside_repo(path: Path, repo_root: Path) -> bool:
 def safe_relpath(path: Path, repo_root: Path) -> str:
     try:
         return relpath(path, repo_root)
-    except ValueError:
+    except (OSError, RuntimeError, ValueError):
         return path.as_posix()
 
 
@@ -141,10 +143,16 @@ def validate_manifest_repo_path(value: str, key: str, label: str, repo_root: Pat
         return None
     try:
         (repo_root / rel).resolve().relative_to(repo_root.resolve())
-    except ValueError:
+    except (OSError, RuntimeError, ValueError):
         errors.append(f"{label}: {key} must resolve inside the repository root")
         return None
     return rel
+
+
+def repo_relative_input_path(value: str, key: str, label: str, repo_root: Path, errors: list[str]) -> Path | None:
+    rel = validate_manifest_repo_path(value, key, label, repo_root, errors)
+    return repo_root / rel if rel is not None else None
+
 
 def require_non_empty_string(mapping: dict[str, Any], key: str, label: str, repo_root: Path, errors: list[str]) -> str:
     value = mapping.get(key)
@@ -622,10 +630,18 @@ def compare_baseline_report(
     if baseline_report is None:
         warnings.append("no baseline parity report supplied; shrink checks used current inventory controls only")
         return None
-    baseline_path = repo_root / baseline_report
+    baseline_path = repo_relative_input_path(
+        baseline_report.as_posix(),
+        "--baseline-report",
+        "baseline assembly parity report",
+        repo_root,
+        errors,
+    )
+    if baseline_path is None:
+        return None
     baseline = read_json(baseline_path, "baseline assembly parity report")
     baseline_summary = baseline.get("summary", {}) if isinstance(baseline, dict) else {}
-    checked: dict[str, Any] = {"path": baseline_report.as_posix(), "comparisons": []}
+    checked: dict[str, Any] = {"path": safe_relpath(baseline_path, repo_root), "comparisons": []}
     for key in (
         "collector_source_part_count",
         "harness_source_part_count",
@@ -766,10 +782,41 @@ def render_markdown(report: dict[str, Any]) -> str:
 
 def write_outputs(repo_root: Path, report: dict[str, Any], json_output: Path, markdown_output: Path) -> list[str]:
     errors: list[str] = []
-    for path, content in (
-        (repo_root / json_output, json.dumps(report, indent=2) + "\n"),
-        (repo_root / markdown_output, render_markdown(report)),
-    ):
+    json_path = repo_relative_input_path(
+        json_output.as_posix(),
+        "--json-output",
+        "assembly parity JSON report output",
+        repo_root,
+        errors,
+    )
+    markdown_path = repo_relative_input_path(
+        markdown_output.as_posix(),
+        "--markdown-output",
+        "assembly parity Markdown report output",
+        repo_root,
+        errors,
+    )
+    if json_path is not None and markdown_path is not None:
+        try:
+            if json_path.resolve() == markdown_path.resolve():
+                errors.append("assembly parity JSON and Markdown report output paths must be different")
+        except (OSError, RuntimeError):
+            errors.append("assembly parity report output paths must resolve inside the repository root")
+    output_targets = (
+        (
+            json_path,
+            json.dumps(report, indent=2) + "\n",
+        ),
+        (
+            markdown_path,
+            render_markdown(report),
+        ),
+    )
+    if errors:
+        return errors
+    for path, content in output_targets:
+        if path is None:
+            continue
         try:
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(content, encoding="utf-8")
@@ -780,25 +827,26 @@ def write_outputs(repo_root: Path, report: dict[str, Any], json_output: Path, ma
 
 def build_report(args: argparse.Namespace) -> tuple[dict[str, Any], list[str], list[str]]:
     repo_root = Path(args.repo_root).resolve()
-    manifest_path = repo_root / Path(args.manifest)
-    inventory_path = repo_root / Path(args.inventory)
+    errors: list[str] = []
+    warnings: list[str] = []
+    manifest_path = repo_relative_input_path(args.manifest, "--manifest", "collector runtime manifest", repo_root, errors)
+    inventory_path = repo_relative_input_path(args.inventory, "--inventory", "PowerShell surface inventory", repo_root, errors)
     json_output = Path(args.json_output)
     markdown_output = Path(args.markdown_output)
     baseline_report = Path(args.baseline_report) if args.baseline_report else None
     shrink_exceptions = list(args.shrink_exception or [])
-    errors: list[str] = []
-    warnings: list[str] = []
 
     manifest: dict[str, Any] = {}
     inventory: dict[str, Any] = {}
-    try:
-        manifest = read_json(manifest_path, "collector runtime manifest")
-    except AssemblyParityError as exc:
-        errors.append(str(exc))
-    try:
-        inventory = read_json(inventory_path, "PowerShell surface inventory")
-    except AssemblyParityError as exc:
-        errors.append(str(exc))
+    if not errors and manifest_path is not None and inventory_path is not None:
+        try:
+            manifest = read_json(manifest_path, "collector runtime manifest")
+        except AssemblyParityError as exc:
+            errors.append(str(exc))
+        try:
+            inventory = read_json(inventory_path, "PowerShell surface inventory")
+        except AssemblyParityError as exc:
+            errors.append(str(exc))
     if manifest and not isinstance(manifest, dict):
         errors.append(f"collector runtime manifest must be a JSON object: {Path(args.manifest).as_posix()}")
         manifest = {}
@@ -858,14 +906,16 @@ def build_report(args: argparse.Namespace) -> tuple[dict[str, Any], list[str], l
         "source_of_truth": "#265 assembly-aware validation for PowerShell source parts and generated outputs",
         "manifest": {
             "path": Path(args.manifest).as_posix(),
-            "exists": manifest_path.is_file(),
-            "sha256": sha256_file(manifest_path) if manifest_path.is_file() else None,
+            "accepted": manifest_path is not None,
+            "exists": manifest_path.is_file() if manifest_path is not None else False,
+            "sha256": sha256_file(manifest_path) if manifest_path is not None and manifest_path.is_file() else None,
             "source_strategy": manifest.get("source_strategy") if isinstance(manifest, dict) else None,
         },
         "inventory": {
             "path": Path(args.inventory).as_posix(),
-            "exists": inventory_path.is_file(),
-            "sha256": sha256_file(inventory_path) if inventory_path.is_file() else None,
+            "accepted": inventory_path is not None,
+            "exists": inventory_path.is_file() if inventory_path is not None else False,
+            "sha256": sha256_file(inventory_path) if inventory_path is not None and inventory_path.is_file() else None,
             "schema_version": inventory.get("schema_version") if isinstance(inventory, dict) else None,
             "control_counts": inventory_counts(inventory),
         },

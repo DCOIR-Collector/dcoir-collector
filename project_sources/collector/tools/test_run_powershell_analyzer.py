@@ -776,10 +776,106 @@ class PowerShellAnalyzerWrapperTests(unittest.TestCase):
             root = Path(temp)
             baseline = root / "bad-baseline.json"
             write(baseline, "{not-json")
-            report, errors, _warnings = analyzer.build_report(self.make_args(root, baseline_json=str(baseline)))
+            report, errors, _warnings = analyzer.build_report(self.make_args(root, baseline_json=baseline.name))
 
         self.assertIsNotNone(report)
         self.assertTrue(any("baseline" in error and "invalid JSON" in error for error in errors))
+
+    def test_baseline_path_outside_repo_fails_before_reading(self) -> None:
+        with self.make_repo() as temp:
+            root = Path(temp)
+            outside = root.parent / "outside-baseline.json"
+            write(outside, "{not-json")
+            report, errors, _warnings = analyzer.build_report(
+                self.make_args(root, baseline_json=outside.as_posix())
+            )
+
+        self.assertIsNotNone(report)
+        self.assertTrue(
+            any("PowerShell analyzer baseline path must be a repo-relative path without traversal" in error for error in errors),
+            errors,
+        )
+        self.assertFalse(any("invalid JSON" in error for error in errors), errors)
+        assert report is not None
+        self.assertFalse(report["baseline"]["accepted"])
+
+    def test_baseline_traversal_path_fails_before_reading(self) -> None:
+        with self.make_repo() as temp:
+            root = Path(temp)
+            write(root.parent / "outside-baseline.json", "{not-json")
+            report, errors, _warnings = analyzer.build_report(
+                self.make_args(root, baseline_json="../outside-baseline.json")
+            )
+
+        self.assertIsNotNone(report)
+        self.assertTrue(
+            any("PowerShell analyzer baseline path must be a repo-relative path without traversal" in error for error in errors),
+            errors,
+        )
+        self.assertFalse(any("invalid JSON" in error for error in errors), errors)
+        assert report is not None
+        self.assertFalse(report["baseline"]["accepted"])
+
+    def test_baseline_symlink_loop_fails_closed(self) -> None:
+        with self.make_repo() as temp:
+            root = Path(temp).resolve()
+            loop = root / "loop-baseline.json"
+            try:
+                loop.symlink_to(loop)
+            except (NotImplementedError, OSError) as exc:
+                self.skipTest(f"symlink creation is unavailable: {exc}")
+            report, errors, _warnings = analyzer.build_report(
+                self.make_args(root, baseline_json=loop.name)
+            )
+
+        self.assertIsNotNone(report)
+        self.assertTrue(
+            any("PowerShell analyzer baseline path must resolve inside the repository root" in error for error in errors),
+            errors,
+        )
+        assert report is not None
+        self.assertFalse(report["baseline"]["accepted"])
+
+    def test_inventory_and_settings_paths_must_stay_inside_repo(self) -> None:
+        scenarios = [
+            ("inventory", "../outside-inventory.json", "PowerShell surface inventory path", "inventory"),
+            ("settings", "../outside-settings.psd1", "analyzer settings path", "settings"),
+        ]
+        for arg_name, unsafe_path, expected_label, report_key in scenarios:
+            with self.subTest(arg_name=arg_name):
+                with self.make_repo() as temp:
+                    root = Path(temp)
+                    report, errors, _warnings = analyzer.build_report(
+                        self.make_args(root, **{arg_name: unsafe_path})
+                    )
+
+                self.assertIsNotNone(report)
+                self.assertTrue(
+                    any(f"{expected_label} must be a repo-relative path without traversal" in error for error in errors),
+                    errors,
+                )
+                assert report is not None
+                self.assertFalse(report[report_key]["accepted"])
+
+    def test_inventory_surface_symlink_loop_fails_closed(self) -> None:
+        with self.make_repo() as temp:
+            root = Path(temp).resolve()
+            rel = "project_sources/collector/source/loop.ps1"
+            loop = root / rel
+            try:
+                loop.symlink_to(loop)
+            except (NotImplementedError, OSError) as exc:
+                self.skipTest(f"symlink creation is unavailable: {exc}")
+            inventory_path = root / analyzer.DEFAULT_INVENTORY
+            inventory = json.loads(inventory_path.read_text(encoding="utf-8"))
+            inventory["surfaces"].append(
+                surface(rel, "collector_runtime_source_part", ".ps1", sha256="0" * 64)
+            )
+            write(inventory_path, json.dumps(inventory, indent=2) + "\n")
+            report, errors, _warnings = analyzer.build_report(self.make_args(root))
+
+        self.assertIsNotNone(report)
+        self.assertTrue(any(f"{rel}: inventory path resolves outside repo root" in error for error in errors), errors)
 
     def test_suppressed_rule_mismatch_fails_closed(self) -> None:
         with self.make_repo() as temp:
@@ -801,7 +897,7 @@ class PowerShellAnalyzerWrapperTests(unittest.TestCase):
                     }
                 ),
             )
-            report, errors, _warnings = analyzer.build_report(self.make_args(root, baseline_json=str(baseline)))
+            report, errors, _warnings = analyzer.build_report(self.make_args(root, baseline_json=baseline.name))
 
         self.assertIsNotNone(report)
         self.assertTrue(any("suppressed-rule mismatch" in error for error in errors))
@@ -825,7 +921,7 @@ class PowerShellAnalyzerWrapperTests(unittest.TestCase):
                     }
                 ),
             )
-            report, errors, _warnings = analyzer.build_report(self.make_args(root, baseline_json=str(baseline)))
+            report, errors, _warnings = analyzer.build_report(self.make_args(root, baseline_json=baseline.name))
 
         self.assertIsNotNone(report)
         self.assertTrue(any("baseline suppression missing fingerprint" in error for error in errors))
@@ -873,7 +969,7 @@ class PowerShellAnalyzerWrapperTests(unittest.TestCase):
                     }
                 ),
             )
-            report, errors, _warnings = analyzer.build_report(self.make_args(root, baseline_json=str(baseline)))
+            report, errors, _warnings = analyzer.build_report(self.make_args(root, baseline_json=baseline.name))
 
         self.assertIsNotNone(report)
         self.assertTrue(any("baseline duplicate suppression" in error for error in errors))
@@ -909,7 +1005,7 @@ class PowerShellAnalyzerWrapperTests(unittest.TestCase):
                 ),
             )
             report, errors, _warnings = analyzer.build_report(
-                self.make_args(root, target_path=[rel], baseline_json=str(baseline))
+                self.make_args(root, target_path=[rel], baseline_json=baseline.name)
             )
 
         self.assertEqual(errors, [])
@@ -942,6 +1038,67 @@ class PowerShellAnalyzerWrapperTests(unittest.TestCase):
                 analyzer.write_outputs(root, report, Path("report.json"), Path("markdown-output-as-directory"))
 
         self.assertIn("report write failure", str(caught.exception))
+
+    def test_report_output_paths_must_stay_inside_repo(self) -> None:
+        scenarios = [
+            (
+                "json traversal",
+                Path("../outside-report.json"),
+                Path("report.md"),
+                "JSON report output path",
+                "outside-report.json",
+            ),
+            (
+                "json absolute",
+                "ABSOLUTE_JSON",
+                Path("report.md"),
+                "JSON report output path",
+                "outside-report.json",
+            ),
+            (
+                "markdown traversal",
+                Path("report.json"),
+                Path("../outside-report.md"),
+                "Markdown report output path",
+                "outside-report.md",
+            ),
+            (
+                "markdown absolute",
+                Path("report.json"),
+                "ABSOLUTE_MARKDOWN",
+                "Markdown report output path",
+                "outside-report.md",
+            ),
+        ]
+        for name, json_output, markdown_output, expected_label, outside_name in scenarios:
+            with self.subTest(name=name):
+                with self.make_repo() as temp:
+                    root = Path(temp).resolve()
+                    outside = root.parent / outside_name
+                    outside.unlink(missing_ok=True)
+                    if json_output == "ABSOLUTE_JSON":
+                        json_output = outside
+                    if markdown_output == "ABSOLUTE_MARKDOWN":
+                        markdown_output = outside
+                    report, errors, _warnings = analyzer.build_report(self.make_args(root))
+                    self.assertEqual(errors, [])
+                    assert report is not None
+                    with self.assertRaises(analyzer.AnalyzerContractError) as caught:
+                        analyzer.write_outputs(root, report, Path(json_output), Path(markdown_output))
+
+                self.assertIn(f"{expected_label} must be a repo-relative path without traversal", str(caught.exception))
+                self.assertFalse(outside.exists())
+
+    def test_report_output_paths_must_not_alias(self) -> None:
+        with self.make_repo() as temp:
+            root = Path(temp).resolve()
+            report, errors, _warnings = analyzer.build_report(self.make_args(root))
+            self.assertEqual(errors, [])
+            assert report is not None
+            with self.assertRaises(analyzer.AnalyzerContractError) as caught:
+                analyzer.write_outputs(root, report, Path("same-report"), Path("same-report"))
+
+        self.assertIn("JSON and Markdown report output paths must be different", str(caught.exception))
 
     def test_cli_rewrites_json_as_failed_when_markdown_write_fails(self) -> None:
         with self.make_repo() as temp:

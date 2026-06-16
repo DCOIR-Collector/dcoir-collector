@@ -106,7 +106,7 @@ def sha256_text(text: str) -> str:
 def safe_repo_path(path: Path, repo_root: Path) -> str:
     try:
         return path.resolve().relative_to(repo_root.resolve()).as_posix()
-    except ValueError:
+    except (OSError, RuntimeError, ValueError):
         return path.as_posix()
 
 
@@ -126,7 +126,7 @@ def resolve_repo_input_path(value: str, repo_root: Path, label: str) -> tuple[Pa
     candidate = repo_root.joinpath(*parts)
     try:
         candidate.resolve().relative_to(repo_root.resolve())
-    except (OSError, ValueError):
+    except (OSError, RuntimeError, ValueError):
         return None, normalized, f"{label} path must resolve inside the repository root"
     return candidate, normalized, None
 
@@ -153,7 +153,7 @@ def validate_governance_path_prefix(value: str, repo_root: Path, label: str) -> 
     candidate = repo_root.joinpath(*parts)
     try:
         candidate.resolve().relative_to(repo_root.resolve())
-    except (OSError, ValueError) as exc:
+    except (OSError, RuntimeError, ValueError) as exc:
         raise GovernanceError(f"{label} prefix must resolve inside the repository root: {prefix_value}") from exc
     return prefix_value
 
@@ -174,6 +174,15 @@ def write_json(path: Path, data: dict[str, Any]) -> None:
     path.write_text(json.dumps(data, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
+def resolve_repo_output_path(repo_root: Path, output_path: Path, label: str) -> Path:
+    absolute_path, _repo_path, path_error = resolve_repo_input_path(output_path.as_posix(), repo_root, label)
+    if path_error:
+        raise GovernanceError(f"{label} {path_error}: {output_path.as_posix()}")
+    if absolute_path is None:
+        raise GovernanceError(f"{label} path could not be resolved: {output_path.as_posix()}")
+    return absolute_path
+
+
 def mark_report_write_failure(report: dict[str, Any], message: str) -> None:
     validation = report.setdefault("validation", {})
     validation["success"] = False
@@ -185,8 +194,14 @@ def mark_report_write_failure(report: dict[str, Any], message: str) -> None:
 
 
 def write_outputs(repo_root: Path, report: dict[str, Any], json_output: Path, markdown_output: Path) -> None:
-    json_path = repo_root / json_output
-    markdown_path = repo_root / markdown_output
+    json_path = resolve_repo_output_path(repo_root, json_output, "PowerShell finding governance JSON report output")
+    markdown_path = resolve_repo_output_path(repo_root, markdown_output, "PowerShell finding governance Markdown report output")
+    try:
+        outputs_alias = json_path.resolve() == markdown_path.resolve()
+    except (OSError, RuntimeError) as exc:
+        raise GovernanceError("PowerShell finding governance report output paths must resolve inside the repository root") from exc
+    if outputs_alias:
+        raise GovernanceError("PowerShell finding governance JSON and Markdown report output paths must be different")
     try:
         write_json(json_path, report)
         markdown_path.parent.mkdir(parents=True, exist_ok=True)
@@ -1057,8 +1072,7 @@ def main(argv: list[str] | None = None) -> int:
         try:
             write_outputs(repo_root, report, Path(args.json_output), Path(args.markdown_output))
         except GovernanceError as exc:
-            if report["validation"]["success"]:
-                mark_report_write_failure(report, str(exc))
+            mark_report_write_failure(report, str(exc))
     if report["validation"]["success"]:
         return 0
     for error in report["validation"]["errors"]:

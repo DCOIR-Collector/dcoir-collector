@@ -18,6 +18,7 @@ from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import build_powershell_surface_inventory as inventory_builder
+from powershell_analyzer_contract import AnalyzerContractError, repo_relative_input_path
 
 SCHEMA_VERSION = "dcoir_powershell_custom_check_report_v1"
 CHECKS_SCHEMA_VERSION = "dcoir_powershell_custom_checks_v1"
@@ -70,13 +71,32 @@ def read_json(path: Path, label: str) -> Any:
         raise CustomCheckError(f"{label} missing: {path}") from exc
     except json.JSONDecodeError as exc:
         raise CustomCheckError(f"{label} is not valid JSON: {path}: {exc}") from exc
+    except OSError as exc:
+        raise CustomCheckError(f"{label} could not be read: {path}: {exc}") from exc
 
 
 def safe_relpath(path: Path, repo_root: Path) -> str:
     try:
         return path.resolve().relative_to(repo_root.resolve()).as_posix()
-    except ValueError:
+    except (OSError, RuntimeError, ValueError):
         return path.as_posix()
+
+
+def repo_relative_cli_path(repo_root: Path, value: str | Path, label: str, errors: list[str]) -> Path | None:
+    try:
+        return repo_relative_input_path(repo_root, value, label)
+    except AnalyzerContractError as exc:
+        errors.append(str(exc))
+        return None
+
+
+def repo_input_metadata(path: Path | None, raw_value: str | Path, repo_root: Path, data: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "path": safe_relpath(path, repo_root) if path is not None else str(raw_value),
+        "accepted": path is not None,
+        "schema_version": data.get("schema_version") if path is not None else None,
+        "sha256": sha256_file(path) if path is not None and path.is_file() else None,
+    }
 
 
 def scalar(value: Any) -> str:
@@ -139,7 +159,7 @@ def safe_inventory_path(value: str, label: str, repo_root: Path, errors: list[st
     try:
         resolved = (root / rel).resolve()
         resolved.relative_to(root)
-    except (OSError, ValueError):
+    except (OSError, RuntimeError, ValueError):
         errors.append(f"{label}: path must resolve inside the repository root")
         return ""
     return rel
@@ -721,11 +741,29 @@ def render_markdown(report: dict[str, Any]) -> str:
 
 def write_outputs(repo_root: Path, report: dict[str, Any], json_output: Path, markdown_output: Path) -> list[str]:
     errors: list[str] = []
+    json_path = repo_relative_cli_path(repo_root, json_output, "custom checks JSON report output path", errors)
+    markdown_path = repo_relative_cli_path(repo_root, markdown_output, "custom checks Markdown report output path", errors)
+    if json_path is not None and markdown_path is not None:
+        try:
+            if json_path.resolve() == markdown_path.resolve():
+                errors.append("custom checks JSON and Markdown report output paths must be different")
+        except (OSError, RuntimeError):
+            errors.append("custom checks report output paths must resolve inside the repository root")
     outputs = [
-        (repo_root / json_output, json.dumps(report, indent=2) + "\n"),
-        (repo_root / markdown_output, render_markdown(report)),
+        (
+            json_path,
+            json.dumps(report, indent=2) + "\n",
+        ),
+        (
+            markdown_path,
+            render_markdown(report),
+        ),
     ]
+    if errors:
+        return errors
     for path, content in outputs:
+        if path is None:
+            continue
         try:
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(content, encoding="utf-8")
@@ -739,14 +777,14 @@ def write_outputs(repo_root: Path, report: dict[str, Any], json_output: Path, ma
 
 def build_report(args: argparse.Namespace) -> tuple[dict[str, Any], list[str], list[str]]:
     repo_root = Path(args.repo_root).resolve()
-    checks_path = (repo_root / args.checks).resolve()
-    matrix_path = (repo_root / args.matrix).resolve()
-    inventory_path = (repo_root / args.inventory).resolve()
-    fixture_manifest_path = (repo_root / args.fixture_manifest).resolve()
     json_output = Path(args.json_output)
     markdown_output = Path(args.markdown_output)
     errors: list[str] = []
     warnings: list[str] = []
+    checks_path = repo_relative_cli_path(repo_root, args.checks, "custom checks path", errors)
+    matrix_path = repo_relative_cli_path(repo_root, args.matrix, "rule-to-risk matrix path", errors)
+    inventory_path = repo_relative_cli_path(repo_root, args.inventory, "PowerShell surface inventory path", errors)
+    fixture_manifest_path = repo_relative_cli_path(repo_root, args.fixture_manifest, "custom fixture manifest path", errors)
     checks_doc: dict[str, Any] = {}
     matrix: dict[str, Any] = {}
     inventory: dict[str, Any] = {}
@@ -756,6 +794,8 @@ def build_report(args: argparse.Namespace) -> tuple[dict[str, Any], list[str], l
     surface_paths: set[str] = set()
 
     try:
+        if checks_path is None or matrix_path is None or inventory_path is None or fixture_manifest_path is None:
+            raise CustomCheckError("custom check input path validation failed")
         checks_doc = read_json(checks_path, "custom checks")
         matrix = read_json(matrix_path, "rule-to-risk matrix")
         inventory = read_json(inventory_path, "PowerShell surface inventory")
@@ -846,27 +886,13 @@ def build_report(args: argparse.Namespace) -> tuple[dict[str, Any], list[str], l
         "depends_on": [261, 262, 263],
         "source_of_truth": "#264 custom DCOIR check contract mapped to #263 rule-to-risk matrix",
         "target_scope": args.target_scope,
-        "checks": {
-            "path": safe_relpath(checks_path, repo_root),
-            "schema_version": checks_doc.get("schema_version"),
-            "sha256": sha256_file(checks_path) if checks_path.is_file() else None,
-        },
-        "matrix": {
-            "path": safe_relpath(matrix_path, repo_root),
-            "schema_version": matrix.get("schema_version"),
-            "sha256": sha256_file(matrix_path) if matrix_path.is_file() else None,
-        },
+        "checks": repo_input_metadata(checks_path, args.checks, repo_root, checks_doc),
+        "matrix": repo_input_metadata(matrix_path, args.matrix, repo_root, matrix),
         "inventory": {
-            "path": safe_relpath(inventory_path, repo_root),
-            "schema_version": inventory.get("schema_version"),
-            "sha256": sha256_file(inventory_path) if inventory_path.is_file() else None,
+            **repo_input_metadata(inventory_path, args.inventory, repo_root, inventory),
             "inventory_total_surfaces": inventory.get("summary", {}).get("total_surfaces") if isinstance(inventory, dict) else None,
         },
-        "fixture_manifest": {
-            "path": safe_relpath(fixture_manifest_path, repo_root),
-            "schema_version": manifest.get("schema_version"),
-            "sha256": sha256_file(fixture_manifest_path) if fixture_manifest_path.is_file() else None,
-        },
+        "fixture_manifest": repo_input_metadata(fixture_manifest_path, args.fixture_manifest, repo_root, manifest),
         "summary": {
             "custom_check_count": len(check_map),
             "target_count": len(targets),

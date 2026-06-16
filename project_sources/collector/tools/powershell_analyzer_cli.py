@@ -18,6 +18,7 @@ from powershell_analyzer_contract import (
     ISSUE_NUMBER,
     SCHEMA_VERSION,
     AnalyzerContractError,
+    repo_relative_input_path,
     relpath,
     severity_at_or_above,
     sha256_file,
@@ -29,15 +30,22 @@ from powershell_analyzer_reporting import empty_report, expected_finding_errors,
 
 def build_report(args: argparse.Namespace) -> tuple[dict[str, Any] | None, list[str], list[str]]:
     repo_root = Path(args.repo_root).resolve()
-    inventory_path = (repo_root / args.inventory).resolve()
-    settings_path = (repo_root / args.settings).resolve()
-    baseline_path = Path(args.baseline_json).resolve() if args.baseline_json else None
+    inventory_path: Path | None = None
+    settings_path: Path | None = None
+    baseline_path: Path | None = None
     json_output = Path(args.json_output)
     markdown_output = Path(args.markdown_output)
     errors: list[str] = []
     warnings: list[str] = []
 
     try:
+        inventory_path = repo_relative_input_path(repo_root, args.inventory, "PowerShell surface inventory path")
+        settings_path = repo_relative_input_path(repo_root, args.settings, "analyzer settings path")
+        baseline_path = (
+            repo_relative_input_path(repo_root, args.baseline_json, "PowerShell analyzer baseline path")
+            if args.baseline_json
+            else None
+        )
         policy = validate_policy(settings_path)
         policy["path"] = relpath(settings_path, repo_root)
         warnings.extend(policy["warnings"])
@@ -51,6 +59,7 @@ def build_report(args: argparse.Namespace) -> tuple[dict[str, Any] | None, list[
             repo_root=repo_root,
             inventory_path=inventory_path,
             settings_path=settings_path,
+            baseline_path=baseline_path,
             json_output=json_output,
             markdown_output=markdown_output,
             errors=errors,

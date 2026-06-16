@@ -217,6 +217,77 @@ class PowerShellCustomCheckTests(unittest.TestCase):
         self.assertFalse(report["validation"]["success"])
         self.assertTrue(any("custom checks missing" in error for error in errors))
 
+    def test_cli_input_paths_must_stay_inside_repo_before_read(self) -> None:
+        scenarios = [
+            ("checks", "ABSOLUTE_CHECKS", "custom checks path", "checks"),
+            ("matrix", "../outside-matrix.json", "rule-to-risk matrix path", "matrix"),
+            ("inventory", "../outside-inventory.json", "PowerShell surface inventory path", "inventory"),
+            ("fixture_manifest", "ABSOLUTE_FIXTURE_MANIFEST", "custom fixture manifest path", "fixture_manifest"),
+        ]
+        for arg_name, unsafe_path, expected_label, report_key in scenarios:
+            with self.subTest(arg_name=arg_name):
+                with self.make_repo() as temp:
+                    root = Path(temp).resolve()
+                    outside_name = "outside-custom-check-input.json"
+                    if unsafe_path.startswith("../"):
+                        outside_name = unsafe_path.removeprefix("../")
+                    outside = root.parent / outside_name
+                    write(outside, "{not-json")
+                    if unsafe_path.startswith("ABSOLUTE_"):
+                        unsafe_path = outside.as_posix()
+                    report, errors, _warnings = custom.build_report(
+                        self.args(root, **{arg_name: unsafe_path})
+                    )
+
+                self.assertFalse(report["validation"]["success"])
+                self.assertTrue(
+                    any(f"{expected_label} must be a repo-relative path without traversal" in error for error in errors),
+                    errors,
+                )
+                self.assertFalse(any("not valid JSON" in error for error in errors), errors)
+                self.assertFalse(report[report_key]["accepted"])
+
+    def test_output_paths_must_stay_inside_repo_before_write(self) -> None:
+        scenarios = [
+            (
+                "json traversal",
+                {"json_output": "../outside-custom-report.json", "markdown_output": "custom-report.md"},
+                "custom checks JSON report output path",
+                "outside-custom-report.json",
+            ),
+            (
+                "markdown absolute",
+                {"json_output": "custom-report.json", "markdown_output": "ABSOLUTE_MARKDOWN"},
+                "custom checks Markdown report output path",
+                "outside-custom-report.md",
+            ),
+            (
+                "same path",
+                {"json_output": "same-report", "markdown_output": "same-report"},
+                "custom checks JSON and Markdown report output paths must be different",
+                "same-report",
+            ),
+        ]
+        for name, overrides, expected_label, outside_name in scenarios:
+            with self.subTest(name=name):
+                with self.make_repo() as temp:
+                    root = Path(temp).resolve()
+                    outside = root.parent / outside_name
+                    outside.unlink(missing_ok=True)
+                    if overrides["markdown_output"] == "ABSOLUTE_MARKDOWN":
+                        overrides["markdown_output"] = outside.as_posix()
+                    report, errors, _warnings = custom.build_report(
+                        self.args(root, no_write=False, **overrides)
+                    )
+
+                self.assertFalse(report["validation"]["success"])
+                self.assertTrue(
+                    any(expected_label in error for error in errors),
+                    errors,
+                )
+                if name != "same path":
+                    self.assertFalse(outside.exists())
+
     def test_inventory_targets_must_be_safe_before_reading(self) -> None:
         with self.make_repo() as temp:
             root = Path(temp).resolve()

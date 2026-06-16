@@ -70,7 +70,7 @@ def is_relative_to(path: Path, parent: Path) -> bool:
     try:
         path.resolve().relative_to(parent.resolve())
         return True
-    except ValueError:
+    except (OSError, RuntimeError, ValueError):
         return False
 
 
