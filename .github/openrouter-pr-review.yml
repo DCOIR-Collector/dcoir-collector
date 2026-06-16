@@ -38,6 +38,10 @@ guidance_files:
   - README.md
 
 # The workflow job skips bot comments, but this denylist is checked again in code.
+# Only these GitHub users may trigger the reviewer in this public repository.
+allowed_authors:
+  - malwaredevil
+
 ignored_authors:
   - github-actions[bot]
   - dependabot[bot]

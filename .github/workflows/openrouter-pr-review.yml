@@ -20,6 +20,7 @@ jobs:
       ${{
         github.event.issue.pull_request &&
         github.event.comment.user.type != 'Bot' &&
+        github.event.comment.user.login == 'malwaredevil' &&
         (
           startsWith(github.event.comment.body, '/or-review') ||
           startsWith(github.event.comment.body, '/openrouter-review')
