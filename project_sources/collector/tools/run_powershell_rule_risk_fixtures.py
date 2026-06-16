@@ -819,15 +819,27 @@ def mark_output_failure(report: dict[str, Any], error: str) -> None:
         errors.append(error)
 
 
-def rewrite_failed_json_report(json_path: Path | None, report: dict[str, Any], error: str) -> None:
+def rewrite_failed_report_outputs(
+    json_path: Path | None,
+    markdown_path: Path | None,
+    report: dict[str, Any],
+    error: str,
+) -> None:
     mark_output_failure(report, error)
-    if json_path is None:
-        return
-    try:
-        json_path.parent.mkdir(parents=True, exist_ok=True)
-        json_path.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
-    except (TypeError, OSError) as exc:
-        mark_output_failure(report, f"failed to rewrite failed JSON report after output error: {exc}")
+    written_paths: set[Path] = set()
+    rewrite_targets = [
+        (json_path, json.dumps(report, indent=2) + "\n", "JSON"),
+        (markdown_path, render_report_markdown(report), "Markdown"),
+    ]
+    for path, text, label in rewrite_targets:
+        if path is None or path in written_paths:
+            continue
+        try:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(text, encoding="utf-8")
+            written_paths.add(path)
+        except (TypeError, OSError) as exc:
+            mark_output_failure(report, f"failed to rewrite failed {label} report after output error: {exc}")
 
 
 def write_outputs(
@@ -854,16 +866,16 @@ def write_outputs(
         )
     if path_errors:
         error = "; ".join(path_errors)
-        rewrite_failed_json_report(json_path, report, error)
+        rewrite_failed_report_outputs(json_path, markdown_path, report, error)
         raise RuleRiskFixtureError(error)
 
     if json_path is None or markdown_path is None or matrix_markdown_path is None:
         raise RuleRiskFixtureError("output path validation failed unexpectedly")
     output_paths = [("JSON", json_path), ("Markdown", markdown_path), ("matrix Markdown", matrix_markdown_path)]
     outputs = [
+        ("matrix Markdown", matrix_markdown_path, render_matrix_markdown(matrix)),
         ("JSON", json_path, json.dumps(report, indent=2) + "\n"),
         ("Markdown", markdown_path, render_report_markdown(report)),
-        ("matrix Markdown", matrix_markdown_path, render_matrix_markdown(matrix)),
     ]
     try:
         for _label, path, text in outputs:
@@ -879,7 +891,7 @@ def write_outputs(
     else:
         return
 
-    rewrite_failed_json_report(json_path, report, error)
+    rewrite_failed_report_outputs(json_path, markdown_path, report, error)
     raise RuleRiskFixtureError(error)
 
 
