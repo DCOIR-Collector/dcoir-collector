@@ -178,35 +178,6 @@ def line_window(lines: list[str], index: int, before: int = 0, after: int = 4) -
     return "\n".join(lines[start:end])
 
 
-def local_result_context_bounds(lines: list[str], index: int, after: int = 4) -> tuple[int, int]:
-    start = index
-    for cursor in range(index, max(-1, index - 8), -1):
-        if "[pscustomobject]@{" in lines[cursor].casefold():
-            start = cursor
-            break
-
-    end = index
-    if start != index or "[pscustomobject]@{" in lines[index].casefold():
-        for cursor in range(start, min(len(lines), start + 25)):
-            if "}" in lines[cursor] and cursor >= index:
-                end = cursor
-                break
-
-    for cursor in range(end + 1, min(len(lines), end + after + 1)):
-        stripped = lines[cursor].strip()
-        if not stripped:
-            break
-        if re.search(r"\[pscustomobject\]@\{|^\s*(?:function|if|elseif|else|switch|foreach|for|while)\b", stripped, re.IGNORECASE):
-            break
-        end = cursor
-    return start, end
-
-
-def local_result_context(lines: list[str], index: int, after: int = 4) -> str:
-    start, end = local_result_context_bounds(lines, index, after=after)
-    return "\n".join(lines[start : end + 1])
-
-
 def line_without_powershell_comments_or_strings(line: str) -> str:
     chars: list[str] = []
     quote: str | None = None
@@ -255,12 +226,30 @@ def line_without_powershell_line_comment(line: str) -> str:
                 quote = None
             index += 1
             continue
-        if char == "#":
+        if char == "#" and not (index > 0 and line[index - 1] == "<"):
             return line[:index]
         if char in {"'", '"'}:
             quote = char
         index += 1
     return line
+
+
+def unquoted_token_index(line: str, token: str, start: int = 0) -> int:
+    spans = string_spans(line)
+    position = line.find(token, start)
+    while position != -1:
+        if not position_in_spans(position, spans):
+            return position
+        position = line.find(token, position + len(token))
+    return -1
+
+
+def executable_here_string_start(line: str) -> re.Match[str] | None:
+    code = line_without_powershell_line_comment(line)
+    here_start = re.search(r"@(['\"])\s*$", code)
+    if here_start and not position_in_spans(here_start.start(), string_spans(code)):
+        return here_start
+    return None
 
 
 def powershell_code_lines_preserving_positions(lines: list[str]) -> list[str]:
@@ -282,7 +271,8 @@ def powershell_code_lines_preserving_positions(lines: list[str]) -> list[str]:
             line = " " * (end + 2) + line[end + 2 :]
             in_block_comment = False
         while True:
-            start = line.find("<#")
+            comment_ready_line = line_without_powershell_line_comment(line)
+            start = unquoted_token_index(comment_ready_line, "<#")
             if start == -1:
                 break
             end = line.find("#>", start + 2)
@@ -291,7 +281,7 @@ def powershell_code_lines_preserving_positions(lines: list[str]) -> list[str]:
                 in_block_comment = True
                 break
             line = line[:start] + " " * (end + 2 - start) + line[end + 2 :]
-        here_start = re.search(r"@(['\"])\s*$", line)
+        here_start = executable_here_string_start(line)
         if here_start:
             here_string_quote = here_start.group(1)
             line = line[: here_start.start()]
@@ -316,7 +306,8 @@ def powershell_code_lines(context: str) -> list[str]:
             line = line[end + 2 :]
             in_block_comment = False
         while True:
-            start = line.find("<#")
+            comment_ready_line = line_without_powershell_line_comment(line)
+            start = unquoted_token_index(comment_ready_line, "<#")
             if start == -1:
                 break
             end = line.find("#>", start + 2)
@@ -325,11 +316,11 @@ def powershell_code_lines(context: str) -> list[str]:
                 in_block_comment = True
                 break
             line = line[:start] + " " * (end + 2 - start) + line[end + 2 :]
-        here_start = re.search(r"@(['\"])\s*$", line)
+        here_start = executable_here_string_start(line)
         if here_start:
             here_string_quote = here_start.group(1)
             line = line[: here_start.start()]
-        code_lines.append(line)
+        code_lines.append(line_without_powershell_line_comment(line))
     return code_lines
 
 
@@ -363,6 +354,58 @@ def string_spans(line: str) -> list[tuple[int, int]]:
 
 def position_in_spans(position: int, spans: list[tuple[int, int]]) -> bool:
     return any(start <= position < end for start, end in spans)
+
+
+def pscustomobject_start_column(line: str) -> int | None:
+    code = line_without_powershell_comments_or_strings(line)
+    match = re.search(r"\[pscustomobject\]\s*@\s*\{", code, re.IGNORECASE)
+    return match.start() if match else None
+
+
+def pscustomobject_end_index(code_lines: list[str], start_index: int) -> int | None:
+    start_column = pscustomobject_start_column(code_lines[start_index])
+    if start_column is None:
+        return None
+    depth = 0
+    for cursor in range(start_index, len(code_lines)):
+        code = line_without_powershell_comments_or_strings(code_lines[cursor])
+        scan = code[start_column:] if cursor == start_index else code
+        for char in scan:
+            if char == "{":
+                depth += 1
+            elif char == "}":
+                depth -= 1
+                if depth == 0:
+                    return cursor
+    return None
+
+
+def local_result_context_bounds(lines: list[str], index: int, after: int = 4) -> tuple[int, int]:
+    code_lines = powershell_code_lines_preserving_positions(lines)
+    start = index
+    end = index
+    for cursor in range(index, -1, -1):
+        if pscustomobject_start_column(code_lines[cursor]) is None:
+            continue
+        object_end = pscustomobject_end_index(code_lines, cursor)
+        if object_end is None or index <= object_end:
+            start = cursor
+            end = object_end if object_end is not None else index
+            break
+
+    for cursor in range(end + 1, min(len(lines), end + after + 1)):
+        stripped = line_without_powershell_comments_or_strings(code_lines[cursor]).strip()
+        if not stripped:
+            break
+        if re.search(r"\[pscustomobject\]\s*@\s*\{|^\s*(?:function|if|elseif|else|switch|foreach|for|while)\b", stripped, re.IGNORECASE):
+            break
+        end = cursor
+    return start, end
+
+
+def local_result_context(lines: list[str], index: int, after: int = 4) -> str:
+    start, end = local_result_context_bounds(lines, index, after=after)
+    return "\n".join(lines[start : end + 1])
 
 
 def parse_powershell_scalar_value(line: str, start: int) -> tuple[str, int] | None:
