@@ -75,6 +75,10 @@ on:
         required: false
         default: true
         type: boolean
+      run_powershell_review_assist:
+        required: false
+        default: true
+        type: boolean
       run_gemini_smoke_build:
         required: false
         default: true
@@ -187,6 +191,13 @@ jobs:
         uses: ./.github/actions/run-collector-documentation-quality
         with:
           output-json: project_sources/validation/out_${{ inputs.validation_prefix }}_documentation_quality/collector_documentation_quality.json
+
+      - name: Run PowerShell review-assist report
+        if: ${{ inputs.run_powershell_review_assist }}
+        uses: ./.github/actions/run-powershell-review-assist
+        with:
+          json-output: project_sources/collector/powershell_review_assist_${{ inputs.validation_prefix }}_workflow_report.json
+          markdown-output: project_sources/collector/powershell_review_assist_${{ inputs.validation_prefix }}_workflow_report.md
 
       - name: Smoke-test collector runtime package build
         if: ${{ inputs.run_collector_package_smoke }}
