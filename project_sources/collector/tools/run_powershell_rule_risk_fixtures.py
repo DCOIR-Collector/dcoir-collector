@@ -620,18 +620,26 @@ def pscustomobject_end_index(code_lines: list[str], start_index: int) -> int | N
     return None
 
 
-def local_result_context_bounds(lines: list[str], index: int, after: int = 4) -> tuple[int, int]:
-    code_lines = powershell_code_lines_preserving_positions(lines)
-    start = index
-    end = index
+def result_object_bounds_for_index(code_lines: list[str], index: int) -> tuple[int, int] | None:
     for cursor in range(index, -1, -1):
         if pscustomobject_start_column(code_lines[cursor]) is None:
             continue
         object_end = pscustomobject_end_index(code_lines, cursor)
-        if object_end is None or index <= object_end:
-            start = cursor
-            end = object_end if object_end is not None else index
-            break
+        if object_end is None:
+            return cursor, index
+        if index <= object_end:
+            return cursor, object_end
+    return None
+
+
+def line_in_result_object(code_lines: list[str], index: int) -> bool:
+    return result_object_bounds_for_index(code_lines, index) is not None
+
+
+def local_result_context_bounds(lines: list[str], index: int, after: int = 4) -> tuple[int, int]:
+    code_lines = powershell_code_lines_preserving_positions(lines)
+    result_bounds = result_object_bounds_for_index(code_lines, index)
+    start, end = result_bounds if result_bounds is not None else (index, index)
 
     for cursor in range(end + 1, min(len(lines), end + after + 1)):
         stripped = line_without_powershell_comments_or_strings(code_lines[cursor]).strip()
@@ -789,6 +797,8 @@ def fixture_findings(text: str, path: str) -> list[dict[str, Any]]:
         )
     seen_fail_contexts: set[tuple[int, int]] = set()
     for index, line_text in enumerate(code_lines):
+        if not line_in_result_object(code_lines, index):
+            continue
         if not line_has_assignment_value(line_text, {"status": {"fail"}}):
             continue
         context_bounds = local_result_context_bounds(lines, index)
