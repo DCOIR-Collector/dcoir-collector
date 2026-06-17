@@ -76,10 +76,12 @@ jobs:
         project_sources/validation/out_manual_full_validate_dcoir_run_fixtures/**
         project_sources/validation/out_preflight_documentation_quality/**
         project_sources/validation/out_manual_full_documentation_quality/**
+        project_sources/collector/powershell_review_assist_manual_full_workflow_report.json
+        project_sources/collector/powershell_review_assist_manual_full_workflow_report.md
       artifact_retention_days: 21
       report_title: Manual full validation summary
       report_scope: selected deep validation suite
-      report_note: includes TestResults, Gemini smoke-build output, collector runtime output, validate_DCOIR_Run fixture output, and documentation-quality output when produced.
+      report_note: includes TestResults, Gemini smoke-build output, collector runtime output, validate_DCOIR_Run fixture output, documentation-quality output, and PowerShell review-assist JSON/Markdown when produced.
       report_claim: The workflow conclusion is the authoritative pass/fail signal. The selected suite bounds any readiness claim; use FullRegression or equivalent evidence for broad readiness.
       run_windows_powershell_5_1_syntax: true
       build_runtime_for_harness: true
