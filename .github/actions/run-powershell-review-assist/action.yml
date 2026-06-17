@@ -147,6 +147,18 @@ runs:
         if ($report.artifact_contract.local_artifacts.markdown -ne $reviewAssistMarkdown) {
           throw 'PowerShell review-assist Markdown artifact path metadata did not match the uploaded Markdown path.'
         }
+        $markdownText = Get-Content -LiteralPath $reviewAssistMarkdown -Raw
+        $expectedMarkdownFragments = @(
+          'Workflow behavior: `caller_uploaded_artifact`',
+          ('- JSON: `{0}`' -f $reviewAssistJson),
+          ('- Markdown: `{0}`' -f $reviewAssistMarkdown),
+          $report.artifact_contract.retention_scope
+        )
+        foreach ($fragment in $expectedMarkdownFragments) {
+          if (-not $markdownText.Contains($fragment)) {
+            throw "PowerShell review-assist Markdown artifact metadata missing expected fragment: $fragment"
+          }
+        }
 
 # Compensating evidence: callers upload the generated JSON and Markdown reports
 # and the step prints validation state, workflow behavior, finding count, analyzer state, and paths.
