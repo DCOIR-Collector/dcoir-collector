@@ -1,0 +1,202 @@
+{
+  "schema_version": "dcoir_powershell_custom_check_fixture_manifest_v1",
+  "issue": 264,
+  "parent_issue": 260,
+  "depends_on": [261, 262, 263],
+  "checks": "project_sources/collector/powershell_custom_checks.json",
+  "fixtures_root": "project_sources/collector/fixtures/powershell_analysis",
+  "fixtures": [
+    {
+      "id": "bad-analyzer-skip-success",
+      "kind": "negative",
+      "check_id": "dcoir-analyzer-skip-success",
+      "path": "project_sources/collector/fixtures/powershell_analysis/bad/analyzer_skip_success.ps1",
+      "description": "Analyzer skip state is represented as success.",
+      "expected_findings": [
+        {
+          "check_id": "dcoir-analyzer-skip-success",
+          "rule_name": "DCOIR.NoAnalyzerSkipSuccess",
+          "severity": "Error",
+          "line": 1,
+          "risk_class": "analyzer_policy_inventory_skip_or_tool_failure_reported_success"
+        }
+      ]
+    },
+    {
+      "id": "good-analyzer-skip-fails-closed",
+      "kind": "control",
+      "check_id": "dcoir-analyzer-skip-success",
+      "path": "project_sources/collector/fixtures/powershell_analysis/good/custom_analyzer_skip_fails_closed.ps1",
+      "description": "Analyzer skip state throws instead of reporting success.",
+      "expected_findings": []
+    },
+    {
+      "id": "bad-unchecked-external-exit",
+      "kind": "negative",
+      "check_id": "dcoir-check-external-exit",
+      "path": "project_sources/collector/fixtures/powershell_analysis/bad/unchecked_external_exit.ps1",
+      "description": "External process result is not checked immediately.",
+      "expected_findings": [
+        {
+          "check_id": "dcoir-check-external-exit",
+          "rule_name": "DCOIR.CheckExternalCommandExit",
+          "severity": "Error",
+          "line": 2,
+          "risk_class": "external_command_nonzero_exit_treated_success"
+        }
+      ]
+    },
+    {
+      "id": "good-external-exit-checked",
+      "kind": "control",
+      "check_id": "dcoir-check-external-exit",
+      "path": "project_sources/collector/fixtures/powershell_analysis/good/custom_external_exit_checked.ps1",
+      "description": "External process result is checked before continuing.",
+      "expected_findings": []
+    },
+    {
+      "id": "bad-fail-row-green-exit",
+      "kind": "negative",
+      "check_id": "dcoir-fail-output-must-fail",
+      "path": "project_sources/collector/fixtures/powershell_analysis/bad/fail_row_green_exit.ps1",
+      "description": "A FAIL row is written without throwing or exiting nonzero.",
+      "expected_findings": [
+        {
+          "check_id": "dcoir-fail-output-must-fail",
+          "rule_name": "DCOIR.FailOutputMustFailValidation",
+          "severity": "Error",
+          "line": 2,
+          "risk_class": "fail_rows_reports_or_fixture_outputs_not_causing_failure"
+        }
+      ]
+    },
+    {
+      "id": "good-fail-row-fails-command",
+      "kind": "control",
+      "check_id": "dcoir-fail-output-must-fail",
+      "path": "project_sources/collector/fixtures/powershell_analysis/good/custom_fail_row_fails_command.ps1",
+      "description": "A FAIL row is tied to a thrown validation failure.",
+      "expected_findings": []
+    },
+    {
+      "id": "bad-source-part-drift",
+      "kind": "negative",
+      "check_id": "dcoir-source-part-drift",
+      "path": "project_sources/collector/fixtures/powershell_analysis/bad/source_part_drift.ps1",
+      "description": "Generated output hash metadata records stale source-part assembly.",
+      "expected_findings": [
+        {
+          "check_id": "dcoir-source-part-drift",
+          "rule_name": "DCOIR.SourcePartAssemblyDrift",
+          "severity": "Error",
+          "line": 2,
+          "risk_class": "source_part_assembly_drift_or_stale_generated_output"
+        }
+      ]
+    },
+    {
+      "id": "good-source-part-current",
+      "kind": "control",
+      "check_id": "dcoir-source-part-drift",
+      "path": "project_sources/collector/fixtures/powershell_analysis/good/custom_source_part_current.ps1",
+      "description": "Generated output metadata records current source-part assembly.",
+      "expected_findings": []
+    },
+    {
+      "id": "bad-unsafe-wildcard-delete",
+      "kind": "negative",
+      "check_id": "dcoir-no-unsafe-wildcard-delete",
+      "path": "project_sources/collector/fixtures/powershell_analysis/bad/unsafe_wildcard_delete.ps1",
+      "description": "Wildcard recursive deletion is not constrained to a resolved controlled root.",
+      "expected_findings": [
+        {
+          "check_id": "dcoir-no-unsafe-wildcard-delete",
+          "rule_name": "DCOIR.NoUnsafeWildcardDeletion",
+          "severity": "Error",
+          "line": 2,
+          "risk_class": "unsafe_or_wildcard_deletion_outside_controlled_roots"
+        }
+      ]
+    },
+    {
+      "id": "good-safe-root-delete",
+      "kind": "control",
+      "check_id": "dcoir-no-unsafe-wildcard-delete",
+      "path": "project_sources/collector/fixtures/powershell_analysis/good/custom_safe_root_delete.ps1",
+      "description": "Recursive cleanup is constrained to a resolved controlled root.",
+      "expected_findings": []
+    },
+    {
+      "id": "bad-unbounded-event-query",
+      "kind": "negative",
+      "check_id": "dcoir-bound-event-query",
+      "path": "project_sources/collector/fixtures/powershell_analysis/bad/unbounded_event_query.ps1",
+      "description": "Get-WinEvent reads a whole log without an event window or count cap.",
+      "expected_findings": [
+        {
+          "check_id": "dcoir-bound-event-query",
+          "rule_name": "DCOIR.BoundedEventQueryRequired",
+          "severity": "Error",
+          "line": 2,
+          "risk_class": "unbounded_or_materializing_event_query_patterns"
+        }
+      ]
+    },
+    {
+      "id": "good-bounded-event-query",
+      "kind": "control",
+      "check_id": "dcoir-bound-event-query",
+      "path": "project_sources/collector/fixtures/powershell_analysis/good/custom_bounded_event_query.ps1",
+      "description": "Get-WinEvent uses a bounded filter and event cap.",
+      "expected_findings": []
+    },
+    {
+      "id": "bad-broad-baseline",
+      "kind": "negative",
+      "check_id": "dcoir-baseline-fingerprint-bound",
+      "path": "project_sources/collector/fixtures/powershell_analysis/bad/broad_baseline.ps1",
+      "description": "Baseline suppression is broad and lacks a fingerprint.",
+      "expected_findings": [
+        {
+          "check_id": "dcoir-baseline-fingerprint-bound",
+          "rule_name": "DCOIR.BaselineSuppressionMustBeFingerprintBound",
+          "severity": "Error",
+          "line": 1,
+          "risk_class": "broad_suppression_or_baseline_growth_hiding_risk"
+        }
+      ]
+    },
+    {
+      "id": "good-fingerprint-bound-baseline",
+      "kind": "control",
+      "check_id": "dcoir-baseline-fingerprint-bound",
+      "path": "project_sources/collector/fixtures/powershell_analysis/good/custom_fingerprint_bound_baseline.ps1",
+      "description": "Baseline suppression is bound to exact path, rule, fingerprint, expected count, and reason.",
+      "expected_findings": []
+    },
+    {
+      "id": "bad-swallowed-catch",
+      "kind": "negative",
+      "check_id": "dcoir-no-swallowed-catch",
+      "path": "project_sources/collector/fixtures/powershell_analysis/bad/swallowed_catch.ps1",
+      "description": "Catch block writes a message and then allows success to continue.",
+      "expected_findings": [
+        {
+          "check_id": "dcoir-no-swallowed-catch",
+          "rule_name": "DCOIR.NoSwallowedCatch",
+          "severity": "Error",
+          "line": 4,
+          "risk_class": "swallowed_exception_or_write_only_catch"
+        }
+      ]
+    },
+    {
+      "id": "good-catch-rethrows",
+      "kind": "control",
+      "check_id": "dcoir-no-swallowed-catch",
+      "path": "project_sources/collector/fixtures/powershell_analysis/good/custom_catch_rethrows.ps1",
+      "description": "Catch block records context and rethrows.",
+      "expected_findings": []
+    }
+  ]
+}

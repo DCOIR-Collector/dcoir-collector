@@ -22,7 +22,7 @@ REQUIRED_SNIPPETS = {
         '- python',
         '- actions',
         'actions/upload-artifact@v7',
-        'actions/download-artifact@v7',
+        'actions/download-artifact@v8',
         'name: chatgpt-workflow-report-section-${{ matrix.language }}',
         'pattern: chatgpt-workflow-report-section-*',
         'name: chatgpt-workflow-report-section',

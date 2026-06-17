@@ -1,0 +1,93 @@
+{
+  "schema_version": "dcoir_powershell_finding_governance_v1",
+  "issue": 266,
+  "parent_issue": 260,
+  "depends_on": [262, 263, 264, 265],
+  "policy": {
+    "allowed_decisions": [
+      "remediate-now",
+      "baseline-temporary",
+      "advisory",
+      "false positive",
+      "accepted risk"
+    ],
+    "fail_on_new_unclassified_findings": true,
+    "fail_on_severity_increase": true,
+    "fail_on_count_regression": true,
+    "fail_on_unexpected_disappearance": true,
+    "fail_on_stale_baseline_growth": true,
+    "max_baseline_records": 0,
+    "baseline_record_required_fields": [
+      "id",
+      "decision",
+      "rule_name_or_check_id",
+      "path",
+      "line_or_stable_locator",
+      "severity",
+      "fingerprint",
+      "rationale",
+      "owner",
+      "reviewer",
+      "review_date",
+      "expiry_or_revisit"
+    ],
+    "suppression_policy": {
+      "blanket_repo_suppressions_allowed": false,
+      "wildcard_path_suppressions_allowed": false,
+      "wildcard_rule_suppressions_allowed": false,
+      "requires_fingerprint": true,
+      "requires_owner_reviewer_rationale": true,
+      "requires_expiry_or_revisit": true,
+      "generated_output_file_suppression_requires_assembly_coverage": true
+    }
+  },
+  "classification_rules": [
+    {
+      "id": "fixture-negative-findings-are-advisory-evidence",
+      "decision": "advisory",
+      "path_prefixes": [
+        "project_sources/collector/fixtures/powershell_analysis/"
+      ],
+      "rationale": "PowerShell analysis fixture findings are expected proof points for #263/#264 controls, not production-source remediation debt.",
+      "owner": "DCOIR Collector maintainers",
+      "reviewer": "DCOIR operator",
+      "review_date": "2026-06-10",
+      "revisit_condition": "Reclassify before a workflow gate treats fixture finding reports as production-source debt."
+    }
+  ],
+  "baseline_records": [],
+  "suppressions": [],
+  "approved_delta_exceptions": [],
+  "control_proofs": [
+    {
+      "id": "new-unclassified-finding",
+      "expected_result": "fails when a finding is not matched by a baseline record, suppression, or classification rule",
+      "evidence": "test_new_finding_without_classification_fails_closed"
+    },
+    {
+      "id": "malformed-baseline",
+      "expected_result": "fails when a baseline record is missing required review or fingerprint fields",
+      "evidence": "test_malformed_baseline_fails_closed"
+    },
+    {
+      "id": "severity-increase",
+      "expected_result": "fails when a baseline record's matched finding increases severity",
+      "evidence": "test_severity_increase_fails_closed"
+    },
+    {
+      "id": "unexpected-disappearance",
+      "expected_result": "fails when an expected baseline fingerprint disappears without an exception",
+      "evidence": "test_unexpected_baseline_disappearance_fails_closed"
+    },
+    {
+      "id": "blanket-suppression",
+      "expected_result": "fails on repo-wide, wildcard path, or wildcard rule suppressions",
+      "evidence": "test_blanket_suppression_fails_closed"
+    },
+    {
+      "id": "generated-output-suppression",
+      "expected_result": "fails when a generated-output file suppression lacks #265 assembly coverage and an explicit reviewed reason",
+      "evidence": "test_generated_output_suppression_requires_assembly_coverage"
+    }
+  ]
+}
