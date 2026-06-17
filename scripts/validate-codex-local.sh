@@ -165,6 +165,11 @@ if [ "${CODEX_RUN_SEMGREP:-0}" = "1" ] && command -v semgrep >/dev/null 2>&1; th
   fi
 fi
 
+if grep -Eq '(^\.github/(actions|workflows)/|^scripts/validate-codex-local\.sh$|^project_sources/collector/(powershell_|PSScriptAnalyzerSettings\.psd1|fixtures/powershell_(analysis|review_assist)/|tools/(run_powershell_|test_run_powershell_|powershell_analyzer_).*\.(py|json)|source/|harness/))' "$files_file"; then
+  echo '[validate-codex-local] PowerShell review-assist report check'
+  python3 project_sources/collector/tools/run_powershell_review_assist_report.py --repo-root . --no-write || status=1
+fi
+
 if grep -Eq '\.(ps1|psm1|psd1)$' "$files_file"; then
   echo '[validate-codex-local] PowerShell parser checks'
   if command -v pwsh >/dev/null 2>&1; then
