@@ -8,6 +8,7 @@
   "scope": "Decision record only. No SARIF generation, upload, workflow integration, code-scanning enablement, required-check change, or alert ownership change is performed by #269.",
   "depends_on": [
     266,
+    267,
     268
   ],
   "evidence_inputs": [
