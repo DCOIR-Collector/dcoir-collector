@@ -589,6 +589,77 @@ class PowerShellRuleRiskFixtureTests(unittest.TestCase):
                     any(finding["rule_name"] == "DCOIR.NoAnalyzerSkipSuccess" for finding in findings)
                 )
 
+    def test_fixture_findings_do_not_treat_comment_or_string_as_here_string_start_for_skip_success(self) -> None:
+        cases = {
+            "comment_opener": '# docs @"',
+            "quoted_opener": '$message = "docs @"',
+        }
+        for name, opener in cases.items():
+            with self.subTest(name=name):
+                findings = harness.fixture_findings(
+                    "\n".join(
+                        [
+                            opener,
+                            '$Rows += [pscustomobject]@{ Check = "Analyzer"; Analyzed = $false; Validation = "success" }',
+                            "",
+                        ]
+                    ),
+                    "project_sources/collector/fixtures/powershell_analysis/bad/analyzer_skip_success.ps1",
+                )
+                matching = [finding for finding in findings if finding["rule_name"] == "DCOIR.NoAnalyzerSkipSuccess"]
+
+                self.assertEqual(len(matching), 1)
+                self.assertEqual(matching[0]["line"], 2)
+
+    def test_fixture_findings_do_not_treat_comment_or_string_as_block_comment_start_for_skip_success(self) -> None:
+        cases = {
+            "comment_opener": "# docs <#",
+            "quoted_opener": '$message = "docs <#"',
+        }
+        for name, opener in cases.items():
+            with self.subTest(name=name):
+                findings = harness.fixture_findings(
+                    "\n".join(
+                        [
+                            opener,
+                            '$Rows += [pscustomobject]@{ Check = "Analyzer"; Analyzed = $false; Validation = "success" }',
+                            "",
+                        ]
+                    ),
+                    "project_sources/collector/fixtures/powershell_analysis/bad/analyzer_skip_success.ps1",
+                )
+                matching = [finding for finding in findings if finding["rule_name"] == "DCOIR.NoAnalyzerSkipSuccess"]
+
+                self.assertEqual(len(matching), 1)
+                self.assertEqual(matching[0]["line"], 2)
+
+    def test_fixture_findings_track_long_skip_success_object_until_closing_brace(self) -> None:
+        text = "\n".join(
+            [
+                "$Rows += [pscustomobject]@{",
+                '    Check = "Analyzer"',
+                '    Scope = "Analyzer"',
+                '    Rule = "DCOIR.NoAnalyzerSkipSuccess"',
+                '    Target = "fixture"',
+                '    Category = "validation"',
+                '    Surface = "PowerShell"',
+                '    Evidence = "row"',
+                '    Detail = "skipped"',
+                '    Recommendation = "fail closed"',
+                "    Analyzed = $false",
+                '    Validation = "success"',
+                "}",
+                'throw "long skip object failed closed"',
+                "",
+            ]
+        )
+        findings = harness.fixture_findings(
+            text,
+            "project_sources/collector/fixtures/powershell_analysis/good/control.ps1",
+        )
+
+        self.assertFalse(any(finding["rule_name"] == "DCOIR.NoAnalyzerSkipSuccess" for finding in findings))
+
     def test_fixture_findings_keep_skip_success_evidence_local(self) -> None:
         text = "\n".join(
             [
@@ -638,6 +709,81 @@ class PowerShellRuleRiskFixtureTests(unittest.TestCase):
                 self.assertFalse(
                     any(finding["rule_name"] == "DCOIR.FailOutputMustFailValidation" for finding in findings)
                 )
+
+    def test_fixture_findings_do_not_treat_comment_or_string_as_here_string_start_for_fail_rows(self) -> None:
+        cases = {
+            "comment_opener": '# docs @"',
+            "quoted_opener": '$message = "docs @"',
+        }
+        for name, opener in cases.items():
+            with self.subTest(name=name):
+                findings = harness.fixture_findings(
+                    "\n".join(
+                        [
+                            opener,
+                            '$Rows += [pscustomobject]@{ Check = "Fixture"; Status = "FAIL" }',
+                            "",
+                        ]
+                    ),
+                    "project_sources/collector/fixtures/powershell_analysis/bad/fail_row_green_exit.ps1",
+                )
+                matching = [
+                    finding for finding in findings if finding["rule_name"] == "DCOIR.FailOutputMustFailValidation"
+                ]
+
+                self.assertEqual(len(matching), 1)
+                self.assertEqual(matching[0]["line"], 2)
+
+    def test_fixture_findings_do_not_treat_comment_or_string_as_block_comment_start_for_fail_rows(self) -> None:
+        cases = {
+            "comment_opener": "# docs <#",
+            "quoted_opener": '$message = "docs <#"',
+        }
+        for name, opener in cases.items():
+            with self.subTest(name=name):
+                findings = harness.fixture_findings(
+                    "\n".join(
+                        [
+                            opener,
+                            '$Rows += [pscustomobject]@{ Check = "Fixture"; Status = "FAIL" }',
+                            "",
+                        ]
+                    ),
+                    "project_sources/collector/fixtures/powershell_analysis/bad/fail_row_green_exit.ps1",
+                )
+                matching = [
+                    finding for finding in findings if finding["rule_name"] == "DCOIR.FailOutputMustFailValidation"
+                ]
+
+                self.assertEqual(len(matching), 1)
+                self.assertEqual(matching[0]["line"], 2)
+
+    def test_fixture_findings_track_long_fail_object_until_closing_brace(self) -> None:
+        text = "\n".join(
+            [
+                "$Rows += [pscustomobject]@{",
+                '    Check = "Fixture"',
+                '    Scope = "Analyzer"',
+                '    Rule = "DCOIR.FailOutputMustFailValidation"',
+                '    Target = "fixture"',
+                '    Category = "validation"',
+                '    Surface = "PowerShell"',
+                '    Evidence = "row"',
+                '    Detail = "bad row"',
+                '    Recommendation = "fail closed"',
+                '    Status = "FAIL"',
+                '    Extra = "more object content"',
+                "}",
+                'throw "long fail object failed closed"',
+                "",
+            ]
+        )
+        findings = harness.fixture_findings(
+            text,
+            "project_sources/collector/fixtures/powershell_analysis/good/control.ps1",
+        )
+
+        self.assertFalse(any(finding["rule_name"] == "DCOIR.FailOutputMustFailValidation" for finding in findings))
 
     def test_fixture_findings_bind_fail_rows_to_local_failure_action(self) -> None:
         text = "\n".join(
