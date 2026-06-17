@@ -1,0 +1,114 @@
+{
+  "schema_version": "dcoir_powershell_sarif_decision_record_v1",
+  "issue": 269,
+  "parent_issue": 260,
+  "decision": "defer_sarif_upload",
+  "decision_date": "2026-06-17",
+  "decision_owner": "DCOIR Collector maintainers",
+  "scope": "Decision record only. No SARIF generation, upload, workflow integration, code-scanning enablement, required-check change, or alert ownership change is performed by #269.",
+  "depends_on": [
+    266,
+    268
+  ],
+  "evidence_inputs": [
+    {
+      "issue": 266,
+      "path": "project_sources/collector/powershell_finding_governance_report.json",
+      "schema_version": "dcoir_powershell_finding_governance_report_v1",
+      "validation_success": true,
+      "summary": {
+        "finding_count": 22,
+        "classified_finding_count": 22,
+        "unclassified_finding_count": 0,
+        "baseline_record_count": 0,
+        "suppression_count": 0,
+        "decision_counts": {
+          "advisory": 22
+        }
+      },
+      "decision_relevance": "Baseline and suppression governance is valid for current fixture/custom-check evidence, but there is no live analyzer artifact to upload as SARIF."
+    },
+    {
+      "issue": 267,
+      "path": "project_sources/collector/powershell_engine_pester_boundary_report.json",
+      "schema_version": "dcoir_powershell_engine_pester_boundary_report_v1",
+      "validation_success": true,
+      "summary": {
+        "missing_blocking_output_artifact_count": 1,
+        "unclaimed_blocking_output_artifact_count": 2,
+        "workflow_readiness_claimed": false,
+        "pester_blocking_for_static_validation": false,
+        "independent_enforcement_requires_pester": false
+      },
+      "decision_relevance": "Engine evidence remains split. PowerShell 7 PSScriptAnalyzer and Windows PowerShell 5.1 runtime evidence are future or unclaimed, so code-scanning alerts would overstate current proof."
+    },
+    {
+      "issue": 268,
+      "path": "project_sources/collector/powershell_review_assist_report.json",
+      "schema_version": "dcoir_powershell_review_assist_report_v1",
+      "validation_success": true,
+      "summary": {
+        "required_source_report_count": 7,
+        "required_source_reports_present": 7,
+        "optional_source_reports_missing": 1,
+        "normalized_finding_count": 22,
+        "carried_forward_warning_count": 10,
+        "missing_artifact_count": 1,
+        "unclaimed_artifact_count": 3,
+        "non_claim_count": 9
+      },
+      "decision_relevance": "The review-assist JSON and Markdown artifacts are sufficient for current reviewer handoff and explicitly do not claim SARIF, code scanning, workflow, or required-check readiness."
+    }
+  ],
+  "current_series_review_path": {
+    "accepted_artifacts": [
+      "project_sources/collector/powershell_review_assist_report.json",
+      "project_sources/collector/powershell_review_assist_report.md"
+    ],
+    "rationale": "The current JSON/Markdown artifacts expose source reports, normalized findings, inventory context, baseline and suppression state, engine/Pester boundaries, missing optional analyzer evidence, unclaimed artifacts, warnings, and explicit non-claims without creating GitHub security alerts."
+  },
+  "defer_rationale": [
+    "No validated committed live PSScriptAnalyzer report is present for #262.",
+    "The #268 report is explicitly local committed JSON/Markdown evidence and does not claim SARIF generation or upload readiness.",
+    "The #267 boundary leaves PowerShell 7 analyzer evidence and Windows PowerShell 5.1 runtime evidence as unclaimed or future evidence.",
+    "Uploading current fixture/custom-check evidence as code-scanning alerts would risk noisy or misleading alert ownership before fingerprints, severity mapping, event restrictions, and alert lifecycle are designed.",
+    "Parent #260 can continue through workflow/local integration planning using fail-closed JSON/Markdown report generation without requiring SARIF."
+  ],
+  "future_sarif_implementation_requirements": [
+    "Separate current-session operator approval for SARIF implementation and workflow mutation.",
+    "SARIF producer definition, including source reports consumed and whether fixture evidence, live analyzer evidence, or both are represented.",
+    "SARIF schema/version compatibility proof, including SARIF 2.1.0 output validation.",
+    "Stable rule IDs, rule metadata, severity-to-SARIF-level mapping, and help/fix text.",
+    "Stable fingerprints or partial fingerprints that prevent alert churn across regenerated reports.",
+    "Artifact names and readback path for generated SARIF before upload.",
+    "Minimal workflow permissions, including any security-events: write requirement and why the event context is safe.",
+    "Pull request fork/private-repo behavior and explicit pull_request_target avoidance or justification.",
+    "Code-scanning alert ownership, triage expectations, and noise-control policy.",
+    "Upload run evidence and separate readback of actual code-scanning alerts before claiming alert quality."
+  ],
+  "non_claims": [
+    "No SARIF file is generated by #269.",
+    "No SARIF upload is performed by #269.",
+    "No GitHub workflow file is changed by #269.",
+    "No code-scanning alert, code-scanning enablement, or required-check behavior is changed by #269.",
+    "No pull_request_target workflow design is introduced by #269.",
+    "No artifact-retention setting is changed by #269.",
+    "No live PSScriptAnalyzer evidence is claimed when the #262 analyzer report is absent.",
+    "No parent #260 closeability or #270 workflow-readiness claim is made by #269."
+  ],
+  "handoff_to_270": {
+    "sarif_selected": false,
+    "workflow_local_integration_should_consume": [
+      "project_sources/collector/powershell_review_assist_report.json",
+      "project_sources/collector/powershell_review_assist_report.md"
+    ],
+    "notes": "Because SARIF upload is deferred, #270 should plan workflow/local integration around the existing fail-closed JSON/Markdown report path unless a future approval changes this decision."
+  },
+  "validation": {
+    "success": true,
+    "errors": [],
+    "warnings": [
+      "SARIF upload is deferred, not rejected forever; later implementation requires a fresh explicit mutation gate and evidence readback."
+    ]
+  }
+}
