@@ -657,7 +657,10 @@
           "type": "string"
         },
         "workflow_behavior": {
-          "const": "none"
+          "enum": [
+            "none",
+            "caller_uploaded_artifact"
+          ]
         }
       }
     },
