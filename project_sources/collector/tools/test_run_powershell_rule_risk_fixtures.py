@@ -140,6 +140,19 @@ class PowerShellRuleRiskFixtureTests(unittest.TestCase):
         self.assertEqual(report["summary"]["expected_finding_count"], 1)
         self.assertEqual(report["summary"]["observed_finding_count"], 1)
 
+    def test_fixture_report_ignores_status_fail_variable_outside_result_object(self) -> None:
+        with self.make_repo(
+            bad_text='$Status = "FAIL"\nWrite-Host "bad output"\n',
+            expected_line=2,
+        ) as temp:
+            report, errors, _warnings, _matrix = harness.build_fixture_report(self.args(Path(temp)))
+
+        self.assertEqual(errors, [])
+        self.assertTrue(report["validation"]["success"])
+        self.assertEqual(report["summary"]["expected_finding_count"], 1)
+        self.assertEqual(report["summary"]["observed_finding_count"], 1)
+        self.assertEqual(report["findings"][0]["rule_name"], "PSAvoidUsingWriteHost")
+
     def test_temp_inventory_path_passed_repo_relative_to_wrapper(self) -> None:
         captured: dict[str, str] = {}
 
@@ -709,6 +722,18 @@ class PowerShellRuleRiskFixtureTests(unittest.TestCase):
                 self.assertFalse(
                     any(finding["rule_name"] == "DCOIR.FailOutputMustFailValidation" for finding in findings)
                 )
+
+    def test_fixture_findings_ignore_status_fail_variable_outside_result_object(self) -> None:
+        findings = harness.fixture_findings(
+            '$Status = "FAIL"\nWrite-Host "bad output"\n',
+            "project_sources/collector/fixtures/powershell_analysis/bad/write_host.ps1",
+        )
+        fail_rows = [finding for finding in findings if finding["rule_name"] == "DCOIR.FailOutputMustFailValidation"]
+        write_host = [finding for finding in findings if finding["rule_name"] == "PSAvoidUsingWriteHost"]
+
+        self.assertEqual(fail_rows, [])
+        self.assertEqual(len(write_host), 1)
+        self.assertEqual(write_host[0]["line"], 2)
 
     def test_fixture_findings_do_not_treat_comment_or_string_as_here_string_start_for_fail_rows(self) -> None:
         cases = {
