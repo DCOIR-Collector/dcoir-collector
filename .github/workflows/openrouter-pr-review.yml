@@ -1,3 +1,34 @@
+# DCOIR WORKFLOW OPERATOR NOTES
+# Workflow key:
+# - workflow-ai_review-openrouter-pr-review-0032
+# Purpose:
+# - Run an operator-triggered OpenRouter-assisted PR review for approved PR comment commands.
+# Use when:
+# - Use on a pull request issue_comment from the repository operator with /or-review or /openrouter-review.
+# Do not use when:
+# - Do not use for automatic PR gating, required checks, untrusted authors, or broad workflow mutation.
+# - Do not use in place of governed Prog, Adva, Codi, external Codex, or GitHub Actions review gates.
+# Trigger model:
+# - issue_comment created; job guard requires a PR comment, non-bot malwaredevil author, and approved command prefix.
+# Required inputs:
+# - PR issue number and trigger comment metadata from github.event.
+# Required secrets/config:
+# - Uses the workflow token through github.token, OPENROUTER_API_KEY, and .github/openrouter-pr-review.yml config.
+# - Use secret/config names only as defined here and in the local config; never place secret values in workflow comments, requests, reports, logs, or bundles.
+# Runtime dependencies:
+# - Uses Python 3.12 and scripts/openrouter_pr_review.py from the trusted default branch checkout.
+# Expected outputs/readback:
+# - PR conversation output from scripts/openrouter_pr_review.py and GitHub Actions run/job readback when the workflow changes.
+# Safety notes:
+# - Checkout is pinned to the trusted default branch and persists no credentials.
+# - Keep the manual author/command guard, least needed permissions, and issue_comment boundary intact; do not use pull_request_target.
+# Maintenance notes:
+# - Keep this header aligned with executable behavior whenever triggers, inputs, scripts, reports, artifacts, permissions, or safety checks change.
+# - Keep action versions aligned with the workflow action maintenance audit.
+# Authority routing:
+# - GitHub is canonical for workflow/source truth and this header owns workflow-specific execution guidance.
+# - Supabase `ircore` owns operational routing, validation rules, reusable lessons, and active state.
+# - Use legacy Airtable only when a file explicitly requires a migration or historical lookup.
 name: OpenRouter PR Review
 
 on:
@@ -43,7 +74,7 @@ jobs:
 
       - name: Run OpenRouter PR review
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           PR_NUMBER: ${{ github.event.issue.number }}
