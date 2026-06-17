@@ -1,0 +1,166 @@
+name: Run PowerShell review-assist report
+description: Generate and validate the PowerShell review-assist JSON and Markdown reports.
+inputs:
+  json-output:
+    description: Repo-relative JSON report output path under project_sources/collector.
+    required: false
+    default: project_sources/collector/powershell_review_assist_workflow_report.json
+  markdown-output:
+    description: Repo-relative Markdown report output path under project_sources/collector.
+    required: false
+    default: project_sources/collector/powershell_review_assist_workflow_report.md
+runs:
+  using: composite
+  steps:
+    - name: Generate PowerShell review-assist report
+      shell: pwsh
+      env:
+        REVIEW_ASSIST_JSON_OUTPUT: ${{ inputs.json-output }}
+        REVIEW_ASSIST_MARKDOWN_OUTPUT: ${{ inputs.markdown-output }}
+      run: |
+        $ErrorActionPreference = 'Stop'
+        function Assert-ReviewAssistOutputPath {
+          param(
+            [Parameter(Mandatory = $true)][string] $PathValue,
+            [Parameter(Mandatory = $true)][string] $ExpectedSuffix,
+            [Parameter(Mandatory = $true)][string] $Label
+          )
+
+          if ([string]::IsNullOrWhiteSpace($PathValue)) {
+            throw "$Label output path is required."
+          }
+          $normalized = $PathValue.Replace('\', '/').Trim()
+          if ($normalized.StartsWith('/') -or $normalized -match '^[A-Za-z]:') {
+            throw "$Label output path must be repo-relative: $PathValue"
+          }
+          if ($normalized -match '(^|/)\.\.($|/)') {
+            throw "$Label output path must not contain traversal: $PathValue"
+          }
+          if (-not $normalized.StartsWith('project_sources/collector/')) {
+            throw "$Label output path must stay under project_sources/collector: $PathValue"
+          }
+          if (-not $normalized.EndsWith($ExpectedSuffix)) {
+            throw "${Label} output path must end with ${ExpectedSuffix}: $PathValue"
+          }
+          return $normalized
+        }
+
+        $generatedJson = 'project_sources/collector/powershell_review_assist_report.json'
+        $generatedMarkdown = 'project_sources/collector/powershell_review_assist_report.md'
+        $reviewAssistJson = Assert-ReviewAssistOutputPath -PathValue $env:REVIEW_ASSIST_JSON_OUTPUT -ExpectedSuffix '.json' -Label 'JSON'
+        $reviewAssistMarkdown = Assert-ReviewAssistOutputPath -PathValue $env:REVIEW_ASSIST_MARKDOWN_OUTPUT -ExpectedSuffix '.md' -Label 'Markdown'
+        if ($reviewAssistJson -eq $reviewAssistMarkdown) {
+          throw 'PowerShell review-assist JSON and Markdown outputs must be different paths.'
+        }
+        Remove-Item -LiteralPath $generatedJson -Force -ErrorAction SilentlyContinue
+        Remove-Item -LiteralPath $generatedMarkdown -Force -ErrorAction SilentlyContinue
+        Remove-Item -LiteralPath $reviewAssistJson -Force -ErrorAction SilentlyContinue
+        Remove-Item -LiteralPath $reviewAssistMarkdown -Force -ErrorAction SilentlyContinue
+
+        python project_sources/collector/tools/run_powershell_review_assist_report.py --repo-root .
+        $exitCode = $LASTEXITCODE
+
+        if (-not (Test-Path -LiteralPath $generatedJson)) {
+          throw "PowerShell review-assist JSON report was not produced: $generatedJson"
+        }
+        if (-not (Test-Path -LiteralPath $generatedMarkdown)) {
+          throw "PowerShell review-assist Markdown report was not produced: $generatedMarkdown"
+        }
+
+        $env:REVIEW_ASSIST_GENERATED_JSON = $generatedJson
+        $env:REVIEW_ASSIST_TARGET_JSON = $reviewAssistJson
+        $env:REVIEW_ASSIST_TARGET_MARKDOWN = $reviewAssistMarkdown
+
+        @'
+        import importlib.util
+        import json
+        import os
+        import sys
+        from pathlib import Path
+
+        generated_json = Path(os.environ["REVIEW_ASSIST_GENERATED_JSON"])
+        target_json = Path(os.environ["REVIEW_ASSIST_TARGET_JSON"])
+        target_markdown = Path(os.environ["REVIEW_ASSIST_TARGET_MARKDOWN"])
+        retention_scope = (
+            "workflow-generated report artifacts uploaded by the caller workflow; "
+            "retention is configured by the caller upload-artifact step, not by #268"
+        )
+        workflow_behavior = "caller_uploaded_artifact"
+
+        report = json.loads(generated_json.read_text(encoding="utf-8"))
+        artifact_contract = report.setdefault("artifact_contract", {})
+        local_artifacts = artifact_contract.setdefault("local_artifacts", {})
+        local_artifacts["json"] = target_json.as_posix()
+        local_artifacts["markdown"] = target_markdown.as_posix()
+        artifact_contract["retention_scope"] = retention_scope
+        artifact_contract["workflow_behavior"] = workflow_behavior
+
+        target_json.parent.mkdir(parents=True, exist_ok=True)
+        target_markdown.parent.mkdir(parents=True, exist_ok=True)
+        target_json.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+        spec = importlib.util.spec_from_file_location(
+            "run_powershell_review_assist_report",
+            "project_sources/collector/tools/run_powershell_review_assist_report.py",
+        )
+        module = importlib.util.module_from_spec(spec)
+        assert spec.loader is not None
+        sys.modules[spec.name] = module
+        spec.loader.exec_module(module)
+        markdown = module.render_markdown(report)
+        if "Workflow behavior:" not in markdown:
+            retention_line = f"- Retention scope: {retention_scope}"
+            workflow_line = f"- Workflow behavior: `{workflow_behavior}`"
+            markdown = markdown.replace(retention_line, f"{workflow_line}\n{retention_line}")
+        target_markdown.write_text(markdown, encoding="utf-8")
+        '@ | python -
+        $wrapExitCode = $LASTEXITCODE
+        if ($wrapExitCode -ne 0) {
+          throw "PowerShell review-assist workflow metadata wrapping failed with exit code $wrapExitCode."
+        }
+
+        if (-not (Test-Path -LiteralPath $reviewAssistJson)) {
+          throw "PowerShell review-assist JSON report was not produced: $reviewAssistJson"
+        }
+        if (-not (Test-Path -LiteralPath $reviewAssistMarkdown)) {
+          throw "PowerShell review-assist Markdown report was not produced: $reviewAssistMarkdown"
+        }
+
+        $report = Get-Content -LiteralPath $reviewAssistJson -Raw | ConvertFrom-Json
+        Write-Host "review-assist-json: $reviewAssistJson"
+        Write-Host "review-assist-markdown: $reviewAssistMarkdown"
+        Write-Host "review-assist-workflow-behavior: $($report.artifact_contract.workflow_behavior)"
+        Write-Host "review-assist-validation-success: $($report.validation.success)"
+        Write-Host "review-assist-normalized-findings: $($report.summary.normalized_finding_count)"
+        Write-Host "review-assist-optional-analyzer-state: $($report.evidence_channels.analyzer.state)"
+
+        if ($exitCode -ne 0) {
+          throw "PowerShell review-assist report generation failed with exit code $exitCode."
+        }
+        if ($report.validation.success -ne $true) {
+          throw 'PowerShell review-assist report validation did not report success.'
+        }
+        if ($report.artifact_contract.workflow_behavior -ne 'caller_uploaded_artifact') {
+          throw 'PowerShell review-assist report did not record workflow artifact behavior.'
+        }
+        if ($report.artifact_contract.local_artifacts.json -ne $reviewAssistJson) {
+          throw 'PowerShell review-assist JSON artifact path metadata did not match the uploaded JSON path.'
+        }
+        if ($report.artifact_contract.local_artifacts.markdown -ne $reviewAssistMarkdown) {
+          throw 'PowerShell review-assist Markdown artifact path metadata did not match the uploaded Markdown path.'
+        }
+        $markdownText = Get-Content -LiteralPath $reviewAssistMarkdown -Raw
+        $expectedMarkdownFragments = @(
+          'Workflow behavior: `caller_uploaded_artifact`',
+          ('- JSON: `{0}`' -f $reviewAssistJson),
+          ('- Markdown: `{0}`' -f $reviewAssistMarkdown),
+          $report.artifact_contract.retention_scope
+        )
+        foreach ($fragment in $expectedMarkdownFragments) {
+          if (-not $markdownText.Contains($fragment)) {
+            throw "PowerShell review-assist Markdown artifact metadata missing expected fragment: $fragment"
+          }
+        }
+
+# Compensating evidence: callers upload the generated JSON and Markdown reports
+# and the step prints validation state, workflow behavior, finding count, analyzer state, and paths.

@@ -73,6 +73,9 @@ jobs:
         with:
           output-json: project_sources/validation/out_validate_on_push_documentation_quality/collector_documentation_quality.json
 
+      - name: Run PowerShell review-assist report
+        uses: ./.github/actions/run-powershell-review-assist
+
       - name: Upload validation artifacts
         if: always()
         uses: ./.github/actions/upload-chatgpt-artifact
@@ -85,6 +88,8 @@ jobs:
             project_sources/validation/out_validate_on_push_validate_dcoir_run_fixtures/**
             project_sources/validation/out_preflight_documentation_quality/**
             project_sources/validation/out_validate_on_push_documentation_quality/**
+            project_sources/collector/powershell_review_assist_workflow_report.json
+            project_sources/collector/powershell_review_assist_workflow_report.md
           if-no-files-found: warn
           retention-days: 14
 
@@ -103,7 +108,7 @@ jobs:
           - ref: $env:GITHUB_REF
           - event_name: $env:GITHUB_EVENT_NAME
           - primary_artifact: validate-on-push-results
-          - artifact_note: includes Gemini smoke-build output, collector package smoke-build output, validate_DCOIR_Run fixture output, documentation-quality output, and TestResults when produced.
+          - artifact_note: includes Gemini smoke-build output, collector package smoke-build output, validate_DCOIR_Run fixture output, documentation-quality output, PowerShell review-assist JSON/Markdown, and TestResults when produced.
 
           The workflow conclusion is the authoritative pass/fail signal for the push validation lane. Use artifact readback for harness, package, documentation, or report-specific claims.
           "@ | Set-Content -Path chatgpt_workflow_report_section/chatgpt_workflow_report_section.md -Encoding utf8
