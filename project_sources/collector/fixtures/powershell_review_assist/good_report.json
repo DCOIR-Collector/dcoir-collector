@@ -1,0 +1,964 @@
+{
+  "artifact_contract": {
+    "future_handoff_consumers": [
+      {
+        "consumer": "SARIF decision gate",
+        "issue": 269,
+        "may_consume": [
+          "normalized findings",
+          "evidence channel states",
+          "missing analyzer evidence",
+          "explicit non-claims"
+        ],
+        "not_claimed_by_268": "SARIF generation, SARIF upload, code scanning, or required-check readiness."
+      },
+      {
+        "consumer": "workflow/local integration planning",
+        "issue": 270,
+        "may_consume": [
+          "local report artifact names",
+          "source report contract",
+          "warning carry-forward behavior",
+          "handoff metadata"
+        ],
+        "not_claimed_by_268": "workflow mutation, artifact retention, or changed-file gating."
+      }
+    ],
+    "issue": 268,
+    "local_artifacts": {
+      "json": "project_sources/collector/powershell_review_assist_report.json",
+      "markdown": "project_sources/collector/powershell_review_assist_report.md",
+      "schema": "project_sources/collector/powershell_review_assist_report.schema.json"
+    },
+    "retention_scope": "local committed report artifacts only; workflow artifact retention remains a later explicit gate",
+    "workflow_behavior": "none"
+  },
+  "carried_forward_warnings": [
+    {
+      "source_issue": 265,
+      "source_report": "project_sources/collector/powershell_assembly_parity_report.json",
+      "warning": "no baseline parity report supplied; shrink checks used current inventory controls only"
+    },
+    {
+      "source_issue": 266,
+      "source_report": "project_sources/collector/powershell_finding_governance_report.json",
+      "warning": "optional PowerShell finding report not present: project_sources/collector/powershell_analyzer_report.json"
+    },
+    {
+      "source_issue": 267,
+      "source_report": "project_sources/collector/powershell_engine_pester_boundary_report.json",
+      "warning": "workflow readiness remains a later explicit gate; #267 only defines evidence ownership"
+    },
+    {
+      "source_issue": 267,
+      "source_report": "project_sources/collector/powershell_engine_pester_boundary_report.json",
+      "warning": "Windows PowerShell 5.1 runtime evidence remains separate from local static report generation"
+    },
+    {
+      "source_issue": 267,
+      "source_report": "project_sources/collector/powershell_engine_pester_boundary_report.json",
+      "warning": "engine matrix row powershell-7-psscriptanalyzer artifact is not committed or claimed by this #267 boundary: project_sources/collector/powershell_analyzer_report.json"
+    },
+    {
+      "source_issue": 262,
+      "source_report": "project_sources/collector/powershell_analyzer_report.json",
+      "warning": "optional analyzer evidence is absent; #268 does not claim live PSScriptAnalyzer evidence"
+    },
+    {
+      "source_issue": 267,
+      "source_report": "project_sources/collector/powershell_engine_pester_boundary_report.json",
+      "warning": "workflow or local Windows PowerShell 5.1 validation report: external_or_future is not claimed by #267/#268"
+    },
+    {
+      "source_issue": 267,
+      "source_report": "project_sources/collector/powershell_engine_pester_boundary_report.json",
+      "warning": "project_sources/collector/powershell_analyzer_report.json: not_committed_in_267_boundary is not claimed by #267/#268"
+    },
+    {
+      "source_issue": 267,
+      "source_report": "project_sources/collector/powershell_engine_pester_boundary_report.json",
+      "warning": "future Pester test result artifact when a later gate enables it: external_or_future is not claimed by #267/#268"
+    },
+    {
+      "source_issue": 263,
+      "source_report": "project_sources/collector/powershell_rule_risk_fixture_report.json",
+      "warning": "This #263 harness uses a deterministic local fixture analyzer through the #262 wrapper. It intentionally does not execute PSScriptAnalyzer, so this fixture report does not claim whether pwsh or the PSScriptAnalyzer module is installed in the current environment."
+    }
+  ],
+  "changed_file_context": {
+    "changed_file_count": null,
+    "changed_file_surface_count": null,
+    "claim": "Full-scope inventory counts are present; changed-file execution or gating is not claimed.",
+    "unavailable_reason": "No validated changed-file inventory or base/head changed-file source was supplied to #268."
+  },
+  "depends_on": [
+    261,
+    263,
+    264,
+    265,
+    266,
+    267
+  ],
+  "evidence_channels": {
+    "analyzer": {
+      "claim": "live PSScriptAnalyzer evidence is not claimed unless this report is present and valid",
+      "finding_count": 0,
+      "path": "project_sources/collector/powershell_analyzer_report.json",
+      "source_issue": 262,
+      "state": "optional_missing"
+    },
+    "assembly_parity": {
+      "baseline_comparison": null,
+      "generated_outputs": [
+        {
+          "id": "collector_compiled_runtime",
+          "line_mapping_status": "available",
+          "parity": {
+            "checked_in_output_compared": false,
+            "comparison": "deterministic_in_memory_regeneration",
+            "status": "pass"
+          },
+          "parse": {
+            "errors": [],
+            "line_count": 9366,
+            "method": "static_balance_check",
+            "native_parser_available": false,
+            "success": true
+          },
+          "path": "compiled_runtime/DCOIR_Collector.ps1"
+        },
+        {
+          "id": "harness_generated_tests",
+          "line_mapping_status": "available",
+          "parity": {
+            "checked_in_output_compared": false,
+            "checked_in_path": "project_sources/collector/harness/run_DCOIR_Tests.generated.ps1",
+            "comparison": "deterministic_regeneration_only_checked_in_output_absent",
+            "expected_presence": "optional_when_generated",
+            "status": "pass"
+          },
+          "parse": {
+            "errors": [],
+            "line_count": 2936,
+            "method": "static_balance_check",
+            "native_parser_available": false,
+            "success": true
+          },
+          "path": "project_sources/collector/harness/run_DCOIR_Tests.generated.ps1"
+        }
+      ],
+      "source_issue": 265,
+      "state": "success",
+      "summary": {
+        "collector_source_part_count": 18,
+        "generated_output_count": 2,
+        "harness_source_part_count": 12,
+        "parity_status": "pass",
+        "parity_success_count": 2,
+        "parse_status": "pass",
+        "parse_success_count": 2,
+        "source_input_count": 31,
+        "source_part_count": 30
+      }
+    },
+    "custom_checks": {
+      "finding_count": 1,
+      "fixture_outcomes": {
+        "counts": {
+          "negative": 3
+        },
+        "fixtures": [
+          {
+            "expected_finding_count": 1,
+            "id": "bad-analyzer-skip-success",
+            "kind": "negative",
+            "observed_finding_count": 1,
+            "observed_rules": [
+              "DCOIR.NoAnalyzerSkipSuccess"
+            ],
+            "path": "project_sources/collector/fixtures/powershell_analysis/bad/analyzer_skip_success.ps1"
+          },
+          {
+            "expected_finding_count": 1,
+            "id": "bad-broad-baseline",
+            "kind": "negative",
+            "observed_finding_count": 1,
+            "observed_rules": [
+              "DCOIR.BaselineSuppressionMustBeFingerprintBound"
+            ],
+            "path": "project_sources/collector/fixtures/powershell_analysis/bad/broad_baseline.ps1"
+          },
+          {
+            "expected_finding_count": 1,
+            "id": "bad-fail-row-green-exit",
+            "kind": "negative",
+            "observed_finding_count": 1,
+            "observed_rules": [
+              "DCOIR.FailOutputMustFailValidation"
+            ],
+            "path": "project_sources/collector/fixtures/powershell_analysis/bad/fail_row_green_exit.ps1"
+          }
+        ]
+      },
+      "source_issue": 264,
+      "state": "success"
+    },
+    "deterministic_fixture_analyzer": {
+      "environment_gap": "This #263 harness uses a deterministic local fixture analyzer through the #262 wrapper. It intentionally does not execute PSScriptAnalyzer, so this fixture report does not claim whether pwsh or the PSScriptAnalyzer module is installed in the current environment.",
+      "finding_count": 2,
+      "fixture_outcomes": {
+        "counts": {
+          "negative": 3
+        },
+        "fixtures": [
+          {
+            "expected_finding_count": 1,
+            "id": "bad-analyzer-skip-success",
+            "kind": "negative",
+            "observed_finding_count": 1,
+            "observed_rules": [
+              "DCOIR.NoAnalyzerSkipSuccess"
+            ],
+            "path": "project_sources/collector/fixtures/powershell_analysis/bad/analyzer_skip_success.ps1"
+          },
+          {
+            "expected_finding_count": 1,
+            "id": "bad-broad-baseline",
+            "kind": "negative",
+            "observed_finding_count": 1,
+            "observed_rules": [
+              "DCOIR.BaselineSuppressionMustBeFingerprintBound"
+            ],
+            "path": "project_sources/collector/fixtures/powershell_analysis/bad/broad_baseline.ps1"
+          },
+          {
+            "expected_finding_count": 1,
+            "id": "bad-fail-row-green-exit",
+            "kind": "negative",
+            "observed_finding_count": 1,
+            "observed_rules": [
+              "DCOIR.FailOutputMustFailValidation"
+            ],
+            "path": "project_sources/collector/fixtures/powershell_analysis/bad/fail_row_green_exit.ps1"
+          }
+        ]
+      },
+      "source_issue": 263,
+      "state": "success"
+    },
+    "engine_boundary": {
+      "declared_output_artifacts": [
+        {
+          "artifact_status": "present",
+          "blocking": true,
+          "check_category": "surface_inventory",
+          "evidence_claimed_by_boundary": true,
+          "exists": true,
+          "id": "surface-inventory-contract",
+          "path": "project_sources/collector/powershell_surface_inventory.json",
+          "repo_path": true
+        },
+        {
+          "artifact_status": "external_or_future",
+          "blocking": true,
+          "check_category": "windows_powershell_51_parser_runtime_compatibility",
+          "evidence_claimed_by_boundary": false,
+          "exists": null,
+          "id": "windows-powershell-51-parser-compatibility",
+          "path": "workflow or local Windows PowerShell 5.1 validation report",
+          "repo_path": false
+        },
+        {
+          "artifact_status": "not_committed_in_267_boundary",
+          "blocking": true,
+          "check_category": "powershell_7_static_analyzer",
+          "evidence_claimed_by_boundary": false,
+          "exists": false,
+          "id": "powershell-7-psscriptanalyzer",
+          "path": "project_sources/collector/powershell_analyzer_report.json",
+          "repo_path": true
+        },
+        {
+          "artifact_status": "present",
+          "blocking": true,
+          "check_category": "rule_risk_negative_fixture_proof",
+          "evidence_claimed_by_boundary": true,
+          "exists": true,
+          "id": "rule-risk-fixture-proof",
+          "path": "project_sources/collector/powershell_rule_risk_fixture_report.json",
+          "repo_path": true
+        },
+        {
+          "artifact_status": "present",
+          "blocking": true,
+          "check_category": "dcoir_custom_static_checks",
+          "evidence_claimed_by_boundary": true,
+          "exists": true,
+          "id": "dcoir-custom-checks",
+          "path": "project_sources/collector/powershell_custom_check_report.json",
+          "repo_path": true
+        },
+        {
+          "artifact_status": "present",
+          "blocking": true,
+          "check_category": "assembly_aware_source_generated_parity",
+          "evidence_claimed_by_boundary": true,
+          "exists": true,
+          "id": "source-part-assembly-parity",
+          "path": "project_sources/collector/powershell_assembly_parity_report.json",
+          "repo_path": true
+        },
+        {
+          "artifact_status": "present",
+          "blocking": true,
+          "check_category": "baseline_remediation_suppression_governance",
+          "evidence_claimed_by_boundary": true,
+          "exists": true,
+          "id": "finding-governance",
+          "path": "project_sources/collector/powershell_finding_governance_report.json",
+          "repo_path": true
+        },
+        {
+          "artifact_status": "external_or_future",
+          "blocking": false,
+          "check_category": "pester_supporting_tests",
+          "evidence_claimed_by_boundary": false,
+          "exists": null,
+          "id": "pester-supporting-wrapper-fixture-tests",
+          "path": "future Pester test result artifact when a later gate enables it",
+          "repo_path": false
+        }
+      ],
+      "independent_analyzer_enforcement_proof": {
+        "assembly_parity_success": true,
+        "custom_check_findings": 8,
+        "governance_classified_findings": 22,
+        "governance_unclassified_findings": 0,
+        "requires_pester": false,
+        "rule_risk_fixture_findings": 14
+      },
+      "source_issue": 267,
+      "state": "success",
+      "summary": {
+        "declared_output_artifact_count": 8,
+        "dependency_report_count": 4,
+        "expected_required_category_count": 8,
+        "independent_enforcement_requires_pester": false,
+        "matrix_row_count": 8,
+        "missing_blocking_output_artifact_count": 1,
+        "pester_blocking_for_static_validation": false,
+        "required_category_count": 8,
+        "unclaimed_blocking_output_artifact_count": 2,
+        "workflow_readiness_claimed": false
+      }
+    },
+    "finding_governance": {
+      "baseline_delta": {
+        "as_of": "2026-06-14",
+        "baseline_match_counts": {},
+        "baseline_record_count": 0,
+        "decision_counts": {
+          "advisory": 22
+        },
+        "matched_baseline_record_count": 0,
+        "matched_suppression_count": 0,
+        "suppression_count": 0,
+        "suppression_match_counts": {},
+        "unclassified_finding_count": 0
+      },
+      "governance": {
+        "classification_rule_count": 1,
+        "path": "project_sources/collector/powershell_finding_governance.json",
+        "policy": {
+          "allowed_decisions": [
+            "remediate-now",
+            "baseline-temporary",
+            "advisory",
+            "false positive",
+            "accepted risk"
+          ],
+          "baseline_record_required_fields": [
+            "id",
+            "decision",
+            "rule_name_or_check_id",
+            "path",
+            "line_or_stable_locator",
+            "severity",
+            "fingerprint",
+            "rationale",
+            "owner",
+            "reviewer",
+            "review_date",
+            "expiry_or_revisit"
+          ],
+          "fail_on_count_regression": true,
+          "fail_on_new_unclassified_findings": true,
+          "fail_on_severity_increase": true,
+          "fail_on_stale_baseline_growth": true,
+          "fail_on_unexpected_disappearance": true,
+          "max_baseline_records": 0,
+          "suppression_policy": {
+            "blanket_repo_suppressions_allowed": false,
+            "generated_output_file_suppression_requires_assembly_coverage": true,
+            "requires_expiry_or_revisit": true,
+            "requires_fingerprint": true,
+            "requires_owner_reviewer_rationale": true,
+            "wildcard_path_suppressions_allowed": false,
+            "wildcard_rule_suppressions_allowed": false
+          }
+        },
+        "schema_version": "dcoir_powershell_finding_governance_v1"
+      },
+      "source_issue": 266,
+      "state": "success",
+      "summary": {
+        "baseline_record_count": 0,
+        "classified_finding_count": 22,
+        "decision_counts": {
+          "advisory": 22
+        },
+        "finding_count": 22,
+        "matched_baseline_record_count": 0,
+        "matched_suppression_count": 0,
+        "severity_counts": {
+          "Error": 16,
+          "Warning": 6
+        },
+        "source_schema_counts": {
+          "dcoir_powershell_custom_check_report_v1": 8,
+          "dcoir_powershell_rule_risk_fixture_report_v1": 14
+        },
+        "suppression_count": 0,
+        "unclassified_finding_count": 0
+      }
+    },
+    "pester_boundary": {
+      "claim": "Pester may support later runtime or wrapper evidence but is not blocking static-validation evidence in #268.",
+      "pester_boundary": {
+        "blocking_for_static_security_validation": false,
+        "owned_responsibilities": [
+          {
+            "blocking": false,
+            "notes": "May prove wrapper call behavior but must not be the only analyzer enforcement proof.",
+            "owner": "future explicit wrapper/Pester gate",
+            "surface": "wrapper tests"
+          },
+          {
+            "blocking": false,
+            "notes": "May add Pester test output around existing fixture expectations.",
+            "owner": "future explicit fixture/Pester gate",
+            "surface": "fixture tests"
+          },
+          {
+            "blocking": false,
+            "notes": "Runtime compatibility remains separate from static/security validation.",
+            "owner": "existing collector runtime validation lanes or future explicit runtime/Pester issue",
+            "surface": "runtime tests"
+          }
+        ],
+        "pester_may_replace_analyzer_or_custom_checks": false,
+        "required_evidence_when_used": [
+          "discovery command",
+          "Pester version",
+          "PowerShell engine and version",
+          "runner OS",
+          "test count",
+          "pass/fail count",
+          "machine-readable test result artifact",
+          "human-readable summary",
+          "owning issue or workflow gate",
+          "failure behavior"
+        ],
+        "scope_decision": "supporting-in-scope-not-analyzer-substitute"
+      },
+      "source_issue": 267,
+      "state": "supporting_non_blocking"
+    }
+  },
+  "findings": [
+    {
+      "baseline_state": "not_baselined",
+      "check_id": "",
+      "column": 1,
+      "evidence_kind": "deterministic_fixture_analyzer",
+      "fingerprint": "7f096d3ee8f04fccb5a061553e58be285fb46aaf7738ab63b83d683554818f95",
+      "governance": {
+        "decision": "advisory",
+        "matched_by": "classification_rule",
+        "owner": "DCOIR Collector maintainers",
+        "rationale": "PowerShell analysis fixture findings are expected proof points for #263/#264 controls, not production-source remediation debt.",
+        "record_id": "fixture-negative-findings-are-advisory-evidence",
+        "review_date": "2026-06-10",
+        "reviewer": "DCOIR operator"
+      },
+      "governance_classification": "advisory",
+      "impact": "A skipped analyzer target, missing policy, missing inventory, or failed analyzer process can be misreported as success.",
+      "line": 1,
+      "observed_behavior": "Analyzer skip state is represented with a success validation state.",
+      "path": "project_sources/collector/fixtures/powershell_analysis/bad/analyzer_skip_success.ps1",
+      "recommended_fix_direction": "Fail closed when analyzer policy, inventory, target, or command execution is incomplete.",
+      "risk_classes": [
+        "analyzer_policy_inventory_skip_or_tool_failure_reported_success"
+      ],
+      "rule_name": "DCOIR.NoAnalyzerSkipSuccess",
+      "severity": "Error",
+      "source_generated_target_kind": "fixture",
+      "source_report_path": "project_sources/collector/powershell_rule_risk_fixture_report.json",
+      "source_schema_version": "dcoir_powershell_rule_risk_fixture_report_v1",
+      "suppression_state": "not_suppressed",
+      "target_surfaces": [
+        "validation tooling",
+        "workflow support scripts"
+      ]
+    },
+    {
+      "baseline_state": "not_baselined",
+      "check_id": "",
+      "column": 1,
+      "evidence_kind": "deterministic_fixture_analyzer",
+      "fingerprint": "64bf07846f4b703810fd1f6134a4cb8f5f71b52c44b1822b73da34ced7acff5a",
+      "governance": {
+        "decision": "advisory",
+        "matched_by": "classification_rule",
+        "owner": "DCOIR Collector maintainers",
+        "rationale": "PowerShell analysis fixture findings are expected proof points for #263/#264 controls, not production-source remediation debt.",
+        "record_id": "fixture-negative-findings-are-advisory-evidence",
+        "review_date": "2026-06-10",
+        "reviewer": "DCOIR operator"
+      },
+      "governance_classification": "advisory",
+      "impact": "Broad baseline entries can hide new findings and turn analyzer integration into a green-only status check.",
+      "line": 1,
+      "observed_behavior": "Baseline suppression is broad and lacks a finding fingerprint.",
+      "path": "project_sources/collector/fixtures/powershell_analysis/bad/broad_baseline.ps1",
+      "recommended_fix_direction": "Bind suppressions to path, rule, fingerprint, expected match count, and reason.",
+      "risk_classes": [
+        "broad_suppression_or_baseline_growth_hiding_risk"
+      ],
+      "rule_name": "DCOIR.BaselineSuppressionMustBeFingerprintBound",
+      "severity": "Error",
+      "source_generated_target_kind": "fixture",
+      "source_report_path": "project_sources/collector/powershell_rule_risk_fixture_report.json",
+      "source_schema_version": "dcoir_powershell_rule_risk_fixture_report_v1",
+      "suppression_state": "not_suppressed",
+      "target_surfaces": [
+        "validation tooling",
+        "analyzer baseline artifacts"
+      ]
+    },
+    {
+      "baseline_state": "not_baselined",
+      "check_id": "dcoir-analyzer-skip-success",
+      "column": 1,
+      "evidence_kind": "dcoir_custom_static_check",
+      "fingerprint": "6b214288016a07e17075b735d703d835334379123d037033d5a1a25159be174d",
+      "governance": {
+        "decision": "advisory",
+        "matched_by": "classification_rule",
+        "owner": "DCOIR Collector maintainers",
+        "rationale": "PowerShell analysis fixture findings are expected proof points for #263/#264 controls, not production-source remediation debt.",
+        "record_id": "fixture-negative-findings-are-advisory-evidence",
+        "review_date": "2026-06-10",
+        "reviewer": "DCOIR operator"
+      },
+      "governance_classification": "advisory",
+      "impact": "Skipped analyzer or inventory work can be recorded as green evidence and hide unscanned PowerShell surfaces.",
+      "line": 1,
+      "observed_behavior": "Analyzer, inventory, or target skip states must not be represented as successful validation.",
+      "path": "project_sources/collector/fixtures/powershell_analysis/bad/analyzer_skip_success.ps1",
+      "recommended_fix_direction": "Fail closed when analyzer policy, inventory, target selection, or tool execution is incomplete.",
+      "risk_classes": [
+        "analyzer_policy_inventory_skip_or_tool_failure_reported_success"
+      ],
+      "rule_name": "DCOIR.NoAnalyzerSkipSuccess",
+      "severity": "Error",
+      "source_generated_target_kind": "fixture",
+      "source_report_path": "project_sources/collector/powershell_custom_check_report.json",
+      "source_schema_version": "dcoir_powershell_custom_check_report_v1",
+      "suppression_state": "not_suppressed",
+      "target_surfaces": [
+        "collector harness",
+        "validation tooling",
+        "workflow support scripts"
+      ]
+    }
+  ],
+  "fixture_contract": {
+    "full_report_path": "project_sources/collector/powershell_review_assist_report.json",
+    "full_report_summary": {
+      "carried_forward_warning_count": 10,
+      "finding_count_by_evidence_kind": {
+        "dcoir_custom_static_check": 8,
+        "deterministic_fixture_analyzer": 14
+      },
+      "finding_count_by_governance_classification": {
+        "advisory": 22
+      },
+      "finding_count_by_severity": {
+        "Error": 16,
+        "Warning": 6
+      },
+      "missing_artifact_count": 1,
+      "non_claim_count": 9,
+      "normalized_finding_count": 22,
+      "optional_source_reports_missing": 1,
+      "required_source_report_count": 7,
+      "required_source_reports_present": 7,
+      "source_report_count": 8,
+      "unclaimed_artifact_count": 3,
+      "validation_success": true
+    },
+    "full_surface_inventory_path_decision_counts": {
+      "exclude": 18,
+      "include": 87,
+      "reference": 47,
+      "skip": 0
+    },
+    "kind": "compact_sample",
+    "note": "Compact good-path fixture derived from the full generated #268 review-assist report. Counts in this fixture summary describe the included sample arrays; full-report counts are preserved under fixture_contract.full_report_summary."
+  },
+  "generated_from": {
+    "generated_at_utc": "2026-06-17T09:38:12+00:00",
+    "schema_contract": "project_sources/collector/powershell_review_assist_report.schema.json",
+    "source_reports": [
+      "project_sources/collector/powershell_surface_inventory.json",
+      "project_sources/collector/powershell_rule_risk_fixture_report.json",
+      "project_sources/collector/powershell_rule_risk_matrix.json",
+      "project_sources/collector/powershell_custom_check_report.json",
+      "project_sources/collector/powershell_assembly_parity_report.json",
+      "project_sources/collector/powershell_finding_governance_report.json",
+      "project_sources/collector/powershell_engine_pester_boundary_report.json",
+      "project_sources/collector/powershell_analyzer_report.json"
+    ],
+    "tool": "project_sources/collector/tools/run_powershell_review_assist_report.py"
+  },
+  "issue": 268,
+  "missing_artifacts": [
+    {
+      "path": "project_sources/collector/powershell_analyzer_report.json",
+      "reason": "optional analyzer evidence is absent; #268 does not claim live PSScriptAnalyzer evidence",
+      "required": false,
+      "source_issue": 262
+    }
+  ],
+  "non_claims": [
+    "No workflow YAML was changed by #268.",
+    "No SARIF file is generated or uploaded by #268.",
+    "No GitHub code-scanning alert or required-check behavior is enabled by #268.",
+    "No workflow artifact retention behavior is configured by #268.",
+    "No Pester result is promoted to blocking static-validation evidence by #268.",
+    "No changed-file execution, path-filter behavior, PR-diff coverage, or changed-file gating is claimed by #268.",
+    "No live PSScriptAnalyzer evidence is claimed when the #262 analyzer report is absent.",
+    "No Windows PowerShell 5.1 runtime validation is claimed by #268.",
+    "No #269, #270, PR/workflow readiness, or parent #260 closeability claim is made by #268."
+  ],
+  "parent_issue": 260,
+  "schema_version": "dcoir_powershell_review_assist_report_v1",
+  "source_reports": [
+    {
+      "absent_reason": null,
+      "errors": [],
+      "expected_schema_version": "dcoir_powershell_surface_inventory_v1",
+      "finding_count": null,
+      "label": "#261 surface inventory",
+      "path": "project_sources/collector/powershell_surface_inventory.json",
+      "present": true,
+      "required": true,
+      "schema_version": "dcoir_powershell_surface_inventory_v1",
+      "source_issue": 261,
+      "source_key": "surface_inventory",
+      "validation_status": "success",
+      "warnings": []
+    },
+    {
+      "absent_reason": null,
+      "errors": [],
+      "expected_schema_version": "dcoir_powershell_rule_risk_fixture_report_v1",
+      "finding_count": 14,
+      "label": "#263 rule-risk fixture report",
+      "path": "project_sources/collector/powershell_rule_risk_fixture_report.json",
+      "present": true,
+      "required": true,
+      "schema_version": "dcoir_powershell_rule_risk_fixture_report_v1",
+      "source_issue": 263,
+      "source_key": "rule_risk_report",
+      "validation_status": "success",
+      "warnings": []
+    },
+    {
+      "absent_reason": null,
+      "errors": [],
+      "expected_schema_version": "dcoir_powershell_rule_risk_matrix_v1",
+      "finding_count": null,
+      "label": "#263 rule-risk matrix companion",
+      "path": "project_sources/collector/powershell_rule_risk_matrix.json",
+      "present": true,
+      "required": true,
+      "schema_version": "dcoir_powershell_rule_risk_matrix_v1",
+      "source_issue": 263,
+      "source_key": "rule_risk_matrix",
+      "validation_status": "schema_only_success",
+      "warnings": []
+    },
+    {
+      "absent_reason": null,
+      "errors": [],
+      "expected_schema_version": "dcoir_powershell_custom_check_report_v1",
+      "finding_count": 8,
+      "label": "#264 DCOIR custom-check report",
+      "path": "project_sources/collector/powershell_custom_check_report.json",
+      "present": true,
+      "required": true,
+      "schema_version": "dcoir_powershell_custom_check_report_v1",
+      "source_issue": 264,
+      "source_key": "custom_report",
+      "validation_status": "success",
+      "warnings": []
+    },
+    {
+      "absent_reason": null,
+      "errors": [],
+      "expected_schema_version": "dcoir_powershell_assembly_parity_report_v1",
+      "finding_count": null,
+      "label": "#265 assembly parity report",
+      "path": "project_sources/collector/powershell_assembly_parity_report.json",
+      "present": true,
+      "required": true,
+      "schema_version": "dcoir_powershell_assembly_parity_report_v1",
+      "source_issue": 265,
+      "source_key": "assembly_parity_report",
+      "validation_status": "success",
+      "warnings": [
+        "no baseline parity report supplied; shrink checks used current inventory controls only"
+      ]
+    },
+    {
+      "absent_reason": null,
+      "errors": [],
+      "expected_schema_version": "dcoir_powershell_finding_governance_report_v1",
+      "finding_count": 22,
+      "label": "#266 finding governance report",
+      "path": "project_sources/collector/powershell_finding_governance_report.json",
+      "present": true,
+      "required": true,
+      "schema_version": "dcoir_powershell_finding_governance_report_v1",
+      "source_issue": 266,
+      "source_key": "governance_report",
+      "validation_status": "success",
+      "warnings": [
+        "optional PowerShell finding report not present: project_sources/collector/powershell_analyzer_report.json"
+      ]
+    },
+    {
+      "absent_reason": null,
+      "errors": [],
+      "expected_schema_version": "dcoir_powershell_engine_pester_boundary_report_v1",
+      "finding_count": null,
+      "label": "#267 engine/Pester boundary report",
+      "path": "project_sources/collector/powershell_engine_pester_boundary_report.json",
+      "present": true,
+      "required": true,
+      "schema_version": "dcoir_powershell_engine_pester_boundary_report_v1",
+      "source_issue": 267,
+      "source_key": "engine_boundary_report",
+      "validation_status": "success",
+      "warnings": [
+        "workflow readiness remains a later explicit gate; #267 only defines evidence ownership",
+        "Windows PowerShell 5.1 runtime evidence remains separate from local static report generation",
+        "engine matrix row powershell-7-psscriptanalyzer artifact is not committed or claimed by this #267 boundary: project_sources/collector/powershell_analyzer_report.json"
+      ]
+    },
+    {
+      "absent_reason": "optional analyzer evidence is absent; #268 does not claim live PSScriptAnalyzer evidence",
+      "errors": [],
+      "expected_schema_version": "dcoir_powershell_analyzer_report_v1",
+      "finding_count": 0,
+      "label": "#262 optional PowerShell analyzer report",
+      "path": "project_sources/collector/powershell_analyzer_report.json",
+      "present": false,
+      "required": false,
+      "schema_version": null,
+      "source_issue": 262,
+      "source_key": "analyzer_report",
+      "validation_status": "optional_missing",
+      "warnings": []
+    }
+  ],
+  "summary": {
+    "carried_forward_warning_count": 10,
+    "finding_count_by_evidence_kind": {
+      "dcoir_custom_static_check": 1,
+      "deterministic_fixture_analyzer": 2
+    },
+    "finding_count_by_governance_classification": {
+      "advisory": 3
+    },
+    "finding_count_by_severity": {
+      "Error": 3
+    },
+    "missing_artifact_count": 1,
+    "non_claim_count": 9,
+    "normalized_finding_count": 3,
+    "optional_source_reports_missing": 1,
+    "required_source_report_count": 7,
+    "required_source_reports_present": 7,
+    "source_report_count": 8,
+    "unclaimed_artifact_count": 3,
+    "validation_success": true
+  },
+  "surface_inventory": {
+    "excluded_paths": [
+      {
+        "category": "staging_artifact",
+        "path": "chatgpt_staging/exec_scripts/airtable-total-count-corrected-20260521T100417Z.ps1",
+        "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+        "source_type": ".ps1",
+        "status": "staging"
+      },
+      {
+        "category": "staging_artifact",
+        "path": "chatgpt_staging/exec_scripts/exec-20260519-wbs04-four-table-export-002.ps1",
+        "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+        "source_type": ".ps1",
+        "status": "staging"
+      },
+      {
+        "category": "staging_artifact",
+        "path": "chatgpt_staging/exec_scripts/exec-20260519-wbs04-four-table-export-003.ps1",
+        "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+        "source_type": ".ps1",
+        "status": "staging"
+      }
+    ],
+    "included_paths": [
+      {
+        "category": "github_workflow_support_script",
+        "path": ".github/scripts/Invoke-ChatGptReportPush.ps1",
+        "reason": "GitHub workflow support script is maintained repo PowerShell.",
+        "source_type": ".ps1",
+        "status": "tooling"
+      },
+      {
+        "category": "github_workflow_support_script",
+        "path": ".github/scripts/Wait-ChatGptWorkflowReport.ps1",
+        "reason": "GitHub workflow support script is maintained repo PowerShell.",
+        "source_type": ".ps1",
+        "status": "tooling"
+      }
+    ],
+    "mode": "full",
+    "outputs": {
+      "json": "project_sources/collector/powershell_surface_inventory.json",
+      "markdown": "project_sources/collector/powershell_surface_inventory.md"
+    },
+    "path_decision_counts": {
+      "exclude": 3,
+      "include": 2,
+      "reference": 3,
+      "skip": 0
+    },
+    "reference_paths": [
+      {
+        "category": "workflow_embedded_powershell",
+        "path": ".github/actions/assemble-collector-harness/action.yml",
+        "reason": "Workflow or composite-action YAML embeds PowerShell and needs later snippet-aware handling.",
+        "source_type": "workflow_yaml",
+        "status": "workflow_embedded"
+      },
+      {
+        "category": "workflow_embedded_powershell",
+        "path": ".github/actions/build-collector-runtime-for-harness/action.yml",
+        "reason": "Workflow or composite-action YAML embeds PowerShell and needs later snippet-aware handling.",
+        "source_type": "workflow_yaml",
+        "status": "workflow_embedded"
+      },
+      {
+        "category": "workflow_embedded_powershell",
+        "path": ".github/actions/run-collector-documentation-quality/action.yml",
+        "reason": "Workflow or composite-action YAML embeds PowerShell and needs later snippet-aware handling.",
+        "source_type": "workflow_yaml",
+        "status": "workflow_embedded"
+      }
+    ],
+    "skipped_paths": [],
+    "summary": {
+      "by_category": {
+        "archive_temp_vendor_artifact": 0,
+        "collector_harness_script": 4,
+        "collector_harness_source_part": 12,
+        "collector_runtime_source_part": 18,
+        "collector_runtime_wrapper": 1,
+        "collector_validation_tooling": 2,
+        "fixture_or_example": 23,
+        "generated_or_assembled_output": 0,
+        "github_workflow_support_script": 2,
+        "invalid_workflow_surface": 0,
+        "missing_authoritative_surface": 0,
+        "missing_changed_powershell_surface": 0,
+        "missing_changed_workflow_surface": 0,
+        "operator_tooling": 45,
+        "staging_artifact": 18,
+        "unclassified_powershell_surface": 0,
+        "validation_tooling": 3,
+        "workflow_embedded_powershell": 24
+      },
+      "by_inclusion_decision": {
+        "exclude": 18,
+        "include": 87,
+        "reference": 47
+      },
+      "by_source_type": {
+        ".ps1": 97,
+        ".ps1.txt": 12,
+        ".ps1xml": 0,
+        ".psd1": 9,
+        ".psm1": 10,
+        "workflow_yaml": 24
+      },
+      "by_status": {
+        "fixture": 23,
+        "source": 23,
+        "source_part": 12,
+        "staging": 18,
+        "tooling": 52,
+        "workflow_embedded": 24
+      },
+      "embedded_snippet_count": 69,
+      "total_surfaces": 152
+    }
+  },
+  "unclaimed_artifacts": [
+    {
+      "artifact_status": "external_or_future",
+      "blocking": true,
+      "evidence_claimed_by_boundary": false,
+      "id": "windows-powershell-51-parser-compatibility",
+      "path": "workflow or local Windows PowerShell 5.1 validation report",
+      "reason": "Declared by #267 boundary but not committed, not claimed, external, or future evidence.",
+      "source_issue": 267
+    },
+    {
+      "artifact_status": "not_committed_in_267_boundary",
+      "blocking": true,
+      "evidence_claimed_by_boundary": false,
+      "id": "powershell-7-psscriptanalyzer",
+      "path": "project_sources/collector/powershell_analyzer_report.json",
+      "reason": "Declared by #267 boundary but not committed, not claimed, external, or future evidence.",
+      "source_issue": 267
+    },
+    {
+      "artifact_status": "external_or_future",
+      "blocking": false,
+      "evidence_claimed_by_boundary": false,
+      "id": "pester-supporting-wrapper-fixture-tests",
+      "path": "future Pester test result artifact when a later gate enables it",
+      "reason": "Declared by #267 boundary but not committed, not claimed, external, or future evidence.",
+      "source_issue": 267
+    }
+  ],
+  "validation": {
+    "errors": [],
+    "success": true,
+    "warnings": []
+  }
+}
