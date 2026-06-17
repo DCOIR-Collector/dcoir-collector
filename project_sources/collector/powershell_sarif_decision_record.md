@@ -3,6 +3,7 @@
 - Schema: `dcoir_powershell_sarif_decision_record_v1`
 - Issue: `#269`
 - Parent issue: `#260`
+- Depends on: `#266`, `#267`, `#268`
 - Decision: `defer_sarif_upload`
 - Decision date: `2026-06-17`
 - Validation: `pass`
