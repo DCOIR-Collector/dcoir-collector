@@ -45,34 +45,28 @@ runs:
           return $normalized
         }
 
-        $generatedJson = 'project_sources/collector/powershell_review_assist_report.json'
-        $generatedMarkdown = 'project_sources/collector/powershell_review_assist_report.md'
         $reviewAssistJson = Assert-ReviewAssistOutputPath -PathValue $env:REVIEW_ASSIST_JSON_OUTPUT -ExpectedSuffix '.json' -Label 'JSON'
         $reviewAssistMarkdown = Assert-ReviewAssistOutputPath -PathValue $env:REVIEW_ASSIST_MARKDOWN_OUTPUT -ExpectedSuffix '.md' -Label 'Markdown'
         if ($reviewAssistJson -eq $reviewAssistMarkdown) {
           throw 'PowerShell review-assist JSON and Markdown outputs must be different paths.'
         }
-        Remove-Item -LiteralPath $generatedJson -Force -ErrorAction SilentlyContinue
-        Remove-Item -LiteralPath $generatedMarkdown -Force -ErrorAction SilentlyContinue
         Remove-Item -LiteralPath $reviewAssistJson -Force -ErrorAction SilentlyContinue
         Remove-Item -LiteralPath $reviewAssistMarkdown -Force -ErrorAction SilentlyContinue
 
-        python project_sources/collector/tools/run_powershell_review_assist_report.py --repo-root .
+        python project_sources/collector/tools/run_powershell_review_assist_report.py --repo-root . --json-output "$reviewAssistJson" --markdown-output "$reviewAssistMarkdown" --workflow-artifact
         $exitCode = $LASTEXITCODE
 
-        if (-not (Test-Path -LiteralPath $generatedJson)) {
-          throw "PowerShell review-assist JSON report was not produced: $generatedJson"
+        if (-not (Test-Path -LiteralPath $reviewAssistJson)) {
+          throw "PowerShell review-assist JSON report was not produced: $reviewAssistJson"
         }
-        if (-not (Test-Path -LiteralPath $generatedMarkdown)) {
-          throw "PowerShell review-assist Markdown report was not produced: $generatedMarkdown"
+        if (-not (Test-Path -LiteralPath $reviewAssistMarkdown)) {
+          throw "PowerShell review-assist Markdown report was not produced: $reviewAssistMarkdown"
         }
 
-        Copy-Item -LiteralPath $generatedJson -Destination $reviewAssistJson -Force
-        Copy-Item -LiteralPath $generatedMarkdown -Destination $reviewAssistMarkdown -Force
-
-        $report = Get-Content -LiteralPath $generatedJson -Raw | ConvertFrom-Json
+        $report = Get-Content -LiteralPath $reviewAssistJson -Raw | ConvertFrom-Json
         Write-Host "review-assist-json: $reviewAssistJson"
         Write-Host "review-assist-markdown: $reviewAssistMarkdown"
+        Write-Host "review-assist-workflow-behavior: $($report.artifact_contract.workflow_behavior)"
         Write-Host "review-assist-validation-success: $($report.validation.success)"
         Write-Host "review-assist-normalized-findings: $($report.summary.normalized_finding_count)"
         Write-Host "review-assist-optional-analyzer-state: $($report.evidence_channels.analyzer.state)"
@@ -82,6 +76,9 @@ runs:
         }
         if ($report.validation.success -ne $true) {
           throw 'PowerShell review-assist report validation did not report success.'
+        }
+        if ($report.artifact_contract.workflow_behavior -ne 'caller_uploaded_artifact') {
+          throw 'PowerShell review-assist report did not record workflow artifact behavior.'
         }
 
 # Compensating evidence: callers upload the generated JSON and Markdown reports
