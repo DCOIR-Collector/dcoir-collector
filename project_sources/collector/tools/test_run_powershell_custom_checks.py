@@ -386,6 +386,92 @@ class PowerShellCustomCheckTests(unittest.TestCase):
 
                 self.assertEqual(findings, [])
 
+    def test_fail_output_does_not_treat_comment_or_string_as_here_string_start(self) -> None:
+        cases = {
+            "comment_opener": '# docs @"',
+            "quoted_opener": '$message = "docs @"',
+        }
+        for name, opener in cases.items():
+            with self.subTest(name=name):
+                text = "\n".join(
+                    [
+                        opener,
+                        '$Rows += [pscustomobject]@{ Check = "Fixture"; Status = "FAIL" }',
+                        "",
+                    ]
+                )
+                findings = custom.check_fail_output(
+                    text,
+                    "project_sources/collector/fixtures/powershell_analysis/bad/fail_row_green_exit.ps1",
+                    check_def(
+                        "dcoir-fail-output-must-fail",
+                        "DCOIR.FailOutputMustFailValidation",
+                        "fail_rows_reports_or_fixture_outputs_not_causing_failure",
+                    ),
+                )
+
+                self.assertEqual(len(findings), 1)
+                self.assertEqual(findings[0]["line"], 2)
+
+    def test_fail_output_does_not_treat_comment_or_string_as_block_comment_start(self) -> None:
+        cases = {
+            "comment_opener": "# docs <#",
+            "quoted_opener": '$message = "docs <#"',
+        }
+        for name, opener in cases.items():
+            with self.subTest(name=name):
+                text = "\n".join(
+                    [
+                        opener,
+                        '$Rows += [pscustomobject]@{ Check = "Fixture"; Status = "FAIL" }',
+                        "",
+                    ]
+                )
+                findings = custom.check_fail_output(
+                    text,
+                    "project_sources/collector/fixtures/powershell_analysis/bad/fail_row_green_exit.ps1",
+                    check_def(
+                        "dcoir-fail-output-must-fail",
+                        "DCOIR.FailOutputMustFailValidation",
+                        "fail_rows_reports_or_fixture_outputs_not_causing_failure",
+                    ),
+                )
+
+                self.assertEqual(len(findings), 1)
+                self.assertEqual(findings[0]["line"], 2)
+
+    def test_fail_output_tracks_long_pscustomobject_until_closing_brace(self) -> None:
+        text = "\n".join(
+            [
+                "$Rows += [pscustomobject]@{",
+                '    Check = "Fixture"',
+                '    Scope = "Analyzer"',
+                '    Rule = "DCOIR.FailOutputMustFailValidation"',
+                '    Target = "fixture"',
+                '    Category = "validation"',
+                '    Surface = "PowerShell"',
+                '    Evidence = "row"',
+                '    Detail = "bad row"',
+                '    Recommendation = "fail closed"',
+                '    Status = "FAIL"',
+                '    Extra = "more object content"',
+                "}",
+                'throw "long object failed closed"',
+                "",
+            ]
+        )
+        findings = custom.check_fail_output(
+            text,
+            "project_sources/collector/fixtures/powershell_analysis/good/custom_fail_row_fails_command.ps1",
+            check_def(
+                "dcoir-fail-output-must-fail",
+                "DCOIR.FailOutputMustFailValidation",
+                "fail_rows_reports_or_fixture_outputs_not_causing_failure",
+            ),
+        )
+
+        self.assertEqual(findings, [])
+
     def test_analyzer_skip_success_ignores_unrelated_throw_elsewhere(self) -> None:
         text = "\n".join(
             [
@@ -600,6 +686,92 @@ class PowerShellCustomCheckTests(unittest.TestCase):
                 )
 
                 self.assertEqual(findings, [])
+
+    def test_analyzer_skip_success_does_not_treat_comment_or_string_as_here_string_start(self) -> None:
+        cases = {
+            "comment_opener": '# docs @"',
+            "quoted_opener": '$message = "docs @"',
+        }
+        for name, opener in cases.items():
+            with self.subTest(name=name):
+                text = "\n".join(
+                    [
+                        opener,
+                        '$Rows += [pscustomobject]@{ Check = "Analyzer"; Analyzed = $false; Status = "PASS" }',
+                        "",
+                    ]
+                )
+                findings = custom.check_analyzer_skip_success(
+                    text,
+                    "project_sources/collector/fixtures/powershell_analysis/bad/analyzer_skip_success.ps1",
+                    check_def(
+                        "dcoir-analyzer-skip-success",
+                        "DCOIR.AnalyzerSkipMustFailClosed",
+                        "analyzer_or_validation_skip_treated_success",
+                    ),
+                )
+
+                self.assertEqual(len(findings), 1)
+                self.assertEqual(findings[0]["line"], 2)
+
+    def test_analyzer_skip_success_does_not_treat_comment_or_string_as_block_comment_start(self) -> None:
+        cases = {
+            "comment_opener": "# docs <#",
+            "quoted_opener": '$message = "docs <#"',
+        }
+        for name, opener in cases.items():
+            with self.subTest(name=name):
+                text = "\n".join(
+                    [
+                        opener,
+                        '$Rows += [pscustomobject]@{ Check = "Analyzer"; Analyzed = $false; Status = "PASS" }',
+                        "",
+                    ]
+                )
+                findings = custom.check_analyzer_skip_success(
+                    text,
+                    "project_sources/collector/fixtures/powershell_analysis/bad/analyzer_skip_success.ps1",
+                    check_def(
+                        "dcoir-analyzer-skip-success",
+                        "DCOIR.AnalyzerSkipMustFailClosed",
+                        "analyzer_or_validation_skip_treated_success",
+                    ),
+                )
+
+                self.assertEqual(len(findings), 1)
+                self.assertEqual(findings[0]["line"], 2)
+
+    def test_analyzer_skip_success_tracks_long_pscustomobject_until_closing_brace(self) -> None:
+        text = "\n".join(
+            [
+                "$Rows += [pscustomobject]@{",
+                '    Check = "Analyzer"',
+                '    Scope = "Analyzer"',
+                '    Rule = "DCOIR.NoAnalyzerSkipSuccess"',
+                '    Target = "fixture"',
+                '    Category = "validation"',
+                '    Surface = "PowerShell"',
+                '    Evidence = "row"',
+                '    Detail = "skipped"',
+                '    Recommendation = "fail closed"',
+                "    Analyzed = $false",
+                '    Status = "PASS"',
+                "}",
+                'throw "long skip object failed closed"',
+                "",
+            ]
+        )
+        findings = custom.check_analyzer_skip_success(
+            text,
+            "project_sources/collector/fixtures/powershell_analysis/good/custom_analyzer_skip_fails_closed.ps1",
+            check_def(
+                "dcoir-analyzer-skip-success",
+                "DCOIR.AnalyzerSkipMustFailClosed",
+                "analyzer_or_validation_skip_treated_success",
+            ),
+        )
+
+        self.assertEqual(findings, [])
 
     def test_analyzer_skip_success_flags_only_unsafe_mixed_rows(self) -> None:
         text = "\n".join(
