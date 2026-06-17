@@ -1,0 +1,690 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/DCOIR-Collector/dcoir-collector/project_sources/collector/powershell_review_assist_report.schema.json",
+  "title": "DCOIR PowerShell Review-Assist Report",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "issue",
+    "parent_issue",
+    "depends_on",
+    "generated_from",
+    "source_reports",
+    "summary",
+    "changed_file_context",
+    "surface_inventory",
+    "findings",
+    "evidence_channels",
+    "carried_forward_warnings",
+    "missing_artifacts",
+    "unclaimed_artifacts",
+    "non_claims",
+    "artifact_contract",
+    "validation"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "dcoir_powershell_review_assist_report_v1"
+    },
+    "issue": {
+      "const": 268
+    },
+    "parent_issue": {
+      "const": 260
+    },
+    "depends_on": {
+      "type": "array",
+      "items": {
+        "type": "integer"
+      },
+      "minItems": 6
+    },
+    "generated_from": {
+      "type": "object",
+      "required": [
+        "tool",
+        "generated_at_utc",
+        "source_reports",
+        "schema_contract"
+      ],
+      "properties": {
+        "tool": {
+          "type": "string"
+        },
+        "generated_at_utc": {
+          "type": "string"
+        },
+        "source_reports": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "schema_contract": {
+          "type": "string"
+        }
+      }
+    },
+    "source_reports": {
+      "type": "array",
+      "minItems": 8,
+      "items": {
+        "type": "object",
+        "required": [
+          "source_key",
+          "source_issue",
+          "path",
+          "expected_schema_version",
+          "required",
+          "present",
+          "validation_status",
+          "finding_count",
+          "warnings",
+          "errors"
+        ],
+        "properties": {
+          "source_key": {
+            "type": "string"
+          },
+          "source_issue": {
+            "type": "integer"
+          },
+          "path": {
+            "type": "string"
+          },
+          "expected_schema_version": {
+            "type": "string"
+          },
+          "schema_version": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "present": {
+            "type": "boolean"
+          },
+          "validation_status": {
+            "type": "string"
+          },
+          "finding_count": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "absent_reason": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "required_source_report_count",
+        "required_source_reports_present",
+        "optional_source_reports_missing",
+        "normalized_finding_count",
+        "carried_forward_warning_count",
+        "missing_artifact_count",
+        "unclaimed_artifact_count",
+        "non_claim_count",
+        "validation_success"
+      ],
+      "properties": {
+        "required_source_report_count": {
+          "type": "integer"
+        },
+        "required_source_reports_present": {
+          "type": "integer"
+        },
+        "optional_source_reports_missing": {
+          "type": "integer"
+        },
+        "source_report_count": {
+          "type": "integer"
+        },
+        "normalized_finding_count": {
+          "type": "integer"
+        },
+        "finding_count_by_evidence_kind": {
+          "type": "object"
+        },
+        "finding_count_by_severity": {
+          "type": "object"
+        },
+        "finding_count_by_governance_classification": {
+          "type": "object"
+        },
+        "carried_forward_warning_count": {
+          "type": "integer"
+        },
+        "missing_artifact_count": {
+          "type": "integer"
+        },
+        "unclaimed_artifact_count": {
+          "type": "integer"
+        },
+        "non_claim_count": {
+          "type": "integer"
+        },
+        "validation_success": {
+          "type": "boolean"
+        }
+      }
+    },
+    "changed_file_context": {
+      "type": "object",
+      "required": [
+        "changed_file_count",
+        "changed_file_surface_count",
+        "unavailable_reason",
+        "claim"
+      ],
+      "properties": {
+        "changed_file_count": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "changed_file_surface_count": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "unavailable_reason": {
+          "type": "string"
+        },
+        "claim": {
+          "type": "string"
+        }
+      }
+    },
+    "surface_inventory": {
+      "type": "object",
+      "required": [
+        "mode",
+        "summary",
+        "outputs",
+        "path_decision_counts",
+        "included_paths",
+        "excluded_paths",
+        "reference_paths",
+        "skipped_paths"
+      ]
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "source_report_path",
+          "source_schema_version",
+          "evidence_kind",
+          "path",
+          "line",
+          "column",
+          "severity",
+          "rule_name",
+          "check_id",
+          "risk_classes",
+          "target_surfaces",
+          "fingerprint",
+          "observed_behavior",
+          "impact",
+          "recommended_fix_direction",
+          "governance_classification",
+          "baseline_state",
+          "suppression_state",
+          "source_generated_target_kind"
+        ],
+        "properties": {
+          "source_report_path": {
+            "type": "string"
+          },
+          "source_schema_version": {
+            "type": "string"
+          },
+          "evidence_kind": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "line": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "column": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "severity": {
+            "type": "string"
+          },
+          "rule_name": {
+            "type": "string"
+          },
+          "check_id": {
+            "type": "string"
+          },
+          "risk_classes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "target_surfaces": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "fingerprint": {
+            "type": "string"
+          },
+          "observed_behavior": {
+            "type": "string"
+          },
+          "impact": {
+            "type": "string"
+          },
+          "recommended_fix_direction": {
+            "type": "string"
+          },
+          "governance_classification": {
+            "type": "string"
+          },
+          "baseline_state": {
+            "type": "string"
+          },
+          "suppression_state": {
+            "type": "string"
+          },
+          "source_generated_target_kind": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "evidence_channels": {
+      "type": "object",
+      "required": [
+        "analyzer",
+        "deterministic_fixture_analyzer",
+        "custom_checks",
+        "assembly_parity",
+        "finding_governance",
+        "engine_boundary",
+        "pester_boundary"
+      ],
+      "properties": {
+        "analyzer": {
+          "type": "object",
+          "required": [
+            "source_issue",
+            "state",
+            "path",
+            "finding_count",
+            "claim"
+          ],
+          "properties": {
+            "source_issue": {
+              "type": "integer"
+            },
+            "state": {
+              "type": "string"
+            },
+            "path": {
+              "type": "string"
+            },
+            "finding_count": {
+              "type": "integer"
+            },
+            "claim": {
+              "type": "string"
+            }
+          }
+        },
+        "deterministic_fixture_analyzer": {
+          "type": "object",
+          "required": [
+            "source_issue",
+            "state",
+            "finding_count",
+            "environment_gap",
+            "fixture_outcomes"
+          ],
+          "properties": {
+            "source_issue": {
+              "type": "integer"
+            },
+            "state": {
+              "type": "string"
+            },
+            "finding_count": {
+              "type": "integer"
+            },
+            "environment_gap": {
+              "type": "string"
+            },
+            "fixture_outcomes": {
+              "type": "object"
+            }
+          }
+        },
+        "custom_checks": {
+          "type": "object",
+          "required": [
+            "source_issue",
+            "state",
+            "finding_count",
+            "fixture_outcomes"
+          ],
+          "properties": {
+            "source_issue": {
+              "type": "integer"
+            },
+            "state": {
+              "type": "string"
+            },
+            "finding_count": {
+              "type": "integer"
+            },
+            "fixture_outcomes": {
+              "type": "object"
+            }
+          }
+        },
+        "assembly_parity": {
+          "type": "object",
+          "required": [
+            "source_issue",
+            "state",
+            "summary",
+            "generated_outputs",
+            "baseline_comparison"
+          ],
+          "properties": {
+            "source_issue": {
+              "type": "integer"
+            },
+            "state": {
+              "type": "string"
+            },
+            "summary": {
+              "type": "object"
+            },
+            "generated_outputs": {
+              "type": "array"
+            },
+            "baseline_comparison": {
+              "type": [
+                "object",
+                "array",
+                "string",
+                "null"
+              ]
+            }
+          }
+        },
+        "finding_governance": {
+          "type": "object",
+          "required": [
+            "source_issue",
+            "state",
+            "summary",
+            "baseline_delta",
+            "governance"
+          ],
+          "properties": {
+            "source_issue": {
+              "type": "integer"
+            },
+            "state": {
+              "type": "string"
+            },
+            "summary": {
+              "type": "object"
+            },
+            "baseline_delta": {
+              "type": "object"
+            },
+            "governance": {
+              "type": "object"
+            }
+          }
+        },
+        "engine_boundary": {
+          "type": "object",
+          "required": [
+            "source_issue",
+            "state",
+            "summary",
+            "declared_output_artifacts",
+            "independent_analyzer_enforcement_proof"
+          ],
+          "properties": {
+            "source_issue": {
+              "type": "integer"
+            },
+            "state": {
+              "type": "string"
+            },
+            "summary": {
+              "type": "object"
+            },
+            "declared_output_artifacts": {
+              "type": "array"
+            },
+            "independent_analyzer_enforcement_proof": {
+              "type": "object"
+            }
+          }
+        },
+        "pester_boundary": {
+          "type": "object",
+          "required": [
+            "source_issue",
+            "state",
+            "pester_boundary",
+            "claim"
+          ],
+          "properties": {
+            "source_issue": {
+              "type": "integer"
+            },
+            "state": {
+              "type": "string"
+            },
+            "pester_boundary": {
+              "type": "object"
+            },
+            "claim": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "carried_forward_warnings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "source_issue",
+          "source_report",
+          "warning"
+        ],
+        "properties": {
+          "source_issue": {
+            "type": "integer"
+          },
+          "source_report": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "warning": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "missing_artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "source_issue",
+          "path",
+          "required",
+          "reason"
+        ],
+        "properties": {
+          "source_issue": {
+            "type": "integer"
+          },
+          "path": {
+            "type": "string"
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "reason": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "unclaimed_artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "source_issue",
+          "id",
+          "path",
+          "artifact_status",
+          "blocking",
+          "evidence_claimed_by_boundary",
+          "reason"
+        ],
+        "properties": {
+          "source_issue": {
+            "type": "integer"
+          },
+          "id": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "artifact_status": {
+            "type": "string"
+          },
+          "blocking": {
+            "type": "boolean"
+          },
+          "evidence_claimed_by_boundary": {
+            "type": "boolean"
+          },
+          "reason": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "non_claims": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "artifact_contract": {
+      "type": "object",
+      "required": [
+        "issue",
+        "local_artifacts",
+        "future_handoff_consumers",
+        "retention_scope",
+        "workflow_behavior"
+      ],
+      "properties": {
+        "issue": {
+          "const": 268
+        },
+        "local_artifacts": {
+          "type": "object",
+          "required": [
+            "schema",
+            "json",
+            "markdown"
+          ]
+        },
+        "future_handoff_consumers": {
+          "type": "array",
+          "minItems": 2
+        },
+        "retention_scope": {
+          "type": "string"
+        },
+        "workflow_behavior": {
+          "const": "none"
+        }
+      }
+    },
+    "validation": {
+      "type": "object",
+      "required": [
+        "success",
+        "errors",
+        "warnings"
+      ],
+      "properties": {
+        "success": {
+          "type": "boolean"
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
