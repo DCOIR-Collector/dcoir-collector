@@ -27,6 +27,7 @@ class SarifDecisionRecordTests(unittest.TestCase):
 
     def test_prerequisite_evidence_is_named(self) -> None:
         evidence_by_issue = {entry["issue"]: entry for entry in self.record["evidence_inputs"]}
+        self.assertEqual(set(self.record["depends_on"]), {266, 267, 268})
         self.assertEqual(set(evidence_by_issue), {266, 267, 268})
         self.assertEqual(evidence_by_issue[266]["summary"]["classified_finding_count"], 22)
         self.assertEqual(evidence_by_issue[266]["summary"]["baseline_record_count"], 0)
