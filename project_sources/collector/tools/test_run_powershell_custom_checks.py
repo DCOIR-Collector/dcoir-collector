@@ -221,6 +221,35 @@ class PowerShellCustomCheckTests(unittest.TestCase):
         self.assertEqual(len(findings), 1)
         self.assertEqual(findings[0]["line"], 3)
 
+    def test_fail_output_ignores_status_fail_variable_outside_result_object(self) -> None:
+        text = '$Status = "FAIL"\nWrite-Output "not a fixture result row"\n'
+        findings = custom.check_fail_output(
+            text,
+            "project_sources/collector/fixtures/powershell_analysis/good/control.ps1",
+            check_def(
+                "dcoir-fail-output-must-fail",
+                "DCOIR.FailOutputMustFailValidation",
+                "fail_rows_reports_or_fixture_outputs_not_causing_failure",
+            ),
+        )
+
+        self.assertEqual(findings, [])
+
+    def test_fail_output_counts_only_result_object_status_fail(self) -> None:
+        text = '$Status = "FAIL"\n\n$Rows += [pscustomobject]@{ Check = "Fixture"; Status = "FAIL" }\n'
+        findings = custom.check_fail_output(
+            text,
+            "project_sources/collector/fixtures/powershell_analysis/bad/fail_row_green_exit.ps1",
+            check_def(
+                "dcoir-fail-output-must-fail",
+                "DCOIR.FailOutputMustFailValidation",
+                "fail_rows_reports_or_fixture_outputs_not_causing_failure",
+            ),
+        )
+
+        self.assertEqual(len(findings), 1)
+        self.assertEqual(findings[0]["line"], 3)
+
     def test_fail_output_flags_only_unsafe_mixed_rows(self) -> None:
         text = "\n".join(
             [
