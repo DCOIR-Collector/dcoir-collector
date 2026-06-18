@@ -34,23 +34,31 @@ assert ("calculator.js", 2) in line_index, line_index
 
 config = mod.load_yaml_like_config(str(ROOT / ".github" / "openrouter-pr-review.yml"))
 assert "/or-review" in config.commands
+assert "/dcoir-review" in config.commands
 assert config.model == "openrouter/free"
+assert config.model_stack == ["openrouter/free"]
 assert config.allowed_authors == ["malwaredevil"]
 assert config.post_summary_when_findings is False
 assert config.include_confidence is False
 assert config.redact_secret_literals is True
 assert config.openrouter_max_attempts == 4
 assert config.openrouter_retry_max_seconds == 45
+assert config.script_timeout_seconds == 1500
+assert config.post_progress_comment is True
 assert config.ignored_providers == []
 assert mod.provider_slug("Venice") == "venice"
 assert mod.command_matches("/or-review", config.commands)
 assert mod.command_matches("/or-review security", config.commands)
+assert mod.command_matches("/dcoir-review", config.commands)
+assert mod.matching_command("/dcoir-review please", config.commands) == "/dcoir-review"
 assert not mod.command_matches("looks good", config.commands)
+assert mod.model_stack_label(config) == "openrouter/free"
 
 schema = json.loads((ROOT / "schemas" / "openrouter-pr-review.schema.json").read_text(encoding="utf-8"))
 assert schema["properties"]["findings"]["type"] == "array"
 
-redacted = mod.sanitize_text('token = "sk_live_demo_secret_value_123456"', config)
+secret_like = "sk_" + "live_demo_secret_value_123456"
+redacted = mod.sanitize_text(f'token = "{secret_like}"', config)
 assert "sk_live_demo" not in redacted
 assert "[redacted-secret]" in redacted
 
@@ -59,7 +67,7 @@ comment = mod.build_inline_comment(
         "title": "Hardcoded token",
         "severity": "critical",
         "confidence": 1.0,
-        "body": 'The changed line assigns token = "sk_live_demo_secret_value_123456".',
+        "body": f'The changed line assigns token = "{secret_like}".',
         "suggested_replacement": 'token = os.getenv("OPENROUTER_TOKEN")',
         "validation": "bash scripts/validate-codex-local.sh",
     },
