@@ -82,6 +82,8 @@ punctuation_password = "p@ssw0rd123!"
 dotted_password = "correct.horse.battery.staple"
 delimiter_password = "abc12345;moresecret"
 yaml_password = "yaml:style:password!"
+quoted_json_password = "quoted-json-password!"
+single_quoted_api_key = "single-quoted-api-key!"
 assignment_text = "\n".join(
     [
         f"OPENROUTER_API_KEY={openrouter_key}",
@@ -91,12 +93,24 @@ assignment_text = "\n".join(
         f"password={dotted_password}",
         f"PASSWORD={delimiter_password}",
         f"api-key: {yaml_password}",
+        f'"password": "{quoted_json_password}"',
+        f"'apiKey': '{single_quoted_api_key}'",
     ]
 )
 assignment_redacted = mod.sanitize_text(assignment_text, config)
-for leaked in ["sk-or-v1", "sk-proj", password_value, punctuation_password, dotted_password, delimiter_password, yaml_password]:
+for leaked in [
+    "sk-or-v1",
+    "sk-proj",
+    password_value,
+    punctuation_password,
+    dotted_password,
+    delimiter_password,
+    yaml_password,
+    quoted_json_password,
+    single_quoted_api_key,
+]:
     assert leaked not in assignment_redacted, assignment_redacted
-assert assignment_redacted.count("[redacted-secret]") >= 7
+assert assignment_redacted.count("[redacted-secret]") >= 9
 
 safe_reference = mod.sanitize_text(
     'token = os.getenv("OPENROUTER_TOKEN")\npassword = process.env.DB_PASSWORD\napi_key=${OPENROUTER_API_KEY}',
@@ -107,7 +121,7 @@ assert "process.env.DB_PASSWORD" in safe_reference
 assert "${OPENROUTER_API_KEY}" in safe_reference
 
 prompt = mod.build_prompt(
-    {"number": 281, "title": "Prompt redaction", "body": f"body token {secret_like}\nOPENROUTER_API_KEY={openrouter_key}"},
+    {"number": 281, "title": "Prompt redaction", "body": f"body token {secret_like}\nOPENROUTER_API_KEY={openrouter_key}\n\"password\": \"{quoted_json_password}\""},
     [
         {
             "filename": "example.py",
@@ -115,13 +129,13 @@ prompt = mod.build_prompt(
             "additions": 1,
             "deletions": 0,
             "changes": 1,
-            "patch": f"+token = '{secret_like}'\n+password={punctuation_password}",
+            "patch": f"+token = '{secret_like}'\n+password={punctuation_password}\n+\"password\": \"{quoted_json_password}\"",
         }
     ],
-    f"diff --git a/example.py b/example.py\n+++ b/example.py\n@@ -1,0 +1,3 @@\n+token = '{secret_like}'\n+OPENAI_API_KEY={openai_key}\n+PASSWORD={delimiter_password}\n",
+    f"diff --git a/example.py b/example.py\n+++ b/example.py\n@@ -1,0 +1,4 @@\n+token = '{secret_like}'\n+OPENAI_API_KEY={openai_key}\n+PASSWORD={delimiter_password}\n+\"password\": \"{quoted_json_password}\"\n",
     config,
 )
-for leaked in ["sk_live_demo", "sk-or-v1", "sk-proj", punctuation_password, delimiter_password]:
+for leaked in ["sk_live_demo", "sk-or-v1", "sk-proj", punctuation_password, delimiter_password, quoted_json_password]:
     assert leaked not in prompt, prompt
 assert "[redacted-secret]" in prompt
 
