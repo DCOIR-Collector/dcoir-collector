@@ -347,14 +347,14 @@
       "target_architecture": "Entry workflow plus reusable CodeQL security workflow using GitHub CodeQL Action v4 for Python and GitHub Actions workflow surfaces with security-extended and security-and-quality query suites."
     },
     {
-      "acceptance_evidence": "Manual comment-triggered run readback, trusted default-branch checkout behavior, operator command guard, token/config-name-only handling, and PR conversation output evidence.",
+      "acceptance_evidence": "Manual comment-triggered run readback, trusted default-branch checkout behavior, operator command guard, token/config-name-only handling, progress/status comment evidence, model-stack config readback, and PR conversation output evidence.",
       "contract_family": "openrouter-pr-review",
       "family": "AI-assisted PR review",
       "file": ".github/workflows/openrouter-pr-review.yml",
       "migration_status": "intentionally-inline",
       "risk": "high",
       "rollback": "Disable or remove the OpenRouter PR Review workflow if the comment-triggered review lane becomes unsafe or noisy; preserve the trusted default-branch checkout and operator command guard if restored.",
-      "target_architecture": "Intentionally inline comment-triggered OpenRouter PR review workflow. It keeps the trigger, permissions, concurrency, trusted default-branch checkout, and script invocation visible in the entry workflow rather than routing through central reporter or reusable workflow plumbing."
+      "target_architecture": "Intentionally inline comment-triggered OpenRouter PR review workflow. It keeps the trigger, permissions, concurrency, trusted default-branch checkout, command guard, progress/status comment behavior, model-stack config, and script invocation visible in the entry workflow rather than routing through central reporter or reusable workflow plumbing."
     }
   ]
 }
