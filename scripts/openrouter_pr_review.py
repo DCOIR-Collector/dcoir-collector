@@ -691,9 +691,14 @@ def redact_curl_user_credentials(text: str) -> str:
         value_start = match.end()
         if value_start >= len(text):
             continue
-        quote = text[value_start] if text[value_start] in {"\"", "'"} else ""
+        quote_prefix_length = 0
+        if text[value_start] == "$" and value_start + 1 < len(text) and text[value_start + 1] in {"\"", "'"}:
+            quote_prefix_length = 1
+            quote = text[value_start + 1]
+        else:
+            quote = text[value_start] if text[value_start] in {"\"", "'"} else ""
         if quote:
-            credential_start = value_start + 1
+            credential_start = value_start + quote_prefix_length + 1
             credential_end = find_quoted_value_end(text, credential_start, quote)
             if credential_end < 0:
                 continue
