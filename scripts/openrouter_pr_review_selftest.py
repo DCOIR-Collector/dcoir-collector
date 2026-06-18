@@ -51,9 +51,13 @@ assert config.ignored_providers == []
 assert mod.provider_slug("Venice") == "venice"
 assert mod.command_matches("/or-review", config.commands)
 assert mod.command_matches("/or-review security", config.commands)
+assert mod.command_matches("  /or-review security", config.commands)
+assert mod.command_matches("\n/dcoir-review\tplease", config.commands)
 assert mod.command_matches("/dcoir-review", config.commands)
 assert mod.matching_command("/dcoir-review please", config.commands) == "/dcoir-review"
 assert not mod.command_matches("looks good", config.commands)
+assert not mod.command_matches("/or-reviewer", config.commands)
+assert not mod.command_matches("/dcoir-review-anything", config.commands)
 assert mod.model_stack_label(config) == "openrouter/free"
 
 previous_openrouter_key = os.environ.pop("OPENROUTER_API_KEY", None)
@@ -139,6 +143,11 @@ assignment_text = "\n".join(
         f"Cookie: {cookie_secret}",
         f"Set-Cookie: {set_cookie_secret}",
         f"X-Api-Key: {single_quoted_api_key}",
+        f'"Authorization": "Bearer {bearer_secret}"',
+        f"'Proxy-Authorization': 'Basic {basic_secret}'",
+        f'"Cookie": "{cookie_secret}"',
+        f'"Set-Cookie": f"{set_cookie_secret}"',
+        f'"X-Api-Key": "token {single_quoted_api_key}"',
         f"curl -H \"Authorization: Bearer {bearer_secret}\" https://example.test/",
         f"curl -u dcoir:{curl_password} https://example.test/",
         f"machine example.test login dcoir password {netrc_password}",
@@ -159,6 +168,7 @@ assignment_text = "\n".join(
         f'"token": "{github_secret_reference}"',
         f'"token": \'{exact_os_getenv_reference}\'',
         f'"secret": \'{exact_secrets_reference}\'',
+        f'"Authorization": "Bearer {quoted_env_reference}"',
         f'"password": "{unsafe_process_reference}"',
         f'"token": \'{unsafe_getenv_reference}\'',
         f'"secret": \'{unsafe_secrets_reference}\'',
@@ -231,6 +241,7 @@ def fake_read_text(path: str, default: str = "") -> str:
         return "\n".join(
             [
                 f"Guidance bearer Authorization: Bearer {bearer_secret}",
+                f"Guidance object header \"Authorization\": \"Bearer {bearer_secret}\"",
                 f"Guidance cookie Cookie: {cookie_secret}",
                 f"Guidance URL postgres://dcoir:{url_password}@db.example.test/dcoir",
                 f"Guidance signed {aws_signed_url}",
@@ -253,6 +264,8 @@ try:
                     f"body token {secret_like}",
                     f"OPENROUTER_API_KEY={openrouter_key}",
                     f'"password": "{quoted_json_password}"',
+                    f'"Authorization": "Bearer {bearer_secret}"',
+                    f'"Cookie": "{cookie_secret}"',
                     f"Authorization: Bearer {bearer_secret}",
                     f"Cookie: {cookie_secret}",
                     f"DATABASE_URL=postgres://dcoir:{url_password}@db.example.test/dcoir",
@@ -277,6 +290,7 @@ try:
                         f"+password={punctuation_password}",
                         f"+Authorization: Bearer {bearer_secret}",
                         f"+Cookie: {cookie_secret}",
+                        f'+headers = {{"Authorization": "Bearer {bearer_secret}", "Cookie": "{cookie_secret}"}}',
                         f"+DATABASE_URL=postgres://dcoir:{url_password}@db.example.test/dcoir",
                         f"+SIGNED={generic_signed_url}",
                         "+" + private_key_block.replace("\n", "\n+"),
@@ -302,6 +316,7 @@ try:
                 f"+PASSWORD={delimiter_password}",
                 f"+Authorization: Basic {basic_secret}",
                 f"+Set-Cookie: {set_cookie_secret}",
+                f'+headers = {{"Authorization": "Basic {basic_secret}", "Set-Cookie": "{set_cookie_secret}"}}',
                 f"+NETRC machine example.test login dcoir password {netrc_password}",
                 f"+SIGNED {azure_sas_url}",
                 "+" + private_key_block.replace("\n", "\n+"),
@@ -371,12 +386,12 @@ assert len(truncated_prompt) <= truncation_config.max_prompt_chars + 40
 
 comment = mod.build_inline_comment(
     {
-        "title": "Hardcoded token",
+        "title": "Hardcoded token from @codex",
         "severity": "critical",
         "confidence": 1.0,
-        "body": f'The changed line assigns token = "{secret_like}" and password={punctuation_password}.',
+        "body": f'The changed line assigns token = "{secret_like}" and password={punctuation_password}. Ask @codex to review.',
         "suggested_replacement": 'token = os.getenv("OPENROUTER_TOKEN")',
-        "validation": "bash scripts/validate-codex-local.sh",
+        "validation": "bash scripts/validate-codex-local.sh # ask @codex nowhere",
     },
     "openrouter/free",
     config,
@@ -385,7 +400,48 @@ assert "Confidence:" not in comment
 assert "sk_live_demo" not in comment
 assert punctuation_password not in comment
 assert "os.getenv" in comment
+assert "@codex" not in comment
+assert "@<!-- -->codex" in comment
 assert "Model: `openrouter/free`" in comment
+
+review_body = mod.build_review_body({"summary": "No findings. Ask @codex and @malwaredevil to review."}, [], "openrouter/free", config)
+assert "@codex" not in review_body
+assert "@malwaredevil" not in review_body
+assert "@<!-- -->codex" in review_body
+assert "@<!-- -->malwaredevil" in review_body
+
+class FakeGitHub:
+    def __init__(self) -> None:
+        self.comments: list[str] = []
+        self.updates: list[str] = []
+
+    def create_issue_comment(self, _number: int, body: str) -> dict[str, int]:
+        self.comments.append(body)
+        return {"id": 123}
+
+    def update_issue_comment(self, _comment_id: int, body: str) -> dict[str, str]:
+        self.updates.append(body)
+        return {}
+
+fake_gh = FakeGitHub()
+failure_reporter = mod.ProgressReporter(fake_gh, 281, "/or-review", config)
+failure_reporter.fail(
+    "\n".join(
+        [
+            f"Authorization: Bearer {bearer_secret}",
+            f"Cookie: {cookie_secret}",
+            f"DATABASE_URL=postgres://dcoir:{url_password}@db.example.test/dcoir",
+            generic_signed_url,
+            private_key_block,
+            "Ask @codex to review this failure.",
+        ]
+    )
+)
+failure_body = fake_gh.comments[-1]
+for leaked in [bearer_secret, "cookie-secret", url_password, signed_url_secret, "PRIVATE KEY", "private-key-secret-material", "@codex"]:
+    assert leaked not in failure_body, failure_body
+assert "@<!-- -->codex" in failure_body
+assert "[redacted-secret]" in failure_body
 
 err = mod.parse_openrouter_error('{"error":{"message":"Provider returned error","metadata":{"provider_name":"Venice","retry_after_seconds":21}}}')
 assert err["provider"] == "Venice"
