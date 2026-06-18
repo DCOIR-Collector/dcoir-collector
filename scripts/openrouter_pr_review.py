@@ -429,7 +429,7 @@ COOKIE_UNQUOTED_FIELD_START = re.compile(
 # Cookie pairs use name=value, so only colon-delimited object fields end inline cookies.
 OBJECT_FIELD_AFTER_COMMA = re.compile(r"""(?ix)^\s*[\"']?[A-Z0-9_\-]+[\"']?\s*:""")
 HEADER_VALUE_SCHEME = re.compile(r"(?is)^(?P<prefix>\s*(?:bearer|basic|token)\s+)(?P<secret>.+)$")
-CURL_USER_CREDENTIAL = re.compile(r"""(?ix)(?P<prefix>(?<!\S)(?:--user(?:\s+|=)|-u\s*))(?P<quote>[\"']?)(?P<user>[^:\s\"']*):(?P<password>[^\s\"']{4,})(?P=quote)""")
+CURL_USER_OPTION = re.compile(r"""(?ix)(?P<prefix>(?<!\S)(?:--user(?:\s+|=)|-u\s*))""")
 NETRC_PASSWORD_CREDENTIAL = re.compile(r"(?i)\b(machine\s+\S+\s+login\s+\S+\s+password\s+)(\S{4,})")
 SECRET_QUOTED_ASSIGNMENT_START = re.compile(
     r"""(?ix)(?<![A-Z0-9_\-])(?P<key_quote>[\"']?)(?P<key>[A-Z0-9_\-]*(?:TOKEN|SECRET|PASSWORD|API[_-]?KEY)[A-Z0-9_\-]*)(?P=key_quote)(?P<sep>\s*[:=]\s*)(?P<value_prefix>[rubf]{0,2})(?P<value_quote>[\"'])"""
@@ -598,8 +598,44 @@ def redact_header_field_credentials(text: str) -> str:
     return "".join(result)
 
 
-def redact_curl_user_credential(match: re.Match[str]) -> str:
-    return f"{match.group('prefix')}{match.group('quote')}{match.group('user')}:{REDACTION}{match.group('quote')}"
+def find_unquoted_curl_credential_end(text: str, start: int) -> int:
+    index = start
+    while index < len(text) and text[index] not in {"\r", "\n", "\t", " ", "\"", "'"}:
+        index += 1
+    return index
+
+
+def redact_curl_user_credentials(text: str) -> str:
+    result: list[str] = []
+    cursor = 0
+    for match in CURL_USER_OPTION.finditer(text):
+        if match.start() < cursor:
+            continue
+        value_start = match.end()
+        if value_start >= len(text):
+            continue
+        quote = text[value_start] if text[value_start] in {"\"", "'"} else ""
+        if quote:
+            credential_start = value_start + 1
+            credential_end = find_quoted_value_end(text, credential_start, quote)
+            if credential_end < 0:
+                continue
+            credential = text[credential_start:credential_end]
+        else:
+            credential_start = value_start
+            credential_end = find_unquoted_curl_credential_end(text, credential_start)
+            credential = text[credential_start:credential_end]
+        colon_index = credential.find(":")
+        if colon_index < 0 or len(credential[colon_index + 1 :].strip()) < 4:
+            continue
+        password_start = credential_start + colon_index + 1
+        result.append(text[cursor:password_start])
+        result.append(REDACTION)
+        cursor = credential_end
+    if not result:
+        return text
+    result.append(text[cursor:])
+    return "".join(result)
 
 
 def redact_quoted_assignments(text: str) -> str:
@@ -638,7 +674,7 @@ def sanitize_text(text: str, config: Config) -> str:
     cleaned = redact_header_field_credentials(cleaned)
     cleaned = redact_unquoted_cookie_credentials(cleaned)
     cleaned = HEADER_CREDENTIAL.sub(redact_header_credential, cleaned)
-    cleaned = CURL_USER_CREDENTIAL.sub(redact_curl_user_credential, cleaned)
+    cleaned = redact_curl_user_credentials(cleaned)
     cleaned = NETRC_PASSWORD_CREDENTIAL.sub(lambda match: f"{match.group(1)}{REDACTION}", cleaned)
     cleaned = redact_quoted_assignments(cleaned)
     cleaned = SECRET_UNQUOTED_ASSIGNMENT.sub(redact_unquoted_assignment, cleaned)
