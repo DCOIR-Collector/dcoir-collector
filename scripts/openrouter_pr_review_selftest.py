@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import os
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -53,6 +54,18 @@ assert mod.command_matches("/dcoir-review", config.commands)
 assert mod.matching_command("/dcoir-review please", config.commands) == "/dcoir-review"
 assert not mod.command_matches("looks good", config.commands)
 assert mod.model_stack_label(config) == "openrouter/free"
+
+previous_openrouter_key = os.environ.pop("OPENROUTER_API_KEY", None)
+try:
+    try:
+        mod.env_required("OPENROUTER_API_KEY")
+    except RuntimeError as exc:
+        assert "OPENROUTER_API_KEY" in str(exc)
+    else:
+        raise AssertionError("missing OPENROUTER_API_KEY should raise RuntimeError")
+finally:
+    if previous_openrouter_key is not None:
+        os.environ["OPENROUTER_API_KEY"] = previous_openrouter_key
 
 schema = json.loads((ROOT / "schemas" / "openrouter-pr-review.schema.json").read_text(encoding="utf-8"))
 assert schema["properties"]["findings"]["type"] == "array"
