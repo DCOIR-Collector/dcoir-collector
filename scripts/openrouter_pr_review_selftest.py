@@ -84,6 +84,12 @@ delimiter_password = "abc12345;moresecret"
 yaml_password = "yaml:style:password!"
 quoted_json_password = "quoted-json-password!"
 single_quoted_api_key = "single-quoted-api-key!"
+apostrophe_password = "p@ss'word123!"
+double_quote_password = 'p@ss"word123!'
+escaped_quote_password = r'aaaaaaaa\"tail-secret'
+quoted_env_reference = "${OPENROUTER_API_KEY}"
+dollar_env_reference = "$DB_PASSWORD"
+process_env_reference = "process.env.TOKEN"
 assignment_text = "\n".join(
     [
         f"OPENROUTER_API_KEY={openrouter_key}",
@@ -95,6 +101,12 @@ assignment_text = "\n".join(
         f"api-key: {yaml_password}",
         f'"password": "{quoted_json_password}"',
         f"'apiKey': '{single_quoted_api_key}'",
+        f'"password": "{apostrophe_password}"',
+        f"'password': '{double_quote_password}'",
+        f'"password": "{escaped_quote_password}"',
+        f'"apiKey": "{quoted_env_reference}"',
+        f'"password": "{dollar_env_reference}"',
+        f'"token": "{process_env_reference}"',
     ]
 )
 assignment_redacted = mod.sanitize_text(assignment_text, config)
@@ -108,9 +120,15 @@ for leaked in [
     yaml_password,
     quoted_json_password,
     single_quoted_api_key,
+    apostrophe_password,
+    double_quote_password,
+    escaped_quote_password,
+    "tail-secret",
 ]:
     assert leaked not in assignment_redacted, assignment_redacted
-assert assignment_redacted.count("[redacted-secret]") >= 9
+for preserved in [quoted_env_reference, dollar_env_reference, process_env_reference]:
+    assert preserved in assignment_redacted, assignment_redacted
+assert assignment_redacted.count("[redacted-secret]") >= 12
 
 safe_reference = mod.sanitize_text(
     'token = os.getenv("OPENROUTER_TOKEN")\npassword = process.env.DB_PASSWORD\napi_key=${OPENROUTER_API_KEY}',
@@ -121,7 +139,11 @@ assert "process.env.DB_PASSWORD" in safe_reference
 assert "${OPENROUTER_API_KEY}" in safe_reference
 
 prompt = mod.build_prompt(
-    {"number": 281, "title": "Prompt redaction", "body": f"body token {secret_like}\nOPENROUTER_API_KEY={openrouter_key}\n\"password\": \"{quoted_json_password}\""},
+    {
+        "number": 281,
+        "title": "Prompt redaction",
+        "body": f"body token {secret_like}\nOPENROUTER_API_KEY={openrouter_key}\n\"password\": \"{quoted_json_password}\"\n\"token\": \"{process_env_reference}\"",
+    },
     [
         {
             "filename": "example.py",
@@ -129,14 +151,15 @@ prompt = mod.build_prompt(
             "additions": 1,
             "deletions": 0,
             "changes": 1,
-            "patch": f"+token = '{secret_like}'\n+password={punctuation_password}\n+\"password\": \"{quoted_json_password}\"",
+            "patch": f"+token = '{secret_like}'\n+password={punctuation_password}\n+\"password\": \"{quoted_json_password}\"\n+\"password\": \"{apostrophe_password}\"\n+\"password\": \"{escaped_quote_password}\"\n+\"token\": \"{process_env_reference}\"",
         }
     ],
-    f"diff --git a/example.py b/example.py\n+++ b/example.py\n@@ -1,0 +1,4 @@\n+token = '{secret_like}'\n+OPENAI_API_KEY={openai_key}\n+PASSWORD={delimiter_password}\n+\"password\": \"{quoted_json_password}\"\n",
+    f"diff --git a/example.py b/example.py\n+++ b/example.py\n@@ -1,0 +1,6 @@\n+token = '{secret_like}'\n+OPENAI_API_KEY={openai_key}\n+PASSWORD={delimiter_password}\n+\"password\": \"{quoted_json_password}\"\n+\"password\": \"{escaped_quote_password}\"\n+\"token\": \"{process_env_reference}\"\n",
     config,
 )
-for leaked in ["sk_live_demo", "sk-or-v1", "sk-proj", punctuation_password, delimiter_password, quoted_json_password]:
+for leaked in ["sk_live_demo", "sk-or-v1", "sk-proj", punctuation_password, delimiter_password, quoted_json_password, apostrophe_password, escaped_quote_password, "tail-secret"]:
     assert leaked not in prompt, prompt
+assert process_env_reference in prompt, prompt
 assert "[redacted-secret]" in prompt
 
 comment = mod.build_inline_comment(
