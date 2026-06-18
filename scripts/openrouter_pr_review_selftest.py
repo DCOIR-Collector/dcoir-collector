@@ -99,6 +99,7 @@ set_cookie_secret = "refresh=refresh-cookie-secret-123456789; Path=/; HttpOnly"
 url_password = "url-password-123456789!"
 curl_password = "curl-password-123456789!"
 curl_spaced_password = "curl password secret 12345!"
+curl_fallback_expression = "${{ secrets.CURL_PASSWORD || 'fallback curl secret 12345' }}"
 netrc_password = "netrc-password-123456789!"
 signed_url_secret = "signed-url-secret-123456789abcdef"
 sas_secret = "azure-sas-secret-123456789abcdef"
@@ -171,6 +172,10 @@ assignment_text = "\n".join(
         f"curl -u'dcoir:{curl_spaced_password}' https://example.test/",
         f'curl --user "dcoir:{curl_spaced_password}" https://example.test/',
         f'curl --user="dcoir:{curl_spaced_password}" https://example.test/',
+        f"curl -u :{curl_fallback_expression} https://example.test/",
+        f"curl -u:{curl_fallback_expression} https://example.test/",
+        f"curl --user :{curl_fallback_expression} https://example.test/",
+        f"curl --user=:{curl_fallback_expression} https://example.test/",
         f"machine example.test login dcoir password {netrc_password}",
         f"DATABASE_URL=postgres://dcoir:{url_password}@db.example.test/dcoir",
         f"PACKAGE_URL=https://{openrouter_key}@packages.example.test/simple",
@@ -226,6 +231,7 @@ for leaked in [
     url_password,
     curl_password,
     curl_spaced_password,
+    "fallback curl secret",
     netrc_password,
     signed_url_secret,
     sas_secret,
@@ -297,6 +303,10 @@ curl_cases = {
     f"curl -u'dcoir:{curl_spaced_password}' https://example.test/": "curl -u'dcoir:[redacted-secret]' https://example.test/",
     f'curl --user "dcoir:{curl_spaced_password}" https://example.test/': 'curl --user "dcoir:[redacted-secret]" https://example.test/',
     f'curl --user="dcoir:{curl_spaced_password}" https://example.test/': 'curl --user="dcoir:[redacted-secret]" https://example.test/',
+    f"curl -u :{curl_fallback_expression} https://example.test/": "curl -u :[redacted-secret] https://example.test/",
+    f"curl -u:{curl_fallback_expression} https://example.test/": "curl -u:[redacted-secret] https://example.test/",
+    f"curl --user :{curl_fallback_expression} https://example.test/": "curl --user :[redacted-secret] https://example.test/",
+    f"curl --user=:{curl_fallback_expression} https://example.test/": "curl --user=:[redacted-secret] https://example.test/",
 }
 for curl_form, expected_curl in curl_cases.items():
     assert mod.sanitize_text(curl_form, config) == expected_curl
@@ -506,6 +516,7 @@ failure_reporter.fail(
             f"Authorization: Bearer {bearer_secret}",
             f"Cookie: {cookie_secret}",
             f"DATABASE_URL=postgres://dcoir:{url_password}@db.example.test/dcoir",
+            f"curl --user=:{curl_fallback_expression} https://example.test/",
             generic_signed_url,
             private_key_block,
             "Ask @codex to review this failure.",
@@ -513,7 +524,16 @@ failure_reporter.fail(
     )
 )
 failure_body = fake_gh.comments[-1]
-for leaked in [bearer_secret, "cookie-secret", url_password, signed_url_secret, "PRIVATE KEY", "private-key-secret-material", "@codex"]:
+for leaked in [
+    bearer_secret,
+    "cookie-secret",
+    url_password,
+    signed_url_secret,
+    "fallback curl secret",
+    "PRIVATE KEY",
+    "private-key-secret-material",
+    "@codex",
+]:
     assert leaked not in failure_body, failure_body
 assert "@<!-- -->codex" in failure_body
 assert "[redacted-secret]" in failure_body
