@@ -108,6 +108,7 @@ For governed PR readiness:
 - Valid Codi findings must be fixed and re-reviewed until Codi approves, the operator explicitly waives Codi for the current task, or a future durable instruction change removes or changes the Codi requirement.
 - Codi review comments related to code review in PRs or issues must have a raw comment body whose first non-blank line starts with `CODI FINDS`, then follow the closest practical `@codex` review/finding format used in this repository.
 - Codi approval is internal evidence only and does not replace external `@codex`.
+- After Prog/Adva and Codi are clear for a governed PR, the OpenRouter internal review command (`/or-review` or `/dcoir-review`) must be clear before the external `@codex` request when the gate applies. Required readback includes command comment id, eyes reaction lifecycle, workflow/run state, progress/status comment, PR review output, and valid finding disposition.
 - Before posting or confirming any PR comment that invokes the literal `@codex` handle and asks Codex to review, act, fix, patch, implement, update, or otherwise perform PR-related work, draft the exact comment text, show it to the operator, and receive explicit operator approval in the current session. No approval means no post.
 - External `@codex` requires a literal `@codex` top-level PR comment, comment-id capture, reaction polling, formal response readback, and finding disposition.
 - When citing prior Codex evidence in issue, PR, closure, or parent-tracker text, use non-triggering wording such as `External Codex review` unless the operator explicitly approves a live invocation.
@@ -152,7 +153,7 @@ When used, return:
 5. what was not checked
 6. GitHub work-item receipt status, if applicable
 7. Prog/Adva applicability and evidence, or reason not applicable
-8. Codi/internal review status and external `@codex` exact-text approval status, if applicable
+8. Codi/internal review status, OpenRouter internal review status, and external `@codex` exact-text approval status, if applicable
 9. pass, partial, gap, failed, stale, or not verified as supported by the governing surface
 10. one best next move
 
@@ -163,6 +164,7 @@ When used, return:
 - do not skip GitHub work-item receipt gateways for governed issue/PR work
 - do not claim Prog/Adva discipline is complete unless the implementation/fix scope, adversarial review result, and valid finding disposition are stated, or the pass is explicitly waived, unavailable, or not applicable
 - do not claim the Codi gate is clear unless Codi was actually asked and approved or the operator explicitly waived Codi for the task
+- do not claim the OpenRouter internal review gate is clear unless the command comment, eyes lifecycle, workflow/run state, PR review output, and finding disposition were read back, or the gate was explicitly waived/not applicable
 - do not post or confirm any external `@codex` PR review or action comment unless the operator approved the exact proposed comment text in the current session
 - do not claim the external `@codex` gate is clear until the formal response is read live and valid findings are fixed or dispositioned
 - do not treat skill wording as higher authority than Core Agent Instructions, repository `AGENTS.md`, or Supabase `ircore`
