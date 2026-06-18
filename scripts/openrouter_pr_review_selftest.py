@@ -90,9 +90,21 @@ double_quote_password = 'p@ss"word123!'
 escaped_quote_password = r'aaaaaaaa\"tail-secret'
 bearer_secret = "bearer-secret-123456789"
 basic_secret = "QmFzaWMtc2VjcmV0LTEyMzQ1Njc4OQ=="
+cookie_secret = "sessionid=cookie-secret-123456789; connect.sid=connect-secret-123456789; csrf=csrf-secret-123456789"
+set_cookie_secret = "refresh=refresh-cookie-secret-123456789; Path=/; HttpOnly"
 url_password = "url-password-123456789!"
 curl_password = "curl-password-123456789!"
 netrc_password = "netrc-password-123456789!"
+signed_url_secret = "signed-url-secret-123456789abcdef"
+sas_secret = "azure-sas-secret-123456789abcdef"
+private_key_block = "\n".join(
+    [
+        "-----BEGIN OPENSSH PRIVATE KEY-----",
+        "b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAlwAAAAdzc2gtcn",
+        "NhAAAAAwEAAQAAAIEAprivate-key-secret-material-123456789",
+        "-----END OPENSSH PRIVATE KEY-----",
+    ]
+)
 quoted_env_reference = "${OPENROUTER_API_KEY}"
 dollar_env_reference = "$DB_PASSWORD"
 process_env_reference = "process.env.TOKEN"
@@ -110,6 +122,9 @@ unsafe_method_concat = 'os.getenv("OPENROUTER_TOKEN").strip() + "actual-secret-7
 unsafe_shell_suffix = "${DB_PASSWORD}:actual-secret-000"
 unsafe_f_string = "f\"{os.getenv('OPENROUTER_TOKEN')}:actual-secret-abc\""
 github_secret_fallback = "${{ secrets.OPENROUTER_TOKEN || 'fallback-secret-456' }}"
+aws_signed_url = f"https://bucket.s3.amazonaws.com/object?X-Amz-Credential={openrouter_key}&X-Amz-Signature={signed_url_secret}&X-Amz-Expires=3600"
+azure_sas_url = f"https://account.blob.core.windows.net/container/blob?sv=2026-01-01&sp=r&sig={sas_secret}"
+generic_signed_url = f"https://example.test/webhook?sig={signed_url_secret}&token={openrouter_key}"
 assignment_text = "\n".join(
     [
         f"OPENROUTER_API_KEY={openrouter_key}",
@@ -121,12 +136,18 @@ assignment_text = "\n".join(
         f"api-key: {yaml_password}",
         f"Authorization: Bearer {bearer_secret}",
         f"Proxy-Authorization: Basic {basic_secret}",
+        f"Cookie: {cookie_secret}",
+        f"Set-Cookie: {set_cookie_secret}",
         f"X-Api-Key: {single_quoted_api_key}",
         f"curl -H \"Authorization: Bearer {bearer_secret}\" https://example.test/",
         f"curl -u dcoir:{curl_password} https://example.test/",
         f"machine example.test login dcoir password {netrc_password}",
         f"DATABASE_URL=postgres://dcoir:{url_password}@db.example.test/dcoir",
         f"PACKAGE_URL=https://{openrouter_key}@packages.example.test/simple",
+        aws_signed_url,
+        azure_sas_url,
+        generic_signed_url,
+        private_key_block,
         f'"password": "{quoted_json_password}"',
         f"'apiKey': '{single_quoted_api_key}'",
         f'"password": "{apostrophe_password}"',
@@ -167,9 +188,17 @@ for leaked in [
     escaped_quote_password,
     bearer_secret,
     basic_secret,
+    "cookie-secret",
+    "connect-secret",
+    "csrf-secret",
+    "refresh-cookie-secret",
     url_password,
     curl_password,
     netrc_password,
+    signed_url_secret,
+    sas_secret,
+    "PRIVATE KEY",
+    "private-key-secret-material",
     "tail-secret",
     unsafe_process_reference,
     unsafe_getenv_reference,
@@ -184,7 +213,7 @@ for leaked in [
     assert leaked not in assignment_redacted, assignment_redacted
 for preserved in [quoted_env_reference, dollar_env_reference, process_env_reference, github_secret_reference, exact_os_getenv_reference, exact_secrets_reference]:
     assert preserved in assignment_redacted, assignment_redacted
-assert assignment_redacted.count("[redacted-secret]") >= 24
+assert assignment_redacted.count("[redacted-secret]") >= 30
 
 safe_reference = mod.sanitize_text(
     'token = os.getenv("OPENROUTER_TOKEN")\npassword = process.env.DB_PASSWORD\napi_key=${OPENROUTER_API_KEY}\nsecret: ${{ secrets.OPENROUTER_TOKEN }}',
@@ -202,9 +231,12 @@ def fake_read_text(path: str, default: str = "") -> str:
         return "\n".join(
             [
                 f"Guidance bearer Authorization: Bearer {bearer_secret}",
+                f"Guidance cookie Cookie: {cookie_secret}",
                 f"Guidance URL postgres://dcoir:{url_password}@db.example.test/dcoir",
+                f"Guidance signed {aws_signed_url}",
                 f"Guidance token={unsafe_getenv_suffix}",
                 f"Guidance safe token: {github_secret_reference}",
+                private_key_block,
             ]
         )
     return original_read_text(path, default)
@@ -222,7 +254,10 @@ try:
                     f"OPENROUTER_API_KEY={openrouter_key}",
                     f'"password": "{quoted_json_password}"',
                     f"Authorization: Bearer {bearer_secret}",
+                    f"Cookie: {cookie_secret}",
                     f"DATABASE_URL=postgres://dcoir:{url_password}@db.example.test/dcoir",
+                    aws_signed_url,
+                    private_key_block,
                     f'"token": "{process_env_reference}"',
                     f'"password": "{unsafe_process_reference}"',
                     f"token={unsafe_getenv_default}",
@@ -241,7 +276,10 @@ try:
                         f"+token = '{secret_like}'",
                         f"+password={punctuation_password}",
                         f"+Authorization: Bearer {bearer_secret}",
+                        f"+Cookie: {cookie_secret}",
                         f"+DATABASE_URL=postgres://dcoir:{url_password}@db.example.test/dcoir",
+                        f"+SIGNED={generic_signed_url}",
+                        "+" + private_key_block.replace("\n", "\n+"),
                         f'+\"password\": \"{quoted_json_password}\"',
                         f'+\"password\": \"{apostrophe_password}\"',
                         f'+\"password\": \"{escaped_quote_password}\"',
@@ -258,12 +296,15 @@ try:
             [
                 "diff --git a/example.py b/example.py",
                 "+++ b/example.py",
-                "@@ -1,0 +1,11 @@",
+                "@@ -1,0 +1,14 @@",
                 f"+token = '{secret_like}'",
                 f"+OPENAI_API_KEY={openai_key}",
                 f"+PASSWORD={delimiter_password}",
                 f"+Authorization: Basic {basic_secret}",
+                f"+Set-Cookie: {set_cookie_secret}",
                 f"+NETRC machine example.test login dcoir password {netrc_password}",
+                f"+SIGNED {azure_sas_url}",
+                "+" + private_key_block.replace("\n", "\n+"),
                 f'+\"password\": \"{quoted_json_password}\"',
                 f'+\"password\": \"{escaped_quote_password}\"',
                 f'+\"token\": \"{process_env_reference}\"',
@@ -288,8 +329,16 @@ for leaked in [
     escaped_quote_password,
     bearer_secret,
     basic_secret,
+    "cookie-secret",
+    "connect-secret",
+    "csrf-secret",
+    "refresh-cookie-secret",
     url_password,
     netrc_password,
+    signed_url_secret,
+    sas_secret,
+    "PRIVATE KEY",
+    "private-key-secret-material",
     unsafe_process_reference,
     unsafe_getenv_suffix,
     unsafe_getenv_default,
@@ -304,16 +353,20 @@ assert github_secret_reference in prompt, prompt
 assert "[redacted-secret]" in prompt
 assert r"\"quoted-json-password" not in prompt, prompt
 assert r"bearer-secret" not in prompt, prompt
+assert r"cookie-secret" not in prompt, prompt
 
 truncation_config = replace(config, max_prompt_chars=420, guidance_files=[])
 truncated_prompt = mod.build_prompt(
-    {"number": 281, "title": "Boundary", "body": "A" * 320 + f" password={punctuation_password} " + "B" * 320},
+    {"number": 281, "title": "Boundary", "body": "A" * 320 + f" password={punctuation_password} " + private_key_block + "B" * 320},
     [],
-    f"diff --git a/t.py b/t.py\n+++ b/t.py\n@@ -1 +1 @@\n+Authorization: Bearer {bearer_secret}\n",
+    f"diff --git a/t.py b/t.py\n+++ b/t.py\n@@ -1 +1 @@\n+Authorization: Bearer {bearer_secret}\n+Cookie: {cookie_secret}\n+URL: {generic_signed_url}\n",
     truncation_config,
 )
 assert punctuation_password not in truncated_prompt, truncated_prompt
 assert bearer_secret not in truncated_prompt, truncated_prompt
+assert "cookie-secret" not in truncated_prompt, truncated_prompt
+assert signed_url_secret not in truncated_prompt, truncated_prompt
+assert "PRIVATE KEY" not in truncated_prompt, truncated_prompt
 assert len(truncated_prompt) <= truncation_config.max_prompt_chars + 40
 
 comment = mod.build_inline_comment(
