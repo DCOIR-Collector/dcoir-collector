@@ -109,6 +109,10 @@ curl_multiline_backtick_expression = "`printf multiline backtick curl secret 123
 curl_multiline_backtick_tail_expression = "`printf benign\nmultiline backtick tail secret 12345`"
 curl_unclosed_quoted_password = "top quoted secret 12345"
 curl_proxy_unclosed_quoted_password = "proxy top quoted secret 12345"
+curl_multiline_double_quote_password = "multiline double quoted tail secret 12345"
+curl_multiline_single_quote_password = "multiline single quoted tail secret 12345"
+curl_multiline_ansi_quote_password = "multiline ansi quoted tail secret 12345"
+curl_multiline_locale_quote_password = "multiline locale quoted tail secret 12345"
 curl_ansi_password = "ansi curl secret 12345"
 curl_locale_password = "locale curl secret 12345"
 curl_escaped_space_password = r"escaped\ curl\ secret\ 12345"
@@ -208,8 +212,10 @@ assignment_text = "\n".join(
         f"curl --proxy-user dcoir:{curl_backtick_expression} https://example.test/",
         f"curl --user=:{curl_multiline_backtick_expression} https://example.test/",
         f"curl --user=:{curl_multiline_backtick_tail_expression} https://example.test/",
-        f'curl --user="dcoir:{curl_unclosed_quoted_password} https://example.test/',
-        f"curl --proxy-user='proxy:{curl_proxy_unclosed_quoted_password} https://example.test/",
+        f'curl --user "dcoir:benign\n{curl_multiline_double_quote_password}" https://example.test/',
+        f"curl --proxy-user 'proxy:benign\n{curl_multiline_single_quote_password}' https://example.test/",
+        f"curl --user $'dcoir:benign\n{curl_multiline_ansi_quote_password}' https://example.test/",
+        f'curl --proxy-user $"proxy:benign\n{curl_multiline_locale_quote_password}" https://example.test/',
         f"curl -u $':{curl_ansi_password}' https://example.test/",
         f"curl -u$':{curl_ansi_password}' https://example.test/",
         f"curl --user $':{curl_ansi_password}' https://example.test/",
@@ -275,6 +281,8 @@ assignment_text = "\n".join(
         f"password={unsafe_shell_suffix}",
         f"token={unsafe_f_string}",
         f"token: {github_secret_fallback}",
+        f'curl --user="dcoir:{curl_unclosed_quoted_password} https://example.test/',
+        f"curl --proxy-user='proxy:{curl_proxy_unclosed_quoted_password} https://example.test/",
     ]
 )
 assignment_redacted = mod.sanitize_text(assignment_text, config)
@@ -310,6 +318,10 @@ for leaked in [
     "multiline backtick tail secret",
     curl_unclosed_quoted_password,
     curl_proxy_unclosed_quoted_password,
+    curl_multiline_double_quote_password,
+    curl_multiline_single_quote_password,
+    curl_multiline_ansi_quote_password,
+    curl_multiline_locale_quote_password,
     "ansi curl secret",
     "locale curl secret",
     r"escaped\ curl\ secret",
@@ -410,6 +422,10 @@ curl_cases = {
     f"curl --user=:{curl_multiline_backtick_tail_expression} https://example.test/": "curl --user=:[redacted-secret] https://example.test/",
     f'curl --user="dcoir:{curl_unclosed_quoted_password} https://example.test/': 'curl --user="dcoir:[redacted-secret]',
     f"curl --proxy-user='proxy:{curl_proxy_unclosed_quoted_password} https://example.test/": "curl --proxy-user='proxy:[redacted-secret]",
+    f'curl --user "dcoir:benign\n{curl_multiline_double_quote_password}" https://example.test/': 'curl --user "dcoir:[redacted-secret]" https://example.test/',
+    f"curl --proxy-user 'proxy:benign\n{curl_multiline_single_quote_password}' https://example.test/": "curl --proxy-user 'proxy:[redacted-secret]' https://example.test/",
+    f"curl --user $'dcoir:benign\n{curl_multiline_ansi_quote_password}' https://example.test/": "curl --user $'dcoir:[redacted-secret]' https://example.test/",
+    f'curl --proxy-user $"proxy:benign\n{curl_multiline_locale_quote_password}" https://example.test/': 'curl --proxy-user $"proxy:[redacted-secret]" https://example.test/',
     f"curl -u $':{curl_ansi_password}' https://example.test/": "curl -u $':[redacted-secret]' https://example.test/",
     f"curl -u$':{curl_ansi_password}' https://example.test/": "curl -u$':[redacted-secret]' https://example.test/",
     f"curl --user $':{curl_ansi_password}' https://example.test/": "curl --user $':[redacted-secret]' https://example.test/",
@@ -492,6 +508,7 @@ try:
                     f"Authorization: Bearer {bearer_secret}",
                     f"Cookie: {cookie_secret}",
                     f"DATABASE_URL=postgres://dcoir:{url_password}@db.example.test/dcoir",
+                    f'curl --user "dcoir:benign\n{curl_multiline_double_quote_password}" https://example.test/',
                     aws_signed_url,
                     private_key_block,
                     f'"token": "{process_env_reference}"',
@@ -515,6 +532,7 @@ try:
                         f"+Cookie: {cookie_secret}",
                         f'+headers = {{"Authorization": "Bearer {bearer_secret}", "Cookie": "{cookie_secret}"}}',
                         f"+DATABASE_URL=postgres://dcoir:{url_password}@db.example.test/dcoir",
+                        f'+curl --proxy-user "proxy:benign\n{curl_multiline_single_quote_password}" https://example.test/',
                         f"+SIGNED={generic_signed_url}",
                         "+" + private_key_block.replace("\n", "\n+"),
                         f'+\"password\": \"{quoted_json_password}\"',
@@ -571,6 +589,8 @@ for leaked in [
     "connect-secret",
     "csrf-secret",
     "refresh-cookie-secret",
+    curl_multiline_double_quote_password,
+    curl_multiline_single_quote_password,
     url_password,
     netrc_password,
     signed_url_secret,
@@ -661,8 +681,10 @@ failure_reporter.fail(
             f"curl --user=:{curl_backtick_expression} https://example.test/",
             f"curl --user=:{curl_multiline_backtick_expression} https://example.test/",
             f"curl --user=:{curl_multiline_backtick_tail_expression} https://example.test/",
-            f'curl --user="dcoir:{curl_unclosed_quoted_password} https://example.test/',
-            f"curl --proxy-user='proxy:{curl_proxy_unclosed_quoted_password} https://example.test/",
+            f'curl --user "dcoir:benign\n{curl_multiline_double_quote_password}" https://example.test/',
+            f"curl --proxy-user 'proxy:benign\n{curl_multiline_single_quote_password}' https://example.test/",
+            f"curl --user $'dcoir:benign\n{curl_multiline_ansi_quote_password}' https://example.test/",
+            f'curl --proxy-user $"proxy:benign\n{curl_multiline_locale_quote_password}" https://example.test/',
             f"curl --user=$':{curl_ansi_password}' https://example.test/",
             f'curl --user=$":{curl_locale_password}" https://example.test/',
             f"curl --user=:{curl_escaped_space_password} https://example.test/",
@@ -670,6 +692,8 @@ failure_reporter.fail(
             generic_signed_url,
             private_key_block,
             "Ask @codex to review this failure.",
+            f'curl --user="dcoir:{curl_unclosed_quoted_password} https://example.test/',
+            f"curl --proxy-user='proxy:{curl_proxy_unclosed_quoted_password} https://example.test/",
         ]
     )
 )
@@ -688,6 +712,10 @@ for leaked in [
     "multiline backtick tail secret",
     curl_unclosed_quoted_password,
     curl_proxy_unclosed_quoted_password,
+    curl_multiline_double_quote_password,
+    curl_multiline_single_quote_password,
+    curl_multiline_ansi_quote_password,
+    curl_multiline_locale_quote_password,
     "ansi curl secret",
     "locale curl secret",
     r"escaped\ curl\ secret",
