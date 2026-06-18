@@ -106,6 +106,9 @@ curl_inner_brace_expression = "${{ secrets.CURL_PASSWORD || 'fallback }} curl se
 curl_unclosed_expression = "${{ secrets.CURL_PASSWORD || 'unclosed curl secret 12345"
 curl_backtick_expression = "`printf backtick curl secret 12345`"
 curl_multiline_backtick_expression = "`printf multiline backtick curl secret 12345\n`"
+curl_multiline_backtick_tail_expression = "`printf benign\nmultiline backtick tail secret 12345`"
+curl_unclosed_quoted_password = "top quoted secret 12345"
+curl_proxy_unclosed_quoted_password = "proxy top quoted secret 12345"
 curl_ansi_password = "ansi curl secret 12345"
 curl_locale_password = "locale curl secret 12345"
 curl_escaped_space_password = r"escaped\ curl\ secret\ 12345"
@@ -204,6 +207,9 @@ assignment_text = "\n".join(
         f"curl --user=dcoir:{curl_backtick_expression} https://example.test/",
         f"curl --proxy-user dcoir:{curl_backtick_expression} https://example.test/",
         f"curl --user=:{curl_multiline_backtick_expression} https://example.test/",
+        f"curl --user=:{curl_multiline_backtick_tail_expression} https://example.test/",
+        f'curl --user="dcoir:{curl_unclosed_quoted_password} https://example.test/',
+        f"curl --proxy-user='proxy:{curl_proxy_unclosed_quoted_password} https://example.test/",
         f"curl -u $':{curl_ansi_password}' https://example.test/",
         f"curl -u$':{curl_ansi_password}' https://example.test/",
         f"curl --user $':{curl_ansi_password}' https://example.test/",
@@ -301,6 +307,9 @@ for leaked in [
     "unclosed curl secret",
     "backtick curl secret",
     "multiline backtick curl secret",
+    "multiline backtick tail secret",
+    curl_unclosed_quoted_password,
+    curl_proxy_unclosed_quoted_password,
     "ansi curl secret",
     "locale curl secret",
     r"escaped\ curl\ secret",
@@ -397,7 +406,10 @@ curl_cases = {
     f"curl --user dcoir:{curl_backtick_expression} https://example.test/": "curl --user dcoir:[redacted-secret] https://example.test/",
     f"curl --user=dcoir:{curl_backtick_expression} https://example.test/": "curl --user=dcoir:[redacted-secret] https://example.test/",
     f"curl --proxy-user dcoir:{curl_backtick_expression} https://example.test/": "curl --proxy-user dcoir:[redacted-secret] https://example.test/",
-    f"curl --user=:{curl_multiline_backtick_expression} https://example.test/": "curl --user=:[redacted-secret]\n` https://example.test/",
+    f"curl --user=:{curl_multiline_backtick_expression} https://example.test/": "curl --user=:[redacted-secret] https://example.test/",
+    f"curl --user=:{curl_multiline_backtick_tail_expression} https://example.test/": "curl --user=:[redacted-secret] https://example.test/",
+    f'curl --user="dcoir:{curl_unclosed_quoted_password} https://example.test/': 'curl --user="dcoir:[redacted-secret]',
+    f"curl --proxy-user='proxy:{curl_proxy_unclosed_quoted_password} https://example.test/": "curl --proxy-user='proxy:[redacted-secret]",
     f"curl -u $':{curl_ansi_password}' https://example.test/": "curl -u $':[redacted-secret]' https://example.test/",
     f"curl -u$':{curl_ansi_password}' https://example.test/": "curl -u$':[redacted-secret]' https://example.test/",
     f"curl --user $':{curl_ansi_password}' https://example.test/": "curl --user $':[redacted-secret]' https://example.test/",
@@ -648,6 +660,9 @@ failure_reporter.fail(
             f"curl --user=:{curl_unclosed_expression} https://example.test/",
             f"curl --user=:{curl_backtick_expression} https://example.test/",
             f"curl --user=:{curl_multiline_backtick_expression} https://example.test/",
+            f"curl --user=:{curl_multiline_backtick_tail_expression} https://example.test/",
+            f'curl --user="dcoir:{curl_unclosed_quoted_password} https://example.test/',
+            f"curl --proxy-user='proxy:{curl_proxy_unclosed_quoted_password} https://example.test/",
             f"curl --user=$':{curl_ansi_password}' https://example.test/",
             f'curl --user=$":{curl_locale_password}" https://example.test/',
             f"curl --user=:{curl_escaped_space_password} https://example.test/",
@@ -670,6 +685,9 @@ for leaked in [
     "unclosed curl secret",
     "backtick curl secret",
     "multiline backtick curl secret",
+    "multiline backtick tail secret",
+    curl_unclosed_quoted_password,
+    curl_proxy_unclosed_quoted_password,
     "ansi curl secret",
     "locale curl secret",
     r"escaped\ curl\ secret",
