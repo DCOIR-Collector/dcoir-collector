@@ -429,7 +429,7 @@ COOKIE_UNQUOTED_FIELD_START = re.compile(
 # Cookie pairs use name=value, so only colon-delimited object fields end inline cookies.
 OBJECT_FIELD_AFTER_COMMA = re.compile(r"""(?ix)^\s*[\"']?[A-Z0-9_\-]+[\"']?\s*:""")
 HEADER_VALUE_SCHEME = re.compile(r"(?is)^(?P<prefix>\s*(?:bearer|basic|token)\s+)(?P<secret>.+)$")
-CURL_USER_CREDENTIAL = re.compile(r"""(?ix)(?P<prefix>(?<!\S)(?:--user(?:\s+|=)|-u\s*))(?P<quote>[\"']?)(?P<user>[^:\s\"']+):(?P<password>[^\s\"']{4,})(?P=quote)""")
+CURL_USER_CREDENTIAL = re.compile(r"""(?ix)(?P<prefix>(?<!\S)(?:--user(?:\s+|=)|-u\s*))(?P<quote>[\"']?)(?P<user>[^:\s\"']*):(?P<password>[^\s\"']{4,})(?P=quote)""")
 NETRC_PASSWORD_CREDENTIAL = re.compile(r"(?i)\b(machine\s+\S+\s+login\s+\S+\s+password\s+)(\S{4,})")
 SECRET_QUOTED_ASSIGNMENT_START = re.compile(
     r"""(?ix)(?<![A-Z0-9_\-])(?P<key_quote>[\"']?)(?P<key>[A-Z0-9_\-]*(?:TOKEN|SECRET|PASSWORD|API[_-]?KEY)[A-Z0-9_\-]*)(?P=key_quote)(?P<sep>\s*[:=]\s*)(?P<value_prefix>[rubf]{0,2})(?P<value_quote>[\"'])"""
