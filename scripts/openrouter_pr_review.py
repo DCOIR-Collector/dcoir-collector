@@ -397,8 +397,19 @@ SECRET_QUOTED_ASSIGNMENT = re.compile(
     r"(?i)\b([A-Z0-9_\-]*(?:TOKEN|SECRET|PASSWORD|API[_-]?KEY)[A-Z0-9_\-]*)(\s*[:=]\s*)([\"'])([^\"'\r\n]{8,})([\"'])"
 )
 SECRET_UNQUOTED_ASSIGNMENT = re.compile(
-    r"(?i)\b([A-Z0-9_\-]*(?:TOKEN|SECRET|PASSWORD|API[_-]?KEY)[A-Z0-9_\-]*)(\s*[:=]\s*)([^\s\"'`,;.}{)(\[\]]{8,})"
+    r"(?i)\b([A-Z0-9_\-]*(?:TOKEN|SECRET|PASSWORD|API[_-]?KEY)[A-Z0-9_\-]*)(\s*[:=]\s*)([^\s\"']{8,})"
 )
+SAFE_UNQUOTED_REFERENCE = re.compile(
+    r"(?i)^(?:os\.getenv\(|os\.environ(?:\.get|\[|\b)|env\.get\(|getenv\(|process\.env(?:\.|\[|\b)|import\.meta\.env(?:\.|\[|\b)|secrets\.get\()"
+)
+ENV_REFERENCE = re.compile(r"^\$\{?[A-Za-z_][A-Za-z0-9_]*\}?$")
+
+
+def redact_unquoted_assignment(match: re.Match[str]) -> str:
+    value = match.group(3)
+    if SAFE_UNQUOTED_REFERENCE.match(value) or ENV_REFERENCE.fullmatch(value):
+        return match.group(0)
+    return f"{match.group(1)}{match.group(2)}{REDACTION}"
 
 
 def sanitize_text(text: str, config: Config) -> str:
@@ -406,7 +417,7 @@ def sanitize_text(text: str, config: Config) -> str:
         return text
     cleaned = text
     cleaned = SECRET_QUOTED_ASSIGNMENT.sub(lambda match: f"{match.group(1)}{match.group(2)}{match.group(3)}{REDACTION}{match.group(5)}", cleaned)
-    cleaned = SECRET_UNQUOTED_ASSIGNMENT.sub(lambda match: f"{match.group(1)}{match.group(2)}{REDACTION}", cleaned)
+    cleaned = SECRET_UNQUOTED_ASSIGNMENT.sub(redact_unquoted_assignment, cleaned)
     for pattern in SECRET_VALUE_PATTERNS:
         cleaned = pattern.sub(REDACTION, cleaned)
     return cleaned
