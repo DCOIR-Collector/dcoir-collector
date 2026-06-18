@@ -426,7 +426,8 @@ HEADER_FIELD_CREDENTIAL_START = re.compile(
 COOKIE_UNQUOTED_FIELD_START = re.compile(
     r"""(?ix)(?<![A-Z0-9_\-])(?P<name_quote>[\"']?)(?P<name>cookie|set-cookie)(?P=name_quote)(?P<sep>\s*[:=]\s*)(?!\s*[\"'])"""
 )
-OBJECT_FIELD_AFTER_COMMA = re.compile(r"""(?ix)^\s*[\"']?[A-Z0-9_\-]+[\"']?\s*[:=]""")
+# Cookie pairs use name=value, so only colon-delimited object fields end inline cookies.
+OBJECT_FIELD_AFTER_COMMA = re.compile(r"""(?ix)^\s*[\"']?[A-Z0-9_\-]+[\"']?\s*:""")
 HEADER_VALUE_SCHEME = re.compile(r"(?is)^(?P<prefix>\s*(?:bearer|basic|token)\s+)(?P<secret>.+)$")
 CURL_USER_CREDENTIAL = re.compile(r"""(?ix)(?P<prefix>(?<!\S)(?:--user(?:\s+|=)|-u\s*))(?P<quote>[\"']?)(?P<user>[^:\s\"']+):(?P<password>[^\s\"']{4,})(?P=quote)""")
 NETRC_PASSWORD_CREDENTIAL = re.compile(r"(?i)\b(machine\s+\S+\s+login\s+\S+\s+password\s+)(\S{4,})")
