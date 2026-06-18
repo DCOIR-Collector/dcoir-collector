@@ -75,6 +75,15 @@ redacted = mod.sanitize_text(f'token = "{secret_like}"', config)
 assert "sk_live_demo" not in redacted
 assert "[redacted-secret]" in redacted
 
+prompt = mod.build_prompt(
+    {"number": 281, "title": "Prompt redaction", "body": f"body token {secret_like}"},
+    [{"filename": "example.py", "status": "modified", "additions": 1, "deletions": 0, "changes": 1, "patch": f"+token = '{secret_like}'"}],
+    f"diff --git a/example.py b/example.py\n+++ b/example.py\n@@ -1,0 +1,1 @@\n+token = '{secret_like}'\n",
+    config,
+)
+assert "sk_live_demo" not in prompt
+assert "[redacted-secret]" in prompt
+
 comment = mod.build_inline_comment(
     {
         "title": "Hardcoded token",
