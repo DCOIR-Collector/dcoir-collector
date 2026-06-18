@@ -103,6 +103,7 @@ curl_fallback_expression = "${{ secrets.CURL_PASSWORD || 'fallback curl secret 1
 curl_backtick_expression = "`printf backtick curl secret 12345`"
 curl_ansi_password = "ansi curl secret 12345"
 curl_locale_password = "locale curl secret 12345"
+curl_escaped_space_password = r"escaped\ curl\ secret\ 12345"
 netrc_password = "netrc-password-123456789!"
 signed_url_secret = "signed-url-secret-123456789abcdef"
 sas_secret = "azure-sas-secret-123456789abcdef"
@@ -203,6 +204,14 @@ assignment_text = "\n".join(
         f'curl -u$"dcoir:{curl_locale_password}" https://example.test/',
         f'curl --user $"dcoir:{curl_locale_password}" https://example.test/',
         f'curl --user=$"dcoir:{curl_locale_password}" https://example.test/',
+        f"curl -u :{curl_escaped_space_password} https://example.test/",
+        f"curl -u:{curl_escaped_space_password} https://example.test/",
+        f"curl --user :{curl_escaped_space_password} https://example.test/",
+        f"curl --user=:{curl_escaped_space_password} https://example.test/",
+        f"curl -u dcoir:{curl_escaped_space_password} https://example.test/",
+        f"curl -udcoir:{curl_escaped_space_password} https://example.test/",
+        f"curl --user dcoir:{curl_escaped_space_password} https://example.test/",
+        f"curl --user=dcoir:{curl_escaped_space_password} https://example.test/",
         f"machine example.test login dcoir password {netrc_password}",
         f"DATABASE_URL=postgres://dcoir:{url_password}@db.example.test/dcoir",
         f"PACKAGE_URL=https://{openrouter_key}@packages.example.test/simple",
@@ -262,6 +271,7 @@ for leaked in [
     "backtick curl secret",
     "ansi curl secret",
     "locale curl secret",
+    r"escaped\ curl\ secret",
     netrc_password,
     signed_url_secret,
     sas_secret,
@@ -361,6 +371,14 @@ curl_cases = {
     f'curl -u$"dcoir:{curl_locale_password}" https://example.test/': 'curl -u$"dcoir:[redacted-secret]" https://example.test/',
     f'curl --user $"dcoir:{curl_locale_password}" https://example.test/': 'curl --user $"dcoir:[redacted-secret]" https://example.test/',
     f'curl --user=$"dcoir:{curl_locale_password}" https://example.test/': 'curl --user=$"dcoir:[redacted-secret]" https://example.test/',
+    f"curl -u :{curl_escaped_space_password} https://example.test/": "curl -u :[redacted-secret] https://example.test/",
+    f"curl -u:{curl_escaped_space_password} https://example.test/": "curl -u:[redacted-secret] https://example.test/",
+    f"curl --user :{curl_escaped_space_password} https://example.test/": "curl --user :[redacted-secret] https://example.test/",
+    f"curl --user=:{curl_escaped_space_password} https://example.test/": "curl --user=:[redacted-secret] https://example.test/",
+    f"curl -u dcoir:{curl_escaped_space_password} https://example.test/": "curl -u dcoir:[redacted-secret] https://example.test/",
+    f"curl -udcoir:{curl_escaped_space_password} https://example.test/": "curl -udcoir:[redacted-secret] https://example.test/",
+    f"curl --user dcoir:{curl_escaped_space_password} https://example.test/": "curl --user dcoir:[redacted-secret] https://example.test/",
+    f"curl --user=dcoir:{curl_escaped_space_password} https://example.test/": "curl --user=dcoir:[redacted-secret] https://example.test/",
 }
 for curl_form, expected_curl in curl_cases.items():
     assert mod.sanitize_text(curl_form, config) == expected_curl
@@ -574,6 +592,7 @@ failure_reporter.fail(
             f"curl --user=:{curl_backtick_expression} https://example.test/",
             f"curl --user=$':{curl_ansi_password}' https://example.test/",
             f'curl --user=$":{curl_locale_password}" https://example.test/',
+            f"curl --user=:{curl_escaped_space_password} https://example.test/",
             generic_signed_url,
             private_key_block,
             "Ask @codex to review this failure.",
@@ -590,6 +609,7 @@ for leaked in [
     "backtick curl secret",
     "ansi curl secret",
     "locale curl secret",
+    r"escaped\ curl\ secret",
     "PRIVATE KEY",
     "private-key-secret-material",
     "@codex",
