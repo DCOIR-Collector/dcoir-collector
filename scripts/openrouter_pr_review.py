@@ -386,6 +386,7 @@ def load_guidance(config: Config) -> str:
     return "\n\n".join(parts)
 
 
+PRIVATE_KEY_BLOCK = re.compile(r"-----BEGIN [A-Z0-9 ]*PRIVATE KEY-----.*?-----END [A-Z0-9 ]*PRIVATE KEY-----", re.IGNORECASE | re.DOTALL)
 SECRET_VALUE_PATTERNS = [
     re.compile(r"(?<![A-Za-z0-9_])sk-(?:or|proj|live|test)?-?[A-Za-z0-9][A-Za-z0-9_\-]{8,}", re.IGNORECASE),
     re.compile(r"(?<![A-Za-z0-9_])sk_[A-Za-z0-9_\-]{8,}", re.IGNORECASE),
@@ -397,8 +398,11 @@ URL_PASSWORD_CREDENTIAL = re.compile(r"(?i)\b([a-z][a-z0-9+.-]*://)([^/\s:@?#]*)
 URL_TOKEN_CREDENTIAL = re.compile(
     r"(?i)\b([a-z][a-z0-9+.-]*://)((?:gh[pousr]_|github_pat_|sk-(?:or|proj|live|test)?-?)[^@\s/]+)@"
 )
+SIGNED_URL_QUERY_CREDENTIAL = re.compile(
+    r"(?i)([?&](?:x-amz-signature|x-amz-credential|x-amz-security-token|awsaccesskeyid|signature|sig|sas|se|sp|sv|sr|spr|st|skoid|sktid|skt|ske|sks|skv|token|access_token|refresh_token|sessiontoken|session_token)=)([^&#\s\"']+)"
+)
 HEADER_CREDENTIAL = re.compile(
-    r"""(?ix)\b(?P<name>(?:proxy-)?authorization|x-api-key|api-key|x-auth-token|x-access-token)(?P<sep>\s*[:=]\s*)(?P<quote>[\"']?)(?:(?P<scheme>bearer|basic|token)\s+)?(?P<value>[^\"'\r\n]+?)(?P=quote)(?=\s|$|[\"',;)])"""
+    r"""(?ix)\b(?P<name>(?:proxy-)?authorization|x-api-key|api-key|x-auth-token|x-access-token|cookie|set-cookie)(?P<sep>\s*[:=]\s*)(?P<quote>[\"']?)(?:(?P<scheme>bearer|basic|token)\s+)?(?P<value>[^\"'\r\n]+)(?P=quote)(?=$|[\"',;)])"""
 )
 CURL_USER_CREDENTIAL = re.compile(r"""(?ix)(?P<prefix>\b(?:-u|--user)\s+)(?P<quote>[\"']?)(?P<user>[^:\s\"']+):(?P<password>[^\s\"']{4,})(?P=quote)""")
 NETRC_PASSWORD_CREDENTIAL = re.compile(r"(?i)\b(machine\s+\S+\s+login\s+\S+\s+password\s+)(\S{4,})")
@@ -467,9 +471,14 @@ def find_quoted_value_end(text: str, start: int, quote: str) -> int:
     return -1
 
 
+def redact_private_key_blocks(text: str) -> str:
+    return PRIVATE_KEY_BLOCK.sub(REDACTION, text)
+
+
 def redact_url_credentials(text: str) -> str:
     cleaned = URL_PASSWORD_CREDENTIAL.sub(lambda match: f"{match.group(1)}{match.group(2)}:{REDACTION}@", text)
-    return URL_TOKEN_CREDENTIAL.sub(lambda match: f"{match.group(1)}{REDACTION}@", cleaned)
+    cleaned = URL_TOKEN_CREDENTIAL.sub(lambda match: f"{match.group(1)}{REDACTION}@", cleaned)
+    return SIGNED_URL_QUERY_CREDENTIAL.sub(lambda match: f"{match.group(1)}{REDACTION}", cleaned)
 
 
 def redact_header_credential(match: re.Match[str]) -> str:
@@ -516,6 +525,7 @@ def sanitize_text(text: str, config: Config) -> str:
     if not config.redact_secret_literals:
         return text
     cleaned = text
+    cleaned = redact_private_key_blocks(cleaned)
     cleaned = redact_url_credentials(cleaned)
     cleaned = HEADER_CREDENTIAL.sub(redact_header_credential, cleaned)
     cleaned = CURL_USER_CREDENTIAL.sub(redact_curl_user_credential, cleaned)
