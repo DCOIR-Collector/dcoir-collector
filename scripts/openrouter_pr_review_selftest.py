@@ -75,13 +75,26 @@ redacted = mod.sanitize_text(f'token = "{secret_like}"', config)
 assert "sk_live_demo" not in redacted
 assert "[redacted-secret]" in redacted
 
+openrouter_key = "sk-or-v1-" + "a" * 32
+openai_key = "sk-proj-" + "b" * 32
+password_value = "supersecretvalue12345"
+assignment_text = f"OPENROUTER_API_KEY={openrouter_key}\nOPENAI_API_KEY={openai_key}\npassword={password_value}"
+assignment_redacted = mod.sanitize_text(assignment_text, config)
+assert "sk-or-v1" not in assignment_redacted
+assert "sk-proj" not in assignment_redacted
+assert password_value not in assignment_redacted
+assert assignment_redacted.count("[redacted-secret]") >= 3
+
 prompt = mod.build_prompt(
-    {"number": 281, "title": "Prompt redaction", "body": f"body token {secret_like}"},
-    [{"filename": "example.py", "status": "modified", "additions": 1, "deletions": 0, "changes": 1, "patch": f"+token = '{secret_like}'"}],
-    f"diff --git a/example.py b/example.py\n+++ b/example.py\n@@ -1,0 +1,1 @@\n+token = '{secret_like}'\n",
+    {"number": 281, "title": "Prompt redaction", "body": f"body token {secret_like}\nOPENROUTER_API_KEY={openrouter_key}"},
+    [{"filename": "example.py", "status": "modified", "additions": 1, "deletions": 0, "changes": 1, "patch": f"+token = '{secret_like}'\n+password={password_value}"}],
+    f"diff --git a/example.py b/example.py\n+++ b/example.py\n@@ -1,0 +1,2 @@\n+token = '{secret_like}'\n+OPENAI_API_KEY={openai_key}\n",
     config,
 )
 assert "sk_live_demo" not in prompt
+assert "sk-or-v1" not in prompt
+assert "sk-proj" not in prompt
+assert password_value not in prompt
 assert "[redacted-secret]" in prompt
 
 comment = mod.build_inline_comment(
@@ -89,7 +102,7 @@ comment = mod.build_inline_comment(
         "title": "Hardcoded token",
         "severity": "critical",
         "confidence": 1.0,
-        "body": f'The changed line assigns token = "{secret_like}".',
+        "body": f'The changed line assigns token = "{secret_like}" and password={password_value}.',
         "suggested_replacement": 'token = os.getenv("OPENROUTER_TOKEN")',
         "validation": "bash scripts/validate-codex-local.sh",
     },
@@ -98,6 +111,8 @@ comment = mod.build_inline_comment(
 )
 assert "Confidence:" not in comment
 assert "sk_live_demo" not in comment
+assert password_value not in comment
+assert "os.getenv" in comment
 assert "Model: `openrouter/free`" in comment
 
 err = mod.parse_openrouter_error('{"error":{"message":"Provider returned error","metadata":{"provider_name":"Venice","retry_after_seconds":21}}}')
@@ -105,6 +120,6 @@ assert err["provider"] == "Venice"
 assert err["retry_after"] == 21
 
 assert mod.is_safe_suggestion('token = os.getenv("OPENROUTER_TOKEN")')
-assert not mod.is_safe_suggestion('Use environment variables for secrets.')
+assert not mod.is_safe_suggestion("Use environment variables for secrets.")
 
 print("offline selftest passed")
