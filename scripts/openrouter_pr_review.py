@@ -393,37 +393,61 @@ SECRET_VALUE_PATTERNS = [
     re.compile(r"github_pat_[A-Za-z0-9_]{20,}"),
     re.compile(r"AKIA[0-9A-Z]{16}"),
 ]
+URL_PASSWORD_CREDENTIAL = re.compile(r"(?i)\b([a-z][a-z0-9+.-]*://)([^/\s:@?#]*):([^@\s/]+)@")
+URL_TOKEN_CREDENTIAL = re.compile(
+    r"(?i)\b([a-z][a-z0-9+.-]*://)((?:gh[pousr]_|github_pat_|sk-(?:or|proj|live|test)?-?)[^@\s/]+)@"
+)
+HEADER_CREDENTIAL = re.compile(
+    r"""(?ix)\b(?P<name>(?:proxy-)?authorization|x-api-key|api-key|x-auth-token|x-access-token)(?P<sep>\s*[:=]\s*)(?P<quote>[\"']?)(?:(?P<scheme>bearer|basic|token)\s+)?(?P<value>[^\"'\r\n]+?)(?P=quote)(?=\s|$|[\"',;)])"""
+)
+CURL_USER_CREDENTIAL = re.compile(r"""(?ix)(?P<prefix>\b(?:-u|--user)\s+)(?P<quote>[\"']?)(?P<user>[^:\s\"']+):(?P<password>[^\s\"']{4,})(?P=quote)""")
+NETRC_PASSWORD_CREDENTIAL = re.compile(r"(?i)\b(machine\s+\S+\s+login\s+\S+\s+password\s+)(\S{4,})")
 SECRET_QUOTED_ASSIGNMENT_START = re.compile(
-    r"""(?ix)(?<![A-Z0-9_\-])(?P<key_quote>[\"']?)(?P<key>[A-Z0-9_\-]*(?:TOKEN|SECRET|PASSWORD|API[_-]?KEY)[A-Z0-9_\-]*)(?P=key_quote)(?P<sep>\s*[:=]\s*)(?P<value_quote>[\"'])"""
+    r"""(?ix)(?<![A-Z0-9_\-])(?P<key_quote>[\"']?)(?P<key>[A-Z0-9_\-]*(?:TOKEN|SECRET|PASSWORD|API[_-]?KEY)[A-Z0-9_\-]*)(?P=key_quote)(?P<sep>\s*[:=]\s*)(?P<value_prefix>[rubf]{0,2})(?P<value_quote>[\"'])"""
 )
 SECRET_UNQUOTED_ASSIGNMENT = re.compile(
-    r"(?i)\b([A-Z0-9_\-]*(?:TOKEN|SECRET|PASSWORD|API[_-]?KEY)[A-Z0-9_\-]*)(\s*[:=]\s*)([^\s\"']{8,})"
+    r"""(?ix)
+    (?P<prefix>(?<![A-Z0-9_\-])(?P<key_quote>[\"']?)(?P<key>[A-Z0-9_\-]*(?:TOKEN|SECRET|PASSWORD|API[_-]?KEY)[A-Z0-9_\-]*)(?P=key_quote)(?P<sep>\s*[:=]\s*))
+    (?P<value>
+        \$\{\{[^\r\n]*\}\}
+        | os\.getenv\([^\r\n]*?\)[^\r\n]*
+        | os\.environ\.get\([^\r\n]*?\)[^\r\n]*
+        | os\.environ\[[^\r\n]*?\][^\r\n]*
+        | os\.environ\b[^\r\n]*
+        | env\.get\([^\r\n]*?\)[^\r\n]*
+        | getenv\([^\r\n]*?\)[^\r\n]*
+        | process\.env[^\r\n]*
+        | import\.meta\.env[^\r\n]*
+        | secrets\.get\([^\r\n]*?\)[^\r\n]*
+        | [^\s\"']{8,}
+    )"""
 )
-SAFE_REFERENCE_PREFIX = re.compile(
-    r"(?i)^(?:os\.getenv\(|os\.environ(?:\.get|\[|\b)|env\.get\(|getenv\(|process\.env(?:\.|\[|\b)|import\.meta\.env(?:\.|\[|\b)|secrets\.get\()"
-)
-SAFE_QUOTED_REFERENCE = re.compile(
+SAFE_REFERENCE = re.compile(
     r"""(?ix)^(?:
-    os\.getenv\(\s*[\"'][A-Z_][A-Z0-9_]*[\"']\s*(?:,\s*[\"'][^\"'\r\n]*[\"']\s*)?\)
-    | os\.environ(?:\.get\(\s*[\"'][A-Z_][A-Z0-9_]*[\"']\s*(?:,\s*[\"'][^\"'\r\n]*[\"']\s*)?\)|\[\s*[\"'][A-Z_][A-Z0-9_]*[\"']\s*\])
-    | env\.get\(\s*[\"'][A-Z_][A-Z0-9_]*[\"']\s*(?:,\s*[\"'][^\"'\r\n]*[\"']\s*)?\)
-    | getenv\(\s*[\"'][A-Z_][A-Z0-9_]*[\"']\s*(?:,\s*[\"'][^\"'\r\n]*[\"']\s*)?\)
+    os\.getenv\(\s*[\"'][A-Z_][A-Z0-9_]*[\"']\s*\)
+    | os\.environ(?:\.get\(\s*[\"'][A-Z_][A-Z0-9_]*[\"']\s*\)|\[\s*[\"'][A-Z_][A-Z0-9_]*[\"']\s*\])
+    | env\.get\(\s*[\"'][A-Z_][A-Z0-9_]*[\"']\s*\)
+    | getenv\(\s*[\"'][A-Z_][A-Z0-9_]*[\"']\s*\)
     | process\.env(?:\.[A-Z_][A-Z0-9_]*|\[\s*[\"'][A-Z_][A-Z0-9_]*[\"']\s*\])
     | import\.meta\.env(?:\.[A-Z_][A-Z0-9_]*|\[\s*[\"'][A-Z_][A-Z0-9_]*[\"']\s*\])
     | secrets\.get\(\s*[\"'][A-Z_][A-Z0-9_]*[\"']\s*\)
+    | \$\{\{\s*(?:secrets|env|vars)\.[A-Z_][A-Z0-9_]*\s*\}\}
 )$"""
 )
-ENV_REFERENCE = re.compile(r"^\$\{?[A-Za-z_][A-Za-z0-9_]*\}?$")
+ENV_REFERENCE = re.compile(r"^(?:\$[A-Za-z_][A-Za-z0-9_]*|\$\{[A-Za-z_][A-Za-z0-9_]*\})$")
+
+
+def is_safe_reference(value: str) -> bool:
+    stripped = value.strip()
+    return bool(SAFE_REFERENCE.fullmatch(stripped) or ENV_REFERENCE.fullmatch(stripped))
 
 
 def is_safe_unquoted_reference(value: str) -> bool:
-    stripped = value.strip()
-    return bool(SAFE_REFERENCE_PREFIX.match(stripped) or ENV_REFERENCE.fullmatch(stripped))
+    return is_safe_reference(value)
 
 
 def is_safe_quoted_reference(value: str) -> bool:
-    stripped = value.strip()
-    return bool(SAFE_QUOTED_REFERENCE.fullmatch(stripped) or ENV_REFERENCE.fullmatch(stripped))
+    return is_safe_reference(value)
 
 
 def find_quoted_value_end(text: str, start: int, quote: str) -> int:
@@ -441,6 +465,24 @@ def find_quoted_value_end(text: str, start: int, quote: str) -> int:
         if char in {"\r", "\n"}:
             return -1
     return -1
+
+
+def redact_url_credentials(text: str) -> str:
+    cleaned = URL_PASSWORD_CREDENTIAL.sub(lambda match: f"{match.group(1)}{match.group(2)}:{REDACTION}@", text)
+    return URL_TOKEN_CREDENTIAL.sub(lambda match: f"{match.group(1)}{REDACTION}@", cleaned)
+
+
+def redact_header_credential(match: re.Match[str]) -> str:
+    value = match.group("value").strip()
+    if is_safe_reference(value):
+        return match.group(0)
+    scheme = match.group("scheme")
+    scheme_prefix = f"{scheme} " if scheme else ""
+    return f"{match.group('name')}{match.group('sep')}{match.group('quote')}{scheme_prefix}{REDACTION}{match.group('quote')}"
+
+
+def redact_curl_user_credential(match: re.Match[str]) -> str:
+    return f"{match.group('prefix')}{match.group('quote')}{match.group('user')}:{REDACTION}{match.group('quote')}"
 
 
 def redact_quoted_assignments(text: str) -> str:
@@ -464,16 +506,20 @@ def redact_quoted_assignments(text: str) -> str:
 
 
 def redact_unquoted_assignment(match: re.Match[str]) -> str:
-    value = match.group(3)
+    value = match.group("value")
     if is_safe_unquoted_reference(value):
         return match.group(0)
-    return f"{match.group(1)}{match.group(2)}{REDACTION}"
+    return f"{match.group('prefix')}{REDACTION}"
 
 
 def sanitize_text(text: str, config: Config) -> str:
     if not config.redact_secret_literals:
         return text
     cleaned = text
+    cleaned = redact_url_credentials(cleaned)
+    cleaned = HEADER_CREDENTIAL.sub(redact_header_credential, cleaned)
+    cleaned = CURL_USER_CREDENTIAL.sub(redact_curl_user_credential, cleaned)
+    cleaned = NETRC_PASSWORD_CREDENTIAL.sub(lambda match: f"{match.group(1)}{REDACTION}", cleaned)
     cleaned = redact_quoted_assignments(cleaned)
     cleaned = SECRET_UNQUOTED_ASSIGNMENT.sub(redact_unquoted_assignment, cleaned)
     for pattern in SECRET_VALUE_PATTERNS:
@@ -481,38 +527,42 @@ def sanitize_text(text: str, config: Config) -> str:
     return cleaned
 
 
+def sanitized_prompt_value(value: Any, config: Config) -> str:
+    return sanitize_text(str(value or ""), config)
+
+
 def build_prompt(pr: dict[str, Any], files: list[dict[str, Any]], diff: str, config: Config) -> str:
-    guidance = load_guidance(config)
+    guidance = sanitize_text(load_guidance(config), config)
     changed_files = []
     for item in files[: config.max_files]:
         changed_files.append(
             {
-                "filename": item.get("filename"),
-                "status": item.get("status"),
+                "filename": sanitized_prompt_value(item.get("filename"), config),
+                "status": sanitized_prompt_value(item.get("status"), config),
                 "additions": item.get("additions"),
                 "deletions": item.get("deletions"),
                 "changes": item.get("changes"),
-                "patch": item.get("patch", ""),
+                "patch": sanitized_prompt_value(item.get("patch", ""), config),
             }
         )
     content = f"""
-Repository: {os.environ.get('GITHUB_REPOSITORY', '')}
+Repository: {sanitize_text(os.environ.get('GITHUB_REPOSITORY', ''), config)}
 PR number: {pr.get('number')}
-PR title: {pr.get('title')}
+PR title: {sanitized_prompt_value(pr.get('title'), config)}
 PR body:
-{pr.get('body') or ''}
+{sanitized_prompt_value(pr.get('body'), config)}
 
 Trusted repository guidance:
 {guidance}
 
 Preferred validation commands:
-{json.dumps(config.validation_commands, indent=2)}
+{json.dumps([sanitize_text(str(command), config) for command in config.validation_commands], indent=2)}
 
 Changed file summary:
 {json.dumps(changed_files, indent=2)}
 
 Unified diff:
-{extract_relevant_file_patches(diff, config.max_files)}
+{sanitize_text(extract_relevant_file_patches(diff, config.max_files), config)}
 
 Review task:
 Find only high-signal issues in the PR diff. For each finding, give the exact changed file path and right-side line number. Provide a suggested_replacement only when a small GitHub suggestion block would be safe and likely to apply cleanly. Include validation commands that should pass after the fix.
