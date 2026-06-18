@@ -496,6 +496,27 @@ def find_quoted_value_end(text: str, start: int, quote: str) -> int:
     return -1
 
 
+def find_curl_quoted_value_end(text: str, start: int, quote: str) -> int:
+    escaped = False
+    line_start = start
+    for index in range(start, len(text)):
+        char = text[index]
+        if escaped:
+            escaped = False
+            continue
+        if char == "\\":
+            escaped = True
+            continue
+        if char in {"\r", "\n"}:
+            line_start = index + 1
+            continue
+        if char == quote:
+            if line_start > start and CURL_USER_OPTION.search(text[line_start:index]):
+                return -1
+            return index
+    return -1
+
+
 def redact_private_key_blocks(text: str) -> str:
     return PRIVATE_KEY_BLOCK.sub(REDACTION, text)
 
@@ -663,9 +684,9 @@ def find_unquoted_curl_credential_end(text: str, start: int) -> int:
             index = expression_end + 1
             continue
         if text[index] == "$" and index + 1 < len(text) and text[index + 1] in {"\"", "'"}:
-            expression_end = find_quoted_value_end(text, index + 2, text[index + 1])
+            expression_end = find_curl_quoted_value_end(text, index + 2, text[index + 1])
             if expression_end < 0:
-                return find_curl_credential_line_end(text, index)
+                return len(text)
             index = expression_end + 1
             continue
         if text[index] == "`":
@@ -678,9 +699,9 @@ def find_unquoted_curl_credential_end(text: str, start: int) -> int:
             index += 2
             continue
         if text[index] in {"\"", "'"}:
-            expression_end = find_quoted_value_end(text, index + 1, text[index])
+            expression_end = find_curl_quoted_value_end(text, index + 1, text[index])
             if expression_end < 0:
-                return find_curl_credential_line_end(text, index)
+                return len(text)
             index = expression_end + 1
             continue
         if text[index] in {"\r", "\n", "\t", " ", "\"", "'"}:
@@ -755,9 +776,9 @@ def redact_curl_user_credentials(text: str) -> str:
             quote = text[value_start] if text[value_start] in {"\"", "'"} else ""
         if quote:
             credential_start = value_start + quote_prefix_length + 1
-            credential_end = find_quoted_value_end(text, credential_start, quote)
+            credential_end = find_curl_quoted_value_end(text, credential_start, quote)
             if credential_end < 0:
-                credential_end = find_curl_credential_line_end(text, credential_start)
+                credential_end = len(text)
             credential = text[credential_start:credential_end]
         else:
             credential_start = value_start
