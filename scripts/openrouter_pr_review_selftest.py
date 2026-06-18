@@ -154,6 +154,7 @@ assignment_text = "\n".join(
         f'"Set-Cookie": f"{set_cookie_secret}"',
         f'"X-Api-Key": "token {single_quoted_api_key}"',
         f"curl -H \"Authorization: Bearer {bearer_secret}\" https://example.test/",
+        f"curl -udcoir:{curl_password} https://example.test/",
         f"curl -u dcoir:{curl_password} https://example.test/",
         f"curl --user dcoir:{curl_password} https://example.test/",
         f"curl --user=dcoir:{curl_password} https://example.test/",
@@ -234,28 +235,29 @@ assert assignment_redacted.count("[redacted-secret]") >= 35
 for safe_header in [
     '"Authorization": "Bearer ${OPENROUTER_API_KEY}"',
     'Authorization: "Bearer ${OPENROUTER_API_KEY}"',
+    'headers = { Authorization: "Bearer ${OPENROUTER_API_KEY}" }',
 ]:
     assert mod.sanitize_text(safe_header, config) == safe_header
-for unsafe_header in [
-    f'"Authorization": "Bearer {bearer_secret}"',
-    f'Authorization: "Bearer {bearer_secret}"',
-    f'Authorization: Bearer {bearer_secret}',
-    f'headers = {{ Authorization: "Bearer {bearer_secret}" }}',
-    f'headers = {{ Cookie: "{cookie_secret}" }}',
-]:
-    header_redacted = mod.sanitize_text(unsafe_header, config)
-    assert bearer_secret not in header_redacted, header_redacted
-    assert "cookie-secret" not in header_redacted, header_redacted
-    assert "[redacted-secret]" in header_redacted, header_redacted
-for curl_form in [
-    f"curl -u user:{curl_password} https://example.test/",
-    f"curl --user user:{curl_password} https://example.test/",
-    f"curl --user=user:{curl_password} https://example.test/",
-]:
-    curl_redacted = mod.sanitize_text(curl_form, config)
-    assert curl_password not in curl_redacted, curl_redacted
-    assert "user:[redacted-secret]" in curl_redacted, curl_redacted
-
+header_cases = {
+    f'"Authorization": "Bearer {bearer_secret}"': '"Authorization": "Bearer [redacted-secret]"',
+    f'Authorization: "Bearer {bearer_secret}"': 'Authorization: "Bearer [redacted-secret]"',
+    f'Authorization: Bearer {bearer_secret}': 'Authorization: Bearer [redacted-secret]',
+    f'headers = {{ Authorization: "Bearer {bearer_secret}" }}': 'headers = { Authorization: "Bearer [redacted-secret]" }',
+    f'headers = {{ Cookie: "{cookie_secret}" }}': 'headers = { Cookie: "[redacted-secret]" }',
+    f'headers = {{ Authorization: Bearer {bearer_secret}, X-Trace: "keep-me" }}': 'headers = { Authorization: Bearer [redacted-secret], X-Trace: "keep-me" }',
+    f'headers = {{ Authorization: Bearer {bearer_secret} }}': 'headers = { Authorization: Bearer [redacted-secret] }',
+    f'Authorization: Bearer {bearer_secret}\nnext: field': 'Authorization: Bearer [redacted-secret]\nnext: field',
+}
+for unsafe_header, expected_header in header_cases.items():
+    assert mod.sanitize_text(unsafe_header, config) == expected_header
+curl_cases = {
+    f"curl -uuser:{curl_password} https://example.test/": "curl -uuser:[redacted-secret] https://example.test/",
+    f"curl -u user:{curl_password} https://example.test/": "curl -u user:[redacted-secret] https://example.test/",
+    f"curl --user user:{curl_password} https://example.test/": "curl --user user:[redacted-secret] https://example.test/",
+    f"curl --user=user:{curl_password} https://example.test/": "curl --user=user:[redacted-secret] https://example.test/",
+}
+for curl_form, expected_curl in curl_cases.items():
+    assert mod.sanitize_text(curl_form, config) == expected_curl
 safe_reference = mod.sanitize_text(
     'token = os.getenv("OPENROUTER_TOKEN")\npassword = process.env.DB_PASSWORD\napi_key=${OPENROUTER_API_KEY}\nsecret: ${{ secrets.OPENROUTER_TOKEN }}',
     config,
