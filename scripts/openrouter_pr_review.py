@@ -25,6 +25,12 @@ GITHUB_API = "https://api.github.com"
 OPENROUTER_API = "https://openrouter.ai/api/v1/chat/completions"
 MARKER = "<!-- openrouter-pr-review -->"
 REDACTION = "[redacted-secret]"
+GITHUB_MENTION = re.compile(
+    r"(?<![A-Za-z0-9_.+-])@(?P<mention>[A-Za-z0-9](?:[A-Za-z0-9-]{0,38}[A-Za-z0-9])?(?:/[A-Za-z0-9](?:[A-Za-z0-9-]{0,38}[A-Za-z0-9])?)?)(?=$|[^A-Za-z0-9_/-])"
+)
+CODEX_TRIGGER_MENTION = re.compile(
+    r"(?<![A-Za-z0-9_.+-])@(?P<mention>codex|chatgpt-codex-connector)(?=$|[^A-Za-z0-9_-])", re.IGNORECASE
+)
 
 
 @dataclass
@@ -238,7 +244,7 @@ def emit_status(stage: str, message: str) -> None:
 def matching_command(body: str, commands: list[str]) -> str | None:
     first_line = body.strip().splitlines()[0].strip() if body.strip() else ""
     for command in commands:
-        if first_line == command or first_line.startswith(command + " "):
+        if re.fullmatch(rf"{re.escape(command)}(?:\s+.*)?", first_line):
             return command
     return None
 
@@ -253,6 +259,14 @@ def provider_slug(name: str) -> str:
 
 def model_stack_label(config: Config) -> str:
     return ", ".join(config.model_stack)
+
+
+def neutralize_github_mentions(text: str) -> str:
+    return GITHUB_MENTION.sub(lambda match: f"@<!-- -->{match.group('mention')}", text)
+
+
+def neutralize_codex_trigger_mentions(text: str) -> str:
+    return CODEX_TRIGGER_MENTION.sub(lambda match: f"@<!-- -->{match.group('mention')}", text)
 
 
 class ProgressReporter:
@@ -293,7 +307,8 @@ class ProgressReporter:
         )
 
     def fail(self, message: str) -> None:
-        self._record("failed", message[:500])
+        safe_message = sanitize_github_output(message, self.config)
+        self._record("failed", safe_message[:500])
         self._update_comment(
             self._body(
                 "failed",
@@ -301,7 +316,7 @@ class ProgressReporter:
                     "- Result: review failed before a usable PR review could be posted.",
                     "",
                     "```text",
-                    message[:4000],
+                    safe_message[:4000],
                     "```",
                 ],
             ),
@@ -309,8 +324,9 @@ class ProgressReporter:
         )
 
     def _record(self, stage: str, message: str) -> None:
-        self.steps.append((stage, message))
-        emit_status(stage, message)
+        safe_message = sanitize_github_output(message, self.config)
+        self.steps.append((stage, safe_message))
+        emit_status(stage, safe_message)
 
     def _body(self, state: str, final_lines: list[str] | None = None) -> str:
         lines = [
@@ -404,6 +420,10 @@ SIGNED_URL_QUERY_CREDENTIAL = re.compile(
 HEADER_CREDENTIAL = re.compile(
     r"""(?ix)\b(?P<name>(?:proxy-)?authorization|x-api-key|api-key|x-auth-token|x-access-token|cookie|set-cookie)(?P<sep>\s*[:=]\s*)(?P<quote>[\"']?)(?:(?P<scheme>bearer|basic|token)\s+)?(?P<value>[^\"'\r\n]+)(?P=quote)(?=$|[\"',;)])"""
 )
+HEADER_FIELD_CREDENTIAL_START = re.compile(
+    r"""(?ix)(?<![A-Z0-9_\-])(?P<name_quote>[\"'])(?P<name>(?:proxy-)?authorization|x-api-key|api-key|x-auth-token|x-access-token|cookie|set-cookie)(?P=name_quote)(?P<sep>\s*[:=]\s*)(?P<value_prefix>[rubf]{0,2})(?P<value_quote>[\"'])"""
+)
+HEADER_VALUE_SCHEME = re.compile(r"(?is)^(?P<prefix>\s*(?:bearer|basic|token)\s+)(?P<secret>.+)$")
 CURL_USER_CREDENTIAL = re.compile(r"""(?ix)(?P<prefix>\b(?:-u|--user)\s+)(?P<quote>[\"']?)(?P<user>[^:\s\"']+):(?P<password>[^\s\"']{4,})(?P=quote)""")
 NETRC_PASSWORD_CREDENTIAL = re.compile(r"(?i)\b(machine\s+\S+\s+login\s+\S+\s+password\s+)(\S{4,})")
 SECRET_QUOTED_ASSIGNMENT_START = re.compile(
@@ -490,6 +510,32 @@ def redact_header_credential(match: re.Match[str]) -> str:
     return f"{match.group('name')}{match.group('sep')}{match.group('quote')}{scheme_prefix}{REDACTION}{match.group('quote')}"
 
 
+def redact_header_field_credentials(text: str) -> str:
+    result: list[str] = []
+    cursor = 0
+    for match in HEADER_FIELD_CREDENTIAL_START.finditer(text):
+        if match.start() < cursor:
+            continue
+        value_start = match.end()
+        value_end = find_quoted_value_end(text, value_start, match.group("value_quote"))
+        if value_end < 0:
+            continue
+        value = text[value_start:value_end]
+        scheme_match = HEADER_VALUE_SCHEME.fullmatch(value)
+        if is_safe_reference(value.strip()) or (scheme_match and is_safe_reference(scheme_match.group("secret").strip())):
+            continue
+        result.append(text[cursor:value_start])
+        if scheme_match:
+            result.append(f"{scheme_match.group('prefix')}{REDACTION}")
+        else:
+            result.append(REDACTION)
+        cursor = value_end
+    if not result:
+        return text
+    result.append(text[cursor:])
+    return "".join(result)
+
+
 def redact_curl_user_credential(match: re.Match[str]) -> str:
     return f"{match.group('prefix')}{match.group('quote')}{match.group('user')}:{REDACTION}{match.group('quote')}"
 
@@ -528,6 +574,7 @@ def sanitize_text(text: str, config: Config) -> str:
     cleaned = redact_private_key_blocks(cleaned)
     cleaned = redact_url_credentials(cleaned)
     cleaned = HEADER_CREDENTIAL.sub(redact_header_credential, cleaned)
+    cleaned = redact_header_field_credentials(cleaned)
     cleaned = CURL_USER_CREDENTIAL.sub(redact_curl_user_credential, cleaned)
     cleaned = NETRC_PASSWORD_CREDENTIAL.sub(lambda match: f"{match.group(1)}{REDACTION}", cleaned)
     cleaned = redact_quoted_assignments(cleaned)
@@ -535,6 +582,13 @@ def sanitize_text(text: str, config: Config) -> str:
     for pattern in SECRET_VALUE_PATTERNS:
         cleaned = pattern.sub(REDACTION, cleaned)
     return cleaned
+
+
+def sanitize_github_output(text: str, config: Config, neutralize_mentions: bool = True) -> str:
+    cleaned = sanitize_text(text, config)
+    if neutralize_mentions:
+        return neutralize_github_mentions(cleaned)
+    return neutralize_codex_trigger_mentions(cleaned)
 
 
 def sanitized_prompt_value(value: Any, config: Config) -> str:
@@ -739,12 +793,12 @@ def is_safe_suggestion(suggestion: str) -> bool:
 
 
 def build_inline_comment(finding: dict[str, Any], model_used: str, config: Config) -> str:
-    title = sanitize_text(str(finding.get("title", "Finding")).strip(), config)
+    title = sanitize_github_output(str(finding.get("title", "Finding")).strip(), config)
     severity = str(finding.get("severity", "medium")).upper()
     confidence = float(finding.get("confidence", 0))
-    body = sanitize_text(str(finding.get("body", "")).strip(), config)
-    validation = sanitize_text(str(finding.get("validation", "")).strip(), config)
-    suggestion = sanitize_text(str(finding.get("suggested_replacement", "")).rstrip(), config)
+    body = sanitize_github_output(str(finding.get("body", "")).strip(), config)
+    validation = sanitize_github_output(str(finding.get("validation", "")).strip(), config)
+    suggestion = sanitize_github_output(str(finding.get("suggested_replacement", "")).rstrip(), config, neutralize_mentions=False)
     parts = [f"**{severity}: {title}**", "", body]
     if config.include_confidence:
         parts.extend(["", f"Confidence: `{confidence:.2f}`"])
@@ -762,7 +816,7 @@ def build_inline_comment(finding: dict[str, Any], model_used: str, config: Confi
 def build_review_body(result: dict[str, Any], findings: list[dict[str, Any]], model_used: str, config: Config) -> str:
     if findings and not config.post_summary_when_findings:
         return MARKER
-    summary = sanitize_text(str(result.get("summary", "OpenRouter review completed.")).strip(), config)
+    summary = sanitize_github_output(str(result.get("summary", "OpenRouter review completed.")).strip(), config)
     event_text = "Review posted with inline findings." if findings else "No high-confidence inline findings were found in the changed diff."
     return github_safe_body(
         f"""{MARKER}
@@ -843,13 +897,14 @@ def main() -> None:
         gh.create_review(pr_number, review_body, event, comments, str(pr.get("head", {}).get("sha", "")))
         reporter.complete(model_used, len(comments), event)
     except Exception as exc:
-        reporter.fail(str(exc))
+        safe_error = sanitize_github_output(str(exc), config)
+        reporter.fail(safe_error)
         if not config.post_progress_comment:
             error_body = f"""{MARKER}
 OpenRouter PR review failed.
 
 ```text
-{str(exc)[:4000]}
+{safe_error[:4000]}
 ```
 """.strip()
             try:
