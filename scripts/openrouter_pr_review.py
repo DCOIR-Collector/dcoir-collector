@@ -441,6 +441,7 @@ Unified diff:
 Review task:
 Find only high-signal issues in the PR diff. For each finding, give the exact changed file path and right-side line number. Provide a suggested_replacement only when a small GitHub suggestion block would be safe and likely to apply cleanly. Include validation commands that should pass after the fix.
 """.strip()
+    content = sanitize_text(content, config)
     if len(content) > config.max_prompt_chars:
         content = content[: config.max_prompt_chars] + "\n\n[context truncated by reviewer]"
     return content
