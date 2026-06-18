@@ -5,10 +5,16 @@
 commands:
   - /or-review
   - /openrouter-review
+  - /dcoir-review
 
 # Use the free router for first-pass testing. OpenRouter may select different
 # free models over time. After validation, switch this to a paid model slug.
 model: openrouter/free
+
+# Try models in order. Keep the first entry aligned with `model` for backward
+# compatibility with older script versions and self-tests.
+model_stack:
+  - openrouter/free
 
 # Optional paid candidates for later:
 # model: anthropic/claude-sonnet-4.5
@@ -35,6 +41,11 @@ redact_secret_literals: true
 # 429/5xx failures and skip a provider that reports rate limiting during retry.
 openrouter_max_attempts: 4
 openrouter_retry_max_seconds: 45
+
+# Keep this lower than the workflow timeout so the script can remove the eyes
+# reaction and update the progress comment with a visible failure.
+script_timeout_seconds: 1500
+post_progress_comment: true
 
 # Optional provider denylist. Leave empty by default; the script also adds
 # temporarily failing providers to the retry ignore list automatically.
