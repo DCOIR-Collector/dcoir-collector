@@ -600,9 +600,63 @@ def redact_header_field_credentials(text: str) -> str:
 
 def find_unquoted_curl_credential_end(text: str, start: int) -> int:
     index = start
-    while index < len(text) and text[index] not in {"\r", "\n", "\t", " ", "\"", "'"}:
+    while index < len(text):
+        if text.startswith("${{", index):
+            expression_end = text.find("}}", index + 3)
+            if expression_end < 0:
+                return index
+            index = expression_end + 2
+            continue
+        if text.startswith("${", index):
+            expression_end = text.find("}", index + 2)
+            if expression_end < 0:
+                return index
+            index = expression_end + 1
+            continue
+        if text.startswith("$(", index):
+            expression_end = find_command_substitution_end(text, index + 2)
+            if expression_end < 0:
+                return index
+            index = expression_end + 1
+            continue
+        if text[index] in {"\r", "\n", "\t", " ", "\"", "'"}:
+            return index
         index += 1
     return index
+
+
+def find_command_substitution_end(text: str, start: int) -> int:
+    depth = 1
+    quote = ""
+    escaped = False
+    index = start
+    while index < len(text):
+        char = text[index]
+        if escaped:
+            escaped = False
+            index += 1
+            continue
+        if quote:
+            if char == "\\":
+                escaped = True
+            elif char == quote:
+                quote = ""
+            index += 1
+            continue
+        if char in {"\"", "'"}:
+            quote = char
+            index += 1
+            continue
+        if text.startswith("$(", index):
+            depth += 1
+            index += 2
+            continue
+        if char == ")":
+            depth -= 1
+            if depth == 0:
+                return index
+        index += 1
+    return -1
 
 
 def redact_curl_user_credentials(text: str) -> str:
