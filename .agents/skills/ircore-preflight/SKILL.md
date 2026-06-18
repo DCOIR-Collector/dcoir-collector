@@ -142,6 +142,7 @@ For PR-related code, workflow, or governed-source changes:
 - Valid Codi findings must be fixed and re-reviewed until Codi approves, the operator explicitly waives Codi for the current task, or a future durable instruction change removes or changes the Codi requirement.
 - Codi review comments related to code review in PRs or issues must have a raw comment body whose first non-blank line starts with `CODI FINDS`, then follow the closest practical `@codex` review/finding format used in this repository.
 - Codi approval does not replace Prog, Adva, external `@codex`, GitHub Actions, live GitHub readback, or Supabase receipts.
+- After Prog/Adva and Codi are clear for a governed PR, the OpenRouter internal review command (`/or-review` or `/dcoir-review`) is the next review-assist gate before any external `@codex` review request, when the workflow exists, local validation has passed, and the operator-approved lane is at that step. Read back the command comment id, eyes reaction lifecycle, workflow/run state, progress/status comment, PR review output, and finding disposition.
 - Before posting or confirming any PR comment that invokes the literal `@codex` handle and asks Codex to review, act, fix, patch, implement, update, or otherwise perform PR-related work, draft the exact comment text, show it to the operator, and receive explicit operator approval in the current session. No approval means no post.
 - When citing prior Codex evidence in issue, PR, closure, or parent-tracker text, use non-triggering wording such as `External Codex review` unless the operator explicitly approves a live invocation.
 
@@ -197,6 +198,7 @@ When used, return a compact preflight with:
 - do not skip GitHub work-item receipt gateways for governed issue/PR work
 - do not treat Prog or Adva as operator-triggered only for non-trivial governed work
 - do not skip Codi review before the external `@codex` PR request unless the operator explicitly waived Codi for the current task
+- do not skip the OpenRouter internal review command gate before the external `@codex` PR request when it applies and has not been explicitly waived for the current task
 - do not post or confirm any external `@codex` PR review or action comment unless the operator approved the exact proposed comment text in the current session
 - do not use direct agent-instruction updates unless explicitly approved for the current task
 - do not treat skill wording as higher authority than Core Agent Instructions, repository `AGENTS.md`, or Supabase `ircore`
