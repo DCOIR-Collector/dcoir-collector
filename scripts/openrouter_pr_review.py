@@ -429,7 +429,7 @@ COOKIE_UNQUOTED_FIELD_START = re.compile(
 # Cookie pairs use name=value, so only colon-delimited object fields end inline cookies.
 OBJECT_FIELD_AFTER_COMMA = re.compile(r"""(?ix)^\s*[\"']?[A-Z0-9_\-]+[\"']?\s*:""")
 HEADER_VALUE_SCHEME = re.compile(r"(?is)^(?P<prefix>\s*(?:bearer|basic|token)\s+)(?P<secret>.+)$")
-CURL_USER_OPTION = re.compile(r"""(?ix)(?P<prefix>(?<!\S)(?:--user(?:\s+|=)|-u\s*))""")
+CURL_USER_OPTION = re.compile(r"""(?ix)(?P<prefix>(?<!\S)(?:--(?:proxy-)?user(?:\s+|=)|-u\s*))""")
 NETRC_PASSWORD_CREDENTIAL = re.compile(r"(?i)\b(machine\s+\S+\s+login\s+\S+\s+password\s+)(\S{4,})")
 SECRET_QUOTED_ASSIGNMENT_START = re.compile(
     r"""(?ix)(?<![A-Z0-9_\-])(?P<key_quote>[\"']?)(?P<key>[A-Z0-9_\-]*(?:TOKEN|SECRET|PASSWORD|API[_-]?KEY)[A-Z0-9_\-]*)(?P=key_quote)(?P<sep>\s*[:=]\s*)(?P<value_prefix>[rubf]{0,2})(?P<value_quote>[\"'])"""
@@ -598,37 +598,80 @@ def redact_header_field_credentials(text: str) -> str:
     return "".join(result)
 
 
+def find_curl_credential_line_end(text: str, start: int) -> int:
+    line_end = len(text)
+    for newline in ("\r", "\n"):
+        position = text.find(newline, start)
+        if position >= 0:
+            line_end = min(line_end, position)
+    return line_end
+
+
+def find_github_expression_end(text: str, start: int) -> int:
+    quote = ""
+    escaped = False
+    index = start
+    while index < len(text):
+        char = text[index]
+        if escaped:
+            escaped = False
+            index += 1
+            continue
+        if quote:
+            if char == "\\":
+                escaped = True
+            elif quote == "'" and char == "'" and index + 1 < len(text) and text[index + 1] == "'":
+                index += 2
+                continue
+            elif char == quote:
+                quote = ""
+            elif char in {"\r", "\n"}:
+                return -1
+            index += 1
+            continue
+        if char in {"\"", "'"}:
+            quote = char
+            index += 1
+            continue
+        if text.startswith("}}", index):
+            return index + 2
+        if char in {"\r", "\n"}:
+            return -1
+        index += 1
+    return -1
+
+
 def find_unquoted_curl_credential_end(text: str, start: int) -> int:
     index = start
     while index < len(text):
         if text.startswith("${{", index):
-            expression_end = text.find("}}", index + 3)
+            expression_end = find_github_expression_end(text, index + 3)
             if expression_end < 0:
-                return index
-            index = expression_end + 2
+                return find_curl_credential_line_end(text, index)
+            index = expression_end
             continue
         if text.startswith("${", index):
             expression_end = text.find("}", index + 2)
             if expression_end < 0:
-                return index
+                return find_curl_credential_line_end(text, index)
             index = expression_end + 1
             continue
         if text.startswith("$(", index):
             expression_end = find_command_substitution_end(text, index + 2)
             if expression_end < 0:
-                return index
+                return find_curl_credential_line_end(text, index)
             index = expression_end + 1
             continue
         if text[index] == "$" and index + 1 < len(text) and text[index + 1] in {"\"", "'"}:
             expression_end = find_quoted_value_end(text, index + 2, text[index + 1])
             if expression_end < 0:
-                return index
+                return find_curl_credential_line_end(text, index)
             index = expression_end + 1
             continue
         if text[index] == "`":
             expression_end = find_backtick_substitution_end(text, index + 1)
             if expression_end < 0:
-                return index
+                return find_curl_credential_line_end(text, index)
             index = expression_end + 1
             continue
         if text[index] == "\\" and index + 1 < len(text):
@@ -637,7 +680,7 @@ def find_unquoted_curl_credential_end(text: str, start: int) -> int:
         if text[index] in {"\"", "'"}:
             expression_end = find_quoted_value_end(text, index + 1, text[index])
             if expression_end < 0:
-                return index
+                return find_curl_credential_line_end(text, index)
             index = expression_end + 1
             continue
         if text[index] in {"\r", "\n", "\t", " ", "\"", "'"}:
