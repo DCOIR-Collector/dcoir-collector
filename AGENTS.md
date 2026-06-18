@@ -184,8 +184,9 @@ and reads back the workflow run results through the GitHub API.
 
 For internal review passes, Replit Agent performs `Prog` and `Adva` passes
 internally and invokes its `code_review` subagent when an independent
-adversarial review is warranted. The Codi gate before external `@codex` review
-applies on PRs unless the operator explicitly waives it for the current task.
+adversarial review is warranted. The Codi and OpenRouter internal review gates
+before external `@codex` review apply on PRs unless the operator explicitly
+waives them for the current task.
 
 
 
@@ -353,9 +354,10 @@ codex-pr-finish -b <pr-branch-name> -m "Address PR review comments"
 * Fix valid Codi and Adva findings and repeat the review loop until both approve, the operator explicitly waives the remaining gate for the current task, or a future durable instruction change removes or changes the requirement.
 * Require Codi review comments related to code review in PRs or issues to have a raw comment body whose first non-blank line starts with `CODI FINDS`, then follow the closest practical `@codex` review/finding format used in this repository.
 * Treat Codi and Adva approval as internal review evidence only. It does not replace Prog, GitHub Actions, Supabase work-item receipts, live GitHub readback, operator approval, or the external `@codex` review response.
+* After Prog/Adva and Codi are clear for a governed PR, run the configured OpenRouter internal review command (`/or-review` or `/dcoir-review`) as a single top-level PR comment before drafting or posting the external review request, when the OpenRouter workflow exists on the branch and local validation has passed. Capture the command comment id, eyes reaction lifecycle, workflow/run readback, progress/status comment, and PR review output; fix or explicitly disposition valid findings and repeat the gate when material fixes change the reviewed scope. Do not post the OpenRouter command until the operator-approved lane is at the review-command step.
 * When a governed workflow liveness check uses Gmail, use the human-facing search label `label:GitHub`; connector metadata and returned message labels may show the same mailbox label as `Label_125`. Treat Gmail as an early signal only, and use request-scoped heartbeat files, workflow reports, status summaries, and artifacts as execution evidence.
 * Every repeated `@codex` review request in the same PR thread must use varied wording instead of reusing one exact sentence, regardless of whether the PR is still draft or ready to move from draft to ready.
-* Before moving a governed draft PR to ready, complete Prog/Adva and Codi gates unless explicitly waived for the task, then draft the exact top-level PR comment that explicitly invokes `@codex`, show it to the operator, receive approval in the current session, post only after approval, read the formal `@codex` response live, and disposition valid findings.
+* Before moving a governed draft PR to ready, complete Prog/Adva, Codi, and OpenRouter internal review gates unless explicitly waived for the task, then draft the exact top-level PR comment that explicitly invokes `@codex`, show it to the operator, receive approval in the current session, post only after approval, read the formal `@codex` response live, and disposition valid findings.
 * After making code changes or commits that attempt to resolve an actionable PR review conversation, or after reasonably dismissing an actionable PR review comment with documented rationale, add a non-triggering follow-up reply in that review conversation that states the resolving commit SHA(s) or dismissal rationale, then resolve the GitHub review thread through the GitHub connector. Use the same process for actionable Codi, Adva, or Prog review conversations that require code changes. Do not include the literal `@codex` handle in the follow-up reply, and do not resolve conversations that remain unaddressed or disputed.
 * If the operator approves an external `@codex` fix request, include exact scope, files, ordered instructions, and a direct instruction to finish with `codex-pr-finish -m "Address PR review comments"` when a push back to the PR branch is expected.
 
