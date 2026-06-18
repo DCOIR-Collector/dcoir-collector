@@ -112,11 +112,11 @@ assignment_text = "\n".join(
         f'"apiKey": "{quoted_env_reference}"',
         f'"password": "{dollar_env_reference}"',
         f'"token": "{process_env_reference}"',
-        f'"token": "{exact_os_getenv_reference}"',
-        f'"secret": "{exact_secrets_reference}"',
+        f'"token": \'{exact_os_getenv_reference}\'',
+        f'"secret": \'{exact_secrets_reference}\'',
         f'"password": "{unsafe_process_reference}"',
-        f'"token": "{unsafe_getenv_reference}"',
-        f'"secret": "{unsafe_secrets_reference}"',
+        f'"token": \'{unsafe_getenv_reference}\'',
+        f'"secret": \'{unsafe_secrets_reference}\'',
     ]
 )
 assignment_redacted = mod.sanitize_text(assignment_text, config)
