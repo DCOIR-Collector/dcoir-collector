@@ -158,6 +158,10 @@ assignment_text = "\n".join(
         f"curl -u dcoir:{curl_password} https://example.test/",
         f"curl --user dcoir:{curl_password} https://example.test/",
         f"curl --user=dcoir:{curl_password} https://example.test/",
+        f"curl -u :{curl_password} https://example.test/",
+        f"curl -u:{curl_password} https://example.test/",
+        f"curl --user :{curl_password} https://example.test/",
+        f"curl --user=:{curl_password} https://example.test/",
         f"machine example.test login dcoir password {netrc_password}",
         f"DATABASE_URL=postgres://dcoir:{url_password}@db.example.test/dcoir",
         f"PACKAGE_URL=https://{openrouter_key}@packages.example.test/simple",
@@ -271,6 +275,10 @@ curl_cases = {
     f"curl -u user:{curl_password} https://example.test/": "curl -u user:[redacted-secret] https://example.test/",
     f"curl --user user:{curl_password} https://example.test/": "curl --user user:[redacted-secret] https://example.test/",
     f"curl --user=user:{curl_password} https://example.test/": "curl --user=user:[redacted-secret] https://example.test/",
+    f"curl -u :{curl_password} https://example.test/": "curl -u :[redacted-secret] https://example.test/",
+    f"curl -u:{curl_password} https://example.test/": "curl -u:[redacted-secret] https://example.test/",
+    f"curl --user :{curl_password} https://example.test/": "curl --user :[redacted-secret] https://example.test/",
+    f"curl --user=:{curl_password} https://example.test/": "curl --user=:[redacted-secret] https://example.test/",
 }
 for curl_form, expected_curl in curl_cases.items():
     assert mod.sanitize_text(curl_form, config) == expected_curl
