@@ -514,17 +514,39 @@ def redact_header_credential(match: re.Match[str]) -> str:
     return f"{match.group('name_quote')}{match.group('name')}{match.group('name_quote')}{match.group('sep')}{match.group('quote')}{scheme_prefix}{REDACTION}{match.group('quote')}"
 
 
-def find_unquoted_cookie_value_end(text: str, start: int) -> int:
-    for index in range(start, len(text)):
+def is_inline_object_cookie_context(text: str, field_start: int) -> bool:
+    line_start = text.rfind("\n", 0, field_start) + 1
+    last_open = max(text.rfind("{", line_start, field_start), text.rfind("[", line_start, field_start))
+    if last_open < 0:
+        return False
+    last_close = max(text.rfind("}", line_start, field_start), text.rfind("]", line_start, field_start))
+    return last_close < last_open
+
+
+def find_unquoted_cookie_value_end(text: str, start: int, inline_object: bool) -> int:
+    interpolation_depth = 0
+    index = start
+    while index < len(text):
         char = text[index]
-        if char in {"\r", "\n", "]"}:
+        if char == "$" and index + 1 < len(text) and text[index + 1] == "{":
+            if index + 2 < len(text) and text[index + 2] == "{":
+                interpolation_depth += 2
+                index += 3
+            else:
+                interpolation_depth += 1
+                index += 2
+            continue
+        if char == "}" and interpolation_depth:
+            interpolation_depth -= 1
+            index += 1
+            continue
+        if char in {"\r", "\n"}:
             return index
-        if char == "}":
-            if "${" in text[start : index + 1]:
-                continue
+        if inline_object and char in {"}", "]"}:
             return index
-        if char == "," and OBJECT_FIELD_AFTER_COMMA.match(text[index + 1 :]):
+        if inline_object and char == "," and OBJECT_FIELD_AFTER_COMMA.match(text[index + 1 :]):
             return index
+        index += 1
     return len(text)
 
 
@@ -535,7 +557,8 @@ def redact_unquoted_cookie_credentials(text: str) -> str:
         if match.start() < cursor:
             continue
         value_start = match.end()
-        value_end = find_unquoted_cookie_value_end(text, value_start)
+        inline_object = is_inline_object_cookie_context(text, match.start())
+        value_end = find_unquoted_cookie_value_end(text, value_start, inline_object)
         value = text[value_start:value_end].strip()
         if not value or value == REDACTION or is_safe_reference(value):
             continue
