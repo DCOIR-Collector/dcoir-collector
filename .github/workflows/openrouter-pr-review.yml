@@ -9,7 +9,7 @@
 # - Do not use for automatic PR gating, required checks, untrusted authors, or broad workflow mutation.
 # - Do not use in place of governed Prog, Adva, Codi, external Codex, or GitHub Actions review gates.
 # Trigger model:
-# - issue_comment created; job guard requires a PR comment, non-bot malwaredevil author, and approved command prefix.
+# - issue_comment created; job guard requires a PR comment from non-bot malwaredevil. The Python script accepts only exact approved commands on the first nonblank line.
 # Required inputs:
 # - PR issue number and trigger comment metadata from github.event.
 # Required secrets/config:
@@ -52,12 +52,7 @@ jobs:
       ${{
         github.event.issue.pull_request &&
         github.event.comment.user.type != 'Bot' &&
-        github.event.comment.user.login == 'malwaredevil' &&
-        (
-          startsWith(github.event.comment.body, '/or-review') ||
-          startsWith(github.event.comment.body, '/openrouter-review') ||
-          startsWith(github.event.comment.body, '/dcoir-review')
-        )
+        github.event.comment.user.login == 'malwaredevil'
       }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
