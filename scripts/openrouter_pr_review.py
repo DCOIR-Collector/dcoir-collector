@@ -418,14 +418,15 @@ SIGNED_URL_QUERY_CREDENTIAL = re.compile(
     r"(?i)([?&](?:x-amz-signature|x-amz-credential|x-amz-security-token|awsaccesskeyid|signature|sig|sas|se|sp|sv|sr|spr|st|skoid|sktid|skt|ske|sks|skv|token|access_token|refresh_token|sessiontoken|session_token)=)([^&#\s\"']+)"
 )
 HEADER_CREDENTIAL = re.compile(
-    r"""(?ix)(?<![A-Z0-9_\-])(?P<name_quote>[\"']?)(?P<name>(?:proxy-)?authorization|x-api-key|api-key|x-auth-token|x-access-token|cookie|set-cookie)(?P=name_quote)(?P<sep>\s*[:=]\s*)(?P<quote>[\"']?)(?:(?P<scheme>bearer|basic|token)\s+)?(?P<value>[^\"'\s,;)}\r\n]+)(?P=quote)(?=$|[\s\r\n\"',;)}])"""
+    r"""(?ix)(?<![A-Z0-9_\-])(?P<name_quote>[\"']?)(?P<name>(?:proxy-)?authorization|x-api-key|api-key|x-auth-token|x-access-token)(?P=name_quote)(?P<sep>\s*[:=]\s*)(?P<quote>[\"']?)(?:(?P<scheme>bearer|basic|token)\s+)?(?P<value>[^\"'\s,;)}\r\n]+)(?P=quote)(?=$|[\s\r\n\"',;)}])"""
 )
 HEADER_FIELD_CREDENTIAL_START = re.compile(
     r"""(?ix)(?<![A-Z0-9_\-])(?P<name_quote>[\"']?)(?P<name>(?:proxy-)?authorization|x-api-key|api-key|x-auth-token|x-access-token|cookie|set-cookie)(?P=name_quote)(?P<sep>\s*[:=]\s*)(?P<value_prefix>[rubf]{0,2})(?P<value_quote>[\"'])"""
 )
-COOKIE_LINE_CREDENTIAL = re.compile(
-    r"""(?ix)(?<![A-Z0-9_\-])(?P<name_quote>[\"']?)(?P<name>cookie|set-cookie)(?P=name_quote)(?P<sep>\s*[:=]\s*)(?![\"'])(?P<value>[^\r\n]+)"""
+COOKIE_UNQUOTED_FIELD_START = re.compile(
+    r"""(?ix)(?<![A-Z0-9_\-])(?P<name_quote>[\"']?)(?P<name>cookie|set-cookie)(?P=name_quote)(?P<sep>\s*[:=]\s*)(?!\s*[\"'])"""
 )
+OBJECT_FIELD_AFTER_COMMA = re.compile(r"""(?ix)^\s*[\"']?[A-Z0-9_\-]+[\"']?\s*[:=]""")
 HEADER_VALUE_SCHEME = re.compile(r"(?is)^(?P<prefix>\s*(?:bearer|basic|token)\s+)(?P<secret>.+)$")
 CURL_USER_CREDENTIAL = re.compile(r"""(?ix)(?P<prefix>(?<!\S)(?:--user(?:\s+|=)|-u\s*))(?P<quote>[\"']?)(?P<user>[^:\s\"']+):(?P<password>[^\s\"']{4,})(?P=quote)""")
 NETRC_PASSWORD_CREDENTIAL = re.compile(r"(?i)\b(machine\s+\S+\s+login\s+\S+\s+password\s+)(\S{4,})")
@@ -513,11 +514,38 @@ def redact_header_credential(match: re.Match[str]) -> str:
     return f"{match.group('name_quote')}{match.group('name')}{match.group('name_quote')}{match.group('sep')}{match.group('quote')}{scheme_prefix}{REDACTION}{match.group('quote')}"
 
 
-def redact_cookie_line_credential(match: re.Match[str]) -> str:
-    value = match.group("value").strip()
-    if not value or value.startswith(("\"", "'")) or is_safe_reference(value):
-        return match.group(0)
-    return f"{match.group('name_quote')}{match.group('name')}{match.group('name_quote')}{match.group('sep')}{REDACTION}"
+def find_unquoted_cookie_value_end(text: str, start: int) -> int:
+    for index in range(start, len(text)):
+        char = text[index]
+        if char in {"\r", "\n", "]"}:
+            return index
+        if char == "}":
+            if "${" in text[start : index + 1]:
+                continue
+            return index
+        if char == "," and OBJECT_FIELD_AFTER_COMMA.match(text[index + 1 :]):
+            return index
+    return len(text)
+
+
+def redact_unquoted_cookie_credentials(text: str) -> str:
+    result: list[str] = []
+    cursor = 0
+    for match in COOKIE_UNQUOTED_FIELD_START.finditer(text):
+        if match.start() < cursor:
+            continue
+        value_start = match.end()
+        value_end = find_unquoted_cookie_value_end(text, value_start)
+        value = text[value_start:value_end].strip()
+        if not value or value == REDACTION or is_safe_reference(value):
+            continue
+        result.append(text[cursor:value_start])
+        result.append(REDACTION)
+        cursor = value_end
+    if not result:
+        return text
+    result.append(text[cursor:])
+    return "".join(result)
 
 
 def redact_header_field_credentials(text: str) -> str:
@@ -584,7 +612,7 @@ def sanitize_text(text: str, config: Config) -> str:
     cleaned = redact_private_key_blocks(cleaned)
     cleaned = redact_url_credentials(cleaned)
     cleaned = redact_header_field_credentials(cleaned)
-    cleaned = COOKIE_LINE_CREDENTIAL.sub(redact_cookie_line_credential, cleaned)
+    cleaned = redact_unquoted_cookie_credentials(cleaned)
     cleaned = HEADER_CREDENTIAL.sub(redact_header_credential, cleaned)
     cleaned = CURL_USER_CREDENTIAL.sub(redact_curl_user_credential, cleaned)
     cleaned = NETRC_PASSWORD_CREDENTIAL.sub(lambda match: f"{match.group(1)}{REDACTION}", cleaned)
