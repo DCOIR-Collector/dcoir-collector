@@ -4,7 +4,7 @@
 # Purpose:
 # - Run an operator-triggered OpenRouter-assisted PR review for approved PR comment commands.
 # Use when:
-# - Use on a pull request issue_comment from the repository operator with /or-review or /openrouter-review.
+# - Use on a pull request issue_comment from the repository operator with /or-review, /openrouter-review, or /dcoir-review.
 # Do not use when:
 # - Do not use for automatic PR gating, required checks, untrusted authors, or broad workflow mutation.
 # - Do not use in place of governed Prog, Adva, Codi, external Codex, or GitHub Actions review gates.
@@ -18,7 +18,7 @@
 # Runtime dependencies:
 # - Uses Python 3.12 and scripts/openrouter_pr_review.py from the trusted default branch checkout.
 # Expected outputs/readback:
-# - PR conversation output from scripts/openrouter_pr_review.py and GitHub Actions run/job readback when the workflow changes.
+# - PR conversation progress/status comment, PR review output from scripts/openrouter_pr_review.py, step-summary notices, and GitHub Actions run/job readback when the workflow changes.
 # Safety notes:
 # - Checkout is pinned to the trusted default branch and persists no credentials.
 # - Keep the manual author/command guard, least needed permissions, and issue_comment boundary intact; do not use pull_request_target.
@@ -30,6 +30,7 @@
 # - Supabase `ircore` owns operational routing, validation rules, reusable lessons, and active state.
 # - Use legacy Airtable only when a file explicitly requires a migration or historical lookup.
 name: OpenRouter PR Review
+run-name: OpenRouter PR Review | #${{ github.event.issue.number }} | ${{ github.event.comment.user.login }}
 
 on:
   issue_comment:
@@ -54,11 +55,12 @@ jobs:
         github.event.comment.user.login == 'malwaredevil' &&
         (
           startsWith(github.event.comment.body, '/or-review') ||
-          startsWith(github.event.comment.body, '/openrouter-review')
+          startsWith(github.event.comment.body, '/openrouter-review') ||
+          startsWith(github.event.comment.body, '/dcoir-review')
         )
       }}
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
 
     steps:
       - name: Check out trusted default branch
@@ -74,6 +76,7 @@ jobs:
 
       - name: Run OpenRouter PR review
         env:
+          PYTHONUNBUFFERED: '1'
           GITHUB_TOKEN: ${{ github.token }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           GITHUB_REPOSITORY: ${{ github.repository }}
@@ -83,4 +86,4 @@ jobs:
           TRIGGER_AUTHOR: ${{ github.event.comment.user.login }}
           GITHUB_EVENT_PATH: ${{ github.event_path }}
           OPENROUTER_REVIEW_CONFIG: .github/openrouter-pr-review.yml
-        run: python scripts/openrouter_pr_review.py
+        run: python -u scripts/openrouter_pr_review.py
