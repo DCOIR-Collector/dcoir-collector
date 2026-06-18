@@ -393,8 +393,8 @@ SECRET_VALUE_PATTERNS = [
     re.compile(r"github_pat_[A-Za-z0-9_]{20,}"),
     re.compile(r"AKIA[0-9A-Z]{16}"),
 ]
-SECRET_QUOTED_ASSIGNMENT = re.compile(
-    r"""(?ix)(?P<key_quote>[\"']?)(?P<key>[A-Z0-9_\-]*(?:TOKEN|SECRET|PASSWORD|API[_-]?KEY)[A-Z0-9_\-]*)(?P=key_quote)(?P<sep>\s*[:=]\s*)(?P<value_quote>[\"'])(?P<value>[^\"'\r\n]{8,})(?P=value_quote)"""
+SECRET_QUOTED_ASSIGNMENT_START = re.compile(
+    r"""(?ix)(?<![A-Z0-9_\-])(?P<key_quote>[\"']?)(?P<key>[A-Z0-9_\-]*(?:TOKEN|SECRET|PASSWORD|API[_-]?KEY)[A-Z0-9_\-]*)(?P=key_quote)(?P<sep>\s*[:=]\s*)(?P<value_quote>[\"'])"""
 )
 SECRET_UNQUOTED_ASSIGNMENT = re.compile(
     r"(?i)\b([A-Z0-9_\-]*(?:TOKEN|SECRET|PASSWORD|API[_-]?KEY)[A-Z0-9_\-]*)(\s*[:=]\s*)([^\s\"']{8,})"
@@ -405,9 +405,51 @@ SAFE_UNQUOTED_REFERENCE = re.compile(
 ENV_REFERENCE = re.compile(r"^\$\{?[A-Za-z_][A-Za-z0-9_]*\}?$")
 
 
+def is_safe_secret_reference(value: str) -> bool:
+    stripped = value.strip()
+    return bool(SAFE_UNQUOTED_REFERENCE.match(stripped) or ENV_REFERENCE.fullmatch(stripped))
+
+
+def find_quoted_value_end(text: str, start: int, quote: str) -> int:
+    escaped = False
+    for index in range(start, len(text)):
+        char = text[index]
+        if escaped:
+            escaped = False
+            continue
+        if char == "\\":
+            escaped = True
+            continue
+        if char == quote:
+            return index
+        if char in {"\r", "\n"}:
+            return -1
+    return -1
+
+
+def redact_quoted_assignments(text: str) -> str:
+    result: list[str] = []
+    cursor = 0
+    for match in SECRET_QUOTED_ASSIGNMENT_START.finditer(text):
+        if match.start() < cursor:
+            continue
+        value_start = match.end()
+        value_end = find_quoted_value_end(text, value_start, match.group("value_quote"))
+        if value_end < 0 or value_end - value_start < 8:
+            continue
+        value = text[value_start:value_end]
+        result.append(text[cursor:value_start])
+        result.append(value if is_safe_secret_reference(value) else REDACTION)
+        cursor = value_end
+    if not result:
+        return text
+    result.append(text[cursor:])
+    return "".join(result)
+
+
 def redact_unquoted_assignment(match: re.Match[str]) -> str:
     value = match.group(3)
-    if SAFE_UNQUOTED_REFERENCE.match(value) or ENV_REFERENCE.fullmatch(value):
+    if is_safe_secret_reference(value):
         return match.group(0)
     return f"{match.group(1)}{match.group(2)}{REDACTION}"
 
@@ -416,10 +458,7 @@ def sanitize_text(text: str, config: Config) -> str:
     if not config.redact_secret_literals:
         return text
     cleaned = text
-    cleaned = SECRET_QUOTED_ASSIGNMENT.sub(
-        lambda match: f"{match.group('key_quote')}{match.group('key')}{match.group('key_quote')}{match.group('sep')}{match.group('value_quote')}{REDACTION}{match.group('value_quote')}",
-        cleaned,
-    )
+    cleaned = redact_quoted_assignments(cleaned)
     cleaned = SECRET_UNQUOTED_ASSIGNMENT.sub(redact_unquoted_assignment, cleaned)
     for pattern in SECRET_VALUE_PATTERNS:
         cleaned = pattern.sub(REDACTION, cleaned)
