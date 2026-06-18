@@ -12,6 +12,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import signal
 import sys
 import textwrap
 import time
@@ -31,6 +32,7 @@ MARKER = "<!-- openrouter-pr-review -->"
 class Config:
     commands: list[str]
     model: str
+    model_stack: list[str]
     max_prompt_chars: int
     max_files: int
     max_inline_comments: int
@@ -46,6 +48,8 @@ class Config:
     openrouter_max_attempts: int
     openrouter_retry_max_seconds: int
     ignored_providers: list[str]
+    script_timeout_seconds: int
+    post_progress_comment: bool
 
 
 def die(message: str, exit_code: int = 1) -> None:
@@ -85,9 +89,15 @@ def load_yaml_like_config(path: str) -> Config:
         elif current_key and stripped.startswith("-"):
             item = stripped[1:].strip()
             data.setdefault(current_key, []).append(parse_scalar(item))
+    model = str(data.get("model", "openrouter/free"))
+    raw_stack = data.get("model_stack", [])
+    model_stack = [str(item) for item in raw_stack] if isinstance(raw_stack, list) else []
+    if not model_stack:
+        model_stack = [model]
     return Config(
-        commands=list(data.get("commands", ["/or-review", "/openrouter-review"])),
-        model=str(data.get("model", "openrouter/free")),
+        commands=list(data.get("commands", ["/or-review", "/openrouter-review", "/dcoir-review"])),
+        model=model,
+        model_stack=model_stack,
         max_prompt_chars=int(data.get("max_prompt_chars", 60000)),
         max_files=int(data.get("max_files", 30)),
         max_inline_comments=int(data.get("max_inline_comments", 12)),
@@ -103,6 +113,8 @@ def load_yaml_like_config(path: str) -> Config:
         openrouter_max_attempts=int(data.get("openrouter_max_attempts", 4)),
         openrouter_retry_max_seconds=int(data.get("openrouter_retry_max_seconds", 45)),
         ignored_providers=list(data.get("ignored_providers", [])),
+        script_timeout_seconds=int(data.get("script_timeout_seconds", 1500)),
+        post_progress_comment=bool(data.get("post_progress_comment", True)),
     )
 
 
@@ -129,6 +141,10 @@ def env_required(name: str) -> str:
     if not value:
         die(f"missing required environment variable {name}")
     return value
+
+
+class ReviewTimeoutError(TimeoutError):
+    """Raised by the script-level timeout before the workflow job timeout."""
 
 
 class GitHubClient:
@@ -209,9 +225,140 @@ def github_safe_body(text: str, limit: int = 65000) -> str:
     return text[: limit - 200] + "\n\n[truncated by OpenRouter PR Review]"
 
 
-def command_matches(body: str, commands: list[str]) -> bool:
+def actions_notice_escape(text: str) -> str:
+    return text.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+
+
+def append_step_summary(stage: str, message: str) -> None:
+    summary_path = os.environ.get("GITHUB_STEP_SUMMARY", "")
+    if not summary_path:
+        return
+    try:
+        with Path(summary_path).open("a", encoding="utf-8") as handle:
+            handle.write(f"- **{stage}:** {message}\n")
+    except OSError as exc:
+        print(f"WARN: unable to write step summary: {exc}", file=sys.stderr, flush=True)
+
+
+def emit_status(stage: str, message: str) -> None:
+    print(f"[openrouter-pr-review] {stage}: {message}", flush=True)
+    print(
+        f"::notice title=OpenRouter PR Review::{actions_notice_escape(stage + ': ' + message)}",
+        flush=True,
+    )
+    append_step_summary(stage, message)
+
+
+def matching_command(body: str, commands: list[str]) -> str | None:
     first_line = body.strip().splitlines()[0].strip() if body.strip() else ""
-    return any(first_line == cmd or first_line.startswith(cmd + " ") for cmd in commands)
+    for command in commands:
+        if first_line == command or first_line.startswith(command + " "):
+            return command
+    return None
+
+
+def command_matches(body: str, commands: list[str]) -> bool:
+    return matching_command(body, commands) is not None
+
+
+def model_stack_label(config: Config) -> str:
+    return ", ".join(config.model_stack)
+
+
+class ProgressReporter:
+    def __init__(
+        self,
+        gh: GitHubClient,
+        issue_number: int,
+        command: str,
+        config: Config,
+    ) -> None:
+        self.gh = gh
+        self.issue_number = issue_number
+        self.command = command
+        self.config = config
+        self.comment_id = 0
+        self.steps: list[tuple[str, str]] = []
+
+    def start(self) -> None:
+        self._record("started", "accepted operator review command and initialized progress reporting")
+        if not self.config.post_progress_comment:
+            return
+        try:
+            comment = self.gh.create_issue_comment(self.issue_number, self._body("running"))
+            self.comment_id = int(comment.get("id", 0))
+        except Exception as exc:
+            print(f"WARN: unable to create progress comment: {exc}", file=sys.stderr, flush=True)
+
+    def update(self, stage: str, message: str) -> None:
+        self._record(stage, message)
+        self._update_comment(self._body("running"))
+
+    def complete(self, model_used: str, findings_count: int, review_event: str) -> None:
+        plural = "finding" if findings_count == 1 else "findings"
+        self._record(
+            "completed",
+            f"posted GitHub review using {model_used}; {findings_count} inline {plural}; event={review_event}",
+        )
+        self._update_comment(
+            self._body(
+                "completed",
+                final_lines=[
+                    f"- Result: GitHub review posted with `{findings_count}` inline {plural}.",
+                    f"- Review event: `{review_event}`.",
+                    f"- Model used: `{model_used}`.",
+                ],
+            )
+        )
+
+    def fail(self, message: str) -> None:
+        self._record("failed", message[:500])
+        self._update_comment(
+            self._body(
+                "failed",
+                final_lines=[
+                    "- Result: review failed before a usable PR review could be posted.",
+                    "",
+                    "```text",
+                    message[:4000],
+                    "```",
+                ],
+            ),
+            create_if_missing=True,
+        )
+
+    def _record(self, stage: str, message: str) -> None:
+        self.steps.append((stage, message))
+        emit_status(stage, message)
+
+    def _body(self, state: str, final_lines: list[str] | None = None) -> str:
+        lines = [
+            MARKER,
+            f"OpenRouter PR review {state}.",
+            "",
+            f"- Command: `{self.command}`.",
+            f"- Model stack: `{model_stack_label(self.config)}`.",
+            "- Branch changes: none; this workflow only posts review output.",
+            "- Gate role: internal review-assist signal before any separately approved external review request.",
+        ]
+        if final_lines:
+            lines.extend(["", *final_lines])
+        lines.extend(["", "Progress:"])
+        for stage, message in self.steps[-12:]:
+            lines.append(f"- `{stage}`: {message}")
+        return github_safe_body("\n".join(lines), limit=12000)
+
+    def _update_comment(self, body: str, create_if_missing: bool = False) -> None:
+        if not self.config.post_progress_comment:
+            return
+        try:
+            if self.comment_id:
+                self.gh.update_issue_comment(self.comment_id, body)
+            elif create_if_missing:
+                comment = self.gh.create_issue_comment(self.issue_number, body)
+                self.comment_id = int(comment.get("id", 0))
+        except Exception as exc:
+            print(f"WARN: unable to update progress comment: {exc}", file=sys.stderr, flush=True)
 
 
 def build_diff_line_index(diff: str) -> dict[tuple[str, int], int]:
@@ -327,7 +474,13 @@ def provider_slug(name: str) -> str:
     return re.sub(r"[^a-z0-9_-]+", "-", name.strip().lower()).strip("-")
 
 
-def build_openrouter_payload(prompt: str, schema: dict[str, Any], config: Config, ignored_providers: list[str]) -> dict[str, Any]:
+def build_openrouter_payload(
+    prompt: str,
+    schema: dict[str, Any],
+    config: Config,
+    ignored_providers: list[str],
+    model: str,
+) -> dict[str, Any]:
     system_prompt = read_text("prompts/openrouter-pr-review-system.md")
     provider: dict[str, Any] = {
         "allow_fallbacks": True,
@@ -337,7 +490,7 @@ def build_openrouter_payload(prompt: str, schema: dict[str, Any], config: Config
     if clean_ignored:
         provider["ignore"] = clean_ignored
     return {
-        "model": config.model,
+        "model": model,
         "messages": [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": prompt},
@@ -355,9 +508,15 @@ def build_openrouter_payload(prompt: str, schema: dict[str, Any], config: Config
     }
 
 
-def openrouter_request_once(prompt: str, schema: dict[str, Any], config: Config, ignored_providers: list[str]) -> tuple[dict[str, Any], str]:
+def openrouter_request_once(
+    prompt: str,
+    schema: dict[str, Any],
+    config: Config,
+    ignored_providers: list[str],
+    model: str,
+) -> tuple[dict[str, Any], str]:
     api_key = env_required("OPENROUTER_API_KEY")
-    payload = build_openrouter_payload(prompt, schema, config, ignored_providers)
+    payload = build_openrouter_payload(prompt, schema, config, ignored_providers, model)
     headers = {
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json",
@@ -368,7 +527,7 @@ def openrouter_request_once(prompt: str, schema: dict[str, Any], config: Config,
     with urllib.request.urlopen(req, timeout=180) as response:
         raw = response.read().decode("utf-8")
     data = json.loads(raw)
-    model_used = str(data.get("model", config.model))
+    model_used = str(data.get("model", model))
     content = data.get("choices", [{}])[0].get("message", {}).get("content", "")
     if not content:
         raise RuntimeError("OpenRouter returned an empty response")
@@ -383,51 +542,85 @@ def openrouter_request_once(prompt: str, schema: dict[str, Any], config: Config,
     return parsed, model_used
 
 
-def openrouter_review(prompt: str, schema: dict[str, Any], config: Config) -> tuple[dict[str, Any], str]:
+def openrouter_review(
+    prompt: str,
+    schema: dict[str, Any],
+    config: Config,
+    reporter: ProgressReporter | None = None,
+) -> tuple[dict[str, Any], str]:
     attempts = max(1, config.openrouter_max_attempts)
     retry_cap = max(1, config.openrouter_retry_max_seconds)
-    ignored_providers = [provider_slug(item) for item in config.ignored_providers]
     last_error = "OpenRouter request failed"
 
-    for attempt in range(1, attempts + 1):
-        try:
-            return openrouter_request_once(prompt, schema, config, ignored_providers)
-        except urllib.error.HTTPError as exc:
-            detail = exc.read().decode("utf-8", errors="replace")
-            parsed_error = parse_openrouter_error(detail)
-            provider = provider_slug(str(parsed_error.get("provider", "")))
-            if provider and provider not in ignored_providers:
-                ignored_providers.append(provider)
-            retry_after = parsed_error.get("retry_after")
+    for model_index, model in enumerate(config.model_stack, start=1):
+        ignored_providers = [provider_slug(item) for item in config.ignored_providers]
+        if reporter:
+            reporter.update(
+                "openrouter",
+                f"calling model {model_index}/{len(config.model_stack)}: {model}",
+            )
+        for attempt in range(1, attempts + 1):
             try:
-                delay = float(retry_after) if retry_after is not None else float(exc.headers.get("Retry-After", ""))
-            except (TypeError, ValueError):
-                delay = min(2 ** attempt, retry_cap)
-            delay = min(max(delay, 1.0), float(retry_cap))
-            last_error = f"OpenRouter API failed with HTTP {exc.code}: {parsed_error.get('message', 'request failed')}"
-            if provider:
-                last_error += f" Provider skipped for retry: {provider}."
-            if exc.code in {408, 409, 425, 429, 500, 502, 503, 504} and attempt < attempts:
-                print(f"WARN: {last_error} Retrying in {delay:.0f}s ({attempt}/{attempts})", file=sys.stderr)
-                time.sleep(delay)
-                continue
-            raise RuntimeError(last_error) from exc
-        except RuntimeError as exc:
-            last_error = str(exc)
-            if "empty response" in last_error.lower() and attempt < attempts:
-                delay = min(2 ** attempt, retry_cap)
-                print(f"WARN: {last_error}. Retrying in {delay:.0f}s ({attempt}/{attempts})", file=sys.stderr)
-                time.sleep(delay)
-                continue
-            raise
-        except json.JSONDecodeError as exc:
-            last_error = "OpenRouter returned invalid JSON"
-            if attempt < attempts:
-                delay = min(2 ** attempt, retry_cap)
-                print(f"WARN: {last_error}. Retrying in {delay:.0f}s ({attempt}/{attempts})", file=sys.stderr)
-                time.sleep(delay)
-                continue
-            raise RuntimeError(last_error) from exc
+                if reporter:
+                    reporter.update("openrouter-attempt", f"model={model}; attempt={attempt}/{attempts}")
+                return openrouter_request_once(prompt, schema, config, ignored_providers, model)
+            except urllib.error.HTTPError as exc:
+                detail = exc.read().decode("utf-8", errors="replace")
+                parsed_error = parse_openrouter_error(detail)
+                provider = provider_slug(str(parsed_error.get("provider", "")))
+                if provider and provider not in ignored_providers:
+                    ignored_providers.append(provider)
+                retry_after = parsed_error.get("retry_after")
+                try:
+                    delay = float(retry_after) if retry_after is not None else float(exc.headers.get("Retry-After", ""))
+                except (TypeError, ValueError):
+                    delay = min(2 ** attempt, retry_cap)
+                delay = min(max(delay, 1.0), float(retry_cap))
+                last_error = f"OpenRouter API failed with HTTP {exc.code}: {parsed_error.get('message', 'request failed')}"
+                if provider:
+                    last_error += f" Provider skipped for retry: {provider}."
+                retryable = exc.code in {408, 409, 425, 429, 500, 502, 503, 504}
+                if retryable and attempt < attempts:
+                    print(
+                        f"WARN: {last_error} Retrying in {delay:.0f}s ({attempt}/{attempts})",
+                        file=sys.stderr,
+                        flush=True,
+                    )
+                    if reporter:
+                        reporter.update("openrouter-retry", f"{last_error} retrying in {delay:.0f}s")
+                    time.sleep(delay)
+                    continue
+                break
+            except RuntimeError as exc:
+                last_error = str(exc)
+                if "empty response" in last_error.lower() and attempt < attempts:
+                    delay = min(2 ** attempt, retry_cap)
+                    print(
+                        f"WARN: {last_error}. Retrying in {delay:.0f}s ({attempt}/{attempts})",
+                        file=sys.stderr,
+                        flush=True,
+                    )
+                    if reporter:
+                        reporter.update("openrouter-retry", f"{last_error}; retrying in {delay:.0f}s")
+                    time.sleep(delay)
+                    continue
+                break
+            except json.JSONDecodeError:
+                last_error = "OpenRouter returned invalid JSON"
+                if attempt < attempts:
+                    delay = min(2 ** attempt, retry_cap)
+                    print(
+                        f"WARN: {last_error}. Retrying in {delay:.0f}s ({attempt}/{attempts})",
+                        file=sys.stderr,
+                        flush=True,
+                    )
+                    if reporter:
+                        reporter.update("openrouter-retry", f"{last_error}; retrying in {delay:.0f}s")
+                    time.sleep(delay)
+                    continue
+                break
+        if model_index < len(config.model_stack) and reporter:
+            reporter.update("openrouter-fallback", f"model {model} failed; trying next configured model")
 
     raise RuntimeError(last_error)
 
@@ -559,12 +752,19 @@ def main() -> None:
     if config.allowed_authors and author not in config.allowed_authors:
         print(f"Ignoring unauthorized author {author}")
         return
-    if not command_matches(comment_body, config.commands):
+    command = matching_command(comment_body, config.commands)
+    if not command:
         print("Comment does not match configured review commands")
         return
 
+    def timeout_handler(_signum: int, _frame: Any) -> None:
+        raise ReviewTimeoutError(
+            f"OpenRouter PR review exceeded script timeout of {config.script_timeout_seconds} seconds"
+        )
+
     schema = json.loads(read_text("schemas/openrouter-pr-review.schema.json"))
     gh = GitHubClient(token, repo)
+    reporter = ProgressReporter(gh, pr_number, command, config)
     eyes_reaction_id = 0
 
     try:
@@ -574,11 +774,20 @@ def main() -> None:
         print(f"WARN: unable to add eyes reaction: {exc}", file=sys.stderr)
 
     try:
+        if config.script_timeout_seconds > 0 and hasattr(signal, "SIGALRM"):
+            signal.signal(signal.SIGALRM, timeout_handler)
+            signal.alarm(config.script_timeout_seconds)
+        reporter.start()
+        reporter.update("github", "fetching PR metadata")
         pr = gh.get_pr(pr_number)
+        reporter.update("github", "fetching PR diff")
         diff = gh.get_pr_diff(pr_number)
+        reporter.update("github", "fetching changed file list")
         files = gh.list_files(pr_number)
+        reporter.update("prompt", f"building bounded prompt from {len(files)} changed files")
         prompt = build_prompt(pr, files, diff, config)
-        result, model_used = openrouter_review(prompt, schema, config)
+        result, model_used = openrouter_review(prompt, schema, config, reporter)
+        reporter.update("normalize", "mapping model findings to changed diff lines")
         line_index = build_diff_line_index(diff)
         findings = normalize_findings(result, config, line_index)
 
@@ -596,27 +805,33 @@ def main() -> None:
 
         event = "REQUEST_CHANGES" if comments and config.request_changes_on_findings else "COMMENT"
         review_body = build_review_body(result, findings, model_used, config)
+        reporter.update("github-review", f"posting GitHub review with {len(comments)} inline comments")
         gh.create_review(pr_number, review_body, event, comments, str(pr.get("head", {}).get("sha", "")))
+        reporter.complete(model_used, len(comments), event)
 
     except Exception as exc:
-        error_body = f"""{MARKER}
+        reporter.fail(str(exc))
+        if not config.post_progress_comment:
+            error_body = f"""{MARKER}
 OpenRouter PR review failed.
 
 ```text
 {str(exc)[:4000]}
 ```
 """.strip()
-        try:
-            gh.create_issue_comment(pr_number, error_body)
-        except Exception as comment_exc:
-            print(f"WARN: unable to post failure comment: {comment_exc}", file=sys.stderr)
+            try:
+                gh.create_issue_comment(pr_number, error_body)
+            except Exception as comment_exc:
+                print(f"WARN: unable to post failure comment: {comment_exc}", file=sys.stderr, flush=True)
         raise
     finally:
+        if config.script_timeout_seconds > 0 and hasattr(signal, "SIGALRM"):
+            signal.alarm(0)
         if eyes_reaction_id:
             try:
                 gh.delete_issue_comment_reaction(trigger_comment_id, eyes_reaction_id)
             except Exception as exc:
-                print(f"WARN: unable to remove eyes reaction: {exc}", file=sys.stderr)
+                print(f"WARN: unable to remove eyes reaction: {exc}", file=sys.stderr, flush=True)
 
 
 if __name__ == "__main__":
