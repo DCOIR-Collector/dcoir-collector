@@ -619,6 +619,12 @@ def find_unquoted_curl_credential_end(text: str, start: int) -> int:
                 return index
             index = expression_end + 1
             continue
+        if text[index] == "`":
+            expression_end = find_backtick_substitution_end(text, index + 1)
+            if expression_end < 0:
+                return index
+            index = expression_end + 1
+            continue
         if text[index] in {"\r", "\n", "\t", " ", "\"", "'"}:
             return index
         index += 1
@@ -656,6 +662,23 @@ def find_command_substitution_end(text: str, start: int) -> int:
             if depth == 0:
                 return index
         index += 1
+    return -1
+
+
+def find_backtick_substitution_end(text: str, start: int) -> int:
+    escaped = False
+    for index in range(start, len(text)):
+        char = text[index]
+        if escaped:
+            escaped = False
+            continue
+        if char == "\\":
+            escaped = True
+            continue
+        if char == "`":
+            return index
+        if char in {"\r", "\n"}:
+            return -1
     return -1
 
 
