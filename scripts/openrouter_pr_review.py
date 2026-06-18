@@ -394,7 +394,7 @@ SECRET_VALUE_PATTERNS = [
     re.compile(r"AKIA[0-9A-Z]{16}"),
 ]
 SECRET_QUOTED_ASSIGNMENT = re.compile(
-    r"(?i)\b([A-Z0-9_\-]*(?:TOKEN|SECRET|PASSWORD|API[_-]?KEY)[A-Z0-9_\-]*)(\s*[:=]\s*)([\"'])([^\"'\r\n]{8,})([\"'])"
+    r"""(?ix)(?P<key_quote>[\"']?)(?P<key>[A-Z0-9_\-]*(?:TOKEN|SECRET|PASSWORD|API[_-]?KEY)[A-Z0-9_\-]*)(?P=key_quote)(?P<sep>\s*[:=]\s*)(?P<value_quote>[\"'])(?P<value>[^\"'\r\n]{8,})(?P=value_quote)"""
 )
 SECRET_UNQUOTED_ASSIGNMENT = re.compile(
     r"(?i)\b([A-Z0-9_\-]*(?:TOKEN|SECRET|PASSWORD|API[_-]?KEY)[A-Z0-9_\-]*)(\s*[:=]\s*)([^\s\"']{8,})"
@@ -416,7 +416,10 @@ def sanitize_text(text: str, config: Config) -> str:
     if not config.redact_secret_literals:
         return text
     cleaned = text
-    cleaned = SECRET_QUOTED_ASSIGNMENT.sub(lambda match: f"{match.group(1)}{match.group(2)}{match.group(3)}{REDACTION}{match.group(5)}", cleaned)
+    cleaned = SECRET_QUOTED_ASSIGNMENT.sub(
+        lambda match: f"{match.group('key_quote')}{match.group('key')}{match.group('key_quote')}{match.group('sep')}{match.group('value_quote')}{REDACTION}{match.group('value_quote')}",
+        cleaned,
+    )
     cleaned = SECRET_UNQUOTED_ASSIGNMENT.sub(redact_unquoted_assignment, cleaned)
     for pattern in SECRET_VALUE_PATTERNS:
         cleaned = pattern.sub(REDACTION, cleaned)
