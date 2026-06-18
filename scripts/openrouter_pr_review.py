@@ -625,6 +625,9 @@ def find_unquoted_curl_credential_end(text: str, start: int) -> int:
                 return index
             index = expression_end + 1
             continue
+        if text[index] == "\\" and index + 1 < len(text):
+            index += 2
+            continue
         if text[index] in {"\r", "\n", "\t", " ", "\"", "'"}:
             return index
         index += 1
