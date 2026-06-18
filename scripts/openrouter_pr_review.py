@@ -735,8 +735,6 @@ def find_backtick_substitution_end(text: str, start: int) -> int:
             continue
         if char == "`":
             return index
-        if char in {"\r", "\n"}:
-            return -1
     return -1
 
 
@@ -759,7 +757,7 @@ def redact_curl_user_credentials(text: str) -> str:
             credential_start = value_start + quote_prefix_length + 1
             credential_end = find_quoted_value_end(text, credential_start, quote)
             if credential_end < 0:
-                continue
+                credential_end = find_curl_credential_line_end(text, credential_start)
             credential = text[credential_start:credential_end]
         else:
             credential_start = value_start
