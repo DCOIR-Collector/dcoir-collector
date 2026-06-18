@@ -144,12 +144,19 @@ assignment_text = "\n".join(
         f"Set-Cookie: {set_cookie_secret}",
         f"X-Api-Key: {single_quoted_api_key}",
         f'"Authorization": "Bearer {bearer_secret}"',
+        f'Authorization: "Bearer {bearer_secret}"',
+        f'Authorization: Bearer {bearer_secret}',
+        f'headers = {{ Authorization: "Bearer {bearer_secret}" }}',
+        f'headers = {{ Cookie: "{cookie_secret}" }}',
+        f'Authorization: "Bearer {bearer_secret}"',
         f"'Proxy-Authorization': 'Basic {basic_secret}'",
         f'"Cookie": "{cookie_secret}"',
         f'"Set-Cookie": f"{set_cookie_secret}"',
         f'"X-Api-Key": "token {single_quoted_api_key}"',
         f"curl -H \"Authorization: Bearer {bearer_secret}\" https://example.test/",
         f"curl -u dcoir:{curl_password} https://example.test/",
+        f"curl --user dcoir:{curl_password} https://example.test/",
+        f"curl --user=dcoir:{curl_password} https://example.test/",
         f"machine example.test login dcoir password {netrc_password}",
         f"DATABASE_URL=postgres://dcoir:{url_password}@db.example.test/dcoir",
         f"PACKAGE_URL=https://{openrouter_key}@packages.example.test/simple",
@@ -223,7 +230,31 @@ for leaked in [
     assert leaked not in assignment_redacted, assignment_redacted
 for preserved in [quoted_env_reference, dollar_env_reference, process_env_reference, github_secret_reference, exact_os_getenv_reference, exact_secrets_reference]:
     assert preserved in assignment_redacted, assignment_redacted
-assert assignment_redacted.count("[redacted-secret]") >= 30
+assert assignment_redacted.count("[redacted-secret]") >= 35
+for safe_header in [
+    '"Authorization": "Bearer ${OPENROUTER_API_KEY}"',
+    'Authorization: "Bearer ${OPENROUTER_API_KEY}"',
+]:
+    assert mod.sanitize_text(safe_header, config) == safe_header
+for unsafe_header in [
+    f'"Authorization": "Bearer {bearer_secret}"',
+    f'Authorization: "Bearer {bearer_secret}"',
+    f'Authorization: Bearer {bearer_secret}',
+    f'headers = {{ Authorization: "Bearer {bearer_secret}" }}',
+    f'headers = {{ Cookie: "{cookie_secret}" }}',
+]:
+    header_redacted = mod.sanitize_text(unsafe_header, config)
+    assert bearer_secret not in header_redacted, header_redacted
+    assert "cookie-secret" not in header_redacted, header_redacted
+    assert "[redacted-secret]" in header_redacted, header_redacted
+for curl_form in [
+    f"curl -u user:{curl_password} https://example.test/",
+    f"curl --user user:{curl_password} https://example.test/",
+    f"curl --user=user:{curl_password} https://example.test/",
+]:
+    curl_redacted = mod.sanitize_text(curl_form, config)
+    assert curl_password not in curl_redacted, curl_redacted
+    assert "user:[redacted-secret]" in curl_redacted, curl_redacted
 
 safe_reference = mod.sanitize_text(
     'token = os.getenv("OPENROUTER_TOKEN")\npassword = process.env.DB_PASSWORD\napi_key=${OPENROUTER_API_KEY}\nsecret: ${{ secrets.OPENROUTER_TOKEN }}',
