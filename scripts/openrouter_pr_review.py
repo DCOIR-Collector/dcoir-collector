@@ -418,11 +418,16 @@ SIGNED_URL_QUERY_CREDENTIAL = re.compile(
     r"(?i)([?&](?:x-amz-signature|x-amz-credential|x-amz-security-token|awsaccesskeyid|signature|sig|sas|se|sp|sv|sr|spr|st|skoid|sktid|skt|ske|sks|skv|token|access_token|refresh_token|sessiontoken|session_token)=)([^&#\s\"']+)"
 )
 HEADER_CREDENTIAL = re.compile(
-    r"""(?ix)(?<![A-Z0-9_\-])(?P<name_quote>[\"']?)(?P<name>(?:proxy-)?authorization|x-api-key|api-key|x-auth-token|x-access-token)(?P=name_quote)(?P<sep>\s*[:=]\s*)(?P<quote>[\"']?)(?:(?P<scheme>bearer|basic|token)\s+)?(?P<value>[^\"'\s,;)}\r\n]+)(?P=quote)(?=$|[\s\r\n\"',;)}])"""
+    r"""(?ix)(?<![A-Z0-9_\-])(?P<name_quote>[\"']?)(?P<name>(?:proxy-)?authorization|x-api-key|api-key|x-auth-token|x-access-token)(?P=name_quote)(?P<sep>\s*[:=]\s*)(?P<quote>[\"']?)(?:(?P<scheme>bearer|basic|token)\s+)?(?P<value>(?![$`])[^\"'\s,;)}\r\n]+)(?P=quote)(?=$|[\s\r\n\"',;)}])"""
 )
 HEADER_FIELD_CREDENTIAL_START = re.compile(
     r"""(?ix)(?<![A-Z0-9_\-])(?P<name_quote>[\"']?)(?P<name>(?:proxy-)?authorization|x-api-key|api-key|x-auth-token|x-access-token|cookie|set-cookie)(?P=name_quote)(?P<sep>\s*[:=]\s*)(?P<value_prefix>[rubf]{0,2})(?P<value_quote>[\"'])"""
 )
+
+UNQUOTED_HEADER_CREDENTIAL_START = re.compile(
+    r"""(?ix)(?<![A-Z0-9_\-])(?P<name_quote>[\"']?)(?P<name>(?:proxy-)?authorization|x-api-key|api-key|x-auth-token|x-access-token)(?P=name_quote)(?P<sep>\s*[:=]\s*)(?!\s*[\"'])"""
+)
+
 COOKIE_UNQUOTED_FIELD_START = re.compile(
     r"""(?ix)(?<![A-Z0-9_\-])(?P<name_quote>[\"']?)(?P<name>cookie|set-cookie)(?P=name_quote)(?P<sep>\s*[:=]\s*)(?!\s*[\"'])"""
 )
@@ -586,6 +591,91 @@ def redact_unquoted_cookie_credentials(text: str) -> str:
             continue
         result.append(text[cursor:value_start])
         result.append(REDACTION)
+        cursor = value_end
+    if not result:
+        return text
+    result.append(text[cursor:])
+    return "".join(result)
+
+
+def find_unquoted_header_credential_end(text: str, start: int) -> int:
+    index = start
+    while index < len(text):
+        if text.startswith("${{", index):
+            expression_end = find_github_expression_end(text, index + 3)
+            if expression_end < 0:
+                return find_curl_credential_line_end(text, index)
+            index = expression_end
+            continue
+        if text.startswith("${", index):
+            expression_end = text.find("}", index + 2)
+            if expression_end < 0:
+                return find_curl_credential_line_end(text, index)
+            index = expression_end + 1
+            continue
+        if text.startswith("$(", index):
+            expression_end = find_command_substitution_end(text, index + 2)
+            if expression_end < 0:
+                return find_curl_credential_line_end(text, index)
+            index = expression_end + 1
+            continue
+        if text[index] == "$" and index + 1 < len(text) and text[index + 1] in {"\"", "'"}:
+            expression_end = find_curl_quoted_value_end(text, index + 2, text[index + 1])
+            if expression_end < 0:
+                return len(text)
+            index = expression_end + 1
+            continue
+        if text[index] == "`":
+            expression_end = find_backtick_substitution_end(text, index + 1)
+            if expression_end < 0:
+                return find_curl_credential_line_end(text, index)
+            index = expression_end + 1
+            continue
+        if text[index] == "\\" and index + 1 < len(text):
+            index += 2
+            continue
+        if text[index] in {"\r", "\n", "\t", " ", "\"", "'", ",", ";", ")", "}", "]"}:
+            return index
+        index += 1
+    return index
+
+
+def find_unquoted_header_value_end(text: str, start: int) -> int:
+    probe = start
+    while probe < len(text) and text[probe] in {" ", "\t"}:
+        probe += 1
+    for scheme in ("bearer", "basic", "token"):
+        scheme_end = probe + len(scheme)
+        if text[probe:scheme_end].lower() == scheme and scheme_end < len(text) and text[scheme_end] in {" ", "\t"}:
+            secret_start = scheme_end
+            while secret_start < len(text) and text[secret_start] in {" ", "\t"}:
+                secret_start += 1
+            return find_unquoted_header_credential_end(text, secret_start)
+    return find_unquoted_header_credential_end(text, start)
+
+
+def redact_unquoted_header_credentials(text: str) -> str:
+    result: list[str] = []
+    cursor = 0
+    for match in UNQUOTED_HEADER_CREDENTIAL_START.finditer(text):
+        if match.start() < cursor:
+            continue
+        value_start = match.end()
+        value_end = find_unquoted_header_value_end(text, value_start)
+        value = text[value_start:value_end]
+        stripped_value = value.strip()
+        if not stripped_value or stripped_value == REDACTION:
+            continue
+        scheme_match = HEADER_VALUE_SCHEME.fullmatch(value)
+        secret_value = scheme_match.group("secret").strip() if scheme_match else stripped_value
+        if is_safe_reference(stripped_value) or (scheme_match and is_safe_reference(secret_value)):
+            continue
+        result.append(text[cursor:value_start])
+        if scheme_match:
+            result.append(f"{scheme_match.group('prefix')}{REDACTION}")
+        else:
+            leading = value[: len(value) - len(value.lstrip())]
+            result.append(f"{leading}{REDACTION}")
         cursor = value_end
     if not result:
         return text
@@ -759,13 +849,29 @@ def find_backtick_substitution_end(text: str, start: int) -> int:
     return -1
 
 
+def skip_curl_line_continuation_whitespace(text: str, start: int) -> int:
+    index = start
+    while index < len(text):
+        if text[index] != "\\":
+            return index
+        if index + 2 < len(text) and text[index + 1] == "\r" and text[index + 2] == "\n":
+            index += 3
+        elif index + 1 < len(text) and text[index + 1] in {"\r", "\n"}:
+            index += 2
+        else:
+            return index
+        while index < len(text) and text[index] in {" ", "\t"}:
+            index += 1
+    return index
+
+
 def redact_curl_user_credentials(text: str) -> str:
     result: list[str] = []
     cursor = 0
     for match in CURL_USER_OPTION.finditer(text):
         if match.start() < cursor:
             continue
-        value_start = match.end()
+        value_start = skip_curl_line_continuation_whitespace(text, match.end())
         if value_start >= len(text):
             continue
         quote_prefix_length = 0
@@ -832,6 +938,7 @@ def sanitize_text(text: str, config: Config) -> str:
     cleaned = redact_url_credentials(cleaned)
     cleaned = redact_header_field_credentials(cleaned)
     cleaned = redact_unquoted_cookie_credentials(cleaned)
+    cleaned = redact_unquoted_header_credentials(cleaned)
     cleaned = HEADER_CREDENTIAL.sub(redact_header_credential, cleaned)
     cleaned = redact_curl_user_credentials(cleaned)
     cleaned = NETRC_PASSWORD_CREDENTIAL.sub(lambda match: f"{match.group(1)}{REDACTION}", cleaned)
