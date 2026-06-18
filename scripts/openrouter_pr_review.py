@@ -52,11 +52,6 @@ class Config:
     post_progress_comment: bool
 
 
-def die(message: str, exit_code: int = 1) -> None:
-    print(f"ERROR: {message}", file=sys.stderr)
-    sys.exit(exit_code)
-
-
 def read_text(path: str, default: str = "") -> str:
     try:
         return Path(path).read_text(encoding="utf-8")
@@ -139,7 +134,7 @@ def parse_scalar(value: str) -> Any:
 def env_required(name: str) -> str:
     value = os.environ.get(name, "")
     if not value:
-        die(f"missing required environment variable {name}")
+        raise RuntimeError(f"missing required environment variable {name}")
     return value
 
 
@@ -624,6 +619,7 @@ def openrouter_review(
 
     raise RuntimeError(last_error)
 
+
 def normalize_findings(result: dict[str, Any], config: Config, line_index: dict[tuple[str, int], int]) -> list[dict[str, Any]]:
     findings: list[dict[str, Any]] = []
     for item in result.get("findings", []):
@@ -777,6 +773,7 @@ def main() -> None:
         if config.script_timeout_seconds > 0 and hasattr(signal, "SIGALRM"):
             signal.signal(signal.SIGALRM, timeout_handler)
             signal.alarm(config.script_timeout_seconds)
+        env_required("OPENROUTER_API_KEY")
         reporter.start()
         reporter.update("github", "fetching PR metadata")
         pr = gh.get_pr(pr_number)
