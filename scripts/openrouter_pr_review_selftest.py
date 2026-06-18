@@ -90,6 +90,11 @@ escaped_quote_password = r'aaaaaaaa\"tail-secret'
 quoted_env_reference = "${OPENROUTER_API_KEY}"
 dollar_env_reference = "$DB_PASSWORD"
 process_env_reference = "process.env.TOKEN"
+exact_os_getenv_reference = 'os.getenv("OPENROUTER_TOKEN")'
+exact_secrets_reference = 'secrets.get("OPENROUTER_TOKEN")'
+unsafe_process_reference = "process.env.TOKEN p@ss'word123!"
+unsafe_getenv_reference = 'os.getenv("OPENROUTER_TOKEN") p@ssw0rd123!'
+unsafe_secrets_reference = 'secrets.get("OPENROUTER_TOKEN") secret-tail-123!'
 assignment_text = "\n".join(
     [
         f"OPENROUTER_API_KEY={openrouter_key}",
@@ -107,6 +112,11 @@ assignment_text = "\n".join(
         f'"apiKey": "{quoted_env_reference}"',
         f'"password": "{dollar_env_reference}"',
         f'"token": "{process_env_reference}"',
+        f'"token": "{exact_os_getenv_reference}"',
+        f'"secret": "{exact_secrets_reference}"',
+        f'"password": "{unsafe_process_reference}"',
+        f'"token": "{unsafe_getenv_reference}"',
+        f'"secret": "{unsafe_secrets_reference}"',
     ]
 )
 assignment_redacted = mod.sanitize_text(assignment_text, config)
@@ -124,11 +134,15 @@ for leaked in [
     double_quote_password,
     escaped_quote_password,
     "tail-secret",
+    unsafe_process_reference,
+    unsafe_getenv_reference,
+    unsafe_secrets_reference,
+    "secret-tail-123!",
 ]:
     assert leaked not in assignment_redacted, assignment_redacted
-for preserved in [quoted_env_reference, dollar_env_reference, process_env_reference]:
+for preserved in [quoted_env_reference, dollar_env_reference, process_env_reference, exact_os_getenv_reference, exact_secrets_reference]:
     assert preserved in assignment_redacted, assignment_redacted
-assert assignment_redacted.count("[redacted-secret]") >= 12
+assert assignment_redacted.count("[redacted-secret]") >= 15
 
 safe_reference = mod.sanitize_text(
     'token = os.getenv("OPENROUTER_TOKEN")\npassword = process.env.DB_PASSWORD\napi_key=${OPENROUTER_API_KEY}',
@@ -142,7 +156,7 @@ prompt = mod.build_prompt(
     {
         "number": 281,
         "title": "Prompt redaction",
-        "body": f"body token {secret_like}\nOPENROUTER_API_KEY={openrouter_key}\n\"password\": \"{quoted_json_password}\"\n\"token\": \"{process_env_reference}\"",
+        "body": f"body token {secret_like}\nOPENROUTER_API_KEY={openrouter_key}\n\"password\": \"{quoted_json_password}\"\n\"token\": \"{process_env_reference}\"\n\"password\": \"{unsafe_process_reference}\"",
     },
     [
         {
@@ -151,13 +165,24 @@ prompt = mod.build_prompt(
             "additions": 1,
             "deletions": 0,
             "changes": 1,
-            "patch": f"+token = '{secret_like}'\n+password={punctuation_password}\n+\"password\": \"{quoted_json_password}\"\n+\"password\": \"{apostrophe_password}\"\n+\"password\": \"{escaped_quote_password}\"\n+\"token\": \"{process_env_reference}\"",
+            "patch": f"+token = '{secret_like}'\n+password={punctuation_password}\n+\"password\": \"{quoted_json_password}\"\n+\"password\": \"{apostrophe_password}\"\n+\"password\": \"{escaped_quote_password}\"\n+\"token\": \"{process_env_reference}\"\n+\"password\": \"{unsafe_process_reference}\"",
         }
     ],
-    f"diff --git a/example.py b/example.py\n+++ b/example.py\n@@ -1,0 +1,6 @@\n+token = '{secret_like}'\n+OPENAI_API_KEY={openai_key}\n+PASSWORD={delimiter_password}\n+\"password\": \"{quoted_json_password}\"\n+\"password\": \"{escaped_quote_password}\"\n+\"token\": \"{process_env_reference}\"\n",
+    f"diff --git a/example.py b/example.py\n+++ b/example.py\n@@ -1,0 +1,7 @@\n+token = '{secret_like}'\n+OPENAI_API_KEY={openai_key}\n+PASSWORD={delimiter_password}\n+\"password\": \"{quoted_json_password}\"\n+\"password\": \"{escaped_quote_password}\"\n+\"token\": \"{process_env_reference}\"\n+\"password\": \"{unsafe_process_reference}\"\n",
     config,
 )
-for leaked in ["sk_live_demo", "sk-or-v1", "sk-proj", punctuation_password, delimiter_password, quoted_json_password, apostrophe_password, escaped_quote_password, "tail-secret"]:
+for leaked in [
+    "sk_live_demo",
+    "sk-or-v1",
+    "sk-proj",
+    punctuation_password,
+    delimiter_password,
+    quoted_json_password,
+    apostrophe_password,
+    escaped_quote_password,
+    unsafe_process_reference,
+    "tail-secret",
+]:
     assert leaked not in prompt, prompt
 assert process_env_reference in prompt, prompt
 assert "[redacted-secret]" in prompt
