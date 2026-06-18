@@ -399,15 +399,31 @@ SECRET_QUOTED_ASSIGNMENT_START = re.compile(
 SECRET_UNQUOTED_ASSIGNMENT = re.compile(
     r"(?i)\b([A-Z0-9_\-]*(?:TOKEN|SECRET|PASSWORD|API[_-]?KEY)[A-Z0-9_\-]*)(\s*[:=]\s*)([^\s\"']{8,})"
 )
-SAFE_UNQUOTED_REFERENCE = re.compile(
+SAFE_REFERENCE_PREFIX = re.compile(
     r"(?i)^(?:os\.getenv\(|os\.environ(?:\.get|\[|\b)|env\.get\(|getenv\(|process\.env(?:\.|\[|\b)|import\.meta\.env(?:\.|\[|\b)|secrets\.get\()"
+)
+SAFE_QUOTED_REFERENCE = re.compile(
+    r"""(?ix)^(?:
+    os\.getenv\(\s*[\"'][A-Z_][A-Z0-9_]*[\"']\s*(?:,\s*[\"'][^\"'\r\n]*[\"']\s*)?\)
+    | os\.environ(?:\.get\(\s*[\"'][A-Z_][A-Z0-9_]*[\"']\s*(?:,\s*[\"'][^\"'\r\n]*[\"']\s*)?\)|\[\s*[\"'][A-Z_][A-Z0-9_]*[\"']\s*\])
+    | env\.get\(\s*[\"'][A-Z_][A-Z0-9_]*[\"']\s*(?:,\s*[\"'][^\"'\r\n]*[\"']\s*)?\)
+    | getenv\(\s*[\"'][A-Z_][A-Z0-9_]*[\"']\s*(?:,\s*[\"'][^\"'\r\n]*[\"']\s*)?\)
+    | process\.env(?:\.[A-Z_][A-Z0-9_]*|\[\s*[\"'][A-Z_][A-Z0-9_]*[\"']\s*\])
+    | import\.meta\.env(?:\.[A-Z_][A-Z0-9_]*|\[\s*[\"'][A-Z_][A-Z0-9_]*[\"']\s*\])
+    | secrets\.get\(\s*[\"'][A-Z_][A-Z0-9_]*[\"']\s*\)
+)$"""
 )
 ENV_REFERENCE = re.compile(r"^\$\{?[A-Za-z_][A-Za-z0-9_]*\}?$")
 
 
-def is_safe_secret_reference(value: str) -> bool:
+def is_safe_unquoted_reference(value: str) -> bool:
     stripped = value.strip()
-    return bool(SAFE_UNQUOTED_REFERENCE.match(stripped) or ENV_REFERENCE.fullmatch(stripped))
+    return bool(SAFE_REFERENCE_PREFIX.match(stripped) or ENV_REFERENCE.fullmatch(stripped))
+
+
+def is_safe_quoted_reference(value: str) -> bool:
+    stripped = value.strip()
+    return bool(SAFE_QUOTED_REFERENCE.fullmatch(stripped) or ENV_REFERENCE.fullmatch(stripped))
 
 
 def find_quoted_value_end(text: str, start: int, quote: str) -> int:
@@ -439,7 +455,7 @@ def redact_quoted_assignments(text: str) -> str:
             continue
         value = text[value_start:value_end]
         result.append(text[cursor:value_start])
-        result.append(value if is_safe_secret_reference(value) else REDACTION)
+        result.append(value if is_safe_quoted_reference(value) else REDACTION)
         cursor = value_end
     if not result:
         return text
@@ -449,7 +465,7 @@ def redact_quoted_assignments(text: str) -> str:
 
 def redact_unquoted_assignment(match: re.Match[str]) -> str:
     value = match.group(3)
-    if is_safe_secret_reference(value):
+    if is_safe_unquoted_reference(value):
         return match.group(0)
     return f"{match.group(1)}{match.group(2)}{REDACTION}"
 
