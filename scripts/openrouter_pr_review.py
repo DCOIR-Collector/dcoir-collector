@@ -14,10 +14,8 @@ import os
 import re
 import signal
 import sys
-import textwrap
 import time
 import urllib.error
-import urllib.parse
 import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
@@ -26,6 +24,7 @@ from typing import Any
 GITHUB_API = "https://api.github.com"
 OPENROUTER_API = "https://openrouter.ai/api/v1/chat/completions"
 MARKER = "<!-- openrouter-pr-review -->"
+REDACTION = "[redacted-secret]"
 
 
 @dataclass
@@ -59,12 +58,27 @@ def read_text(path: str, default: str = "") -> str:
         return default
 
 
-def load_yaml_like_config(path: str) -> Config:
-    """Parse the tiny YAML subset used by .github/openrouter-pr-review.yml.
+def parse_scalar(value: str) -> Any:
+    value = value.strip()
+    if value in {"true", "True"}:
+        return True
+    if value in {"false", "False"}:
+        return False
+    if value.startswith("'") and value.endswith("'"):
+        return value[1:-1]
+    if value.startswith('"') and value.endswith('"'):
+        return value[1:-1]
+    try:
+        if "." in value:
+            return float(value)
+        return int(value)
+    except ValueError:
+        return value
 
-    The parser supports top-level scalars and lists. Avoiding PyYAML keeps the
-    action dependency-free and faster to bootstrap on GitHub-hosted runners.
-    """
+
+def load_yaml_like_config(path: str) -> Config:
+    """Parse the tiny YAML subset used by .github/openrouter-pr-review.yml."""
+
     raw = read_text(path)
     data: dict[str, Any] = {}
     current_key: str | None = None
@@ -77,18 +91,17 @@ def load_yaml_like_config(path: str) -> Config:
             key = key.strip()
             value = value.strip()
             current_key = key
-            if value == "":
-                data[key] = []
-            else:
-                data[key] = parse_scalar(value)
+            data[key] = [] if value == "" else parse_scalar(value)
         elif current_key and stripped.startswith("-"):
             item = stripped[1:].strip()
             data.setdefault(current_key, []).append(parse_scalar(item))
+
     model = str(data.get("model", "openrouter/free"))
     raw_stack = data.get("model_stack", [])
     model_stack = [str(item) for item in raw_stack] if isinstance(raw_stack, list) else []
     if not model_stack:
         model_stack = [model]
+
     return Config(
         commands=list(data.get("commands", ["/or-review", "/openrouter-review", "/dcoir-review"])),
         model=model,
@@ -113,24 +126,6 @@ def load_yaml_like_config(path: str) -> Config:
     )
 
 
-def parse_scalar(value: str) -> Any:
-    value = value.strip()
-    if value in {"true", "True"}:
-        return True
-    if value in {"false", "False"}:
-        return False
-    if value.startswith("'") and value.endswith("'"):
-        return value[1:-1]
-    if value.startswith('"') and value.endswith('"'):
-        return value[1:-1]
-    try:
-        if "." in value:
-            return float(value)
-        return int(value)
-    except ValueError:
-        return value
-
-
 def env_required(name: str) -> str:
     value = os.environ.get(name, "")
     if not value:
@@ -146,7 +141,6 @@ class GitHubClient:
     def __init__(self, token: str, repo: str) -> None:
         self.token = token
         self.repo = repo
-        self.owner, self.name = repo.split("/", 1)
 
     def request(
         self,
@@ -237,10 +231,7 @@ def append_step_summary(stage: str, message: str) -> None:
 
 def emit_status(stage: str, message: str) -> None:
     print(f"[openrouter-pr-review] {stage}: {message}", flush=True)
-    print(
-        f"::notice title=OpenRouter PR Review::{actions_notice_escape(stage + ': ' + message)}",
-        flush=True,
-    )
+    print(f"::notice title=OpenRouter PR Review::{actions_notice_escape(stage + ': ' + message)}", flush=True)
     append_step_summary(stage, message)
 
 
@@ -256,18 +247,16 @@ def command_matches(body: str, commands: list[str]) -> bool:
     return matching_command(body, commands) is not None
 
 
+def provider_slug(name: str) -> str:
+    return re.sub(r"[^a-z0-9_-]+", "-", name.strip().lower()).strip("-")
+
+
 def model_stack_label(config: Config) -> str:
     return ", ".join(config.model_stack)
 
 
 class ProgressReporter:
-    def __init__(
-        self,
-        gh: GitHubClient,
-        issue_number: int,
-        command: str,
-        config: Config,
-    ) -> None:
+    def __init__(self, gh: GitHubClient, issue_number: int, command: str, config: Config) -> None:
         self.gh = gh
         self.issue_number = issue_number
         self.command = command
@@ -291,10 +280,7 @@ class ProgressReporter:
 
     def complete(self, model_used: str, findings_count: int, review_event: str) -> None:
         plural = "finding" if findings_count == 1 else "findings"
-        self._record(
-            "completed",
-            f"posted GitHub review using {model_used}; {findings_count} inline {plural}; event={review_event}",
-        )
+        self._record("completed", f"posted GitHub review using {model_used}; {findings_count} inline {plural}; event={review_event}")
         self._update_comment(
             self._body(
                 "completed",
@@ -357,7 +343,6 @@ class ProgressReporter:
 
 
 def build_diff_line_index(diff: str) -> dict[tuple[str, int], int]:
-    """Map (path, right-side line) to GitHub legacy diff position."""
     mapping: dict[tuple[str, int], int] = {}
     current_path: str | None = None
     position = 0
@@ -381,10 +366,6 @@ def build_diff_line_index(diff: str) -> dict[tuple[str, int], int]:
         position += 1
         if line.startswith("-") and not line.startswith("---"):
             continue
-        if line.startswith("+") and not line.startswith("+++"):
-            mapping[(current_path, right_line)] = position
-            right_line += 1
-            continue
         mapping[(current_path, right_line)] = position
         right_line += 1
     return mapping
@@ -403,6 +384,32 @@ def load_guidance(config: Config) -> str:
         if text:
             parts.append(f"## {path}\n\n{text}")
     return "\n\n".join(parts)
+
+
+SECRET_VALUE_PATTERNS = [
+    re.compile(r"(?<![A-Za-z0-9_])sk-(?:or|proj|live|test)?-?[A-Za-z0-9][A-Za-z0-9_\-]{8,}", re.IGNORECASE),
+    re.compile(r"(?<![A-Za-z0-9_])sk_[A-Za-z0-9_\-]{8,}", re.IGNORECASE),
+    re.compile(r"gh[pousr]_[A-Za-z0-9_]{20,}"),
+    re.compile(r"github_pat_[A-Za-z0-9_]{20,}"),
+    re.compile(r"AKIA[0-9A-Z]{16}"),
+]
+SECRET_QUOTED_ASSIGNMENT = re.compile(
+    r"(?i)\b([A-Z0-9_\-]*(?:TOKEN|SECRET|PASSWORD|API[_-]?KEY)[A-Z0-9_\-]*)(\s*[:=]\s*)([\"'])([^\"'\r\n]{8,})([\"'])"
+)
+SECRET_UNQUOTED_ASSIGNMENT = re.compile(
+    r"(?i)\b([A-Z0-9_\-]*(?:TOKEN|SECRET|PASSWORD|API[_-]?KEY)[A-Z0-9_\-]*)(\s*[:=]\s*)([^\s\"'`,;.}{)(\[\]]{8,})"
+)
+
+
+def sanitize_text(text: str, config: Config) -> str:
+    if not config.redact_secret_literals:
+        return text
+    cleaned = text
+    cleaned = SECRET_QUOTED_ASSIGNMENT.sub(lambda match: f"{match.group(1)}{match.group(2)}{match.group(3)}{REDACTION}{match.group(5)}", cleaned)
+    cleaned = SECRET_UNQUOTED_ASSIGNMENT.sub(lambda match: f"{match.group(1)}{match.group(2)}{REDACTION}", cleaned)
+    for pattern in SECRET_VALUE_PATTERNS:
+        cleaned = pattern.sub(REDACTION, cleaned)
+    return cleaned
 
 
 def build_prompt(pr: dict[str, Any], files: list[dict[str, Any]], diff: str, config: Config) -> str:
@@ -459,58 +466,30 @@ def parse_openrouter_error(detail: str) -> dict[str, Any]:
     retry_after = metadata.get("retry_after_seconds") if isinstance(metadata, dict) else None
     if retry_after is None and isinstance(metadata, dict):
         retry_after = metadata.get("retry_after_seconds_raw")
-    return {
-        "message": message,
-        "provider": provider,
-        "retry_after": retry_after,
-    }
+    return {"message": message, "provider": provider, "retry_after": retry_after}
 
 
-def provider_slug(name: str) -> str:
-    return re.sub(r"[^a-z0-9_-]+", "-", name.strip().lower()).strip("-")
-
-
-def build_openrouter_payload(
-    prompt: str,
-    schema: dict[str, Any],
-    config: Config,
-    ignored_providers: list[str],
-    model: str,
-) -> dict[str, Any]:
-    system_prompt = read_text("prompts/openrouter-pr-review-system.md")
-    provider: dict[str, Any] = {
-        "allow_fallbacks": True,
-        "require_parameters": True,
-    }
+def build_openrouter_payload(prompt: str, schema: dict[str, Any], config: Config, ignored_providers: list[str], model: str) -> dict[str, Any]:
+    provider: dict[str, Any] = {"allow_fallbacks": True, "require_parameters": True}
     clean_ignored = [item for item in ignored_providers if item]
     if clean_ignored:
         provider["ignore"] = clean_ignored
     return {
         "model": model,
         "messages": [
-            {"role": "system", "content": system_prompt},
+            {"role": "system", "content": read_text("prompts/openrouter-pr-review-system.md")},
             {"role": "user", "content": prompt},
         ],
         "response_format": {
             "type": "json_schema",
-            "json_schema": {
-                "name": "openrouter_pr_review",
-                "strict": True,
-                "schema": schema,
-            },
+            "json_schema": {"name": "openrouter_pr_review", "strict": True, "schema": schema},
         },
         "provider": provider,
         "temperature": 0.2,
     }
 
 
-def openrouter_request_once(
-    prompt: str,
-    schema: dict[str, Any],
-    config: Config,
-    ignored_providers: list[str],
-    model: str,
-) -> tuple[dict[str, Any], str]:
+def openrouter_request_once(prompt: str, schema: dict[str, Any], config: Config, ignored_providers: list[str], model: str) -> tuple[dict[str, Any], str]:
     api_key = env_required("OPENROUTER_API_KEY")
     payload = build_openrouter_payload(prompt, schema, config, ignored_providers, model)
     headers = {
@@ -530,7 +509,6 @@ def openrouter_request_once(
     try:
         parsed = json.loads(content)
     except json.JSONDecodeError:
-        # Some free models may wrap JSON in a fenced block. Try one conservative recovery.
         match = re.search(r"```(?:json)?\s*(\{.*\})\s*```", content, flags=re.DOTALL)
         if not match:
             raise
@@ -538,12 +516,7 @@ def openrouter_request_once(
     return parsed, model_used
 
 
-def openrouter_review(
-    prompt: str,
-    schema: dict[str, Any],
-    config: Config,
-    reporter: ProgressReporter | None = None,
-) -> tuple[dict[str, Any], str]:
+def openrouter_review(prompt: str, schema: dict[str, Any], config: Config, reporter: ProgressReporter | None = None) -> tuple[dict[str, Any], str]:
     attempts = max(1, config.openrouter_max_attempts)
     retry_cap = max(1, config.openrouter_retry_max_seconds)
     last_error = "OpenRouter request failed"
@@ -551,10 +524,7 @@ def openrouter_review(
     for model_index, model in enumerate(config.model_stack, start=1):
         ignored_providers = [provider_slug(item) for item in config.ignored_providers]
         if reporter:
-            reporter.update(
-                "openrouter",
-                f"calling model {model_index}/{len(config.model_stack)}: {model}",
-            )
+            reporter.update("openrouter", f"calling model {model_index}/{len(config.model_stack)}: {model}")
         for attempt in range(1, attempts + 1):
             try:
                 if reporter:
@@ -570,18 +540,13 @@ def openrouter_review(
                 try:
                     delay = float(retry_after) if retry_after is not None else float(exc.headers.get("Retry-After", ""))
                 except (TypeError, ValueError):
-                    delay = min(2 ** attempt, retry_cap)
+                    delay = min(2**attempt, retry_cap)
                 delay = min(max(delay, 1.0), float(retry_cap))
                 last_error = f"OpenRouter API failed with HTTP {exc.code}: {parsed_error.get('message', 'request failed')}"
                 if provider:
                     last_error += f" Provider skipped for retry: {provider}."
                 retryable = exc.code in {408, 409, 425, 429, 500, 502, 503, 504}
                 if retryable and attempt < attempts:
-                    print(
-                        f"WARN: {last_error} Retrying in {delay:.0f}s ({attempt}/{attempts})",
-                        file=sys.stderr,
-                        flush=True,
-                    )
                     if reporter:
                         reporter.update("openrouter-retry", f"{last_error} retrying in {delay:.0f}s")
                     time.sleep(delay)
@@ -590,12 +555,7 @@ def openrouter_review(
             except RuntimeError as exc:
                 last_error = str(exc)
                 if "empty response" in last_error.lower() and attempt < attempts:
-                    delay = min(2 ** attempt, retry_cap)
-                    print(
-                        f"WARN: {last_error}. Retrying in {delay:.0f}s ({attempt}/{attempts})",
-                        file=sys.stderr,
-                        flush=True,
-                    )
+                    delay = min(2**attempt, retry_cap)
                     if reporter:
                         reporter.update("openrouter-retry", f"{last_error}; retrying in {delay:.0f}s")
                     time.sleep(delay)
@@ -604,12 +564,7 @@ def openrouter_review(
             except json.JSONDecodeError:
                 last_error = "OpenRouter returned invalid JSON"
                 if attempt < attempts:
-                    delay = min(2 ** attempt, retry_cap)
-                    print(
-                        f"WARN: {last_error}. Retrying in {delay:.0f}s ({attempt}/{attempts})",
-                        file=sys.stderr,
-                        flush=True,
-                    )
+                    delay = min(2**attempt, retry_cap)
                     if reporter:
                         reporter.update("openrouter-retry", f"{last_error}; retrying in {delay:.0f}s")
                     time.sleep(delay)
@@ -640,51 +595,18 @@ def normalize_findings(result: dict[str, Any], config: Config, line_index: dict[
     return findings[: config.max_inline_comments]
 
 
-SECRET_PATTERNS = [
-    re.compile(r"sk_live_[A-Za-z0-9_\-]{8,}"),
-    re.compile(r"gh[pousr]_[A-Za-z0-9_]{20,}"),
-    re.compile(r"github_pat_[A-Za-z0-9_]{20,}"),
-    re.compile(r"AKIA[0-9A-Z]{16}"),
-    re.compile(r"(?i)(token|secret|password|api[_-]?key)([\s:=]+)[\"'][^\"']{8,}[\"']"),
-]
-
-
-def sanitize_text(text: str, config: Config) -> str:
-    if not config.redact_secret_literals:
-        return text
-    cleaned = text
-    for pattern in SECRET_PATTERNS:
-        def repl(match: re.Match[str]) -> str:
-            if match.lastindex and match.lastindex >= 2:
-                return f"{match.group(1)}{match.group(2)}[redacted-secret]"
-            return "[redacted-secret]"
-        cleaned = pattern.sub(repl, cleaned)
-    return cleaned
-
-
 def is_safe_suggestion(suggestion: str) -> bool:
     text = suggestion.strip()
     if not text:
         return False
-    prose_prefixes = (
-        "use ",
-        "replace ",
-        "remove ",
-        "avoid ",
-        "store ",
-        "validate ",
-        "sanitize ",
-        "consider ",
-        "e.g.",
-        "for example",
-    )
+    prose_prefixes = ("use ", "replace ", "remove ", "avoid ", "store ", "validate ", "sanitize ", "consider ", "e.g.", "for example")
     lowered = text.lower()
     if lowered.startswith(prose_prefixes):
         return False
     if " should " in lowered or " you should " in lowered:
         return False
     code_signals = ("=", "(", ")", "{", "}", "[", "]", ":", ";", "return ", "throw ", "raise ", "if ", "for ", "while ")
-    return any(signal in text for signal in code_signals)
+    return any(signal_text in text for signal_text in code_signals)
 
 
 def build_inline_comment(finding: dict[str, Any], model_used: str, config: Config) -> str:
@@ -694,11 +616,7 @@ def build_inline_comment(finding: dict[str, Any], model_used: str, config: Confi
     body = sanitize_text(str(finding.get("body", "")).strip(), config)
     validation = sanitize_text(str(finding.get("validation", "")).strip(), config)
     suggestion = sanitize_text(str(finding.get("suggested_replacement", "")).rstrip(), config)
-    parts = [
-        f"**{severity}: {title}**",
-        "",
-        body,
-    ]
+    parts = [f"**{severity}: {title}**", "", body]
     if config.include_confidence:
         parts.extend(["", f"Confidence: `{confidence:.2f}`"])
     if suggestion:
@@ -716,10 +634,7 @@ def build_review_body(result: dict[str, Any], findings: list[dict[str, Any]], mo
     if findings and not config.post_summary_when_findings:
         return MARKER
     summary = sanitize_text(str(result.get("summary", "OpenRouter review completed.")).strip(), config)
-    if findings:
-        event_text = "Review posted with inline findings."
-    else:
-        event_text = "No high-confidence inline findings were found in the changed diff."
+    event_text = "Review posted with inline findings." if findings else "No high-confidence inline findings were found in the changed diff."
     return github_safe_body(
         f"""{MARKER}
 OpenRouter PR review completed.
@@ -755,9 +670,7 @@ def main() -> None:
         return
 
     def timeout_handler(_signum: int, _frame: Any) -> None:
-        raise ReviewTimeoutError(
-            f"OpenRouter PR review exceeded script timeout of {config.script_timeout_seconds} seconds"
-        )
+        raise ReviewTimeoutError(f"OpenRouter PR review exceeded script timeout of {config.script_timeout_seconds} seconds")
 
     schema = json.loads(read_text("schemas/openrouter-pr-review.schema.json"))
     gh = GitHubClient(token, repo)
@@ -768,7 +681,7 @@ def main() -> None:
         reaction = gh.create_issue_comment_reaction(trigger_comment_id, "eyes")
         eyes_reaction_id = int(reaction.get("id", 0))
     except Exception as exc:
-        print(f"WARN: unable to add eyes reaction: {exc}", file=sys.stderr)
+        print(f"WARN: unable to add eyes reaction: {exc}", file=sys.stderr, flush=True)
 
     try:
         if config.script_timeout_seconds > 0 and hasattr(signal, "SIGALRM"):
@@ -793,20 +706,13 @@ def main() -> None:
         for finding in findings:
             path = str(finding["path"])
             line = int(finding["line"])
-            comments.append(
-                {
-                    "path": path,
-                    "position": line_index[(path, line)],
-                    "body": build_inline_comment(finding, model_used, config),
-                }
-            )
+            comments.append({"path": path, "position": line_index[(path, line)], "body": build_inline_comment(finding, model_used, config)})
 
         event = "REQUEST_CHANGES" if comments and config.request_changes_on_findings else "COMMENT"
         review_body = build_review_body(result, findings, model_used, config)
         reporter.update("github-review", f"posting GitHub review with {len(comments)} inline comments")
         gh.create_review(pr_number, review_body, event, comments, str(pr.get("head", {}).get("sha", "")))
         reporter.complete(model_used, len(comments), event)
-
     except Exception as exc:
         reporter.fail(str(exc))
         if not config.post_progress_comment:
