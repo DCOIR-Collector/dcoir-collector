@@ -71,6 +71,15 @@ def list_value(data: dict[str, Any], key: str) -> list[str]:
 
 def bool_value(data: dict[str, Any], key: str, default: bool) -> bool:
     value = data.get(key, default)
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, (int, float)):
+        return bool(value)
+    lowered = str(value).strip().lower()
+    if lowered in {"true", "yes", "on", "1"}:
+        return True
+    if lowered in {"false", "no", "off", "0", "none", "null", ""}:
+        return False
     return bool(value)
 
 
@@ -401,20 +410,6 @@ def openrouter_review(prompt: str, schema: dict[str, Any], config: Any, reporter
 
 def summary_suggests_problem(summary: str) -> bool:
     cleaned = re.sub(r"[^a-z0-9]+", " ", summary.lower()).strip()
-    negative_phrases = (
-        "no findings",
-        "no issue",
-        "no issues",
-        "no problems",
-        "no actionable",
-        "no high confidence",
-        "no high signal",
-        "nothing actionable",
-        "looks good",
-        "clean review",
-    )
-    if any(phrase in cleaned for phrase in negative_phrases):
-        return False
     positive_terms = (
         "finding",
         "issue",
@@ -430,7 +425,22 @@ def summary_suggests_problem(summary: str) -> bool:
         "must",
         "breaks",
     )
-    return any(term in cleaned for term in positive_terms)
+    negative_phrases = (
+        "nothing actionable",
+        "no high confidence",
+        "no high signal",
+        "no actionable",
+        "no findings",
+        "no problems",
+        "no issues",
+        "no issue",
+        "looks good",
+        "clean review",
+    )
+    stripped = cleaned
+    for phrase in negative_phrases:
+        stripped = stripped.replace(phrase, " ")
+    return any(term in stripped for term in positive_terms)
 
 
 def normalize_findings(result: dict[str, Any], config: Any, line_index: dict[tuple[str, int], int]) -> list[dict[str, Any]]:
