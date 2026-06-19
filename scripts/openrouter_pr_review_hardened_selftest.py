@@ -177,6 +177,20 @@ except mod.ReviewQualityError as exc:
 else:
     raise AssertionError("summary-only problem should fail review quality")
 
+try:
+    mod.normalize_findings(
+        {
+            "summary": "No high-confidence inline findings were found, but the only high-signal finding is a governance regression.",
+            "findings": [],
+        },
+        config,
+        line_index,
+    )
+except mod.ReviewQualityError as exc:
+    assert "summary indicated a possible issue" in str(exc)
+else:
+    raise AssertionError("mixed clean/problem summary should fail review quality")
+
 assert mod.normalize_findings({"summary": "No findings.", "findings": []}, config, line_index) == []
 
 print("hardened OpenRouter selftest passed")
