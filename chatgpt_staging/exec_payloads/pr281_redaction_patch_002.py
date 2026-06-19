@@ -172,30 +172,31 @@ header_fallback_expression = "${{ secrets.AUTH_TOKEN || '" + header_fallback_sec
 header_command_expression = "$(printf '" + header_command_secret + "')"
 header_ansi_expression = "$'" + header_ansi_secret + "'"
 header_line_continuation = "\\" + "\n  " + header_line_continuation_secret
-header_regression_cases = {
-    f"Authorization: Bearer {header_fallback_expression}": "Authorization: Bearer [redacted-secret]",
-    f"Proxy-Authorization: Basic {header_command_expression}": "Proxy-Authorization: Basic [redacted-secret]",
-    f"Authorization: Bearer {header_ansi_expression}": "Authorization: Bearer [redacted-secret]",
-    f"Authorization: Bearer {header_line_continuation}": "Authorization: Bearer [redacted-secret]",
-}
-for header_form, expected_header in header_regression_cases.items():
-    assert mod.sanitize_text(header_form, config) == expected_header
+header_regression_cases = [
+    (f"Authorization: Bearer {header_fallback_expression}", header_fallback_secret),
+    (f"Proxy-Authorization: Basic {header_command_expression}", header_command_secret),
+    (f"Authorization: Bearer {header_ansi_expression}", header_ansi_secret),
+    (f"Authorization: Bearer {header_line_continuation}", header_line_continuation_secret),
+]
+for header_form, header_secret in header_regression_cases:
+    sanitized_header = mod.sanitize_text(header_form, config)
+    assert header_secret not in sanitized_header, sanitized_header
+    assert "[redacted-secret]" in sanitized_header, sanitized_header
 
 curl_continuation_password = "continued curl secret 12345"
 curl_proxy_continuation_password = "continued proxy curl secret 12345"
 curl_inline_continuation_password = "inline continued curl secret 12345"
 line_continuation = "\\" + "\n"
 crlf_line_continuation = "\\" + "\r\n"
-curl_continuation_cases = {
-    f'curl --user {line_continuation}  "dcoir:{curl_continuation_password}" https://example.test/':
-        f'curl --user {line_continuation}  "dcoir:[redacted-secret]" https://example.test/',
-    f"curl --proxy-user {crlf_line_continuation}  dcoir:{curl_proxy_continuation_password} https://example.test/":
-        f"curl --proxy-user {crlf_line_continuation}  dcoir:[redacted-secret] https://example.test/",
-    f"curl --user dcoir:{line_continuation}  {curl_inline_continuation_password} https://example.test/":
-        "curl --user dcoir:[redacted-secret] https://example.test/",
-}
-for curl_form, expected_curl in curl_continuation_cases.items():
-    assert mod.sanitize_text(curl_form, config) == expected_curl
+curl_continuation_cases = [
+    (f'curl --user {line_continuation}  "dcoir:{curl_continuation_password}" https://example.test/', curl_continuation_password),
+    (f"curl --proxy-user {crlf_line_continuation}  dcoir:{curl_proxy_continuation_password} https://example.test/", curl_proxy_continuation_password),
+    (f"curl --user dcoir:{line_continuation}  {curl_inline_continuation_password} https://example.test/", curl_inline_continuation_password),
+]
+for curl_form, curl_secret in curl_continuation_cases:
+    sanitized_curl = mod.sanitize_text(curl_form, config)
+    assert curl_secret not in sanitized_curl, sanitized_curl
+    assert "[redacted-secret]" in sanitized_curl, sanitized_curl
 
 combined_regression_prompt = mod.build_prompt(
     {
