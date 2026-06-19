@@ -318,18 +318,19 @@ Before moving a draft PR to ready:
 10. Repeat the Codi review loop after fixes until Codi approves, the operator explicitly waives the remaining Codi gate for the current task, or a future durable instruction change removes or changes the Codi requirement.
 11. Treat Codi approval or waiver as internal review evidence only. It does not replace live GitHub readback, GitHub Actions validation, Supabase receipts, or the external `@codex` response.
 12. Record or refresh GitHub work-item evidence for the Codi gate when a governed issue work item exists.
-13. After the operator approves the exact proposed text in the current session, add or confirm a top-level PR comment that explicitly invokes `@codex` and asks for a review of the PR.
-14. Vary the wording of repeated `@codex` review requests in the same PR thread instead of repeating one exact sentence.
-15. Capture the GitHub issue comment id for that exact `@codex` review-request comment.
-16. Poll that comment's reactions with the GitHub connector action `Fetch reactions for an issue comment` using `repo_full_name`, `comment_id`, and a suitable `per_page` value such as `100`.
-17. If an `eyes` reaction from `chatgpt-codex-connector[bot]` appears, treat it as evidence that Codex has picked up and is working on the request.
-18. Continue polling the same comment until the `eyes` reaction is removed.
-19. Then read the PR reviews and/or merged PR discussion timeline for the new formal Codex response. The response may not be visible in the exact same check where the reaction disappears, so continue polling until the formal review/comment is read back.
-20. Read the formal external Codex response live.
-21. Fix or explicitly disposition valid external Codex findings.
-22. Wait for applicable PR validation workflows when they run.
-23. Read back run IDs, head SHA, job/step outcomes, and artifacts/reports when applicable.
-24. Record final readiness evidence through `ircore.record_github_work_item_readback` when a governed issue work item exists.
+13. After Prog/Adva and Codi are clear, run the configured OpenRouter internal review command (`/or-review` or `/dcoir-review`) as a single top-level PR comment before drafting or posting the external `@codex` review request, when the OpenRouter workflow/script are available on the default branch or an explicitly approved equivalent live-test lane and local validation has passed. For PRs that add or change the OpenRouter `issue_comment` workflow/script, do not treat branch-only workflow existence as enough; record the bootstrap gap until default-branch landing or an approved equivalent live-test lane can exercise the changed code. Capture the command comment id, eyes reaction lifecycle, workflow/run readback, progress/status comment, and PR review output; fix or explicitly disposition valid findings and repeat the gate when material fixes change the reviewed scope. Do not post the OpenRouter command until the operator-approved lane is at the review-command step.
+14. After the operator approves the exact proposed text in the current session, add or confirm a top-level PR comment that explicitly invokes `@codex` and asks for a review of the PR.
+15. Vary the wording of repeated `@codex` review requests in the same PR thread instead of repeating one exact sentence.
+16. Capture the GitHub issue comment id for that exact `@codex` review-request comment.
+17. Poll that comment's reactions with the GitHub connector action `Fetch reactions for an issue comment` using `repo_full_name`, `comment_id`, and a suitable `per_page` value such as `100`.
+18. If an `eyes` reaction from `chatgpt-codex-connector[bot]` appears, treat it as evidence that Codex has picked up and is working on the request.
+19. Continue polling the same comment until the `eyes` reaction is removed.
+20. Then read the PR reviews and/or merged PR discussion timeline for the new formal Codex response. The response may not be visible in the exact same check where the reaction disappears, so continue polling until the formal review/comment is read back.
+21. Read the formal external Codex response live.
+22. Fix or explicitly disposition valid external Codex findings.
+23. Wait for applicable PR validation workflows when they run.
+24. Read back run IDs, head SHA, job/step outcomes, and artifacts/reports when applicable.
+25. Record final readiness evidence through `ircore.record_github_work_item_readback` when a governed issue work item exists.
 
 The literal `@codex` mention is required. A plain-text reference to “Codex” is not sufficient to request the review.
 

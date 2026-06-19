@@ -46,6 +46,7 @@
 - [ ] Prog implementation/fix pass is complete or not applicable
 - [ ] Adva adversarial review pass is complete or not applicable
 - [ ] Codi review is complete or explicitly waived before external Codex review
+- [ ] OpenRouter internal review (`/or-review` or `/dcoir-review`) is clear after Codi and before external Codex review, or explicitly not applicable/waived because default-branch or equivalent live-test availability is absent for an OpenRouter workflow/script bootstrap PR
 - [ ] External Codex review request exact text was shown to the operator and explicitly approved before posting, or the external Codex gate is not applicable
 
 ## Codex Review And Fix Context
@@ -77,6 +78,7 @@ Do not mark ready for review until this checklist is complete.
 - [ ] The final scope review explicitly confirms whether every issue acceptance criterion is implemented, intentionally deferred, or no longer applicable
 - [ ] Any additional impactful scope suggestions were presented to the operator and either implemented, deferred, or rejected before undrafting
 - [ ] Codi is clear on the latest PR head
+- [ ] OpenRouter internal review is clear on the latest PR head, including command comment, progress/readback, review output, and finding disposition, or an explicit bootstrap/default-branch availability gap is recorded for OpenRouter workflow/script changes
 - [ ] External Codex is clear on the latest PR head after an operator-approved exact-text request, or the gate is explicitly not applicable
 - [ ] The PR remains draft until the operator approves the final undraft step
 
