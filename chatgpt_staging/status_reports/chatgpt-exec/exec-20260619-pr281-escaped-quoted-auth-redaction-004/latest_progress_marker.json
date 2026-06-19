@@ -1,0 +1,15 @@
+{
+  "artifact_name": "",
+  "exit_code": "",
+  "github_ref": "refs/heads/main",
+  "github_run_attempt": "1",
+  "github_run_id": "27844719950",
+  "github_sha": "90356375821973c7cfd15ff4abca1d1885f3a658",
+  "phase": "request-resolved",
+  "request_id": "exec-20260619-pr281-escaped-quoted-auth-redaction-004",
+  "request_path": "chatgpt_staging/exec_requests/exec-20260619-pr281-escaped-quoted-auth-redaction-004.json",
+  "result": "running",
+  "schema": "dcoir.chatgpt_staging.latest_progress_marker.v1",
+  "updated_utc": "2026-06-19T19:29:52Z",
+  "workflow": "chatgpt-exec"
+}
