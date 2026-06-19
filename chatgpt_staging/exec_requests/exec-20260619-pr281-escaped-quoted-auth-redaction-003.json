@@ -1,0 +1,12 @@
+{
+  "schema": "dcoir.chatgpt_staging.exec_request.v1",
+  "request_id": "exec-20260619-pr281-escaped-quoted-auth-redaction-003",
+  "operator_approved": true,
+  "approved_at_utc": "2026-06-19T19:25:00Z",
+  "shell": "powershell_5",
+  "timeout_seconds": 1800,
+  "artifact_retention_days": 3,
+  "cleanup_request_after_run": true,
+  "approved_command_preview": "Run staged PR #281 escaped quoted auth-credential redaction script 003. Guard PR branch head and file blob SHAs, update only scripts/openrouter_pr_review.py and scripts/openrouter_pr_review_selftest.py, run py_compile, offline selftest, diff checks, commit, and push only to the PR branch. No external Codex request, slash command, workflow edit, or ready-for-review transition is posted.",
+  "script_path": "chatgpt_staging/exec_scripts/pr281_escaped_quoted_auth_redaction_003.ps1"
+}
