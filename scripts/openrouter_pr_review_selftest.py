@@ -515,6 +515,7 @@ try:
                     f'"Cookie": "{cookie_secret}"',
                     f"Authorization: Bearer {bearer_secret}",
                     f'Authorization: Bearer "{bearer_secret}"',
+                    f'Authorization: Bearer \\"{bearer_secret}\\"',
                     f"Cookie: {cookie_secret}",
                     f"DATABASE_URL=postgres://dcoir:{url_password}@db.example.test/dcoir",
                     f'curl --user "dcoir:benign\n{curl_multiline_double_quote_password}" https://example.test/',
@@ -539,6 +540,7 @@ try:
                         f"+password={punctuation_password}",
                         f"+Authorization: Bearer {bearer_secret}",
                         f'+Authorization: Bearer "{bearer_secret}"',
+                        f'+Authorization: Bearer \\"{bearer_secret}\\"',
                         f"+Cookie: {cookie_secret}",
                         f'+headers = {{"Authorization": "Bearer {bearer_secret}", "Cookie": "{cookie_secret}"}}',
                         f"+DATABASE_URL=postgres://dcoir:{url_password}@db.example.test/dcoir",
@@ -567,6 +569,7 @@ try:
                 f"+PASSWORD={delimiter_password}",
                 f"+Authorization: Basic {basic_secret}",
                 f'+Authorization: Basic "{basic_secret}"',
+                f'+Authorization: Basic \\"{basic_secret}\\"',
                 f"+Set-Cookie: {set_cookie_secret}",
                 f'+headers = {{"Authorization": "Basic {basic_secret}", "Set-Cookie": "{set_cookie_secret}"}}',
                 f"+NETRC machine example.test login dcoir password {netrc_password}",
@@ -643,7 +646,7 @@ comment = mod.build_inline_comment(
         "title": "Hardcoded token from @codex",
         "severity": "critical",
         "confidence": 1.0,
-        "body": f'The changed line assigns token = "{secret_like}", password={punctuation_password}, and Authorization: Bearer "{bearer_secret}". Ask @codex to review.',
+        "body": f'The changed line assigns token = "{secret_like}", password={punctuation_password}, and Authorization: Bearer "{bearer_secret}" plus Authorization: Bearer \\"{bearer_secret}\\". Ask @codex to review.',
         "suggested_replacement": 'token = os.getenv("OPENROUTER_TOKEN")',
         "validation": "bash scripts/validate-codex-local.sh # ask @codex nowhere",
     },
@@ -684,6 +687,7 @@ failure_reporter.fail(
         [
             f"Authorization: Bearer {bearer_secret}",
             f'Authorization: Bearer "{bearer_secret}"',
+            f'Authorization: Bearer \\"{bearer_secret}\\"',
             f"Cookie: {cookie_secret}",
             f"DATABASE_URL=postgres://dcoir:{url_password}@db.example.test/dcoir",
             f"curl --user=:{curl_fallback_expression} https://example.test/",
@@ -753,6 +757,7 @@ header_command_secret = "command header secret 12345"
 header_ansi_secret = "ansi header secret 12345"
 header_line_continuation_secret = "header continuation secret 12345"
 header_quoted_secret = "quoted header secret 12345"
+escaped_quoted_header_secret = "escaped quoted header secret 12345"
 header_fallback_expression = "${{ secrets.AUTH_TOKEN || '" + header_fallback_secret + "' }}"
 header_command_expression = "$(printf '" + header_command_secret + "')"
 header_ansi_expression = "$'" + header_ansi_secret + "'"
@@ -764,10 +769,13 @@ header_regression_cases = [
     (f"Authorization: Bearer {header_line_continuation}", header_line_continuation_secret),
     (f'Authorization: Bearer "{header_quoted_secret}"', header_quoted_secret),
     (f"Proxy-Authorization: Basic '{header_quoted_secret}'", header_quoted_secret),
+    (f'Authorization: Bearer \\"{escaped_quoted_header_secret}\\"', escaped_quoted_header_secret),
+    (f'Proxy-Authorization: Basic \\"{escaped_quoted_header_secret}\\"', escaped_quoted_header_secret),
 ]
 for safe_quoted_header in [
     'Authorization: Bearer "${OPENROUTER_API_KEY}"',
     "Proxy-Authorization: Basic '${OPENROUTER_API_KEY}'",
+    'Authorization: Bearer \\"${OPENROUTER_API_KEY}\\"',
 ]:
     assert mod.sanitize_text(safe_quoted_header, config) == safe_quoted_header
 
@@ -798,6 +806,7 @@ combined_regression_prompt = mod.build_prompt(
         "body": "\n".join([
             f"Authorization: Bearer {header_fallback_expression}",
             f'Authorization: Bearer "{header_quoted_secret}"',
+            f'Authorization: Bearer \\"{escaped_quoted_header_secret}\\"',
             f"Proxy-Authorization: Basic {header_command_expression}",
             f"curl --user dcoir:{line_continuation}  {curl_inline_continuation_password} https://example.test/",
         ]),
@@ -812,6 +821,7 @@ for leaked in [
     header_ansi_secret,
     header_line_continuation_secret,
     header_quoted_secret,
+    escaped_quoted_header_secret,
     curl_continuation_password,
     curl_proxy_continuation_password,
     curl_inline_continuation_password,

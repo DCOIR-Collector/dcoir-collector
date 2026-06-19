@@ -537,10 +537,12 @@ def redact_header_credential(match: re.Match[str]) -> str:
     if not value or is_safe_header_secret_value(value):
         return match.group(0)
     scheme = match.group("scheme")
+    tail = match.string[match.end():].lstrip()
     if scheme is None and value.lower() in {"bearer", "basic", "token"}:
-        tail = match.string[match.end():].lstrip()
         if tail[:1] in {'"', "'"}:
             return match.group(0)
+    if scheme is not None and value == "\\" and tail[:1] in {'"', "'"}:
+        return match.group(0)
     scheme_prefix = f"{scheme} " if scheme else ""
     return f"{match.group('name_quote')}{match.group('name')}{match.group('name_quote')}{match.group('sep')}{match.group('quote')}{scheme_prefix}{REDACTION}{match.group('quote')}"
 
@@ -617,6 +619,19 @@ def skip_line_continuation_whitespace(text: str, start: int) -> int:
     return index
 
 
+def find_escaped_quoted_value_end(text: str, start: int, quote: str) -> int:
+    index = start
+    while index < len(text):
+        if text[index] == "\\" and index + 1 < len(text):
+            if text[index + 1] == quote:
+                return index + 2
+            index += 2
+            continue
+        if text[index] in {"\r", "\n"}:
+            return -1
+        index += 1
+    return -1
+
 def find_unquoted_header_credential_end(text: str, start: int) -> int:
     index = start
     consumed_plain = False
@@ -658,6 +673,21 @@ def find_unquoted_header_credential_end(text: str, start: int) -> int:
             if expression_end < 0:
                 return find_curl_credential_line_end(text, index)
             index = expression_end + 1
+            consumed_plain = True
+            continue
+        if text[index] == "\\" and index + 1 < len(text) and text[index + 1] in {'"', "'"}:
+            expression_end = find_escaped_quoted_value_end(text, index + 2, text[index + 1])
+            if consumed_plain:
+                next_delimiter = len(text)
+                for delimiter in ("\r", "\n", "\t", " ", ",", ";", ")", "}", "]"):
+                    delimiter_position = text.find(delimiter, index + 2)
+                    if delimiter_position >= 0:
+                        next_delimiter = min(next_delimiter, delimiter_position)
+                if expression_end < 0 or expression_end > next_delimiter:
+                    return index
+            if expression_end < 0:
+                return len(text)
+            index = expression_end
             consumed_plain = True
             continue
         if text[index] in {'"', "'"}:
@@ -707,8 +737,9 @@ def is_safe_header_secret_value(value: str) -> bool:
         return is_safe_reference(stripped[1:-1].strip())
     if len(stripped) >= 3 and stripped[0] == "$" and stripped[1] in {'"', "'"} and stripped[-1] == stripped[1]:
         return is_safe_reference(stripped[2:-1].strip())
+    if len(stripped) >= 4 and stripped[0] == "\\" and stripped[1] in {'"', "'"} and stripped[-2:] == f"\\{stripped[1]}":
+        return is_safe_reference(stripped[2:-2].strip())
     return False
-
 
 def redact_unquoted_header_credentials(text: str) -> str:
     result: list[str] = []
