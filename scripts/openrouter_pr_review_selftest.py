@@ -735,4 +735,64 @@ assert err["retry_after"] == 21
 assert mod.is_safe_suggestion('token = os.getenv("OPENROUTER_TOKEN")')
 assert not mod.is_safe_suggestion("Use environment variables for secrets.")
 
+
+header_fallback_secret = "fallback header secret 12345"
+header_command_secret = "command header secret 12345"
+header_ansi_secret = "ansi header secret 12345"
+header_line_continuation_secret = "header continuation secret 12345"
+header_fallback_expression = "${{ secrets.AUTH_TOKEN || '" + header_fallback_secret + "' }}"
+header_command_expression = "$(printf '" + header_command_secret + "')"
+header_ansi_expression = "$'" + header_ansi_secret + "'"
+header_line_continuation = "\\" + "\n  " + header_line_continuation_secret
+header_regression_cases = [
+    (f"Authorization: Bearer {header_fallback_expression}", header_fallback_secret),
+    (f"Proxy-Authorization: Basic {header_command_expression}", header_command_secret),
+    (f"Authorization: Bearer {header_ansi_expression}", header_ansi_secret),
+    (f"Authorization: Bearer {header_line_continuation}", header_line_continuation_secret),
+]
+for header_form, header_secret in header_regression_cases:
+    sanitized_header = mod.sanitize_text(header_form, config)
+    assert header_secret not in sanitized_header, sanitized_header
+    assert "[redacted-secret]" in sanitized_header, sanitized_header
+
+curl_continuation_password = "continued curl secret 12345"
+curl_proxy_continuation_password = "continued-proxy-curl-secret-12345"
+curl_inline_continuation_password = "inline-continued-curl-secret-12345"
+line_continuation = "\\" + "\n"
+crlf_line_continuation = "\\" + "\r\n"
+curl_continuation_cases = [
+    (f'curl --user {line_continuation}  "dcoir:{curl_continuation_password}" https://example.test/', curl_continuation_password),
+    (f"curl --proxy-user {crlf_line_continuation}  dcoir:{curl_proxy_continuation_password} https://example.test/", curl_proxy_continuation_password),
+    (f"curl --user dcoir:{line_continuation}  {curl_inline_continuation_password} https://example.test/", curl_inline_continuation_password),
+]
+for curl_form, curl_secret in curl_continuation_cases:
+    sanitized_curl = mod.sanitize_text(curl_form, config)
+    assert curl_secret not in sanitized_curl, sanitized_curl
+    assert "[redacted-secret]" in sanitized_curl, sanitized_curl
+
+combined_regression_prompt = mod.build_prompt(
+    {
+        "number": 281,
+        "title": "Continuation redaction",
+        "body": "\n".join([
+            f"Authorization: Bearer {header_fallback_expression}",
+            f"Proxy-Authorization: Basic {header_command_expression}",
+            f"curl --user dcoir:{line_continuation}  {curl_inline_continuation_password} https://example.test/",
+        ]),
+    },
+    [],
+    "",
+    config,
+)
+for leaked in [
+    header_fallback_secret,
+    header_command_secret,
+    header_ansi_secret,
+    header_line_continuation_secret,
+    curl_continuation_password,
+    curl_proxy_continuation_password,
+    curl_inline_continuation_password,
+]:
+    assert leaked not in combined_regression_prompt, combined_regression_prompt
+
 print("offline selftest passed")

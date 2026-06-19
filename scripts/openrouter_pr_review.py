@@ -598,9 +598,29 @@ def redact_unquoted_cookie_credentials(text: str) -> str:
     return "".join(result)
 
 
+def skip_line_continuation_whitespace(text: str, start: int) -> int:
+    index = start
+    while index < len(text):
+        if text[index] != "\\":
+            return index
+        if index + 2 < len(text) and text[index + 1] == "\r" and text[index + 2] == "\n":
+            index += 3
+        elif index + 1 < len(text) and text[index + 1] in {"\r", "\n"}:
+            index += 2
+        else:
+            return index
+        while index < len(text) and text[index] in {" ", "\t"}:
+            index += 1
+    return index
+
+
 def find_unquoted_header_credential_end(text: str, start: int) -> int:
     index = start
     while index < len(text):
+        continuation_index = skip_line_continuation_whitespace(text, index)
+        if continuation_index != index:
+            index = continuation_index
+            continue
         if text.startswith("${{", index):
             expression_end = find_github_expression_end(text, index + 3)
             if expression_end < 0:
@@ -619,7 +639,7 @@ def find_unquoted_header_credential_end(text: str, start: int) -> int:
                 return find_curl_credential_line_end(text, index)
             index = expression_end + 1
             continue
-        if text[index] == "$" and index + 1 < len(text) and text[index + 1] in {"\"", "'"}:
+        if text[index] == "$" and index + 1 < len(text) and text[index + 1] in {'"', "'"}:
             expression_end = find_curl_quoted_value_end(text, index + 2, text[index + 1])
             if expression_end < 0:
                 return len(text)
@@ -634,11 +654,10 @@ def find_unquoted_header_credential_end(text: str, start: int) -> int:
         if text[index] == "\\" and index + 1 < len(text):
             index += 2
             continue
-        if text[index] in {"\r", "\n", "\t", " ", "\"", "'", ",", ";", ")", "}", "]"}:
+        if text[index] in {"\r", "\n", "\t", " ", '"', "'", ",", ";", ")", "}", "]"}:
             return index
         index += 1
     return index
-
 
 def find_unquoted_header_value_end(text: str, start: int) -> int:
     probe = start
@@ -773,7 +792,7 @@ def find_unquoted_curl_credential_end(text: str, start: int) -> int:
                 return find_curl_credential_line_end(text, index)
             index = expression_end + 1
             continue
-        if text[index] == "$" and index + 1 < len(text) and text[index + 1] in {"\"", "'"}:
+        if text[index] == "$" and index + 1 < len(text) and text[index + 1] in {'"', "'"}:
             expression_end = find_curl_quoted_value_end(text, index + 2, text[index + 1])
             if expression_end < 0:
                 return len(text)
@@ -785,20 +804,24 @@ def find_unquoted_curl_credential_end(text: str, start: int) -> int:
                 return find_curl_credential_line_end(text, index)
             index = expression_end + 1
             continue
-        if text[index] == "\\" and index + 1 < len(text):
-            index += 2
-            continue
-        if text[index] in {"\"", "'"}:
+        if text[index] == "\\":
+            continuation_index = skip_line_continuation_whitespace(text, index)
+            if continuation_index != index:
+                index = continuation_index
+                continue
+            if index + 1 < len(text):
+                index += 2
+                continue
+        if text[index] in {'"', "'"}:
             expression_end = find_curl_quoted_value_end(text, index + 1, text[index])
             if expression_end < 0:
                 return len(text)
             index = expression_end + 1
             continue
-        if text[index] in {"\r", "\n", "\t", " ", "\"", "'"}:
+        if text[index] in {"\r", "\n", "\t", " ", '"', "'"}:
             return index
         index += 1
     return index
-
 
 def find_command_substitution_end(text: str, start: int) -> int:
     depth = 1
@@ -850,20 +873,7 @@ def find_backtick_substitution_end(text: str, start: int) -> int:
 
 
 def skip_curl_line_continuation_whitespace(text: str, start: int) -> int:
-    index = start
-    while index < len(text):
-        if text[index] != "\\":
-            return index
-        if index + 2 < len(text) and text[index + 1] == "\r" and text[index + 2] == "\n":
-            index += 3
-        elif index + 1 < len(text) and text[index + 1] in {"\r", "\n"}:
-            index += 2
-        else:
-            return index
-        while index < len(text) and text[index] in {" ", "\t"}:
-            index += 1
-    return index
-
+    return skip_line_continuation_whitespace(text, start)
 
 def redact_curl_user_credentials(text: str) -> str:
     result: list[str] = []
