@@ -427,6 +427,11 @@ def summary_suggests_problem(summary: str) -> bool:
     )
     negative_phrases = (
         "nothing actionable",
+        "no high confidence inline findings were found",
+        "no high confidence findings were found",
+        "no high confidence inline findings",
+        "no high confidence findings",
+        "no high signal findings",
         "no high confidence",
         "no high signal",
         "no actionable",
