@@ -333,4 +333,32 @@ except mod.ReviewQualityError as exc:
 else:
     raise AssertionError("clean negated list followed by problem summary should fail review quality")
 
+try:
+    mod.normalize_findings(
+        {
+            "summary": "No issues, security risks remain.",
+            "findings": [],
+        },
+        config,
+        line_index,
+    )
+except mod.ReviewQualityError as exc:
+    assert "summary indicated a possible issue" in str(exc)
+else:
+    raise AssertionError("clean noun followed by modifier problem summary should fail review quality")
+
+try:
+    mod.normalize_findings(
+        {
+            "summary": "No issues, regressions, security risks remain.",
+            "findings": [],
+        },
+        config,
+        line_index,
+    )
+except mod.ReviewQualityError as exc:
+    assert "summary indicated a possible issue" in str(exc)
+else:
+    raise AssertionError("clean negated list followed by modifier problem summary should fail review quality")
+
 print("hardened OpenRouter selftest passed")
