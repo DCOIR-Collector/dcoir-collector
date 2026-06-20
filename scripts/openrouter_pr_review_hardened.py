@@ -451,7 +451,14 @@ def summary_suggests_problem(summary: str) -> bool:
     )
     problem_noun_pattern = r"(?:findings?|issues?|problems?|regressions?|risks?|failures?|bypasses?)"
     modified_problem_noun_pattern = rf"(?:[a-z0-9-]+\s+){{0,4}}{problem_noun_pattern}"
+    clean_two_item_problem_noun_pattern = (
+        rf"(?!(?:a|an|the|this|that|these|those)\b)"
+        rf"(?:[a-z0-9-]+\s+){{0,4}}{problem_noun_pattern}"
+    )
     negated_list_patterns = (
+        rf"\bno\b\s+{clean_two_item_problem_noun_pattern}"
+        rf"\s+(?:and|or)\s+{clean_two_item_problem_noun_pattern}"
+        r"(?:\s+(?:were|was|are|is|found|identified|detected|observed|present|remaining|remain))*",
         rf"\bno\b\s+{modified_problem_noun_pattern}"
         rf"(?:,\s*(?!\b(?:and|or)\b){modified_problem_noun_pattern})+"
         rf"(?:,\s*|\s+)(?:and|or)\s+{modified_problem_noun_pattern}"
