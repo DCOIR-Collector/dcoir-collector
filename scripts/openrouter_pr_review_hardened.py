@@ -77,7 +77,7 @@ RISK_SENTINEL_RULES: tuple[tuple[str, str, re.Pattern[str]], ...] = (
     (
         "recursive delete primitive",
         "recursive deletion needs path root constraints, fail-closed behavior, and visible errors",
-        re.compile(r"\bshutil\.rmtree\b|\bRemove-Item\b.*(?:^|\s)-Recurse\b", re.IGNORECASE),
+        re.compile(r"\bshutil\.rmtree\b|\bRemove-Item\b[^\n]*\s-Recurse\b", re.IGNORECASE),
     ),
     (
         "environment dump or exfiltration primitive",
