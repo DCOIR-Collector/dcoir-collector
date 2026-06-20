@@ -225,6 +225,11 @@ assert mod.normalize_findings(
     line_index,
 ) == []
 assert mod.normalize_findings({"summary": "No regressions found.", "findings": []}, config, line_index) == []
+assert mod.normalize_findings(
+    {"summary": "No regressions found and no security risks remain.", "findings": []},
+    config,
+    line_index,
+) == []
 
 try:
     mod.normalize_findings(
@@ -239,5 +244,33 @@ except mod.ReviewQualityError as exc:
     assert "summary indicated a possible issue" in str(exc)
 else:
     raise AssertionError("mixed negated-clean/problem summary should fail review quality")
+
+try:
+    mod.normalize_findings(
+        {
+            "summary": "No regressions found, but security risks remain.",
+            "findings": [],
+        },
+        config,
+        line_index,
+    )
+except mod.ReviewQualityError as exc:
+    assert "summary indicated a possible issue" in str(exc)
+else:
+    raise AssertionError("contrast-clause problem summary should fail review quality")
+
+try:
+    mod.normalize_findings(
+        {
+            "summary": "No regressions found and security risks remain.",
+            "findings": [],
+        },
+        config,
+        line_index,
+    )
+except mod.ReviewQualityError as exc:
+    assert "summary indicated a possible issue" in str(exc)
+else:
+    raise AssertionError("coordinated mixed clean/problem summary should fail review quality")
 
 print("hardened OpenRouter selftest passed")
