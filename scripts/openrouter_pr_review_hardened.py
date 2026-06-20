@@ -417,7 +417,6 @@ def openrouter_review(prompt: str, schema: dict[str, Any], config: Any, reporter
 
 
 def summary_suggests_problem(summary: str) -> bool:
-    cleaned = re.sub(r"[^a-z0-9]+", " ", summary.lower()).strip()
     positive_terms = (
         "finding",
         "issue",
@@ -457,14 +456,14 @@ def summary_suggests_problem(summary: str) -> bool:
     )
 
     def clause_suggests_problem(clause: str) -> bool:
-        stripped = clause
+        stripped = re.sub(r"[^a-z0-9]+", " ", clause.lower()).strip()
         for phrase in negative_phrases:
             stripped = stripped.replace(phrase, " ")
         for pattern in negated_problem_patterns:
             stripped = re.sub(pattern, " ", stripped)
         return any(re.search(rf"\b{re.escape(term)}s?\b", stripped) for term in positive_terms)
 
-    clauses = re.split(r"\b(?:and|but|however|though|although|yet|except|nevertheless|still)\b", cleaned)
+    clauses = re.split(r"(?:[.;:!?]+|,\s+|\b(?:and|but|however|though|although|yet|except|nevertheless|still)\b)", summary)
     return any(clause_suggests_problem(clause.strip()) for clause in clauses if clause.strip())
 
 
