@@ -450,15 +450,27 @@ def summary_suggests_problem(summary: str) -> bool:
         "clean review",
     )
     problem_noun_pattern = r"(?:findings?|issues?|problems?|regressions?|risks?|failures?|bypasses?)"
+    remaining_problem_noun_pattern = r"(?:issues?|problems?|regressions?|risks?|failures?|bypasses?)"
     modified_problem_noun_pattern = rf"(?:[a-z0-9-]+\s+){{0,4}}{problem_noun_pattern}"
     clean_two_item_problem_noun_pattern = (
         rf"(?!(?:a|an|the|this|that|these|those)\b)"
         rf"(?:[a-z0-9-]+\s+){{0,4}}{problem_noun_pattern}"
     )
+    clean_two_item_remaining_noun_pattern = (
+        rf"(?!(?:a|an|the|this|that|these|those)\b)"
+        rf"(?:[a-z0-9-]+\s+){{1,4}}{remaining_problem_noun_pattern}"
+    )
+    clean_two_item_result_verb_pattern = r"(?:(?:were|was|are|is)\s+)?(?:found|identified|detected|observed)"
     negated_list_patterns = (
         rf"\bno\b\s+{clean_two_item_problem_noun_pattern}"
         rf"\s+(?:and|or)\s+{clean_two_item_problem_noun_pattern}"
-        r"(?:\s+(?:were|was|are|is|found|identified|detected|observed|present|remaining|remain))*",
+        rf"\s+{clean_two_item_result_verb_pattern}",
+        rf"\bno\b\s+{clean_two_item_problem_noun_pattern}"
+        rf"\s+or\s+{clean_two_item_problem_noun_pattern}"
+        r"\s+(?:present|remaining|remain)",
+        rf"\bno\b\s+{clean_two_item_remaining_noun_pattern}"
+        rf"\s+and\s+{clean_two_item_remaining_noun_pattern}"
+        r"\s+(?:present|remaining|remain)",
         rf"\bno\b\s+{modified_problem_noun_pattern}"
         rf"(?:,\s*(?!\b(?:and|or)\b){modified_problem_noun_pattern})+"
         rf"(?:,\s*|\s+)(?:and|or)\s+{modified_problem_noun_pattern}"
