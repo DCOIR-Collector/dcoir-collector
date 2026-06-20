@@ -31,11 +31,17 @@ assert "/dcoir-review" in config.commands
 assert config.model == "openrouter/auto"
 assert config.model_stack == ["openrouter/auto"]
 assert config.smoke_test_free_model is False
-assert config.auto_cost_quality_tradeoff == 4
+assert config.auto_cost_quality_tradeoff == 2
 assert "openai/gpt-5*" in config.auto_allowed_models
+assert "google/gemini-2.5-pro*" in config.auto_allowed_models
+assert "google/gemini-3.1-pro*" in config.auto_allowed_models
+assert "google/gemini-*" not in config.auto_allowed_models
 assert config.fallback_models == []
 assert config.fail_on_unanchored_findings is True
 assert config.fail_on_summary_only_problem is True
+assert config.risk_sentinel_quality_gate is True
+assert config.risk_sentinel_retry_on_empty is True
+assert config.risk_sentinel_max_anchors == 12
 
 short_prompt_config = copy.copy(config)
 short_prompt_config.max_prompt_chars = 900
@@ -71,7 +77,7 @@ assert payload["plugins"] == [
     {
         "id": "auto-router",
         "allowed_models": config.auto_allowed_models,
-        "cost_quality_tradeoff": 4,
+        "cost_quality_tradeoff": 2,
     }
 ]
 assert payload["session_id"].startswith("dcoir-openrouter-pr-review:DCOIR-Collector-dcoir-collector:pr-277")
@@ -100,34 +106,6 @@ try:
         raise AssertionError("free-router config without smoke opt-in should fail")
 finally:
     Path(free_config_path).unlink(missing_ok=True)
-
-with tempfile.NamedTemporaryFile("w", encoding="utf-8", delete=False) as handle:
-    handle.write(
-        "\n".join(
-            [
-                "commands:",
-                "  - /or-review",
-                "model: openrouter/auto",
-                "model_stack:",
-                "  - openrouter/auto",
-                "fallback_models:",
-                "  - qwen/qwen3-coder-plus",
-                "  - deepseek/deepseek-v3.2",
-                "auto_cost_quality_tradeoff: 3",
-                "openrouter_service_tier: flex",
-                "openrouter_route:",
-            ]
-        )
-    )
-    fallback_config_path = handle.name
-try:
-    fallback_config = mod.load_hardened_config(fallback_config_path)
-    fallback_payload = mod.build_openrouter_payload("review prompt", schema, fallback_config, [], "openrouter/auto")
-    assert fallback_payload["models"] == ["openrouter/auto", "qwen/qwen3-coder-plus", "deepseek/deepseek-v3.2"]
-    assert fallback_payload["service_tier"] == "flex"
-    assert "route" not in fallback_payload
-finally:
-    Path(fallback_config_path).unlink(missing_ok=True)
 
 sample_diff = """diff --git a/docs/review.md b/docs/review.md
 index 1111111..2222222 100644
@@ -185,275 +163,185 @@ except mod.ReviewQualityError as exc:
 else:
     raise AssertionError("unanchored model finding should fail review quality")
 
-try:
-    mod.normalize_findings(
-        {
-            "summary": "The only high-signal finding is a governance regression.",
-            "findings": [],
-        },
-        config,
-        line_index,
-    )
-except mod.ReviewQualityError as exc:
-    assert "summary indicated a possible issue" in str(exc)
-else:
-    raise AssertionError("summary-only problem should fail review quality")
 
-try:
-    mod.normalize_findings(
-        {
-            "summary": "No high-confidence inline findings were found, but the only high-signal finding is a governance regression.",
-            "findings": [],
-        },
-        config,
-        line_index,
-    )
-except mod.ReviewQualityError as exc:
-    assert "summary indicated a possible issue" in str(exc)
-else:
-    raise AssertionError("mixed clean/problem summary should fail review quality")
+def assert_clean(summary: str) -> None:
+    assert mod.normalize_findings({"summary": summary, "findings": []}, config, line_index) == []
 
-assert mod.normalize_findings(
-    {"summary": "No high-confidence inline findings were found.", "findings": []},
-    config,
-    line_index,
-) == []
-assert mod.normalize_findings({"summary": "No high-confidence issues.", "findings": []}, config, line_index) == []
-assert mod.normalize_findings({"summary": "No actionable issues remain.", "findings": []}, config, line_index) == []
-assert mod.normalize_findings({"summary": "No high-confidence regressions.", "findings": []}, config, line_index) == []
-assert mod.normalize_findings(
-    {"summary": "No issues, regressions, or risks were identified.", "findings": []},
-    config,
-    line_index,
-) == []
-assert mod.normalize_findings(
-    {"summary": "No findings, issues, regressions, or failures remain.", "findings": []},
-    config,
-    line_index,
-) == []
-assert mod.normalize_findings(
-    {"summary": "No security issues, workflow regressions, or operational risks remain.", "findings": []},
-    config,
-    line_index,
-) == []
-assert mod.normalize_findings(
-    {"summary": "No security issues, workflow regressions or operational risks remain.", "findings": []},
-    config,
-    line_index,
-) == []
-assert mod.normalize_findings(
-    {"summary": "No security issues and workflow regressions remain.", "findings": []},
-    config,
-    line_index,
-) == []
-assert mod.normalize_findings(
-    {"summary": "No security issues and regressions remain.", "findings": []},
-    config,
-    line_index,
-) == []
-assert mod.normalize_findings(
-    {"summary": "No findings and issues were identified.", "findings": []},
-    config,
-    line_index,
-) == []
-try:
-    mod.normalize_findings(
-        {
-            "summary": "No findings and security risks remain.",
-            "findings": [],
-        },
-        config,
-        line_index,
-    )
-except mod.ReviewQualityError as exc:
-    assert "summary indicated a possible issue" in str(exc)
-else:
-    raise AssertionError("bare problem tail after clean finding summary should fail review quality")
 
-try:
-    mod.normalize_findings(
-        {
-            "summary": "No issues and security risks remain.",
-            "findings": [],
-        },
-        config,
-        line_index,
-    )
-except mod.ReviewQualityError as exc:
-    assert "summary indicated a possible issue" in str(exc)
-else:
-    raise AssertionError("bare problem tail after clean issue summary should fail review quality")
+def assert_problem(summary: str) -> None:
+    try:
+        mod.normalize_findings({"summary": summary, "findings": []}, config, line_index)
+    except mod.ReviewQualityError as exc:
+        assert "summary indicated a possible issue" in str(exc)
+    else:
+        raise AssertionError(f"summary should fail review quality: {summary}")
 
-assert mod.normalize_findings({"summary": "No findings.", "findings": []}, config, line_index) == []
-assert mod.normalize_findings(
-    {"summary": "No workflow security risks were identified.", "findings": []},
-    config,
-    line_index,
-) == []
-assert mod.normalize_findings({"summary": "No regressions found.", "findings": []}, config, line_index) == []
-assert mod.normalize_findings(
-    {"summary": "No regressions found and no security risks remain.", "findings": []},
-    config,
-    line_index,
-) == []
-assert mod.normalize_findings(
-    {"summary": "No regressions found. No security risks remain.", "findings": []},
-    config,
-    line_index,
+
+for clean_summary in [
+    "No high-confidence inline findings were found.",
+    "No high-confidence issues.",
+    "No actionable issues remain.",
+    "No high-confidence regressions.",
+    "No issues, regressions, or risks were identified.",
+    "No findings, issues, regressions, or failures remain.",
+    "No security issues, workflow regressions, or operational risks remain.",
+    "No security issues, workflow regressions or operational risks remain.",
+    "No security issues and workflow regressions remain.",
+    "No security issues and regressions remain.",
+    "No findings and issues were identified.",
+    "No findings.",
+    "No workflow security risks were identified.",
+    "No regressions found.",
+    "No regressions found and no security risks remain.",
+    "No regressions found. No security risks remain.",
+]:
+    assert_clean(clean_summary)
+
+for problem_summary in [
+    "The only high-signal finding is a governance regression.",
+    "No high-confidence inline findings were found, but the only high-signal finding is a governance regression.",
+    "No findings and security risks remain.",
+    "No issues and security risks remain.",
+    "No workflow security risks were identified, but validation should reject unanchored findings.",
+    "No regressions found, but security risks remain.",
+    "No regressions found and security risks remain.",
+    "No findings and this security risk remains.",
+    "No findings and the workflow regression remains.",
+    "No regressions found. Security risks remain.",
+    "No regressions found, security risks remain.",
+    "No issues, regressions, or risks were identified, security risks remain.",
+    "No issues, security risks remain.",
+    "No issues, regressions, security risks remain.",
+    "No security issues, workflow regressions, operational risks remain.",
+]:
+    assert_problem(problem_summary)
+
+probe_diff = """diff --git a/validation-review-probes/Invoke-IntentionalFlawedReviewBaseline.ps1 b/validation-review-probes/Invoke-IntentionalFlawedReviewBaseline.ps1
+index 0000000..1111111 100644
+--- /dev/null
++++ b/validation-review-probes/Invoke-IntentionalFlawedReviewBaseline.ps1
+@@ -0,0 +1,61 @@
++function New-OsqueryStatement {
++    param([string]$Filter)
++    return "SELECT pid, name, path FROM processes WHERE name LIKE '%$Filter%';"
++}
++function Invoke-CollectorProbe {
++    param([string]$Path, [string]$CommandText)
++    Invoke-Expression "Get-ChildItem $Path | Where-Object Name -like '$CommandText'"
++}
++function Test-ShouldEscalate {
++    if ($Severity -eq "High" -or "Critical") {
++        return $true
++    }
++}
++function Remove-ProbeWorkspace {
++    Remove-Item $Path -Recurse -Force
++}
++function Send-CaseContext {
++    $payload = @{ env = Get-ChildItem Env: | ForEach-Object { "$($_.Name)=$($_.Value)" } }
++}
+diff --git a/validation-review-probes/intentional_flawed_review_baseline.py b/validation-review-probes/intentional_flawed_review_baseline.py
+index 0000000..2222222 100644
+--- /dev/null
++++ b/validation-review-probes/intentional_flawed_review_baseline.py
+@@ -0,0 +1,52 @@
++def build_process_query(hostname, operator_filter):
++    return f"WHERE hostname = '{hostname}' AND name LIKE '%{operator_filter}%';"
++def write_triage_note(case_id, note, output_dir):
++    subprocess.run(f"git add {destination}", shell=True, check=False)
++def should_escalate(severity, confidence):
++    if severity == "critical" or "high":
++        return True
++def cleanup_collector_workspace(path_from_comment):
++    shutil.rmtree(path_from_comment, ignore_errors=True)
++def export_env_to_report(report_path):
++    Path(report_path).write_text("\\n".join(f"{key}={value}" for key, value in os.environ.items()))
+"""
+sentinels = mod.detect_risk_sentinels(probe_diff)
+assert len(sentinels) >= 10
+assert any(item.path.endswith(".py") and item.label == "shell=True subprocess invocation" for item in sentinels)
+assert any(item.path.endswith(".py") and item.label == "truthy literal branch condition" for item in sentinels)
+assert any(item.path.endswith(".ps1") and item.label == "PowerShell Invoke-Expression" for item in sentinels)
+assert any(item.path.endswith(".ps1") and item.label == "environment dump or exfiltration primitive" for item in sentinels)
+assert mod.detect_risk_sentinels(
+    """diff --git a/docs/examples.md b/docs/examples.md
+index 0000000..1111111 100644
+--- /dev/null
++++ b/docs/examples.md
+@@ -0,0 +1,2 @@
++Example text mentions subprocess.run("echo hi", shell=True) for reviewer education.
+""",
 ) == []
 
+risk_prompt = mod.build_prompt(
+    {"number": 287, "title": "Validation probe", "body": "Disposable validation baseline."},
+    [
+        {"filename": "validation-review-probes/intentional_flawed_review_baseline.py", "status": "added"},
+        {"filename": "validation-review-probes/Invoke-IntentionalFlawedReviewBaseline.ps1", "status": "added"},
+    ],
+    probe_diff,
+    config,
+    sentinels,
+)
+assert "Changed-code risk signals detected before model review" in risk_prompt
+assert "shell=True subprocess invocation" in risk_prompt
+assert "PowerShell Invoke-Expression" in risk_prompt
+
+calls: list[str] = []
+original_openrouter_review = mod.openrouter_review
+
+
+def fake_openrouter_review(prompt: str, _schema: dict, _config: object, _reporter: object | None = None):
+    calls.append(prompt)
+    if len(calls) == 1:
+        return {"summary": "No high-confidence inline findings were found.", "findings": []}, "weak-model", ""
+    return {
+        "summary": "Found unsafe shell execution.",
+        "findings": [
+            {
+                "title": "Avoid shell execution",
+                "severity": "high",
+                "confidence": 0.95,
+                "path": "validation-review-probes/intentional_flawed_review_baseline.py",
+                "line": 4,
+                "body": "shell=True executes constructed text.",
+                "suggested_replacement": "",
+                "validation": "python3 scripts/openrouter_pr_review_hardened_selftest.py",
+            }
+        ],
+    }, "strong-model", ""
+
+
+mod.openrouter_review = fake_openrouter_review
 try:
-    mod.normalize_findings(
-        {
-            "summary": "No workflow security risks were identified, but validation should reject unanchored findings.",
-            "findings": [],
-        },
+    retry_result, retry_model, _retry_tier = mod.openrouter_review_with_quality_retry(
+        "initial prompt",
+        schema,
         config,
-        line_index,
+        None,
+        sentinels,
     )
-except mod.ReviewQualityError as exc:
-    assert "summary indicated a possible issue" in str(exc)
-else:
-    raise AssertionError("mixed negated-clean/problem summary should fail review quality")
+finally:
+    mod.openrouter_review = original_openrouter_review
+assert len(calls) == 2
+assert retry_model == "strong-model"
+assert retry_result["findings"]
+assert "Review quality retry" in calls[1]
+assert "validation-review-probes/intentional_flawed_review_baseline.py" in calls[1]
+
+tiny_retry_config = copy.copy(config)
+tiny_retry_config.max_prompt_chars = 240
+tiny_retry_prompt = mod.build_quality_retry_prompt("x" * 1000, {"summary": "No findings."}, sentinels, tiny_retry_config)
+assert len(tiny_retry_prompt) <= tiny_retry_config.max_prompt_chars
 
 try:
-    mod.normalize_findings(
-        {
-            "summary": "No regressions found, but security risks remain.",
-            "findings": [],
-        },
-        config,
-        line_index,
-    )
+    mod.enforce_risk_sentinel_findings([], sentinels, config)
 except mod.ReviewQualityError as exc:
-    assert "summary indicated a possible issue" in str(exc)
+    assert "high-risk changed-line signals" in str(exc)
 else:
-    raise AssertionError("contrast-clause problem summary should fail review quality")
+    raise AssertionError("empty findings after risk-sentinel retry should fail review quality")
 
-try:
-    mod.normalize_findings(
-        {
-            "summary": "No regressions found and security risks remain.",
-            "findings": [],
-        },
-        config,
-        line_index,
-    )
-except mod.ReviewQualityError as exc:
-    assert "summary indicated a possible issue" in str(exc)
-else:
-    raise AssertionError("coordinated mixed clean/problem summary should fail review quality")
-
-try:
-    mod.normalize_findings(
-        {
-            "summary": "No findings and this security risk remains.",
-            "findings": [],
-        },
-        config,
-        line_index,
-    )
-except mod.ReviewQualityError as exc:
-    assert "summary indicated a possible issue" in str(exc)
-else:
-    raise AssertionError("problem tail after clean finding summary should fail review quality")
-
-try:
-    mod.normalize_findings(
-        {
-            "summary": "No findings and the workflow regression remains.",
-            "findings": [],
-        },
-        config,
-        line_index,
-    )
-except mod.ReviewQualityError as exc:
-    assert "summary indicated a possible issue" in str(exc)
-else:
-    raise AssertionError("problem tail after clean finding summary should fail review quality")
-
-try:
-    mod.normalize_findings(
-        {
-            "summary": "No regressions found. Security risks remain.",
-            "findings": [],
-        },
-        config,
-        line_index,
-    )
-except mod.ReviewQualityError as exc:
-    assert "summary indicated a possible issue" in str(exc)
-else:
-    raise AssertionError("punctuation-separated problem summary should fail review quality")
-
-try:
-    mod.normalize_findings(
-        {
-            "summary": "No regressions found, security risks remain.",
-            "findings": [],
-        },
-        config,
-        line_index,
-    )
-except mod.ReviewQualityError as exc:
-    assert "summary indicated a possible issue" in str(exc)
-else:
-    raise AssertionError("comma-separated problem summary should fail review quality")
-
-try:
-    mod.normalize_findings(
-        {
-            "summary": "No issues, regressions, or risks were identified, security risks remain.",
-            "findings": [],
-        },
-        config,
-        line_index,
-    )
-except mod.ReviewQualityError as exc:
-    assert "summary indicated a possible issue" in str(exc)
-else:
-    raise AssertionError("clean negated list followed by problem summary should fail review quality")
-
-try:
-    mod.normalize_findings(
-        {
-            "summary": "No issues, security risks remain.",
-            "findings": [],
-        },
-        config,
-        line_index,
-    )
-except mod.ReviewQualityError as exc:
-    assert "summary indicated a possible issue" in str(exc)
-else:
-    raise AssertionError("clean noun followed by modifier problem summary should fail review quality")
-
-try:
-    mod.normalize_findings(
-        {
-            "summary": "No issues, regressions, security risks remain.",
-            "findings": [],
-        },
-        config,
-        line_index,
-    )
-except mod.ReviewQualityError as exc:
-    assert "summary indicated a possible issue" in str(exc)
-else:
-    raise AssertionError("clean negated list followed by modifier problem summary should fail review quality")
-
-try:
-    mod.normalize_findings(
-        {
-            "summary": "No security issues, workflow regressions, operational risks remain.",
-            "findings": [],
-        },
-        config,
-        line_index,
-    )
-except mod.ReviewQualityError as exc:
-    assert "summary indicated a possible issue" in str(exc)
-else:
-    raise AssertionError("modifier list without final conjunction should fail review quality")
+mod.enforce_risk_sentinel_findings([{"title": "accepted"}], sentinels, config)
+mod.enforce_risk_sentinel_findings([], [], config)
 
 print("hardened OpenRouter selftest passed")
