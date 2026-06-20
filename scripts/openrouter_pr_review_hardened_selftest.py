@@ -218,6 +218,9 @@ assert mod.normalize_findings(
     config,
     line_index,
 ) == []
+assert mod.normalize_findings({"summary": "No high-confidence issues.", "findings": []}, config, line_index) == []
+assert mod.normalize_findings({"summary": "No actionable issues remain.", "findings": []}, config, line_index) == []
+assert mod.normalize_findings({"summary": "No high-confidence regressions.", "findings": []}, config, line_index) == []
 assert mod.normalize_findings({"summary": "No findings.", "findings": []}, config, line_index) == []
 assert mod.normalize_findings(
     {"summary": "No workflow security risks were identified.", "findings": []},
