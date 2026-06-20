@@ -221,6 +221,16 @@ assert mod.normalize_findings(
 assert mod.normalize_findings({"summary": "No high-confidence issues.", "findings": []}, config, line_index) == []
 assert mod.normalize_findings({"summary": "No actionable issues remain.", "findings": []}, config, line_index) == []
 assert mod.normalize_findings({"summary": "No high-confidence regressions.", "findings": []}, config, line_index) == []
+assert mod.normalize_findings(
+    {"summary": "No issues, regressions, or risks were identified.", "findings": []},
+    config,
+    line_index,
+) == []
+assert mod.normalize_findings(
+    {"summary": "No findings, issues, regressions, or failures remain.", "findings": []},
+    config,
+    line_index,
+) == []
 assert mod.normalize_findings({"summary": "No findings.", "findings": []}, config, line_index) == []
 assert mod.normalize_findings(
     {"summary": "No workflow security risks were identified.", "findings": []},
@@ -308,5 +318,19 @@ except mod.ReviewQualityError as exc:
     assert "summary indicated a possible issue" in str(exc)
 else:
     raise AssertionError("comma-separated problem summary should fail review quality")
+
+try:
+    mod.normalize_findings(
+        {
+            "summary": "No issues, regressions, or risks were identified, security risks remain.",
+            "findings": [],
+        },
+        config,
+        line_index,
+    )
+except mod.ReviewQualityError as exc:
+    assert "summary indicated a possible issue" in str(exc)
+else:
+    raise AssertionError("clean negated list followed by problem summary should fail review quality")
 
 print("hardened OpenRouter selftest passed")
