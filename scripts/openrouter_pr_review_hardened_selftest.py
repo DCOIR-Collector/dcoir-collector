@@ -236,6 +236,11 @@ assert mod.normalize_findings(
     config,
     line_index,
 ) == []
+assert mod.normalize_findings(
+    {"summary": "No security issues, workflow regressions or operational risks remain.", "findings": []},
+    config,
+    line_index,
+) == []
 assert mod.normalize_findings({"summary": "No findings.", "findings": []}, config, line_index) == []
 assert mod.normalize_findings(
     {"summary": "No workflow security risks were identified.", "findings": []},
