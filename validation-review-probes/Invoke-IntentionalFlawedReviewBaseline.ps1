@@ -58,4 +58,4 @@ function Send-CaseContext {
 }
 
 $statement = New-OsqueryStatement -Filter $OperatorFilter
-Write-Output "Prepared query for $CaseId: $statement"
+Write-Output "Prepared query for ${CaseId}: $statement"
