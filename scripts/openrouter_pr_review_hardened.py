@@ -460,6 +460,10 @@ def summary_suggests_problem(summary: str) -> bool:
         rf"(?!(?:a|an|the|this|that|these|those)\b)"
         rf"(?:[a-z0-9-]+\s+){{1,4}}{remaining_problem_noun_pattern}"
     )
+    clean_two_item_following_remaining_noun_pattern = (
+        rf"(?!(?:a|an|the|this|that|these|those)\b)"
+        rf"(?:[a-z0-9-]+\s+){{0,4}}{remaining_problem_noun_pattern}"
+    )
     clean_two_item_result_verb_pattern = r"(?:(?:were|was|are|is)\s+)?(?:found|identified|detected|observed)"
     negated_list_patterns = (
         rf"\bno\b\s+{clean_two_item_problem_noun_pattern}"
@@ -469,7 +473,7 @@ def summary_suggests_problem(summary: str) -> bool:
         rf"\s+or\s+{clean_two_item_problem_noun_pattern}"
         r"\s+(?:present|remaining|remain)",
         rf"\bno\b\s+{clean_two_item_remaining_noun_pattern}"
-        rf"\s+and\s+{clean_two_item_remaining_noun_pattern}"
+        rf"\s+and\s+{clean_two_item_following_remaining_noun_pattern}"
         r"\s+(?:present|remaining|remain)",
         rf"\bno\b\s+{modified_problem_noun_pattern}"
         rf"(?:,\s*(?!\b(?:and|or)\b){modified_problem_noun_pattern})+"
