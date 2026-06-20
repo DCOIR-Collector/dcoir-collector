@@ -247,6 +247,11 @@ assert mod.normalize_findings(
     line_index,
 ) == []
 assert mod.normalize_findings(
+    {"summary": "No security issues and regressions remain.", "findings": []},
+    config,
+    line_index,
+) == []
+assert mod.normalize_findings(
     {"summary": "No findings and issues were identified.", "findings": []},
     config,
     line_index,
