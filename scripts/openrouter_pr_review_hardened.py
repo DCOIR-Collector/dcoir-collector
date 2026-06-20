@@ -449,7 +449,14 @@ def summary_suggests_problem(summary: str) -> bool:
         "looks good",
         "clean review",
     )
+    negated_list_patterns = (
+        r"\bno\b(?:\s+[a-z0-9-]+){0,4}\s+(?:findings?|issues?|problems?|regressions?|risks?|failures?|bypasses?)"
+        r"(?:,\s*(?:and\s+|or\s+)?(?:[a-z0-9-]+\s+){0,4}"
+        r"(?:findings?|issues?|problems?|regressions?|risks?|failures?|bypasses?))+"
+        r"(?:\s+(?:were|was|are|is|found|identified|detected|observed|present|remaining|remain))*",
+    )
     negated_problem_patterns = (
+        *negated_list_patterns,
         r"\bno\b(?:\s+[a-z0-9]+){0,8}\s+(?:findings?|issues?|problems?|regressions?|risks?|failures?|bypasses?)\b"
         r"(?:\s+(?:were|was|are|is|found|identified|detected|observed|present|remaining|remain))*",
         r"\bnot\b(?:\s+[a-z0-9]+){0,5}\s+(?:found|identified|detected|observed)\b",
@@ -463,7 +470,10 @@ def summary_suggests_problem(summary: str) -> bool:
             stripped = stripped.replace(phrase, " ")
         return any(re.search(rf"\b{re.escape(term)}s?\b", stripped) for term in positive_terms)
 
-    clauses = re.split(r"(?:[.;:!?]+|,\s+|\b(?:and|but|however|though|although|yet|except|nevertheless|still)\b)", summary)
+    cleaned_summary = summary.lower()
+    for pattern in negated_list_patterns:
+        cleaned_summary = re.sub(pattern, " ", cleaned_summary)
+    clauses = re.split(r"(?:[.;:!?]+|,\s+|\b(?:and|but|however|though|although|yet|except|nevertheless|still)\b)", cleaned_summary)
     return any(clause_suggests_problem(clause.strip()) for clause in clauses if clause.strip())
 
 
@@ -610,3 +620,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+}  // Wait invalid JSON? no, content string ended? Need check tool result. It wasn't closed? Actually my JSON includes a trailing 
