@@ -366,4 +366,18 @@ except mod.ReviewQualityError as exc:
 else:
     raise AssertionError("clean negated list followed by modifier problem summary should fail review quality")
 
+try:
+    mod.normalize_findings(
+        {
+            "summary": "No security issues, workflow regressions, operational risks remain.",
+            "findings": [],
+        },
+        config,
+        line_index,
+    )
+except mod.ReviewQualityError as exc:
+    assert "summary indicated a possible issue" in str(exc)
+else:
+    raise AssertionError("modifier list without final conjunction should fail review quality")
+
 print("hardened OpenRouter selftest passed")
