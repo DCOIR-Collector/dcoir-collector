@@ -451,7 +451,7 @@ def summary_suggests_problem(summary: str) -> bool:
     )
     negated_list_patterns = (
         r"\bno\b(?:\s+[a-z0-9-]+){0,4}\s+(?:findings?|issues?|problems?|regressions?|risks?|failures?|bypasses?)"
-        r"(?:,\s*(?:and\s+|or\s+)?(?:[a-z0-9-]+\s+){0,4}"
+        r"(?:,\s*(?:(?:and\s+|or\s+)(?:[a-z0-9-]+\s+){0,4})?"
         r"(?:findings?|issues?|problems?|regressions?|risks?|failures?|bypasses?))+"
         r"(?:\s+(?:were|was|are|is|found|identified|detected|observed|present|remaining|remain))*",
     )
