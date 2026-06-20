@@ -450,17 +450,22 @@ def summary_suggests_problem(summary: str) -> bool:
         "looks good",
         "clean review",
     )
-    stripped = cleaned
-    for phrase in negative_phrases:
-        stripped = stripped.replace(phrase, " ")
     negated_problem_patterns = (
         r"\bno\b(?:\s+[a-z0-9]+){0,8}\s+(?:findings?|issues?|problems?|regressions?|risks?|failures?|bypasses?)\b"
         r"(?:\s+(?:were|was|are|is|found|identified|detected|observed|present|remaining|remain))*",
         r"\bnot\b(?:\s+[a-z0-9]+){0,5}\s+(?:found|identified|detected|observed)\b",
     )
-    for pattern in negated_problem_patterns:
-        stripped = re.sub(pattern, " ", stripped)
-    return any(re.search(rf"\b{re.escape(term)}s?\b", stripped) for term in positive_terms)
+
+    def clause_suggests_problem(clause: str) -> bool:
+        stripped = clause
+        for phrase in negative_phrases:
+            stripped = stripped.replace(phrase, " ")
+        for pattern in negated_problem_patterns:
+            stripped = re.sub(pattern, " ", stripped)
+        return any(re.search(rf"\b{re.escape(term)}s?\b", stripped) for term in positive_terms)
+
+    clauses = re.split(r"\b(?:and|but|however|though|although|yet|except|nevertheless|still)\b", cleaned)
+    return any(clause_suggests_problem(clause.strip()) for clause in clauses if clause.strip())
 
 
 def normalize_findings(result: dict[str, Any], config: Any, line_index: dict[tuple[str, int], int]) -> list[dict[str, Any]]:
