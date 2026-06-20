@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import copy
 import importlib.util
 import json
 import os
@@ -35,6 +36,27 @@ assert "openai/gpt-5*" in config.auto_allowed_models
 assert config.fallback_models == []
 assert config.fail_on_unanchored_findings is True
 assert config.fail_on_summary_only_problem is True
+
+short_prompt_config = copy.copy(config)
+short_prompt_config.max_prompt_chars = 900
+large_diff = """diff --git a/docs/review.md b/docs/review.md
+index 1111111..2222222 100644
+--- a/docs/review.md
++++ b/docs/review.md
+@@ -1,2 +1,3 @@
+ Review gates remain required.
++External review may be skipped after local checks.
+ Keep issue receipts current.
+""" + ("+filler line to force prompt truncation\n" * 200)
+bounded_prompt = mod.build_prompt(
+    {"number": 277, "title": "Prompt budget test", "body": "Ensure hardening survives truncation."},
+    [{"filename": "docs/review.md", "status": "modified", "additions": 201, "deletions": 0, "changes": 201}],
+    large_diff,
+    short_prompt_config,
+)
+assert len(bounded_prompt) <= short_prompt_config.max_prompt_chars
+assert bounded_prompt.startswith("Governed review hardening requirements:")
+assert "Every semantic, Markdown, governance, validation, or review-gate concern" in bounded_prompt
 
 schema = json.loads((ROOT / "schemas" / "openrouter-pr-review.schema.json").read_text(encoding="utf-8"))
 payload = mod.build_openrouter_payload("review prompt", schema, config, ["venice"], "openrouter/auto")
@@ -197,5 +219,25 @@ assert mod.normalize_findings(
     line_index,
 ) == []
 assert mod.normalize_findings({"summary": "No findings.", "findings": []}, config, line_index) == []
+assert mod.normalize_findings(
+    {"summary": "No workflow security risks were identified.", "findings": []},
+    config,
+    line_index,
+) == []
+assert mod.normalize_findings({"summary": "No regressions found.", "findings": []}, config, line_index) == []
+
+try:
+    mod.normalize_findings(
+        {
+            "summary": "No workflow security risks were identified, but validation should reject unanchored findings.",
+            "findings": [],
+        },
+        config,
+        line_index,
+    )
+except mod.ReviewQualityError as exc:
+    assert "summary indicated a possible issue" in str(exc)
+else:
+    raise AssertionError("mixed negated-clean/problem summary should fail review quality")
 
 print("hardened OpenRouter selftest passed")
