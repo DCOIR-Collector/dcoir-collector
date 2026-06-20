@@ -304,6 +304,34 @@ else:
 try:
     mod.normalize_findings(
         {
+            "summary": "No findings and this security risk remains.",
+            "findings": [],
+        },
+        config,
+        line_index,
+    )
+except mod.ReviewQualityError as exc:
+    assert "summary indicated a possible issue" in str(exc)
+else:
+    raise AssertionError("problem tail after clean finding summary should fail review quality")
+
+try:
+    mod.normalize_findings(
+        {
+            "summary": "No findings and the workflow regression remains.",
+            "findings": [],
+        },
+        config,
+        line_index,
+    )
+except mod.ReviewQualityError as exc:
+    assert "summary indicated a possible issue" in str(exc)
+else:
+    raise AssertionError("problem tail after clean finding summary should fail review quality")
+
+try:
+    mod.normalize_findings(
+        {
             "summary": "No regressions found. Security risks remain.",
             "findings": [],
         },
