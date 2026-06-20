@@ -449,10 +449,12 @@ def summary_suggests_problem(summary: str) -> bool:
         "looks good",
         "clean review",
     )
+    problem_noun_pattern = r"(?:findings?|issues?|problems?|regressions?|risks?|failures?|bypasses?)"
+    modified_problem_noun_pattern = rf"(?:[a-z0-9-]+\s+){{0,4}}{problem_noun_pattern}"
     negated_list_patterns = (
-        r"\bno\b(?:\s+[a-z0-9-]+){0,4}\s+(?:findings?|issues?|problems?|regressions?|risks?|failures?|bypasses?)"
-        r"(?:,\s*(?:(?:and\s+|or\s+)(?:[a-z0-9-]+\s+){0,4})?"
-        r"(?:findings?|issues?|problems?|regressions?|risks?|failures?|bypasses?))+"
+        rf"\bno\b\s+{modified_problem_noun_pattern}"
+        rf"(?:,\s*(?!\b(?:and|or)\b){modified_problem_noun_pattern})*"
+        rf",\s*(?:and|or)\s+{modified_problem_noun_pattern}"
         r"(?:\s+(?:were|was|are|is|found|identified|detected|observed|present|remaining|remain))*",
     )
     negated_problem_patterns = (
