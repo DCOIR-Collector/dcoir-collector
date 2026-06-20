@@ -620,4 +620,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-}  // Wait invalid JSON? no, content string ended? Need check tool result. It wasn't closed? Actually my JSON includes a trailing 
