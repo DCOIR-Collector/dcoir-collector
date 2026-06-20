@@ -7,6 +7,7 @@ owning the governed routing payload and review-quality gates for issue #277.
 
 from __future__ import annotations
 
+import copy
 import json
 import os
 import re
@@ -244,7 +245,6 @@ def session_id(config: Any) -> str:
 
 
 def build_prompt(pr: dict[str, Any], files: list[dict[str, Any]], diff: str, config: Any) -> str:
-    prompt = base.build_prompt(pr, files, diff, config)
     hardening = """
 
 Governed review hardening requirements:
@@ -252,10 +252,18 @@ Governed review hardening requirements:
 - For Markdown and governed-source findings, anchor the finding to the nearest changed right-side line that introduced or materially preserves the risky wording.
 - If a small suggestion block is not safe, leave suggested_replacement empty and put exact repair steps in the finding body.
 - Each finding body must include observed behavior, impact, exact correction guidance, and validation or readback guidance.
-""".rstrip()
-    combined = f"{prompt}{hardening}"
+""".strip()
+    separator = "\n\n"
+    truncation_marker = "\n\n[context truncated by reviewer]"
+    prompt_budget = max(0, config.max_prompt_chars - len(hardening) - len(separator))
+    base_budget = max(0, prompt_budget - len(truncation_marker))
+    prompt_config = copy.copy(config)
+    prompt_config.max_prompt_chars = base_budget
+    prompt = base.build_prompt(pr, files, diff, prompt_config)
+    combined = f"{hardening}{separator}{prompt}"
     if len(combined) > config.max_prompt_chars:
-        combined = combined[: config.max_prompt_chars] + "\n\n[context truncated by reviewer]"
+        retained_chars = max(0, config.max_prompt_chars - len(truncation_marker))
+        combined = combined[:retained_chars] + truncation_marker
     return base.sanitize_text(combined, config)
 
 
@@ -445,7 +453,14 @@ def summary_suggests_problem(summary: str) -> bool:
     stripped = cleaned
     for phrase in negative_phrases:
         stripped = stripped.replace(phrase, " ")
-    return any(term in stripped for term in positive_terms)
+    negated_problem_patterns = (
+        r"\bno\b(?:\s+[a-z0-9]+){0,8}\s+(?:findings?|issues?|problems?|regressions?|risks?|failures?|bypasses?)\b"
+        r"(?:\s+(?:were|was|are|is|found|identified|detected|observed|present|remaining|remain))*",
+        r"\bnot\b(?:\s+[a-z0-9]+){0,5}\s+(?:found|identified|detected|observed)\b",
+    )
+    for pattern in negated_problem_patterns:
+        stripped = re.sub(pattern, " ", stripped)
+    return any(re.search(rf"\b{re.escape(term)}s?\b", stripped) for term in positive_terms)
 
 
 def normalize_findings(result: dict[str, Any], config: Any, line_index: dict[tuple[str, int], int]) -> list[dict[str, Any]]:
