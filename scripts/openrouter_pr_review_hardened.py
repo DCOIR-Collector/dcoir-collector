@@ -16,6 +16,7 @@ import sys
 import time
 import urllib.error
 import urllib.request
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -31,6 +32,75 @@ class ReviewQualityError(RuntimeError):
 
 class ReviewTimeoutError(TimeoutError):
     """Raised before the workflow timeout so cleanup can still run."""
+
+
+@dataclass(frozen=True)
+class ChangedLine:
+    path: str
+    line: int
+    text: str
+
+
+@dataclass(frozen=True)
+class RiskSentinel:
+    path: str
+    line: int
+    label: str
+    detail: str
+    text: str
+
+
+RISK_SENTINEL_RULES: tuple[tuple[str, str, re.Pattern[str]], ...] = (
+    (
+        "PowerShell Invoke-Expression",
+        "Invoke-Expression executes constructed text as code; verify no operator/comment input reaches it",
+        re.compile(r"\bInvoke-Expression\b", re.IGNORECASE),
+    ),
+    (
+        "raw SQL/query string interpolation",
+        "raw variables are interpolated into a query-like string; verify escaping, parameterization, and evidence scope",
+        re.compile(
+            r"(?:\bSELECT\b|\bFROM\b|\bWHERE\b(?!-Object)|(?<!-)\bLIKE\b).*(?:\{[^}]+\}|\$[A-Za-z_][A-Za-z0-9_]*)",
+            re.IGNORECASE,
+        ),
+    ),
+    (
+        "shell=True subprocess invocation",
+        "shell execution can turn path or identifier input into command execution and can hide failures when check is false",
+        re.compile(r"\bsubprocess\.\w+\([^#\n]*\bshell\s*=\s*True\b"),
+    ),
+    (
+        "truthy literal branch condition",
+        "a literal string after or/-or is always truthy and can bypass intended severity or confidence checks",
+        re.compile(r"(?:\bor\b|\b-or\b)\s+['\"][^'\"]+['\"]", re.IGNORECASE),
+    ),
+    (
+        "recursive delete primitive",
+        "recursive deletion needs path root constraints, fail-closed behavior, and visible errors",
+        re.compile(r"\bshutil\.rmtree\b|\bRemove-Item\b.*(?:^|\s)-Recurse\b", re.IGNORECASE),
+    ),
+    (
+        "environment dump or exfiltration primitive",
+        "full environment enumeration can leak CI or collector secrets into reports, logs, or webhooks",
+        re.compile(r"\bos\.environ(?:\.items\(\)|\b)|\bGet-ChildItem\s+Env:", re.IGNORECASE),
+    ),
+)
+
+RISK_SENTINEL_EXTENSIONS = {
+    ".bash",
+    ".cjs",
+    ".js",
+    ".json",
+    ".mjs",
+    ".ps1",
+    ".psd1",
+    ".psm1",
+    ".py",
+    ".sh",
+    ".ts",
+    ".yaml",
+    ".yml",
+}
 
 
 def sanitize_github_output(text: str, config: Any, neutralize_mentions: bool = True) -> str:
@@ -123,6 +193,9 @@ def load_hardened_config(path: str) -> Any:
     config.smoke_test_free_model = bool_value(data, "smoke_test_free_model", False)
     config.fail_on_unanchored_findings = bool_value(data, "fail_on_unanchored_findings", True)
     config.fail_on_summary_only_problem = bool_value(data, "fail_on_summary_only_problem", True)
+    config.risk_sentinel_quality_gate = bool_value(data, "risk_sentinel_quality_gate", True)
+    config.risk_sentinel_retry_on_empty = bool_value(data, "risk_sentinel_retry_on_empty", True)
+    config.risk_sentinel_max_anchors = int(data.get("risk_sentinel_max_anchors", 12))
     config.script_timeout_seconds = int(data.get("script_timeout_seconds", getattr(config, "script_timeout_seconds", 1500)))
     config.post_progress_comment = bool_value(data, "post_progress_comment", getattr(config, "post_progress_comment", True))
 
@@ -244,15 +317,101 @@ def session_id(config: Any) -> str:
     return re.sub(r"[^A-Za-z0-9_.:-]+", "-", raw)[:256]
 
 
-def build_prompt(pr: dict[str, Any], files: list[dict[str, Any]], diff: str, config: Any) -> str:
-    hardening = """
+def iter_added_diff_lines(diff: str) -> list[ChangedLine]:
+    lines: list[ChangedLine] = []
+    current_path: str | None = None
+    right_line: int | None = None
+    for line in diff.splitlines():
+        if line.startswith("diff --git "):
+            current_path = None
+            right_line = None
+            continue
+        if line.startswith("+++ b/"):
+            current_path = line[6:]
+            continue
+        if line.startswith("@@"):
+            match = re.search(r"\+(\d+)(?:,\d+)?", line)
+            right_line = int(match.group(1)) if match else None
+            continue
+        if current_path is None or right_line is None:
+            continue
+        if line.startswith("+") and not line.startswith("+++"):
+            lines.append(ChangedLine(current_path, right_line, line[1:]))
+            right_line += 1
+            continue
+        if line.startswith("-") and not line.startswith("---"):
+            continue
+        right_line += 1
+    return lines
 
+
+def detect_risk_sentinels(diff: str, max_anchors: int | None = None) -> list[RiskSentinel]:
+    sentinels: list[RiskSentinel] = []
+    for changed_line in iter_added_diff_lines(diff):
+        if Path(changed_line.path).suffix.lower() not in RISK_SENTINEL_EXTENSIONS:
+            continue
+        for label, detail, pattern in RISK_SENTINEL_RULES:
+            if pattern.search(changed_line.text):
+                sentinels.append(
+                    RiskSentinel(
+                        path=changed_line.path,
+                        line=changed_line.line,
+                        label=label,
+                        detail=detail,
+                        text=changed_line.text,
+                    )
+                )
+                break
+    if max_anchors is not None:
+        return sentinels[:max_anchors]
+    return sentinels
+
+
+def risk_sentinel_digest(sentinels: list[RiskSentinel]) -> str:
+    return "; ".join(f"{item.path}:{item.line} {item.label}" for item in sentinels[:6])
+
+
+def risk_sentinel_block(sentinels: list[RiskSentinel], config: Any) -> str:
+    lines = [
+        "Changed-code risk signals detected before model review:",
+        "These are not automatic findings, but a zero-finding review must explicitly survive review of these anchors.",
+    ]
+    for item in sentinels[: getattr(config, "risk_sentinel_max_anchors", 12)]:
+        snippet = item.text.strip().replace("`", "'")
+        if len(snippet) > 180:
+            snippet = snippet[:177] + "..."
+        lines.append(f"- {item.path}:{item.line} [{item.label}] {item.detail}. Changed code: `{snippet}`")
+    return base.sanitize_text("\n".join(lines), config)
+
+
+def append_with_budget(prefix: str, suffix: str, max_chars: int) -> str:
+    separator = "\n\n"
+    if len(prefix) + len(separator) + len(suffix) <= max_chars:
+        return f"{prefix}{separator}{suffix}"
+    truncation_marker = "\n\n[context truncated by reviewer]"
+    if len(suffix) + len(truncation_marker) >= max_chars:
+        retained_suffix = max(0, max_chars - len(truncation_marker))
+        return f"{suffix[:retained_suffix]}{truncation_marker}"
+    retained = max(0, max_chars - len(separator) - len(suffix) - len(truncation_marker))
+    return f"{prefix[:retained]}{truncation_marker}{separator}{suffix}"
+
+
+def build_prompt(
+    pr: dict[str, Any],
+    files: list[dict[str, Any]],
+    diff: str,
+    config: Any,
+    risk_sentinels: list[RiskSentinel] | None = None,
+) -> str:
+    hardening = """
 Governed review hardening requirements:
 - Do not hide actionable issues only in the summary. Every semantic, Markdown, governance, validation, or review-gate concern must be returned as a finding object.
 - For Markdown and governed-source findings, anchor the finding to the nearest changed right-side line that introduced or materially preserves the risky wording.
 - If a small suggestion block is not safe, leave suggested_replacement empty and put exact repair steps in the finding body.
 - Each finding body must include observed behavior, impact, exact correction guidance, and validation or readback guidance.
 """.strip()
+    if risk_sentinels and getattr(config, "risk_sentinel_quality_gate", True):
+        hardening = f"{hardening}\n\n{risk_sentinel_block(risk_sentinels, config)}"
     separator = "\n\n"
     truncation_marker = "\n\n[context truncated by reviewer]"
     prompt_budget = max(0, config.max_prompt_chars - len(hardening) - len(separator))
@@ -265,6 +424,31 @@ Governed review hardening requirements:
         retained_chars = max(0, config.max_prompt_chars - len(truncation_marker))
         combined = combined[:retained_chars] + truncation_marker
     return base.sanitize_text(combined, config)
+
+
+def build_quality_retry_prompt(
+    prompt: str,
+    previous_result: dict[str, Any],
+    risk_sentinels: list[RiskSentinel],
+    config: Any,
+) -> str:
+    previous_summary = str(previous_result.get("summary", "")).strip() or "No previous summary returned."
+    retry_guidance = f"""
+Review quality retry:
+The previous response returned zero structured findings even though the changed diff contains high-risk review anchors.
+Re-review the exact anchors below. Return actionable findings for true issues. If you decide an anchor is safe, the summary must explain why that specific anchor is safe.
+
+{risk_sentinel_block(risk_sentinels, config)}
+
+Previous zero-finding summary:
+{previous_summary}
+""".strip()
+    return append_with_budget(prompt, base.sanitize_text(retry_guidance, config), config.max_prompt_chars)
+
+
+def has_no_structured_findings(result: dict[str, Any]) -> bool:
+    findings = result.get("findings", [])
+    return not isinstance(findings, list) or len(findings) == 0
 
 
 def build_openrouter_payload(prompt: str, schema: dict[str, Any], config: Any, ignored_providers: list[str], model: str) -> dict[str, Any]:
@@ -416,6 +600,30 @@ def openrouter_review(prompt: str, schema: dict[str, Any], config: Any, reporter
     raise RuntimeError(last_error)
 
 
+def openrouter_review_with_quality_retry(
+    prompt: str,
+    schema: dict[str, Any],
+    config: Any,
+    reporter: Any | None,
+    risk_sentinels: list[RiskSentinel],
+) -> tuple[dict[str, Any], str, str]:
+    result, model_used, service_tier = openrouter_review(prompt, schema, config, reporter)
+    if (
+        risk_sentinels
+        and getattr(config, "risk_sentinel_quality_gate", True)
+        and getattr(config, "risk_sentinel_retry_on_empty", True)
+        and has_no_structured_findings(result)
+    ):
+        if reporter:
+            reporter.update(
+                "quality-retry",
+                "model returned zero findings despite high-risk changed-line signals; retrying with explicit anchors",
+            )
+        retry_prompt = build_quality_retry_prompt(prompt, result, risk_sentinels, config)
+        result, model_used, service_tier = openrouter_review(retry_prompt, schema, config, reporter)
+    return result, model_used, service_tier
+
+
 def summary_suggests_problem(summary: str) -> bool:
     positive_terms = (
         "finding",
@@ -550,6 +758,16 @@ def normalize_findings(result: dict[str, Any], config: Any, line_index: dict[tup
     return []
 
 
+def enforce_risk_sentinel_findings(findings: list[dict[str, Any]], risk_sentinels: list[RiskSentinel], config: Any) -> None:
+    if findings or not risk_sentinels or not getattr(config, "risk_sentinel_quality_gate", True):
+        return
+    raise ReviewQualityError(
+        "OpenRouter review quality failure: the changed diff contained high-risk changed-line signals, but the model "
+        "produced no actionable inline findings after quality retry. Signals: "
+        f"{risk_sentinel_digest(risk_sentinels)}."
+    )
+
+
 def remove_eyes_reaction(gh: Any, trigger_comment_id: int, reaction_id: int, status: dict[str, str]) -> None:
     if not reaction_id:
         status["removed"] = "not attempted; no eyes reaction id was recorded"
@@ -612,12 +830,16 @@ def main() -> None:
         diff = gh.get_pr_diff(pr_number)
         reporter.update("github", "fetching changed file list")
         files = gh.list_files(pr_number)
+        risk_sentinels = detect_risk_sentinels(diff, getattr(config, "risk_sentinel_max_anchors", 12))
+        if risk_sentinels and getattr(config, "risk_sentinel_quality_gate", True):
+            reporter.update("risk-sentinel", f"detected {len(risk_sentinels)} high-risk changed-line signals: {risk_sentinel_digest(risk_sentinels)}")
         reporter.update("prompt", f"building bounded prompt from {len(files)} changed files")
-        prompt = build_prompt(pr, files, diff, config)
-        result, model_used, service_tier = openrouter_review(prompt, schema, config, reporter)
+        prompt = build_prompt(pr, files, diff, config, risk_sentinels)
+        result, model_used, service_tier = openrouter_review_with_quality_retry(prompt, schema, config, reporter, risk_sentinels)
         reporter.update("normalize", "mapping model findings to changed diff lines")
         line_index = base.build_diff_line_index(diff)
         findings = normalize_findings(result, config, line_index)
+        enforce_risk_sentinel_findings(findings, risk_sentinels, config)
 
         comments: list[dict[str, Any]] = []
         for finding in findings:
