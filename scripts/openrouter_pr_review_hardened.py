@@ -454,7 +454,7 @@ def summary_suggests_problem(summary: str) -> bool:
     negated_list_patterns = (
         rf"\bno\b\s+{modified_problem_noun_pattern}"
         rf"(?:,\s*(?!\b(?:and|or)\b){modified_problem_noun_pattern})*"
-        rf",\s*(?:and|or)\s+{modified_problem_noun_pattern}"
+        rf"(?:,\s*|\s+)(?:and|or)\s+{modified_problem_noun_pattern}"
         r"(?:\s+(?:were|was|are|is|found|identified|detected|observed|present|remaining|remain))*",
     )
     negated_problem_patterns = (
