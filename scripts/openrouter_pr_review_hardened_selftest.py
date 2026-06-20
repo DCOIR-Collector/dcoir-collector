@@ -251,6 +251,34 @@ assert mod.normalize_findings(
     config,
     line_index,
 ) == []
+try:
+    mod.normalize_findings(
+        {
+            "summary": "No findings and security risks remain.",
+            "findings": [],
+        },
+        config,
+        line_index,
+    )
+except mod.ReviewQualityError as exc:
+    assert "summary indicated a possible issue" in str(exc)
+else:
+    raise AssertionError("bare problem tail after clean finding summary should fail review quality")
+
+try:
+    mod.normalize_findings(
+        {
+            "summary": "No issues and security risks remain.",
+            "findings": [],
+        },
+        config,
+        line_index,
+    )
+except mod.ReviewQualityError as exc:
+    assert "summary indicated a possible issue" in str(exc)
+else:
+    raise AssertionError("bare problem tail after clean issue summary should fail review quality")
+
 assert mod.normalize_findings({"summary": "No findings.", "findings": []}, config, line_index) == []
 assert mod.normalize_findings(
     {"summary": "No workflow security risks were identified.", "findings": []},
