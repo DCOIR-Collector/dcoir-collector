@@ -457,10 +457,10 @@ def summary_suggests_problem(summary: str) -> bool:
 
     def clause_suggests_problem(clause: str) -> bool:
         stripped = re.sub(r"[^a-z0-9]+", " ", clause.lower()).strip()
-        for phrase in negative_phrases:
-            stripped = stripped.replace(phrase, " ")
         for pattern in negated_problem_patterns:
             stripped = re.sub(pattern, " ", stripped)
+        for phrase in negative_phrases:
+            stripped = stripped.replace(phrase, " ")
         return any(re.search(rf"\b{re.escape(term)}s?\b", stripped) for term in positive_terms)
 
     clauses = re.split(r"(?:[.;:!?]+|,\s+|\b(?:and|but|however|though|although|yet|except|nevertheless|still)\b)", summary)
