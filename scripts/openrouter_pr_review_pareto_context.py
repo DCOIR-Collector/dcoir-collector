@@ -55,10 +55,11 @@ FILE_WRITE_PATH_DETAIL = (
     "dynamic path segments used for file writes need segment validation, normalization, "
     "and root containment checks before writing or staging files"
 )
+PYTHON_PATH_TARGET_PART = r"[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*"
 PYTHON_PATH_ASSIGNMENT_RE = re.compile(
-    r"\b(?P<target>[A-Za-z_][A-Za-z0-9_]*)\s*=\s*(?P<expr>.*(?:Path|os\.path\.join)\s*\(.*)"
+    rf"\b(?P<target>{PYTHON_PATH_TARGET_PART})\s*=\s*(?P<expr>.*(?:Path|os\.path\.join)\s*\(.*)"
 )
-PYTHON_FILE_WRITE_RE = re.compile(r"\b(?P<target>[A-Za-z_][A-Za-z0-9_]*)\.write_(?:text|bytes)\s*\(")
+PYTHON_FILE_WRITE_RE = re.compile(rf"\b(?P<target>{PYTHON_PATH_TARGET_PART})\.write_(?:text|bytes)\s*\(")
 PYTHON_TRIPLE_QUOTE_RE = re.compile(r"(?<!\\)(?:'''|\"\"\")")
 
 
@@ -100,6 +101,16 @@ def python_call_name(node: ast.AST) -> str:
     return ""
 
 
+def python_target_key(node: ast.AST) -> str | None:
+    if isinstance(node, ast.Name):
+        return node.id
+    if isinstance(node, ast.Attribute):
+        prefix = python_target_key(node.value)
+        if prefix:
+            return f"{prefix}.{node.attr}"
+    return None
+
+
 def python_assignment_target_names(text: str) -> set[str]:
     try:
         module = ast.parse(text.lstrip())
@@ -108,19 +119,19 @@ def python_assignment_target_names(text: str) -> set[str]:
     names: set[str] = set()
 
     def collect(node: ast.AST) -> None:
-        if isinstance(node, ast.Name):
-            names.add(node.id)
-        elif isinstance(node, (ast.Tuple, ast.List)):
+        target_key = python_target_key(node)
+        if target_key:
+            names.add(target_key)
+            root = target_key.split(".", 1)[0]
+            names.add(root)
+            return
+        if isinstance(node, (ast.Tuple, ast.List)):
             for item in node.elts:
                 collect(item)
         elif isinstance(node, ast.Starred):
             collect(node.value)
-        elif isinstance(node, (ast.Attribute, ast.Subscript)):
-            root = node.value
-            while isinstance(root, (ast.Attribute, ast.Subscript)):
-                root = root.value
-            if isinstance(root, ast.Name):
-                names.add(root.id)
+        elif isinstance(node, ast.Subscript):
+            collect(node.value)
 
     for statement in module.body:
         if isinstance(statement, ast.Assign):
@@ -141,10 +152,14 @@ def python_simple_assignment(text: str) -> tuple[str, ast.AST] | None:
     if not module.body:
         return None
     statement = module.body[0]
-    if isinstance(statement, ast.Assign) and len(statement.targets) == 1 and isinstance(statement.targets[0], ast.Name):
-        return statement.targets[0].id, statement.value
-    if isinstance(statement, ast.AnnAssign) and isinstance(statement.target, ast.Name):
-        return statement.target.id, statement.value
+    if isinstance(statement, ast.Assign) and len(statement.targets) == 1:
+        target_key = python_target_key(statement.targets[0])
+        if target_key:
+            return target_key, statement.value
+    if isinstance(statement, ast.AnnAssign):
+        target_key = python_target_key(statement.target)
+        if target_key:
+            return target_key, statement.value
     return None
 
 
@@ -169,11 +184,24 @@ def python_is_os_path_join(node: ast.AST) -> bool:
 
 
 def python_path_expr_info(node: ast.AST) -> tuple[bool, bool]:
-    if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Div):
-        left_is_path, left_has_dynamic = python_path_expr_info(node.left)
-        if not left_is_path:
+    if isinstance(node, ast.BinOp):
+        if isinstance(node.op, ast.Add):
+            left_is_path, left_has_dynamic = python_path_expr_info(node.left)
+            right_is_path, right_has_dynamic = python_path_expr_info(node.right)
+            if left_is_path or right_is_path:
+                return True, (
+                    left_has_dynamic
+                    or right_has_dynamic
+                    or python_is_dynamic_path_segment(node.left)
+                    or python_is_dynamic_path_segment(node.right)
+                )
             return False, False
-        return True, left_has_dynamic or python_is_dynamic_path_segment(node.right)
+        if isinstance(node.op, ast.Div):
+            left_is_path, left_has_dynamic = python_path_expr_info(node.left)
+            if not left_is_path:
+                right_is_dynamic = python_is_dynamic_path_segment(node.right)
+                return right_is_dynamic, right_is_dynamic
+            return True, left_has_dynamic or python_is_dynamic_path_segment(node.right)
     if python_is_path_constructor(node) or python_is_os_path_join(node):
         args = list(node.args)
         if len(args) < 2:
@@ -304,6 +332,10 @@ def detect_python_file_write_path_sentinels(diff: str) -> list[hardened.RiskSent
             continue
         for assigned_target in python_assignment_target_names(diff_line.text):
             assigned_paths.pop(assigned_target, None)
+            prefix = f"{assigned_target}."
+            for tracked_target in list(assigned_paths):
+                if tracked_target.startswith(prefix):
+                    assigned_paths.pop(tracked_target, None)
         write_match = PYTHON_FILE_WRITE_RE.search(diff_line.text)
         if not write_match:
             continue
