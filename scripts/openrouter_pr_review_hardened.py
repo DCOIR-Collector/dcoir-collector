@@ -345,22 +345,77 @@ def iter_added_diff_lines(diff: str) -> list[ChangedLine]:
     return lines
 
 
+def is_comment_only_added_line(path: str, text: str) -> bool:
+    stripped = text.strip()
+    if not stripped:
+        return True
+    suffix = Path(path).suffix.lower()
+    if suffix in {".py", ".sh", ".bash", ".yaml", ".yml"}:
+        return stripped.startswith("#")
+    if suffix in {".ps1", ".psd1", ".psm1"}:
+        return stripped.startswith(("#", "<#", "#>"))
+    if suffix in {".js", ".cjs", ".mjs", ".ts"}:
+        return stripped.startswith(("//", "/*", "*", "*/"))
+    return False
+
+
+def append_risk_sentinel(
+    sentinels: list[RiskSentinel],
+    seen: set[tuple[str, int, str]],
+    changed_line: ChangedLine,
+    label: str,
+    detail: str,
+) -> None:
+    key = (changed_line.path, changed_line.line, label)
+    if key in seen:
+        return
+    seen.add(key)
+    sentinels.append(
+        RiskSentinel(
+            path=changed_line.path,
+            line=changed_line.line,
+            label=label,
+            detail=detail,
+            text=changed_line.text,
+        )
+    )
+
+
 def detect_risk_sentinels(diff: str, max_anchors: int | None = None) -> list[RiskSentinel]:
     sentinels: list[RiskSentinel] = []
+    seen: set[tuple[str, int, str]] = set()
+    active_python_subprocess_call: str | None = None
+    shell_subprocess_detail = next(
+        detail for label, detail, _pattern in RISK_SENTINEL_RULES if label == "shell=True subprocess invocation"
+    )
     for changed_line in iter_added_diff_lines(diff):
-        if Path(changed_line.path).suffix.lower() not in RISK_SENTINEL_EXTENSIONS:
+        suffix = Path(changed_line.path).suffix.lower()
+        if suffix not in RISK_SENTINEL_EXTENSIONS:
+            active_python_subprocess_call = None
             continue
+        if is_comment_only_added_line(changed_line.path, changed_line.text):
+            continue
+
+        if suffix == ".py":
+            if active_python_subprocess_call == changed_line.path and re.search(r"\bshell\s*=\s*True\b", changed_line.text):
+                append_risk_sentinel(
+                    sentinels,
+                    seen,
+                    changed_line,
+                    "shell=True subprocess invocation",
+                    shell_subprocess_detail,
+                )
+            open_call = re.search(r"\bsubprocess\.\w+\(", changed_line.text)
+            if open_call and ")" not in changed_line.text[open_call.end() :]:
+                active_python_subprocess_call = changed_line.path
+            elif active_python_subprocess_call == changed_line.path and ")" in changed_line.text:
+                active_python_subprocess_call = None
+        else:
+            active_python_subprocess_call = None
+
         for label, detail, pattern in RISK_SENTINEL_RULES:
             if pattern.search(changed_line.text):
-                sentinels.append(
-                    RiskSentinel(
-                        path=changed_line.path,
-                        line=changed_line.line,
-                        label=label,
-                        detail=detail,
-                        text=changed_line.text,
-                    )
-                )
+                append_risk_sentinel(sentinels, seen, changed_line, label, detail)
                 break
     if max_anchors is not None:
         return sentinels[:max_anchors]
