@@ -168,17 +168,23 @@ def python_is_os_path_join(node: ast.AST) -> bool:
     return isinstance(node, ast.Call) and python_call_name(node.func) == "os.path.join"
 
 
-def python_path_expr_has_dynamic_write_segment(node: ast.AST) -> bool:
+def python_path_expr_info(node: ast.AST) -> tuple[bool, bool]:
     if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Div):
-        if python_is_path_constructor(node.left) or python_path_expr_has_dynamic_write_segment(node.left):
-            return python_is_dynamic_path_segment(node.right)
-        return False
+        left_is_path, left_has_dynamic = python_path_expr_info(node.left)
+        if not left_is_path:
+            return False, False
+        return True, left_has_dynamic or python_is_dynamic_path_segment(node.right)
     if python_is_path_constructor(node) or python_is_os_path_join(node):
         args = list(node.args)
         if len(args) < 2:
-            return False
-        return any(python_is_dynamic_path_segment(arg) for arg in args[1:])
-    return False
+            return True, False
+        return True, any(python_is_dynamic_path_segment(arg) for arg in args[1:])
+    return False, False
+
+
+def python_path_expr_has_dynamic_write_segment(node: ast.AST) -> bool:
+    _is_path, has_dynamic = python_path_expr_info(node)
+    return has_dynamic
 
 
 def python_dynamic_path_target(text: str) -> str | None:
