@@ -122,6 +122,58 @@ assert any(
     for item in path_write_sentinels
 )
 
+context_write_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/validation-review-probes/intentional_flawed_review_baseline.py b/validation-review-probes/intentional_flawed_review_baseline.py
+index 0000000..1111111 100644
+--- a/validation-review-probes/intentional_flawed_review_baseline.py
++++ b/validation-review-probes/intentional_flawed_review_baseline.py
+@@ -1,5 +1,5 @@
+ from pathlib import Path
+ def write_triage_note(case_id, note, output_dir):
+-    destination = Path(output_dir) / "summary.txt"
++    destination = Path(output_dir) / f"{case_id}.txt"
+     destination.write_text(note, encoding="utf-8")
+"""
+)
+assert any(
+    item.path == "validation-review-probes/intentional_flawed_review_baseline.py"
+    and item.line == 3
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in context_write_sentinels
+)
+
+multi_arg_path_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,5 @@
++from pathlib import Path
++def write_triage_note(case_id, note, output_dir):
++    destination = Path(output_dir, f"{case_id}.txt")
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 3
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in multi_arg_path_sentinels
+)
+
+fixture_string_sentinels = mod.detect_risk_sentinels(
+    '''diff --git a/scripts/openrouter_pr_review_pareto_context_selftest.py b/scripts/openrouter_pr_review_pareto_context_selftest.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/scripts/openrouter_pr_review_pareto_context_selftest.py
+@@ -0,0 +1,5 @@
++fixture = """diff --git a/probe.py b/probe.py
+++    subprocess.run(f"git add {destination}", shell=True, check=False)
++"""
+'''
+)
+assert not any(item.label == "shell=True subprocess invocation" for item in fixture_string_sentinels)
+
 assert mod.detect_risk_sentinels(
     """diff --git a/tools/comment_examples.py b/tools/comment_examples.py
 index 0000000..1111111 100644
