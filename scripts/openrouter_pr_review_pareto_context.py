@@ -254,10 +254,13 @@ def build_prompt(
     # Extremely small budgets preserve the hardened core review prompt and rely
     # on workflow progress/review readback for context-mode visibility.
     if config.max_prompt_chars >= 3000:
-        budget = max(0, min(len(context), int(getattr(config, "deep_review_max_total_chars", 24000)), config.max_prompt_chars // 3))
+        suffix_budget = config.max_prompt_chars // 3
+        budget = max(0, min(len(context), int(getattr(config, "deep_review_max_total_chars", 24000)), suffix_budget))
         if len(context) > budget:
             context = truncate_with_balanced_fences(context, budget, DEEP_CONTEXT_PROMPT_TRUNCATED_MARKER)
         suffix = "\n\n".join(["\n".join(mode_lines), context]).strip()
+        if len(suffix) > suffix_budget:
+            suffix = truncate_with_balanced_fences(suffix, suffix_budget, DEEP_CONTEXT_PROMPT_TRUNCATED_MARKER)
 
     prompt_config = copy.copy(config)
     separator = "\n\n"
