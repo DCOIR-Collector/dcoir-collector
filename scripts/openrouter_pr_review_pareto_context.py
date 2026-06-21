@@ -243,8 +243,12 @@ def neutralize_github_mentions(text: str) -> str:
     return re.sub(r"@(?=[A-Za-z0-9])", "@<!-- -->", text)
 
 
+def sanitize_context_summary(context_summary: str, config: Any) -> str:
+    return neutralize_github_mentions(hardened.sanitize_github_output(context_summary, config))
+
+
 def append_context_to_review_body(body: str, review_mode: str, context_summary: str, config: Any) -> str:
-    safe_context_summary = neutralize_github_mentions(hardened.sanitize_github_output(context_summary, config))
+    safe_context_summary = sanitize_context_summary(context_summary, config)
     return base.github_safe_body(f"{body}\n\n{CONTEXT_REVIEW_MARKER} `{review_mode}`\n\nContext readback: {safe_context_summary}")
 
 
@@ -307,7 +311,8 @@ def main() -> None:
             reporter.update("review-mode", f"prior context review readback failed; using first-pass posture: {str(exc)[:240]}")
         review_mode = review_mode_for_command(comment_body, command, config, prior_successful_review)
         deep_context_block, context_summary = build_deep_context_block(gh, pr, files, config, review_mode)
-        reporter.update("context", context_summary)
+        safe_context_summary = sanitize_context_summary(context_summary, config)
+        reporter.update("context", safe_context_summary)
         risk_sentinels = hardened.detect_risk_sentinels(diff, getattr(config, "risk_sentinel_max_anchors", 12))
         if risk_sentinels and getattr(config, "risk_sentinel_quality_gate", True):
             reporter.update("risk-sentinel", f"detected {len(risk_sentinels)} high-risk changed-line signals: {hardened.risk_sentinel_digest(risk_sentinels)}")
