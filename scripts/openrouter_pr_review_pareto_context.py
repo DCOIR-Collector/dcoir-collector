@@ -208,23 +208,35 @@ def build_prompt(
     review_mode: str,
     context_summary: str,
 ) -> str:
-    context = base.sanitize_text(deep_context_block.strip(), config)
-    if context:
-        budget = max(0, min(len(context), int(getattr(config, "deep_review_max_total_chars", 24000))))
-        marker = "\n\n[deep context truncated by reviewer]"
-        if len(context) > budget:
-            context = f"{context[: max(0, budget - len(marker))]}{marker}"
-
-    prompt_config = copy.copy(config)
-    prompt_config.max_prompt_chars = max(0, config.max_prompt_chars - len(context) - 1000)
-    prompt = hardened.build_prompt(pr, files, diff, prompt_config, risk_sentinels)
     mode_lines = [
         f"{CONTEXT_REVIEW_MARKER} {review_mode}",
         f"Context readback: {context_summary}",
         "When deep context is present, use it to reason about full changed-file behavior, but anchor actionable findings to changed lines when practical.",
     ]
-    suffix = "\n\n".join(["\n".join(mode_lines), context]).strip()
-    return hardened.append_with_budget(prompt, suffix, config.max_prompt_chars) if suffix else prompt
+    context = base.sanitize_text(deep_context_block.strip(), config)
+    suffix = ""
+    if config.max_prompt_chars >= 3000:
+        budget = max(0, min(len(context), int(getattr(config, "deep_review_max_total_chars", 24000)), config.max_prompt_chars // 3))
+        marker = "\n\n[deep context truncated by reviewer]"
+        if len(context) > budget:
+            context = f"{context[: max(0, budget - len(marker))]}{marker}"
+        suffix = "\n\n".join(["\n".join(mode_lines), context]).strip()
+
+    prompt_config = copy.copy(config)
+    reserve = min(len(suffix), config.max_prompt_chars // 3) if suffix else 0
+    prompt_config.max_prompt_chars = max(0, config.max_prompt_chars - reserve - 2)
+    prompt = hardened.build_prompt(pr, files, diff, prompt_config, risk_sentinels)
+    if not suffix:
+        return prompt[: config.max_prompt_chars]
+    separator = "\n\n"
+    if len(prompt) + len(separator) + len(suffix) <= config.max_prompt_chars:
+        return f"{prompt}{separator}{suffix}"
+    marker = "\n\n[deep context truncated by reviewer]"
+    remaining = config.max_prompt_chars - len(prompt) - len(separator)
+    if remaining <= len(marker):
+        retained_prompt = max(0, config.max_prompt_chars - len(marker))
+        return f"{prompt[:retained_prompt]}{marker}"
+    return f"{prompt}{separator}{suffix[: remaining - len(marker)]}{marker}"
 
 
 def append_context_to_review_body(body: str, review_mode: str, context_summary: str) -> str:
