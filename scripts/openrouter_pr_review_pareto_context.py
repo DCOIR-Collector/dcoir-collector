@@ -21,6 +21,7 @@ base = hardened.base
 CONTEXT_REVIEW_MARKER = "Context mode:"
 DEEP_CONTEXT_MIN_PARTIAL_CHARS = 400
 DEEP_CONTEXT_BUDGET_EXHAUSTED_SUFFIX = "\n~~~\n\n[deep context budget exhausted]"
+DEEP_CONTEXT_PROMPT_TRUNCATED_MARKER = "\n\n[deep context truncated by reviewer]"
 
 
 def optional_float(data: dict[str, Any], key: str) -> float | None:
@@ -97,6 +98,8 @@ def list_pr_reviews(gh: Any, pr_number: int) -> list[dict[str, Any]]:
         reviews.extend(batch)
         if len(batch) < 100:
             break
+        # Exact multiples of 100 cost one extra empty-page readback, which is
+        # acceptable for the small PR review counts this workflow expects.
         page += 1
     return reviews
 
@@ -111,6 +114,8 @@ def has_prior_successful_context_review(gh: Any, pr_number: int) -> bool:
 
 def language_hint(path: str) -> str:
     suffix = Path(path).suffix.lower()
+    # Common review surfaces get language hints; uncommon suffixes safely fall
+    # back to plain text instead of expanding the prompt grammar surface.
     return {
         ".bash": "bash",
         ".cjs": "javascript",
@@ -199,6 +204,8 @@ def build_deep_context_block(gh: Any, pr: dict[str, Any], files: list[dict[str, 
         included.append(f"{path}{' (truncated)' if truncated else ''}")
         remaining -= len(block)
         if remaining <= DEEP_CONTEXT_MIN_PARTIAL_CHARS:
+            # Keep a floor for useful context; below this, the next block would
+            # usually be a tiny fragment rather than actionable file context.
             break
 
     if not included:
@@ -209,6 +216,22 @@ def build_deep_context_block(gh: Any, pr: dict[str, Any], files: list[dict[str, 
     if omitted:
         summary += f"; omitted {len(omitted)}: {', '.join(omitted[:4])}"
     return "\n\n".join(lines), summary
+
+
+def truncate_with_balanced_fences(text: str, max_chars: int, marker: str) -> str:
+    if len(text) <= max_chars:
+        return text
+    if max_chars <= len(marker):
+        return marker[:max_chars]
+    fence_close = "\n~~~"
+    partial_limit = max(0, max_chars - len(marker))
+    partial = text[:partial_limit].rstrip()
+    if partial.count("~~~") % 2 == 1:
+        partial_limit = max(0, max_chars - len(marker) - len(fence_close))
+        partial = text[:partial_limit].rstrip()
+        if partial.count("~~~") % 2 == 1:
+            partial = f"{partial}{fence_close}"
+    return f"{partial}{marker}"
 
 
 def build_prompt(
@@ -228,28 +251,28 @@ def build_prompt(
     ]
     context = base.sanitize_text(deep_context_block.strip(), config)
     suffix = ""
+    # Extremely small budgets preserve the hardened core review prompt and rely
+    # on workflow progress/review readback for context-mode visibility.
     if config.max_prompt_chars >= 3000:
         budget = max(0, min(len(context), int(getattr(config, "deep_review_max_total_chars", 24000)), config.max_prompt_chars // 3))
-        marker = "\n\n[deep context truncated by reviewer]"
         if len(context) > budget:
-            context = f"{context[: max(0, budget - len(marker))]}{marker}"
+            context = truncate_with_balanced_fences(context, budget, DEEP_CONTEXT_PROMPT_TRUNCATED_MARKER)
         suffix = "\n\n".join(["\n".join(mode_lines), context]).strip()
 
     prompt_config = copy.copy(config)
+    separator = "\n\n"
     reserve = min(len(suffix), config.max_prompt_chars // 3) if suffix else 0
-    prompt_config.max_prompt_chars = max(0, config.max_prompt_chars - reserve - 2)
+    prompt_config.max_prompt_chars = max(0, config.max_prompt_chars - reserve - len(separator))
     prompt = hardened.build_prompt(pr, files, diff, prompt_config, risk_sentinels)
     if not suffix:
         return prompt[: config.max_prompt_chars]
-    separator = "\n\n"
     if len(prompt) + len(separator) + len(suffix) <= config.max_prompt_chars:
         return f"{prompt}{separator}{suffix}"
-    marker = "\n\n[deep context truncated by reviewer]"
     remaining = config.max_prompt_chars - len(prompt) - len(separator)
-    if remaining <= len(marker):
-        retained_prompt = max(0, config.max_prompt_chars - len(marker))
-        return f"{prompt[:retained_prompt]}{marker}"
-    return f"{prompt}{separator}{suffix[: remaining - len(marker)]}{marker}"
+    if remaining <= len(DEEP_CONTEXT_PROMPT_TRUNCATED_MARKER):
+        retained_prompt = max(0, config.max_prompt_chars - len(DEEP_CONTEXT_PROMPT_TRUNCATED_MARKER))
+        return f"{prompt[:retained_prompt]}{DEEP_CONTEXT_PROMPT_TRUNCATED_MARKER}"
+    return f"{prompt}{separator}{truncate_with_balanced_fences(suffix, remaining, DEEP_CONTEXT_PROMPT_TRUNCATED_MARKER)}"
 
 
 def neutralize_github_mentions(text: str) -> str:
@@ -307,7 +330,7 @@ def main() -> None:
         if config.script_timeout_seconds > 0 and hasattr(signal, "SIGALRM"):
             signal.signal(signal.SIGALRM, timeout_handler)
             signal.alarm(config.script_timeout_seconds)
-        base.env_required("OPENROUTER_API_KEY")
+        base.env_required("OPENROUTER_API_KEY")  # Validate required secret; request code reads it again.
         reporter.start()
         reporter.update("reaction", f"eyes add: {reaction_status['added']}")
         reporter.update("github", "fetching PR metadata")
