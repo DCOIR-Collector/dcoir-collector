@@ -26,7 +26,7 @@ jobs:
       PACKAGE_VERSION_OVERRIDE: ${{ inputs.package_version_override }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Set up workflow runtime
         uses: ./.github/actions/setup-workflow-runtime
         with:
