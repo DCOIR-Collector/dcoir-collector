@@ -20,15 +20,19 @@ smoke_test_free_model: false
 pareto_min_coding_score: 0.80
 
 # Auto Router remains only as a secondary fallback.
+# OpenRouter Auto Router allowed_models uses model patterns, so keep the list
+# narrow and coding-focused instead of allowing broad family globs.
 auto_cost_quality_tradeoff: 2
 auto_allowed_models:
   - anthropic/claude-sonnet*
   - openai/gpt-5*
   - google/gemini-2.5-pro*
-  - google/gemini-3.1-pro*
+  - google/gemini-3.1-pro-preview*
   - qwen/qwen3-coder*
   - deepseek/deepseek-v3*
 
+# Keep native OpenRouter fallback, route, and service-tier controls unset here.
+# The governed model_stack above owns the explicit model fallback order.
 fallback_models:
 
 openrouter_route:
@@ -69,6 +73,8 @@ ignored_providers:
 validation_commands:
   - python3 scripts/openrouter_pr_review_pareto_context_selftest.py
   - python3 scripts/openrouter_pr_review_hardened_selftest.py
+  # Requires a real git checkout for full changed-file discovery; extracted
+  # workspaces may only exercise this as a smoke check.
   - bash scripts/validate-codex-local.sh
   - pwsh -NoProfile -File scripts/validate-windows-powershell-51.ps1 -AllowPowerShell7 -AllowEmpty
   - python3 scripts/validate-codeql-security-workflow.py
