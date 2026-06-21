@@ -26,6 +26,7 @@ spec.loader.exec_module(mod)
 
 os.environ["GITHUB_REPOSITORY"] = "DCOIR-Collector/dcoir-collector"
 os.environ["PR_NUMBER"] = "287"
+os.environ["OPENROUTER_API_KEY"] = "test-openrouter-key"
 
 config = mod.load_pareto_context_config(str(ROOT / ".github" / "openrouter-pr-review-pareto.yml"))
 assert config.model == "openrouter/pareto-code"
@@ -51,6 +52,43 @@ assert pareto_payload["model"] == "openrouter/pareto-code"
 assert pareto_payload["provider"]["require_parameters"] is True
 assert pareto_payload["response_format"]["json_schema"]["strict"] is True
 assert pareto_payload["plugins"] == [{"id": "pareto-router", "min_coding_score": 0.80}]
+
+
+class FakeOpenRouterResponse:
+    def __enter__(self):
+        return self
+
+    def __exit__(self, _exc_type, _exc, _tb) -> None:
+        return None
+
+    def read(self) -> bytes:
+        return json.dumps(
+            {
+                "model": "served-pareto-model",
+                "choices": [{"message": {"content": json.dumps({"summary": "No findings.", "findings": []})}}],
+            }
+        ).encode("utf-8")
+
+
+captured_payloads: list[dict] = []
+original_urlopen = mod.hardened.urllib.request.urlopen
+
+
+def fake_urlopen(request, timeout=0):
+    captured_payloads.append(json.loads(request.data.decode("utf-8")))
+    return FakeOpenRouterResponse()
+
+
+mod.hardened.urllib.request.urlopen = fake_urlopen
+try:
+    parsed_response, served_model, service_tier = mod.hardened.openrouter_request_once("review prompt", schema, config, [], "openrouter/pareto-code")
+finally:
+    mod.hardened.urllib.request.urlopen = original_urlopen
+assert parsed_response["findings"] == []
+assert served_model == "served-pareto-model"
+assert service_tier == ""
+assert captured_payloads[0]["plugins"] == [{"id": "pareto-router", "min_coding_score": 0.80}]
+assert captured_payloads[0]["response_format"]["json_schema"]["strict"] is True
 
 auto_payload = mod.build_openrouter_payload("review prompt", schema, config, ["venice"], "openrouter/auto")
 assert auto_payload["model"] == "openrouter/auto"
@@ -170,6 +208,27 @@ assert "tools/huge_probe.py" in budget_summary
 assert "[deep context budget exhausted]" in budget_block
 assert budget_block.count("~~~") % 2 == 0
 
+prompt_context = (
+    "Deep changed-file context:\n\n"
+    "### tools/huge_probe.py\n"
+    "Status: modified; head ref: abc123def456\n"
+    "~~~python\n"
+    + ("print('large prompt context')\n" * 3000)
+    + "\n~~~"
+)
+prompt_truncated = mod.build_prompt(
+    {"number": 287, "title": "Prompt fence balance", "body": "Exercise prompt-level context truncation."},
+    [{"filename": "tools/huge_probe.py", "status": "modified", "additions": 500, "deletions": 0, "changes": 500}],
+    "diff --git a/tools/huge_probe.py b/tools/huge_probe.py\n",
+    config,
+    [],
+    prompt_context,
+    "first-pass-deep",
+    "first-pass-deep; included 1 file context block(s): tools/huge_probe.py (truncated)",
+)
+assert mod.DEEP_CONTEXT_PROMPT_TRUNCATED_MARKER.strip() in prompt_truncated
+assert prompt_truncated.count("~~~") % 2 == 0
+
 prompt = mod.build_prompt(
     {"number": 287, "title": "Deep context probe", "body": "Test first-pass context."},
     [{"filename": "tools/review_probe.py", "status": "added", "additions": 2, "deletions": 0, "changes": 2}],
@@ -199,6 +258,8 @@ small_prompt = mod.build_prompt(
 assert len(small_prompt) <= small_config.max_prompt_chars
 assert small_prompt.startswith("Governed review hardening requirements:")
 assert "Every semantic, Markdown, governance, validation, or review-gate concern" in small_prompt
+assert mod.CONTEXT_REVIEW_MARKER not in small_prompt
+assert mod.DEEP_CONTEXT_PROMPT_TRUNCATED_MARKER.strip() not in small_prompt
 
 
 class FakeErrorBody:
