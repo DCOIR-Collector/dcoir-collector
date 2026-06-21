@@ -299,7 +299,7 @@ def detect_python_file_write_path_sentinels(diff: str) -> list[hardened.RiskSent
         if hardened.is_comment_only_added_line(diff_line.path, diff_line.text):
             continue
         dynamic_target = python_dynamic_path_target(diff_line.text)
-        if diff_line.is_added and dynamic_target:
+        if dynamic_target:
             assigned_paths[dynamic_target] = diff_line
             continue
         for assigned_target in python_assignment_target_names(diff_line.text):
@@ -310,13 +310,16 @@ def detect_python_file_write_path_sentinels(diff: str) -> list[hardened.RiskSent
         assignment = assigned_paths.get(write_match.group("target"))
         if not assignment:
             continue
+        if not assignment.is_added and not diff_line.is_added:
+            continue
+        anchor = assignment if assignment.is_added else diff_line
         sentinels.append(
             hardened.RiskSentinel(
-                path=assignment.path,
-                line=assignment.line,
+                path=anchor.path,
+                line=anchor.line,
                 label=FILE_WRITE_PATH_LABEL,
                 detail=FILE_WRITE_PATH_DETAIL,
-                text=assignment.text,
+                text=anchor.text,
             )
         )
     return sentinels
