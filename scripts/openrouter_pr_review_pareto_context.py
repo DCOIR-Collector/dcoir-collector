@@ -239,8 +239,13 @@ def build_prompt(
     return f"{prompt}{separator}{suffix[: remaining - len(marker)]}{marker}"
 
 
-def append_context_to_review_body(body: str, review_mode: str, context_summary: str) -> str:
-    return base.github_safe_body(f"{body}\n\n{CONTEXT_REVIEW_MARKER} `{review_mode}`\n\nContext readback: {context_summary}")
+def neutralize_github_mentions(text: str) -> str:
+    return re.sub(r"@(?=[A-Za-z0-9])", "@<!-- -->", text)
+
+
+def append_context_to_review_body(body: str, review_mode: str, context_summary: str, config: Any) -> str:
+    safe_context_summary = neutralize_github_mentions(hardened.sanitize_github_output(context_summary, config))
+    return base.github_safe_body(f"{body}\n\n{CONTEXT_REVIEW_MARKER} `{review_mode}`\n\nContext readback: {safe_context_summary}")
 
 
 def main() -> None:
@@ -321,7 +326,7 @@ def main() -> None:
             comments.append({"path": path, "position": line_index[(path, line)], "body": base.build_inline_comment(finding, model_used, config)})
 
         event = "REQUEST_CHANGES" if comments and config.request_changes_on_findings else "COMMENT"
-        review_body = append_context_to_review_body(base.build_review_body(result, findings, model_used, config), review_mode, context_summary)
+        review_body = append_context_to_review_body(base.build_review_body(result, findings, model_used, config), review_mode, context_summary, config)
         reporter.update("github-review", f"posting GitHub review with {len(comments)} inline comments")
         gh.create_review(pr_number, review_body, event, comments, str(pr.get("head", {}).get("sha", "")))
         hardened.remove_eyes_reaction(gh, trigger_comment_id, reaction_id, reaction_status)
