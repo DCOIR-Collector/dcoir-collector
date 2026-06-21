@@ -120,6 +120,22 @@ assert "Context mode: first-pass-deep" in prompt
 assert "Deep changed-file context" in prompt
 assert "subprocess.run(command, shell=True)" in prompt
 
+small_config = mod.copy.copy(config)
+small_config.max_prompt_chars = 900
+small_prompt = mod.build_prompt(
+    {"number": 287, "title": "Small prompt", "body": "Ensure hardening survives."},
+    [{"filename": "tools/review_probe.py", "status": "added", "additions": 2, "deletions": 0, "changes": 2}],
+    "diff --git a/tools/review_probe.py b/tools/review_probe.py\n",
+    small_config,
+    [],
+    deep_block + ("\nextra context" * 500),
+    "first-pass-deep",
+    deep_summary,
+)
+assert len(small_prompt) <= small_config.max_prompt_chars
+assert small_prompt.startswith("Governed review hardening requirements:")
+assert "Every semantic, Markdown, governance, validation, or review-gate concern" in small_prompt
+
 
 class FakeErrorBody:
     def read(self) -> bytes:
