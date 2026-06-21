@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import ast
 import base64
 import copy
 import json
@@ -57,7 +58,6 @@ FILE_WRITE_PATH_DETAIL = (
 PYTHON_PATH_ASSIGNMENT_RE = re.compile(
     r"\b(?P<target>[A-Za-z_][A-Za-z0-9_]*)\s*=\s*(?P<expr>.*(?:Path|os\.path\.join)\s*\(.*)"
 )
-PYTHON_ASSIGNMENT_TARGET_RE = re.compile(r"^\s*(?P<target>[A-Za-z_][A-Za-z0-9_]*)\s*=(?!=)")
 PYTHON_FILE_WRITE_RE = re.compile(r"\b(?P<target>[A-Za-z_][A-Za-z0-9_]*)\.write_(?:text|bytes)\s*\(")
 PYTHON_TRIPLE_QUOTE_RE = re.compile(r"(?<!\\)(?:'''|\"\"\")")
 
@@ -68,6 +68,7 @@ class PythonDiffLine(NamedTuple):
     text: str
     is_added: bool
     inside_multiline_string: bool
+    inside_diff_fixture_string: bool
 
 
 def build_openrouter_payload(
@@ -90,7 +91,102 @@ def build_openrouter_payload(
 hardened.build_openrouter_payload = build_openrouter_payload
 
 
+def python_call_name(node: ast.AST) -> str:
+    if isinstance(node, ast.Name):
+        return node.id
+    if isinstance(node, ast.Attribute):
+        prefix = python_call_name(node.value)
+        return f"{prefix}.{node.attr}" if prefix else node.attr
+    return ""
+
+
+def python_assignment_target_names(text: str) -> set[str]:
+    try:
+        module = ast.parse(text.lstrip())
+    except SyntaxError:
+        return set()
+    names: set[str] = set()
+
+    def collect(node: ast.AST) -> None:
+        if isinstance(node, ast.Name):
+            names.add(node.id)
+        elif isinstance(node, (ast.Tuple, ast.List)):
+            for item in node.elts:
+                collect(item)
+        elif isinstance(node, ast.Starred):
+            collect(node.value)
+        elif isinstance(node, (ast.Attribute, ast.Subscript)):
+            root = node.value
+            while isinstance(root, (ast.Attribute, ast.Subscript)):
+                root = root.value
+            if isinstance(root, ast.Name):
+                names.add(root.id)
+
+    for statement in module.body:
+        if isinstance(statement, ast.Assign):
+            for target in statement.targets:
+                collect(target)
+        elif isinstance(statement, ast.AnnAssign):
+            collect(statement.target)
+        elif isinstance(statement, ast.AugAssign):
+            collect(statement.target)
+    return names
+
+
+def python_simple_assignment(text: str) -> tuple[str, ast.AST] | None:
+    try:
+        module = ast.parse(text.lstrip())
+    except SyntaxError:
+        return None
+    if not module.body:
+        return None
+    statement = module.body[0]
+    if isinstance(statement, ast.Assign) and len(statement.targets) == 1 and isinstance(statement.targets[0], ast.Name):
+        return statement.targets[0].id, statement.value
+    if isinstance(statement, ast.AnnAssign) and isinstance(statement.target, ast.Name):
+        return statement.target.id, statement.value
+    return None
+
+
+def python_is_literal_path_segment(node: ast.AST) -> bool:
+    return isinstance(node, ast.Constant) and isinstance(node.value, (str, bytes))
+
+
+def python_is_dynamic_path_segment(node: ast.AST) -> bool:
+    if python_is_literal_path_segment(node):
+        return False
+    if isinstance(node, ast.Constant):
+        return False
+    return True
+
+
+def python_is_path_constructor(node: ast.AST) -> bool:
+    return isinstance(node, ast.Call) and python_call_name(node.func) in {"Path", "pathlib.Path"}
+
+
+def python_is_os_path_join(node: ast.AST) -> bool:
+    return isinstance(node, ast.Call) and python_call_name(node.func) == "os.path.join"
+
+
+def python_path_expr_has_dynamic_write_segment(node: ast.AST) -> bool:
+    if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Div):
+        if python_is_path_constructor(node.left) or python_path_expr_has_dynamic_write_segment(node.left):
+            return python_is_dynamic_path_segment(node.right)
+        return False
+    if python_is_path_constructor(node) or python_is_os_path_join(node):
+        args = list(node.args)
+        if len(args) < 2:
+            return False
+        return any(python_is_dynamic_path_segment(arg) for arg in args[1:])
+    return False
+
+
 def python_dynamic_path_target(text: str) -> str | None:
+    assignment = python_simple_assignment(text)
+    if assignment:
+        target, expr_node = assignment
+        if python_path_expr_has_dynamic_write_segment(expr_node):
+            return target
     match = PYTHON_PATH_ASSIGNMENT_RE.search(text)
     if not match:
         return None
@@ -102,14 +198,16 @@ def python_dynamic_path_target(text: str) -> str | None:
     return match.group("target")
 
 
-def update_python_multiline_string_delimiter(active_delimiter: str | None, text: str) -> str | None:
+def update_python_multiline_string_state(active_delimiter: str | None, active_diff_fixture: bool, text: str) -> tuple[str | None, bool]:
     for match in PYTHON_TRIPLE_QUOTE_RE.finditer(text):
         delimiter = match.group(0)
         if active_delimiter is None:
             active_delimiter = delimiter
+            active_diff_fixture = "diff --git " in text[match.end() :]
         elif delimiter == active_delimiter:
             active_delimiter = None
-    return active_delimiter
+            active_diff_fixture = False
+    return active_delimiter, active_diff_fixture
 
 
 def iter_python_diff_lines_with_context(diff: str) -> list[PythonDiffLine]:
@@ -117,20 +215,24 @@ def iter_python_diff_lines_with_context(diff: str) -> list[PythonDiffLine]:
     current_path: str | None = None
     right_line: int | None = None
     active_delimiter: str | None = None
+    active_diff_fixture = False
     for raw_line in diff.splitlines():
         if raw_line.startswith("diff --git "):
             current_path = None
             right_line = None
             active_delimiter = None
+            active_diff_fixture = False
             continue
         if raw_line.startswith("+++ b/"):
             current_path = raw_line[6:]
             active_delimiter = None
+            active_diff_fixture = False
             continue
         if raw_line.startswith("@@"):
             match = re.search(r"\+(\d+)(?:,\d+)?", raw_line)
             right_line = int(match.group(1)) if match else None
             active_delimiter = None
+            active_diff_fixture = False
             continue
         if current_path is None or right_line is None:
             continue
@@ -144,16 +246,16 @@ def iter_python_diff_lines_with_context(diff: str) -> list[PythonDiffLine]:
             continue
         if raw_line.startswith("+") and not raw_line.startswith("+++"):
             text = raw_line[1:]
-            lines.append(PythonDiffLine(current_path, right_line, text, True, active_delimiter is not None))
-            if not hardened.is_comment_only_added_line(current_path, text):
-                active_delimiter = update_python_multiline_string_delimiter(active_delimiter, text)
+            lines.append(PythonDiffLine(current_path, right_line, text, True, active_delimiter is not None, active_diff_fixture))
+            if active_delimiter is not None or not hardened.is_comment_only_added_line(current_path, text):
+                active_delimiter, active_diff_fixture = update_python_multiline_string_state(active_delimiter, active_diff_fixture, text)
             right_line += 1
             continue
         if raw_line.startswith(" "):
             text = raw_line[1:]
-            lines.append(PythonDiffLine(current_path, right_line, text, False, active_delimiter is not None))
-            if not hardened.is_comment_only_added_line(current_path, text):
-                active_delimiter = update_python_multiline_string_delimiter(active_delimiter, text)
+            lines.append(PythonDiffLine(current_path, right_line, text, False, active_delimiter is not None, active_diff_fixture))
+            if active_delimiter is not None or not hardened.is_comment_only_added_line(current_path, text):
+                active_delimiter, active_diff_fixture = update_python_multiline_string_state(active_delimiter, active_diff_fixture, text)
             right_line += 1
             continue
         if not raw_line.startswith("\\"):
@@ -161,11 +263,11 @@ def iter_python_diff_lines_with_context(diff: str) -> list[PythonDiffLine]:
     return lines
 
 
-def python_multiline_string_added_line_keys(diff: str) -> set[tuple[str, int]]:
+def python_diff_fixture_added_line_keys(diff: str) -> set[tuple[str, int]]:
     return {
         (line.path, line.line)
         for line in iter_python_diff_lines_with_context(diff)
-        if line.is_added and line.inside_multiline_string
+        if line.is_added and line.inside_diff_fixture_string
     }
 
 
@@ -185,9 +287,8 @@ def detect_python_file_write_path_sentinels(diff: str) -> list[hardened.RiskSent
         if diff_line.is_added and dynamic_target:
             assigned_paths[dynamic_target] = diff_line
             continue
-        assignment_match = PYTHON_ASSIGNMENT_TARGET_RE.search(diff_line.text)
-        if assignment_match and assignment_match.group("target") in assigned_paths:
-            assigned_paths.pop(assignment_match.group("target"), None)
+        for assigned_target in python_assignment_target_names(diff_line.text):
+            assigned_paths.pop(assigned_target, None)
         write_match = PYTHON_FILE_WRITE_RE.search(diff_line.text)
         if not write_match:
             continue
@@ -207,12 +308,12 @@ def detect_python_file_write_path_sentinels(diff: str) -> list[hardened.RiskSent
 
 
 def detect_risk_sentinels(diff: str, max_anchors: int | None = None) -> list[hardened.RiskSentinel]:
-    multiline_string_added_lines = python_multiline_string_added_line_keys(diff)
+    diff_fixture_added_lines = python_diff_fixture_added_line_keys(diff)
     combined = [
         *[
             sentinel
             for sentinel in _original_detect_risk_sentinels(diff, None)
-            if (sentinel.path, sentinel.line) not in multiline_string_added_lines
+            if (sentinel.path, sentinel.line) not in diff_fixture_added_lines
         ],
         *detect_python_file_write_path_sentinels(diff),
     ]
