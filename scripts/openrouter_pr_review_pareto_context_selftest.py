@@ -145,6 +145,25 @@ index 0000000..1111111 100644
 """
 )
 assert not any(item.label == mod.FILE_WRITE_PATH_LABEL for item in literal_path_sentinels)
+cross_file_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_builder.py b/tools/path_builder.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_builder.py
+@@ -0,0 +1,3 @@
++from pathlib import Path
++def build_path(output_dir, case_id):
++    destination = Path(output_dir) / f"{case_id}.txt"
+diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,3 @@
++def write_path(destination, note):
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert not any(item.label == mod.FILE_WRITE_PATH_LABEL for item in cross_file_sentinels)
 
 
 class FakeGitHubClient:
