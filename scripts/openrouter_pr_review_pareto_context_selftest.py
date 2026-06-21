@@ -199,6 +199,25 @@ assert any(
     for item in join_variable_segment_sentinels
 )
 
+single_dynamic_path_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,6 @@
++from pathlib import Path
++def write_triage_note(filename, note):
++    destination = Path(filename)
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 3
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in single_dynamic_path_sentinels
+)
+
 chained_literal_then_variable_sentinels = mod.detect_risk_sentinels(
     """diff --git a/tools/path_writer.py b/tools/path_writer.py
 index 0000000..1111111 100644
@@ -249,6 +268,20 @@ index 0000000..1111111 100644
 '''
 )
 assert not any(item.label == "shell=True subprocess invocation" for item in fixture_string_sentinels)
+
+split_fixture_marker_sentinels = mod.detect_risk_sentinels(
+    '''diff --git a/scripts/openrouter_pr_review_pareto_context_selftest.py b/scripts/openrouter_pr_review_pareto_context_selftest.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/scripts/openrouter_pr_review_pareto_context_selftest.py
+@@ -0,0 +1,6 @@
++fixture = """
++diff --git a/probe.py b/probe.py
+++    subprocess.run(f"git add {destination}", shell=True, check=False)
++"""
+'''
+)
+assert not any(item.label == "shell=True subprocess invocation" for item in split_fixture_marker_sentinels)
 
 real_multiline_sql_sentinels = mod.detect_risk_sentinels(
     '''diff --git a/tools/query_builder.py b/tools/query_builder.py

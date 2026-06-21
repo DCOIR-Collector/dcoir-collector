@@ -187,11 +187,18 @@ def python_path_expr_has_dynamic_write_segment(node: ast.AST) -> bool:
     return has_dynamic
 
 
+def python_single_dynamic_path_expr(node: ast.AST) -> bool:
+    if not (python_is_path_constructor(node) or python_is_os_path_join(node)):
+        return False
+    args = list(node.args)
+    return len(args) == 1 and python_is_dynamic_path_segment(args[0])
+
+
 def python_dynamic_path_target(text: str) -> str | None:
     assignment = python_simple_assignment(text)
     if assignment:
         target, expr_node = assignment
-        if python_path_expr_has_dynamic_write_segment(expr_node):
+        if python_path_expr_has_dynamic_write_segment(expr_node) or python_single_dynamic_path_expr(expr_node):
             return target
     match = PYTHON_PATH_ASSIGNMENT_RE.search(text)
     if not match:
@@ -205,6 +212,8 @@ def python_dynamic_path_target(text: str) -> str | None:
 
 
 def update_python_multiline_string_state(active_delimiter: str | None, active_diff_fixture: bool, text: str) -> tuple[str | None, bool]:
+    if active_delimiter is not None and not active_diff_fixture and "diff --git " in text:
+        active_diff_fixture = True
     for match in PYTHON_TRIPLE_QUOTE_RE.finditer(text):
         delimiter = match.group(0)
         if active_delimiter is None:
@@ -576,13 +585,12 @@ def main() -> None:
         print(f"Ignoring denied author {author}")
         return
     if config.allowed_authors and author not in config.allowed_authors:
-        print(f"Ignoring unauthorized author {author}")
+        print(f"Ignoring unauthorized author {auth}")
         return
     command = hardened.matching_command(comment_body, config.commands)
     if not command:
         print("Comment does not match configured review commands")
         return
-
     def timeout_handler(_signum: int, _frame: Any) -> None:
         raise hardened.ReviewTimeoutError(f"OpenRouter PR review exceeded script timeout of {config.script_timeout_seconds} seconds")
 
