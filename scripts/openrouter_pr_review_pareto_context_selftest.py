@@ -8,6 +8,7 @@ import importlib.util
 import json
 import os
 import urllib.error
+from email.message import Message
 from pathlib import Path
 
 
@@ -32,6 +33,8 @@ assert config.model_stack == ["openrouter/pareto-code", "openrouter/auto"]
 assert config.pareto_min_coding_score == 0.80
 assert config.auto_cost_quality_tradeoff == 2
 assert "google/gemini-*" not in config.auto_allowed_models
+assert "google/gemini-3.1-pro-preview*" in config.auto_allowed_models
+assert "google/gemini-3.1-pro*" not in config.auto_allowed_models
 assert config.first_pass_deep_review is True
 assert config.deep_review_max_files == 8
 
@@ -63,6 +66,7 @@ class FakeGitHubClient:
         self.files = {
             "tools/review_probe.py": "def run_probe(command):\n    return subprocess.run(command, shell=True)\n",
             "docs/review.md": "# Review\n\nKeep governed review evidence visible.\n",
+            "tools/later_probe.py": "import subprocess\n\nsubprocess.run('whoami', shell=True)\n",
         }
 
     def request(self, _method: str, path: str):
@@ -106,6 +110,28 @@ assert "subprocess.run(command, shell=True)" in deep_block
 assert "included 2 file context block" in deep_summary
 assert "old/deleted.py (deleted)" in deep_summary
 
+diff_block, diff_summary = mod.build_deep_context_block(FakeGitHubClient(), {}, [], config, "diff")
+assert diff_block == ""
+assert "diff-focused" in diff_summary
+
+limited_config = mod.copy.copy(config)
+limited_config.deep_review_max_files = 1
+mixed_block, mixed_summary = mod.build_deep_context_block(
+    FakeGitHubClient(),
+    {"head": {"sha": "abc123def4567890"}},
+    [
+        {"filename": "old/deleted.py", "status": "removed"},
+        {"filename": "missing/unavailable.py", "status": "modified"},
+        {"filename": "tools/later_probe.py", "status": "modified"},
+    ],
+    limited_config,
+    "first-pass-deep",
+)
+assert "tools/later_probe.py" in mixed_block
+assert "included 1 file context block" in mixed_summary
+assert "old/deleted.py (deleted)" in mixed_summary
+assert "missing/unavailable.py" in mixed_summary
+
 prompt = mod.build_prompt(
     {"number": 287, "title": "Deep context probe", "body": "Test first-pass context."},
     [{"filename": "tools/review_probe.py", "status": "added", "additions": 2, "deletions": 0, "changes": 2}],
@@ -147,6 +173,7 @@ class FakeErrorBody:
 
 called_models: list[str] = []
 original_request_once = mod.hardened.openrouter_request_once
+empty_headers = Message()
 
 
 def fake_request_once(_prompt: str, _schema: dict, _config: object, _ignored: list[str], model: str):
@@ -156,7 +183,7 @@ def fake_request_once(_prompt: str, _schema: dict, _config: object, _ignored: li
             url="https://openrouter.ai/api/v1/chat/completions",
             code=404,
             msg="No endpoints found",
-            hdrs={},
+            hdrs=empty_headers,
             fp=FakeErrorBody(),
         )
     return {"summary": "No findings.", "findings": []}, "fallback-model", ""
