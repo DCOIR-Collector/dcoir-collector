@@ -95,9 +95,12 @@ def python_dynamic_path_target(text: str) -> str | None:
 def detect_python_file_write_path_sentinels(diff: str) -> list[hardened.RiskSentinel]:
     sentinels: list[hardened.RiskSentinel] = []
     assigned_paths: dict[str, hardened.ChangedLine] = {}
+    current_path = ""
     for changed_line in hardened.iter_added_diff_lines(diff):
-        if Path(changed_line.path).suffix.lower() != ".py":
+        if changed_line.path != current_path:
+            current_path = changed_line.path
             assigned_paths.clear()
+        if Path(changed_line.path).suffix.lower() != ".py":
             continue
         if hardened.is_comment_only_added_line(changed_line.path, changed_line.text):
             continue
