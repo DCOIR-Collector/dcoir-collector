@@ -216,6 +216,40 @@ for problem_summary in [
 ]:
     assert_problem(problem_summary)
 
+
+multiline_subprocess_diff = """diff --git a/tools/run_probe.py b/tools/run_probe.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/run_probe.py
+@@ -0,0 +1,6 @@
++import subprocess
++def run_probe(command):
++    subprocess.run(
++        command,
++        shell=True,
++    )
++"""
+multiline_sentinels = mod.detect_risk_sentinels(multiline_subprocess_diff)
+assert any(
+    item.path == "tools/run_probe.py"
+    and item.line == 5
+    and item.label == "shell=True subprocess invocation"
+    for item in multiline_sentinels
+)
+assert len({(item.path, item.line, item.label) for item in multiline_sentinels}) == len(multiline_sentinels)
+
+comment_only_diff = """diff --git a/tools/comment_examples.py b/tools/comment_examples.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/comment_examples.py
+@@ -0,0 +1,4 @@
++# avoid subprocess.run("echo hi", shell=True) in production
++# Invoke-Expression is intentionally mentioned in this comment-only example
++# Remove-Item -Recurse also appears only as documentation
++
++"""
+assert mod.detect_risk_sentinels(comment_only_diff) == []
+
 probe_diff = """diff --git a/validation-review-probes/Invoke-IntentionalFlawedReviewBaseline.ps1 b/validation-review-probes/Invoke-IntentionalFlawedReviewBaseline.ps1
 index 0000000..1111111 100644
 --- /dev/null
