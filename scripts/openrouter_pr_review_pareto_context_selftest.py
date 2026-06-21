@@ -38,6 +38,13 @@ assert "google/gemini-3.1-pro*" not in config.auto_allowed_models
 assert config.first_pass_deep_review is True
 assert config.deep_review_max_files == 8
 
+try:
+    mod.optional_float({"pareto_min_coding_score": "high"}, "pareto_min_coding_score")
+except ValueError as exc:
+    assert "pareto_min_coding_score" in str(exc)
+else:
+    raise AssertionError("malformed optional float should fail with a clear config error")
+
 schema = json.loads((ROOT / "schemas" / "openrouter-pr-review.schema.json").read_text(encoding="utf-8"))
 pareto_payload = mod.build_openrouter_payload("review prompt", schema, config, [], "openrouter/pareto-code")
 assert pareto_payload["model"] == "openrouter/pareto-code"
@@ -67,6 +74,7 @@ class FakeGitHubClient:
             "tools/review_probe.py": "def run_probe(command):\n    return subprocess.run(command, shell=True)\n",
             "docs/review.md": "# Review\n\nKeep governed review evidence visible.\n",
             "tools/later_probe.py": "import subprocess\n\nsubprocess.run('whoami', shell=True)\n",
+            "tools/huge_probe.py": "print('large context line')\n" * 1000,
         }
 
     def request(self, _method: str, path: str):
@@ -76,6 +84,8 @@ class FakeGitHubClient:
             raise AssertionError(f"unexpected GitHub path: {path}")
         encoded_path = path.split("/contents/", 1)[1].split("?", 1)[0]
         file_path = mod.urllib.parse.unquote(encoded_path)
+        if file_path == "large/oversized.py":
+            return {"type": "file", "encoding": "none", "content": ""}
         content = self.files[file_path].encode("utf-8")
         return {
             "type": "file",
@@ -131,6 +141,34 @@ assert "tools/later_probe.py" in mixed_block
 assert "included 1 file context block" in mixed_summary
 assert "old/deleted.py (deleted)" in mixed_summary
 assert "missing/unavailable.py" in mixed_summary
+
+large_block, large_summary = mod.build_deep_context_block(
+    FakeGitHubClient(),
+    {"head": {"sha": "abc123def4567890"}},
+    [
+        {"filename": "large/oversized.py", "status": "modified"},
+        {"filename": "tools/later_probe.py", "status": "modified"},
+    ],
+    limited_config,
+    "first-pass-deep",
+)
+assert "tools/later_probe.py" in large_block
+assert "large/oversized.py (file exceeds GitHub content API limit (>1 MB)" in large_summary
+
+budget_config = mod.copy.copy(config)
+budget_config.deep_review_max_files = 1
+budget_config.deep_review_max_file_chars = 5000
+budget_config.deep_review_max_total_chars = 520
+budget_block, budget_summary = mod.build_deep_context_block(
+    FakeGitHubClient(),
+    {"head": {"sha": "abc123def4567890"}},
+    [{"filename": "tools/huge_probe.py", "status": "modified"}],
+    budget_config,
+    "first-pass-deep",
+)
+assert "tools/huge_probe.py" in budget_summary
+assert "[deep context budget exhausted]" in budget_block
+assert budget_block.count("~~~") % 2 == 0
 
 prompt = mod.build_prompt(
     {"number": 287, "title": "Deep context probe", "body": "Test first-pass context."},
