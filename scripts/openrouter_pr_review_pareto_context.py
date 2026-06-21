@@ -12,7 +12,7 @@ import signal
 import sys
 import urllib.parse
 from pathlib import Path
-from typing import Any
+from typing import Any, NamedTuple
 
 import openrouter_pr_review_hardened as hardened
 
@@ -57,7 +57,17 @@ FILE_WRITE_PATH_DETAIL = (
 PYTHON_PATH_ASSIGNMENT_RE = re.compile(
     r"\b(?P<target>[A-Za-z_][A-Za-z0-9_]*)\s*=\s*(?P<expr>.*(?:Path|os\.path\.join)\s*\(.*)"
 )
+PYTHON_ASSIGNMENT_TARGET_RE = re.compile(r"^\s*(?P<target>[A-Za-z_][A-Za-z0-9_]*)\s*=(?!=)")
 PYTHON_FILE_WRITE_RE = re.compile(r"\b(?P<target>[A-Za-z_][A-Za-z0-9_]*)\.write_(?:text|bytes)\s*\(")
+PYTHON_TRIPLE_QUOTE_RE = re.compile(r"(?<!\\)(?:'''|\"\"\")")
+
+
+class PythonDiffLine(NamedTuple):
+    path: str
+    line: int
+    text: str
+    is_added: bool
+    inside_multiline_string: bool
 
 
 def build_openrouter_payload(
@@ -85,30 +95,100 @@ def python_dynamic_path_target(text: str) -> str | None:
     if not match:
         return None
     expr = match.group("expr")
-    if "/" not in expr and "os.path.join" not in expr:
+    if "/" not in expr and "os.path.join" not in expr and not re.search(r"\bPath\s*\(", expr):
         return None
     if not (re.search(r"\bf['\"]", expr) and "{" in expr):
         return None
     return match.group("target")
 
 
+def update_python_multiline_string_delimiter(active_delimiter: str | None, text: str) -> str | None:
+    for match in PYTHON_TRIPLE_QUOTE_RE.finditer(text):
+        delimiter = match.group(0)
+        if active_delimiter is None:
+            active_delimiter = delimiter
+        elif delimiter == active_delimiter:
+            active_delimiter = None
+    return active_delimiter
+
+
+def iter_python_diff_lines_with_context(diff: str) -> list[PythonDiffLine]:
+    lines: list[PythonDiffLine] = []
+    current_path: str | None = None
+    right_line: int | None = None
+    active_delimiter: str | None = None
+    for raw_line in diff.splitlines():
+        if raw_line.startswith("diff --git "):
+            current_path = None
+            right_line = None
+            active_delimiter = None
+            continue
+        if raw_line.startswith("+++ b/"):
+            current_path = raw_line[6:]
+            active_delimiter = None
+            continue
+        if raw_line.startswith("@@"):
+            match = re.search(r"\+(\d+)(?:,\d+)?", raw_line)
+            right_line = int(match.group(1)) if match else None
+            active_delimiter = None
+            continue
+        if current_path is None or right_line is None:
+            continue
+        if Path(current_path).suffix.lower() != ".py":
+            if raw_line.startswith("+") and not raw_line.startswith("+++"):
+                right_line += 1
+            elif not raw_line.startswith("-") or raw_line.startswith("---"):
+                right_line += 1
+            continue
+        if raw_line.startswith("-") and not raw_line.startswith("---"):
+            continue
+        if raw_line.startswith("+") and not raw_line.startswith("+++"):
+            text = raw_line[1:]
+            lines.append(PythonDiffLine(current_path, right_line, text, True, active_delimiter is not None))
+            if not hardened.is_comment_only_added_line(current_path, text):
+                active_delimiter = update_python_multiline_string_delimiter(active_delimiter, text)
+            right_line += 1
+            continue
+        if raw_line.startswith(" "):
+            text = raw_line[1:]
+            lines.append(PythonDiffLine(current_path, right_line, text, False, active_delimiter is not None))
+            if not hardened.is_comment_only_added_line(current_path, text):
+                active_delimiter = update_python_multiline_string_delimiter(active_delimiter, text)
+            right_line += 1
+            continue
+        if not raw_line.startswith("\\"):
+            right_line += 1
+    return lines
+
+
+def python_multiline_string_added_line_keys(diff: str) -> set[tuple[str, int]]:
+    return {
+        (line.path, line.line)
+        for line in iter_python_diff_lines_with_context(diff)
+        if line.is_added and line.inside_multiline_string
+    }
+
+
 def detect_python_file_write_path_sentinels(diff: str) -> list[hardened.RiskSentinel]:
     sentinels: list[hardened.RiskSentinel] = []
-    assigned_paths: dict[str, hardened.ChangedLine] = {}
+    assigned_paths: dict[str, PythonDiffLine] = {}
     current_path = ""
-    for changed_line in hardened.iter_added_diff_lines(diff):
-        if changed_line.path != current_path:
-            current_path = changed_line.path
+    for diff_line in iter_python_diff_lines_with_context(diff):
+        if diff_line.path != current_path:
+            current_path = diff_line.path
             assigned_paths.clear()
-        if Path(changed_line.path).suffix.lower() != ".py":
+        if diff_line.inside_multiline_string:
             continue
-        if hardened.is_comment_only_added_line(changed_line.path, changed_line.text):
+        if hardened.is_comment_only_added_line(diff_line.path, diff_line.text):
             continue
-        dynamic_target = python_dynamic_path_target(changed_line.text)
-        if dynamic_target:
-            assigned_paths[dynamic_target] = changed_line
+        dynamic_target = python_dynamic_path_target(diff_line.text)
+        if diff_line.is_added and dynamic_target:
+            assigned_paths[dynamic_target] = diff_line
             continue
-        write_match = PYTHON_FILE_WRITE_RE.search(changed_line.text)
+        assignment_match = PYTHON_ASSIGNMENT_TARGET_RE.search(diff_line.text)
+        if assignment_match and assignment_match.group("target") in assigned_paths:
+            assigned_paths.pop(assignment_match.group("target"), None)
+        write_match = PYTHON_FILE_WRITE_RE.search(diff_line.text)
         if not write_match:
             continue
         assignment = assigned_paths.get(write_match.group("target"))
@@ -127,8 +207,13 @@ def detect_python_file_write_path_sentinels(diff: str) -> list[hardened.RiskSent
 
 
 def detect_risk_sentinels(diff: str, max_anchors: int | None = None) -> list[hardened.RiskSentinel]:
+    multiline_string_added_lines = python_multiline_string_added_line_keys(diff)
     combined = [
-        *_original_detect_risk_sentinels(diff, None),
+        *[
+            sentinel
+            for sentinel in _original_detect_risk_sentinels(diff, None)
+            if (sentinel.path, sentinel.line) not in multiline_string_added_lines
+        ],
         *detect_python_file_write_path_sentinels(diff),
     ]
     deduped: list[hardened.RiskSentinel] = []
