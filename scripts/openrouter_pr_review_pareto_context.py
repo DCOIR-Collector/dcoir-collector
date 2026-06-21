@@ -130,9 +130,12 @@ def fetch_pr_file_text(gh: Any, path: str, ref: str) -> str:
     payload = gh.request("GET", f"/repos/{gh.repo}/contents/{encoded_path}?ref={encoded_ref}")
     if not isinstance(payload, dict) or payload.get("type") != "file":
         raise RuntimeError("content API did not return a file")
+    content = payload.get("content")
+    if content is None:
+        raise RuntimeError("file exceeds GitHub content API limit (>1 MB); omitting from deep context")
     if payload.get("encoding") != "base64":
         raise RuntimeError("content API did not return base64 text")
-    raw = base64.b64decode(str(payload.get("content", "")).replace("\n", ""))
+    raw = base64.b64decode(str(content).replace("\n", ""))
     return raw.decode("utf-8")
 
 
@@ -155,7 +158,9 @@ def build_deep_context_block(gh: Any, pr: dict[str, Any], files: list[dict[str, 
     omitted: list[str] = []
     remaining = max_total_chars
 
-    for item in files[:max_files]:
+    for item in files:
+        if len(included) >= max_files:
+            break
         path = str(item.get("filename", "")).strip()
         status = str(item.get("status", "")).strip()
         if not path:
