@@ -12,6 +12,7 @@ import os
 import urllib.error
 from email.message import Message
 from pathlib import Path
+from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -107,41 +108,22 @@ assert mod.review_mode_for_command("/dcoir-review diff", "/dcoir-review", config
 unauthorized_config = mod.copy.copy(config)
 unauthorized_config.allowed_authors = ["allowed-operator"]
 original_load_pareto_context_config = mod.load_pareto_context_config
-original_env = {
-    key: os.environ.get(key)
-    for key in [
-        "GITHUB_REPOSITORY",
-        "PR_NUMBER",
-        "GITHUB_TOKEN",
-        "TRIGGER_COMMENT_ID",
-        "TRIGGER_COMMENT_BODY",
-        "TRIGGER_AUTHOR",
-        "OPENROUTER_REVIEW_CONFIG",
-    ]
+unauthorized_env = {
+    "GITHUB_REPOSITORY": "DCOIR-Collector/dcoir-collector",
+    "PR_NUMBER": "287",
+    "GITHUB_TOKEN": "test-token",
+    "TRIGGER_COMMENT_ID": "123",
+    "TRIGGER_COMMENT_BODY": "/dcoir-review",
+    "TRIGGER_AUTHOR": "not-allowed",
+    "OPENROUTER_REVIEW_CONFIG": "test-config.yml",
 }
-os.environ.update(
-    {
-        "GITHUB_REPOSITORY": "DCOIR-Collector/dcoir-collector",
-        "PR_NUMBER": "287",
-        "GITHUB_TOKEN": "test-token",
-        "TRIGGER_COMMENT_ID": "123",
-        "TRIGGER_COMMENT_BODY": "/dcoir-review",
-        "TRIGGER_AUTHOR": "not-allowed",
-        "OPENROUTER_REVIEW_CONFIG": "test-config.yml",
-    }
-)
 unauthorized_stdout = io.StringIO()
 mod.load_pareto_context_config = lambda _path: unauthorized_config
 try:
-    with contextlib.redirect_stdout(unauthorized_stdout):
+    with mock.patch.dict(os.environ, unauthorized_env, clear=False), contextlib.redirect_stdout(unauthorized_stdout):
         mod.main()
 finally:
     mod.load_pareto_context_config = original_load_pareto_context_config
-    for key, value in original_env.items():
-        if value is None:
-            os.environ.pop(key, None)
-        else:
-            os.environ[key] = value
 assert "Ignoring unauthorized author not-allowed" in unauthorized_stdout.getvalue()
 
 path_write_sentinels = mod.detect_risk_sentinels(
@@ -241,6 +223,53 @@ assert any(
     for item in join_variable_segment_sentinels
 )
 
+literal_root_path_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,7 @@
++import os
++from pathlib import Path
++def write_triage_note(filename, note):
++    destination = Path("/safe", filename)
++    backup = os.path.join("/safe", filename)
++    destination.write_text(note, encoding="utf-8")
++    backup.write_text(note, encoding="utf-8")
+"""
+)
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 4
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in literal_root_path_sentinels
+)
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 5
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in literal_root_path_sentinels
+)
+
+multi_variable_fstring_path_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,5 @@
++from pathlib import Path
++def write_triage_note(base, filename, note):
++    destination = Path(f"{base}/{filename}")
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 3
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in multi_variable_fstring_path_sentinels
+)
+
 single_dynamic_path_sentinels = mod.detect_risk_sentinels(
     """diff --git a/tools/path_writer.py b/tools/path_writer.py
 index 0000000..1111111 100644
@@ -267,7 +296,7 @@ index 0000000..1111111 100644
 +++ b/tools/path_writer.py
 @@ -0,0 +1,6 @@
 +from pathlib import Path
-+def write_triae_note(filename, note, output_dir):
++def write_triage_note(filename, note, output_dir):
 +    destination = Path(output_dir) / "cases" / filename
 +    destination.write_text(note, encoding="utf-8")
 """
@@ -286,7 +315,7 @@ index 0000000..1111111 100644
 +++ b/tools/path_writer.py
 @@ -0,0 +1,6 @@
 +from pathlib import Path
-+def write_triae_note(filename, note, output_dir):
++def write_triage_note(filename, note, output_dir):
 +    destination = Path(output_dir) / filename / "note.txt"
 +    destination.write_text(note, encoding="utf-8")
 """
@@ -333,7 +362,7 @@ index 0000000..1111111 100644
 @@ -0,0 +1,5 @@
 +def load_case(case_id):
 +    query = f"""
-SELECT * FROM cases WHERE id = {case_id}
++SELECT * FROM cases WHERE id = {case_id}
 +"""
 '''
 )
@@ -366,7 +395,7 @@ assert any(
 
 assert mod.detect_risk_sentinels(
     """diff --git a/tools/comment_examples.py b/tools/comment_examples.py
-index 0000000..111111 100644
+index 0000000..1111111 100644
 --- /dev/null
 +++ b/tools/comment_examples.py
 @@ -0,0 +1,3 @@
@@ -387,6 +416,19 @@ index 0000000..1111111 100644
 """
 )
 assert not any(item.label == mod.FILE_WRITE_PATH_LABEL for item in literal_path_sentinels)
+literal_single_path_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/safe_writer.py b/tools/safe_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/safe_writer.py
+@@ -0,0 +1,5 @@
++from pathlib import Path
++def write_summary(note):
++    destination = Path("summary.txt")
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert not any(item.label == mod.FILE_WRITE_PATH_LABEL for item in literal_single_path_sentinels)
 safe_reassign_sentinels = mod.detect_risk_sentinels(
     """diff --git a/tools/safe_writer.py b/tools/safe_writer.py
 index 0000000..1111111 100644
