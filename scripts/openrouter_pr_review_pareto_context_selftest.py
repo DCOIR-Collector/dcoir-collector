@@ -102,6 +102,50 @@ assert mod.review_mode_for_command("/dcoir-review deep", "/dcoir-review", config
 assert mod.review_mode_for_command("/dcoir-review exhaustive", "/dcoir-review", config, True) == "deep-forced"
 assert mod.review_mode_for_command("/dcoir-review diff", "/dcoir-review", config, False) == "diff"
 
+path_write_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/validation-review-probes/intentional_flawed_review_baseline.py b/validation-review-probes/intentional_flawed_review_baseline.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/validation-review-probes/intentional_flawed_review_baseline.py
+@@ -0,0 +1,6 @@
++from pathlib import Path
++def write_triage_note(case_id, note, output_dir):
++    destination = Path(output_dir) / f"{case_id}.txt"
++    destination.write_text(note, encoding="utf-8")
++    subprocess.run(f"git add {destination}", shell=True, check=False)
+"""
+)
+assert any(
+    item.path == "validation-review-probes/intentional_flawed_review_baseline.py"
+    and item.line == 3
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in path_write_sentinels
+)
+
+assert mod.detect_risk_sentinels(
+    """diff --git a/tools/comment_examples.py b/tools/comment_examples.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/comment_examples.py
+@@ -0,0 +1,3 @@
++# destination = Path(output_dir) / f"{case_id}.txt"
++# destination.write_text(note, encoding="utf-8")
+"""
+) == []
+literal_path_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/safe_writer.py b/tools/safe_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/safe_writer.py
+@@ -0,0 +1,5 @@
++from pathlib import Path
++def write_summary(output_dir, note):
++    destination = Path(output_dir) / "summary.txt"
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert not any(item.label == mod.FILE_WRITE_PATH_LABEL for item in literal_path_sentinels)
+
 
 class FakeGitHubClient:
     repo = "DCOIR-Collector/dcoir-collector"
