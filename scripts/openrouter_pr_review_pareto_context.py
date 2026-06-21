@@ -585,12 +585,13 @@ def main() -> None:
         print(f"Ignoring denied author {author}")
         return
     if config.allowed_authors and author not in config.allowed_authors:
-        print(f"Ignoring unauthorized author {auth}")
+        print(f"Ignoring unauthorized author {author}")
         return
     command = hardened.matching_command(comment_body, config.commands)
     if not command:
         print("Comment does not match configured review commands")
         return
+
     def timeout_handler(_signum: int, _frame: Any) -> None:
         raise hardened.ReviewTimeoutError(f"OpenRouter PR review exceeded script timeout of {config.script_timeout_seconds} seconds")
 
