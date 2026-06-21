@@ -161,6 +161,44 @@ assert any(
     for item in multi_arg_path_sentinels
 )
 
+variable_segment_path_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,6 @@
++from pathlib import Path
++def write_triage_note(filename, note, output_dir):
++    destination = Path(output_dir) / filename
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 3
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in variable_segment_path_sentinels
+)
+
+join_variable_segment_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,6 @@
++import os
++def write_triage_note(filename, note, output_dir):
++    destination = os.path.join(output_dir, filename)
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 3
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in join_variable_segment_sentinels
+)
+
 fixture_string_sentinels = mod.detect_risk_sentinels(
     '''diff --git a/scripts/openrouter_pr_review_pareto_context_selftest.py b/scripts/openrouter_pr_review_pareto_context_selftest.py
 index 0000000..1111111 100644
@@ -173,6 +211,45 @@ index 0000000..1111111 100644
 '''
 )
 assert not any(item.label == "shell=True subprocess invocation" for item in fixture_string_sentinels)
+
+real_multiline_sql_sentinels = mod.detect_risk_sentinels(
+    '''diff --git a/tools/query_builder.py b/tools/query_builder.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/query_builder.py
+@@ -0,0 +1,5 @@
++def load_case(case_id):
++    query = f"""
++SELECT * FROM cases WHERE id = {case_id}
++"""
+'''
+)
+assert any(
+    item.path == "tools/query_builder.py"
+    and item.line == 3
+    and item.label == "raw SQL/query string interpolation"
+    for item in real_multiline_sql_sentinels
+)
+
+comment_like_string_close_sentinels = mod.detect_risk_sentinels(
+    '''diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,6 @@
++def write_triage_note(case_id, note, output_dir):
++    doc = """open text
++    # """
++    destination = Path(output_dir) / f"{case_id}.txt"
++    destination.write_text(note, encoding="utf-8")
+'''
+)
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 4
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in comment_like_string_close_sentinels
+)
 
 assert mod.detect_risk_sentinels(
     """diff --git a/tools/comment_examples.py b/tools/comment_examples.py
@@ -197,6 +274,20 @@ index 0000000..1111111 100644
 """
 )
 assert not any(item.label == mod.FILE_WRITE_PATH_LABEL for item in literal_path_sentinels)
+safe_reassign_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/safe_writer.py b/tools/safe_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/safe_writer.py
+@@ -0,0 +1,6 @@
++from pathlib import Path
++def write_summary(output_dir, note, case_id):
++    destination = Path(output_dir) / f"{case_id}.txt"
++    destination = Path(output_dir) / "summary.txt"
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert not any(item.label == mod.FILE_WRITE_PATH_LABEL for item in safe_reassign_sentinels)
 cross_file_sentinels = mod.detect_risk_sentinels(
     """diff --git a/tools/path_builder.py b/tools/path_builder.py
 index 0000000..1111111 100644
