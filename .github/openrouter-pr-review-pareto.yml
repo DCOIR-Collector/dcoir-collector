@@ -20,8 +20,9 @@ smoke_test_free_model: false
 pareto_min_coding_score: 0.80
 
 # Auto Router remains only as a secondary fallback.
-# OpenRouter Auto Router allowed_models uses model patterns, so keep the list
-# narrow and coding-focused instead of allowing broad family globs.
+# OpenRouter Auto Router allowed_models uses documented model patterns:
+# https://openrouter.ai/docs/guides/routing/routers/auto-router#pattern-syntax
+# Keep the list narrow and coding-focused instead of allowing broad family globs.
 auto_cost_quality_tradeoff: 2
 auto_allowed_models:
   - anthropic/claude-sonnet*
