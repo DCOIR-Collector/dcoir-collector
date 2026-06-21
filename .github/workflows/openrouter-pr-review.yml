@@ -13,12 +13,12 @@
 # Required inputs:
 # - PR issue number and trigger comment metadata from github.event.
 # Required secrets/config:
-# - Uses the workflow token through github.token, OPENROUTER_API_KEY, and .github/openrouter-pr-review-governed.yml config.
+# - Uses the workflow token through github.token, OPENROUTER_API_KEY, and .github/openrouter-pr-review-pareto.yml config.
 # - Use secret/config names only as defined here and in the local config; never place secret values in workflow comments, requests, reports, logs, or bundles.
 # Runtime dependencies:
-# - Uses Python 3.12 and scripts/openrouter_pr_review_hardened.py from the trusted default branch checkout.
+# - Uses Python 3.12 and scripts/openrouter_pr_review_pareto_context.py from the trusted default branch checkout.
 # Expected outputs/readback:
-# - PR conversation progress/status comment, PR review output from scripts/openrouter_pr_review_hardened.py, step-summary notices, and GitHub Actions run/job readback when the workflow changes.
+# - PR conversation progress/status comment, PR review output from scripts/openrouter_pr_review_pareto_context.py, step-summary notices, and GitHub Actions run/job readback when the workflow changes.
 # Safety notes:
 # - Checkout is pinned to the trusted default branch and persists no credentials.
 # - Keep the manual author/command guard, least needed permissions, and issue_comment boundary intact; do not use pull_request_target.
@@ -80,5 +80,5 @@ jobs:
           TRIGGER_COMMENT_BODY: ${{ github.event.comment.body }}
           TRIGGER_AUTHOR: ${{ github.event.comment.user.login }}
           GITHUB_EVENT_PATH: ${{ github.event_path }}
-          OPENROUTER_REVIEW_CONFIG: .github/openrouter-pr-review-governed.yml
-        run: python -u scripts/openrouter_pr_review_hardened.py
+          OPENROUTER_REVIEW_CONFIG: .github/openrouter-pr-review-pareto.yml
+        run: python -u scripts/openrouter_pr_review_pareto_context.py
