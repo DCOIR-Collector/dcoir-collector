@@ -19,13 +19,18 @@ import openrouter_pr_review_hardened as hardened
 
 base = hardened.base
 CONTEXT_REVIEW_MARKER = "Context mode:"
+DEEP_CONTEXT_MIN_PARTIAL_CHARS = 400
+DEEP_CONTEXT_BUDGET_EXHAUSTED_SUFFIX = "\n~~~\n\n[deep context budget exhausted]"
 
 
 def optional_float(data: dict[str, Any], key: str) -> float | None:
     value = data.get(key)
     if value in ("", None):
         return None
-    return float(value)
+    try:
+        return float(value)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"Config key {key!r} must be a number or empty, got {value!r}") from exc
 
 
 def load_pareto_context_config(path: str) -> Any:
@@ -130,10 +135,11 @@ def fetch_pr_file_text(gh: Any, path: str, ref: str) -> str:
     payload = gh.request("GET", f"/repos/{gh.repo}/contents/{encoded_path}?ref={encoded_ref}")
     if not isinstance(payload, dict) or payload.get("type") != "file":
         raise RuntimeError("content API did not return a file")
+    encoding = payload.get("encoding")
     content = payload.get("content")
-    if content is None:
+    if content is None or (content == "" and encoding == "none"):
         raise RuntimeError("file exceeds GitHub content API limit (>1 MB); omitting from deep context")
-    if payload.get("encoding") != "base64":
+    if encoding != "base64":
         raise RuntimeError("content API did not return base64 text")
     raw = base64.b64decode(str(content).replace("\n", ""))
     return raw.decode("utf-8")
@@ -182,15 +188,17 @@ def build_deep_context_block(gh: Any, pr: dict[str, Any], files: list[dict[str, 
             snippet = f"{snippet}\n\n[full-file context truncated for this file]"
         block = f"### {path}\nStatus: {status}; head ref: {head_sha[:12]}\n~~~{language_hint(path)}\n{snippet}\n~~~"
         if len(block) > remaining:
-            if not included and remaining > 400:
-                block = block[: remaining - 35] + "\n\n[deep context budget exhausted]"
+            if not included and remaining > DEEP_CONTEXT_MIN_PARTIAL_CHARS + len(DEEP_CONTEXT_BUDGET_EXHAUSTED_SUFFIX):
+                partial = block[: remaining - len(DEEP_CONTEXT_BUDGET_EXHAUSTED_SUFFIX)].rstrip()
+                fence_suffix = "\n~~~" if partial.count("~~~") % 2 == 1 else ""
+                block = f"{partial}{fence_suffix}\n\n[deep context budget exhausted]"
             else:
                 omitted.append(f"{path} (deep context budget)")
                 continue
         lines.append(block)
         included.append(f"{path}{' (truncated)' if truncated else ''}")
         remaining -= len(block)
-        if remaining <= 400:
+        if remaining <= DEEP_CONTEXT_MIN_PARTIAL_CHARS:
             break
 
     if not included:
