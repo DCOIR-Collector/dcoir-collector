@@ -117,7 +117,9 @@ class FakeGitHubClient:
 
     def request(self, _method: str, path: str):
         if path.startswith("/repos/DCOIR-Collector/dcoir-collector/pulls/287/reviews"):
-            return self.reviews
+            params = mod.urllib.parse.parse_qs(mod.urllib.parse.urlparse(path).query)
+            page = int(params.get("page", ["1"])[0])
+            return self.reviews if page == 1 else []
         if "/contents/" not in path:
             raise AssertionError(f"unexpected GitHub path: {path}")
         encoded_path = path.split("/contents/", 1)[1].split("?", 1)[0]
@@ -140,6 +142,7 @@ assert (
     )
     is True
 )
+assert mod.has_prior_successful_context_review(FakeGitHubClient([{"body": mod.base.MARKER}] * 100), 287) is False
 
 deep_block, deep_summary = mod.build_deep_context_block(
     FakeGitHubClient(),
