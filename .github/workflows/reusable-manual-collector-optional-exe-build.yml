@@ -44,7 +44,7 @@ jobs:
       SKIP_PS2EXE_INSTALL: ${{ inputs.skip_ps2exe_install }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Set up workflow runtime
         uses: ./.github/actions/setup-workflow-runtime
         with:
