@@ -47,6 +47,17 @@ def load_pareto_context_config(path: str) -> Any:
 
 
 _original_build_openrouter_payload = hardened.build_openrouter_payload
+_original_detect_risk_sentinels = hardened.detect_risk_sentinels
+
+FILE_WRITE_PATH_LABEL = "unsafe file-write path construction"
+FILE_WRITE_PATH_DETAIL = (
+    "dynamic path segments used for file writes need segment validation, normalization, "
+    "and root containment checks before writing or staging files"
+)
+PYTHON_PATH_ASSIGNMENT_RE = re.compile(
+    r"\b(?P<target>[A-Za-z_][A-Za-z0-9_]*)\s*=\s*(?P<expr>.*(?:Path|os\.path\.join)\s*\(.*)"
+)
+PYTHON_FILE_WRITE_RE = re.compile(r"\b(?P<target>[A-Za-z_][A-Za-z0-9_]*)\.write_(?:text|bytes)\s*\(")
 
 
 def build_openrouter_payload(
@@ -67,6 +78,70 @@ def build_openrouter_payload(
 
 
 hardened.build_openrouter_payload = build_openrouter_payload
+
+
+def python_dynamic_path_target(text: str) -> str | None:
+    match = PYTHON_PATH_ASSIGNMENT_RE.search(text)
+    if not match:
+        return None
+    expr = match.group("expr")
+    if "/" not in expr and "os.path.join" not in expr:
+        return None
+    if not (re.search(r"\bf['\"]", expr) and "{" in expr):
+        return None
+    return match.group("target")
+
+
+def detect_python_file_write_path_sentinels(diff: str) -> list[hardened.RiskSentinel]:
+    sentinels: list[hardened.RiskSentinel] = []
+    assigned_paths: dict[str, hardened.ChangedLine] = {}
+    for changed_line in hardened.iter_added_diff_lines(diff):
+        if Path(changed_line.path).suffix.lower() != ".py":
+            assigned_paths.clear()
+            continue
+        if hardened.is_comment_only_added_line(changed_line.path, changed_line.text):
+            continue
+        dynamic_target = python_dynamic_path_target(changed_line.text)
+        if dynamic_target:
+            assigned_paths[dynamic_target] = changed_line
+            continue
+        write_match = PYTHON_FILE_WRITE_RE.search(changed_line.text)
+        if not write_match:
+            continue
+        assignment = assigned_paths.get(write_match.group("target"))
+        if not assignment:
+            continue
+        sentinels.append(
+            hardened.RiskSentinel(
+                path=assignment.path,
+                line=assignment.line,
+                label=FILE_WRITE_PATH_LABEL,
+                detail=FILE_WRITE_PATH_DETAIL,
+                text=assignment.text,
+            )
+        )
+    return sentinels
+
+
+def detect_risk_sentinels(diff: str, max_anchors: int | None = None) -> list[hardened.RiskSentinel]:
+    combined = [
+        *_original_detect_risk_sentinels(diff, None),
+        *detect_python_file_write_path_sentinels(diff),
+    ]
+    deduped: list[hardened.RiskSentinel] = []
+    seen: set[tuple[str, int, str]] = set()
+    for sentinel in combined:
+        key = (sentinel.path, sentinel.line, sentinel.label)
+        if key in seen:
+            continue
+        seen.add(key)
+        deduped.append(sentinel)
+    if max_anchors is not None:
+        return deduped[:max_anchors]
+    return deduped
+
+
+hardened.detect_risk_sentinels = detect_risk_sentinels
 
 
 def command_option_tokens(body: str, command: str) -> set[str]:
@@ -248,6 +323,7 @@ def build_prompt(
         f"{CONTEXT_REVIEW_MARKER} {review_mode}",
         f"Context readback: {context_summary}",
         "When deep context is present, use it to reason about full changed-file behavior, but anchor actionable findings to changed lines when practical.",
+        "Inspect dynamic path construction and file writes for traversal, arbitrary overwrite, missing root-containment checks, and unsafe staging side effects.",
     ]
     context = base.sanitize_text(deep_context_block.strip(), config)
     suffix = ""
