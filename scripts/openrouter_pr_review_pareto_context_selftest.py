@@ -171,8 +171,17 @@ assert called_models == ["openrouter/pareto-code", "openrouter/auto"]
 assert model_used == "fallback-model"
 assert result["findings"] == []
 
-review_body = mod.append_context_to_review_body(mod.base.MARKER, "first-pass-deep", deep_summary)
+review_body = mod.append_context_to_review_body(mod.base.MARKER, "first-pass-deep", deep_summary, config)
 assert "Context mode: `first-pass-deep`" in review_body
 assert "Context readback:" in review_body
+unsafe_review_body = mod.append_context_to_review_body(
+    mod.base.MARKER,
+    "first-pass-deep",
+    "included hostile/@codex.py and @malwaredevil-owned/file.py",
+    config,
+)
+assert "@codex" not in unsafe_review_body
+assert "@malwaredevil" not in unsafe_review_body
+assert "@<!-- -->codex" in unsafe_review_body
 
 print("Pareto context OpenRouter selftest passed")
