@@ -317,7 +317,13 @@ def python_path_expr_info(node: ast.AST, path_constructor_names: set[str] | None
         return True, base_has_dynamic or any(python_is_dynamic_path_segment(arg) for arg in node.args)
     if python_is_path_constructor(node, path_constructor_names) or python_is_os_path_join(node):
         args = list(node.args)
-        if len(args) < 2:
+        if len(args) == 1:
+            arg = args[0]
+            arg_is_path, arg_has_dynamic = python_path_expr_info(arg, path_constructor_names)
+            if arg_is_path or (isinstance(arg, ast.BinOp) and isinstance(arg.op, ast.Div)):
+                return True, arg_has_dynamic
+            return True, python_is_dynamic_path_segment(arg)
+        if len(args) < 1:
             return True, False
         return True, any(python_is_dynamic_path_segment(arg) for arg in args[1:])
     return False, False
