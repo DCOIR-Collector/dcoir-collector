@@ -1,0 +1,15 @@
+{
+  "artifact_name": "",
+  "exit_code": "",
+  "github_ref": "refs/heads/main",
+  "github_run_attempt": "1",
+  "github_run_id": "27980675840",
+  "github_sha": "118c068892cf0fbd25abda46f864c0d226f81a51",
+  "phase": "request-resolved",
+  "request_id": "pr296-path-info-regression-fix-20260622T200724Z",
+  "request_path": "chatgpt_staging/exec_requests/pr296-path-info-regression-fix-20260622T200724Z.json",
+  "result": "running",
+  "schema": "dcoir.chatgpt_staging.latest_progress_marker.v1",
+  "updated_utc": "2026-06-22T20:08:35Z",
+  "workflow": "chatgpt-exec"
+}
