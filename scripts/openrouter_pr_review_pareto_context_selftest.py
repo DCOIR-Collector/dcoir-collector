@@ -267,6 +267,29 @@ assert any(
     for item in multiline_path_sentinels
 )
 
+qualified_multiline_path_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,7 @@
++import pathlib
++def write_triage_note(filename, note, output_dir):
++    destination = pathlib.Path(
++        output_dir,
++        filename,
++    )
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert mod.python_dynamic_path_target("destination = pathlib.Path(\n    output_dir,\n    filename,\n)") == "destination"
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 3
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in qualified_multiline_path_sentinels
+)
+
 literal_root_path_sentinels = mod.detect_risk_sentinels(
     """diff --git a/tools/path_writer.py b/tools/path_writer.py
 index 0000000..1111111 100644
