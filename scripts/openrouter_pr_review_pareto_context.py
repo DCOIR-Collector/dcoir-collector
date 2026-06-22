@@ -70,6 +70,7 @@ PYTHON_FILE_WRITE_RE = re.compile(
 PYTHON_SCOPE_BOUNDARY_RE = re.compile(r"^\s*(?:async\s+def|def|class)\s+[A-Za-z_][A-Za-z0-9_]*\b")
 PYTHON_TRIPLE_QUOTE_RE = re.compile(r"(?<!\\)(?:'''|\"\"\")")
 DEFAULT_PYTHON_PATH_CONSTRUCTORS = frozenset({"Path", "pathlib.Path"})
+PYTHON_PATH_ALIAS_CONTEXT: dict[str, set[str]] = {}
 
 
 class PythonDiffLine(NamedTuple):
@@ -196,7 +197,7 @@ def python_path_constructor_aliases(text: str) -> set[str]:
         module = ast.parse(text.lstrip())
     except SyntaxError:
         return aliases
-    for statement in module.body:
+    for statement in ast.walk(module):
         if isinstance(statement, ast.ImportFrom) and statement.module == "pathlib":
             for alias in statement.names:
                 if alias.name == "Path":
@@ -206,6 +207,15 @@ def python_path_constructor_aliases(text: str) -> set[str]:
                 if alias.name == "pathlib":
                     aliases.add(f"{alias.asname or alias.name}.Path")
     return aliases
+
+
+def set_python_path_alias_context(path_alias_context: dict[str, set[str]] | None) -> None:
+    global PYTHON_PATH_ALIAS_CONTEXT
+    PYTHON_PATH_ALIAS_CONTEXT = {
+        path: set(aliases)
+        for path, aliases in (path_alias_context or {}).items()
+        if aliases
+    }
 
 
 def python_path_assignment_start(text: str, path_constructor_names: set[str] | None = None) -> bool:
@@ -444,6 +454,7 @@ def detect_python_file_write_path_sentinels(diff: str) -> list[hardened.RiskSent
     for diff_line in iter_python_diff_lines_with_context(diff):
         if diff_line.path != current_alias_path:
             path_constructor_names = set(DEFAULT_PYTHON_PATH_CONSTRUCTORS)
+            path_constructor_names.update(PYTHON_PATH_ALIAS_CONTEXT.get(diff_line.path, set()))
             current_alias_path = diff_line.path
         scope = (diff_line.path, diff_line.hunk)
         if scope != current_scope:
@@ -611,6 +622,25 @@ def fetch_pr_file_text(gh: Any, path: str, ref: str) -> str:
         raise RuntimeError("content API did not return base64 text")
     raw = base64.b64decode(str(content).replace("\n", ""))
     return raw.decode("utf-8")
+
+
+def build_python_path_alias_context(gh: Any, pr: dict[str, Any], files: list[dict[str, Any]]) -> dict[str, set[str]]:
+    head_sha = str(pr.get("head", {}).get("sha", "") or "")
+    if not head_sha:
+        return {}
+    path_alias_context: dict[str, set[str]] = {}
+    for item in files:
+        path = str(item.get("filename", "")).strip()
+        status = str(item.get("status", "")).strip()
+        if not path or status in {"removed", "deleted"} or Path(path).suffix.lower() != ".py":
+            continue
+        try:
+            aliases = python_path_constructor_aliases(fetch_pr_file_text(gh, path, head_sha))
+        except Exception:
+            continue
+        if aliases:
+            path_alias_context[path] = aliases
+    return path_alias_context
 
 
 def build_deep_context_block(gh: Any, pr: dict[str, Any], files: list[dict[str, Any]], config: Any, review_mode: str) -> tuple[str, str]:
@@ -808,6 +838,7 @@ def main() -> None:
         diff = gh.get_pr_diff(pr_number)
         reporter.update("github", "fetching changed file list")
         files = gh.list_files(pr_number)
+        set_python_path_alias_context(build_python_path_alias_context(gh, pr, files))
         try:
             prior_successful_review = has_prior_successful_context_review(gh, pr_number)
             reporter.update("review-mode", f"prior context review found: {str(prior_successful_review).lower()}")
@@ -852,6 +883,7 @@ def main() -> None:
         reporter.fail(hardened.sanitize_github_output(str(exc), config))
         raise
     finally:
+        set_python_path_alias_context({})
         if config.script_timeout_seconds > 0 and hasattr(signal, "SIGALRM"):
             signal.alarm(0)
 
