@@ -64,6 +64,25 @@ assert any(
     for item in qualified_joinpath_variable_segment_sentinels
 )
 
+os_path_join_variable_segment_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,6 @@
++import os
++def write_triage_note(filename, note, output_dir):
++    destination = os.path.join(output_dir, filename)
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 3
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in os_path_join_variable_segment_sentinels
+)
+
 literal_joinpath_sentinels = mod.detect_risk_sentinels(
     """diff --git a/tools/safe_writer.py b/tools/safe_writer.py
 index 0000000..1111111 100644
