@@ -63,6 +63,9 @@ PYTHON_PATH_ASSIGNMENT_RE = re.compile(
 PYTHON_PATH_ASSIGNMENT_START_RE = re.compile(
     rf"^\s*{PYTHON_PATH_TARGET_PART}\s*(?::\s*[^=]+)?=\s*(?:Path|pathlib\.Path|os\.path\.join)\s*\("
 )
+PYTHON_ASSIGNMENT_CONTINUATION_START_RE = re.compile(
+    rf"^\s*{PYTHON_PATH_TARGET_PART}\s*(?::\s*[^=]+)?=\s*(?:\(|\\\s*)?$"
+)
 PYTHON_FILE_WRITE_RE = re.compile(
     rf"(?:\b(?P<target>{PYTHON_PATH_TARGET_PART})|\b(?:Path|pathlib\.Path)\s*\(\s*(?P<wrapped_target>{PYTHON_PATH_TARGET_PART})\s*\))"
     r"\.write_(?:text|bytes)\s*\("
@@ -183,6 +186,20 @@ def python_assignment_value_references_target(text: str, target: str) -> bool:
     return False
 
 
+def python_augmented_assignment_targets(text: str) -> set[str]:
+    try:
+        module = ast.parse(text.lstrip())
+    except SyntaxError:
+        return set()
+    targets: set[str] = set()
+    for statement in module.body:
+        if isinstance(statement, ast.AugAssign):
+            target_key = python_target_key(statement.target)
+            if target_key:
+                targets.add(target_key)
+    return targets
+
+
 def python_statement_is_complete(text: str) -> bool:
     try:
         ast.parse(text.lstrip())
@@ -220,6 +237,8 @@ def set_python_path_alias_context(path_alias_context: dict[str, set[str]] | None
 
 def python_path_assignment_start(text: str, path_constructor_names: set[str] | None = None) -> bool:
     if PYTHON_PATH_ASSIGNMENT_START_RE.search(text):
+        return True
+    if PYTHON_ASSIGNMENT_CONTINUATION_START_RE.search(text):
         return True
     names = sorted((path_constructor_names or set()) - DEFAULT_PYTHON_PATH_CONSTRUCTORS, key=len, reverse=True)
     if not names:
@@ -457,7 +476,7 @@ def detect_python_file_write_path_sentinels(diff: str) -> list[hardened.RiskSent
     sentinels: list[hardened.RiskSentinel] = []
     assigned_paths: dict[str, PythonDiffLine] = {}
     path_constructor_names = set(DEFAULT_PYTHON_PATH_CONSTRUCTORS)
-    current_scope: tuple[str, int] = ("", 0)
+    current_path = ""
     current_alias_path = ""
     pending_path_assignment: list[PythonDiffLine] = []
 
@@ -476,10 +495,9 @@ def detect_python_file_write_path_sentinels(diff: str) -> list[hardened.RiskSent
             path_constructor_names = set(DEFAULT_PYTHON_PATH_CONSTRUCTORS)
             path_constructor_names.update(PYTHON_PATH_ALIAS_CONTEXT.get(diff_line.path, set()))
             current_alias_path = diff_line.path
-        scope = (diff_line.path, diff_line.hunk)
-        if scope != current_scope:
+        if diff_line.path != current_path:
             flush_pending_path_assignment()
-            current_scope = scope
+            current_path = diff_line.path
             assigned_paths.clear()
         if diff_line.inside_multiline_string:
             continue
@@ -505,10 +523,14 @@ def detect_python_file_write_path_sentinels(diff: str) -> list[hardened.RiskSent
         if python_path_assignment_start(diff_line.text, path_constructor_names) and not python_statement_is_complete(diff_line.text):
             pending_path_assignment = [diff_line]
             continue
+        augmented_targets = python_augmented_assignment_targets(diff_line.text)
         for assigned_target in python_assignment_target_names(diff_line.text):
-            keep_exact_target = assigned_target in assigned_paths and python_assignment_value_references_target(
-                diff_line.text,
-                assigned_target,
+            keep_exact_target = assigned_target in assigned_paths and (
+                assigned_target in augmented_targets
+                or python_assignment_value_references_target(
+                    diff_line.text,
+                    assigned_target,
+                )
             )
             if keep_exact_target:
                 if diff_line.is_added and not assigned_paths[assigned_target].is_added:
@@ -766,7 +788,7 @@ def build_prompt(
         f"Context readback: {context_summary}",
         "When deep context is present, use it to reason about full changed-file behavior, but anchor actionable findings to changed lines when practical.",
         "Every finding must include exact correction guidance or the smallest safe patch direction, plus validation/readback guidance.",
-        "Prefer GitHub apply-ready suggestions: when a finding has a precise replacement for the commented line or selected range, put only that exact replacement code in suggested_replacement so the renderer emits a Suggested fix with a ```suggestion block; leave suggested_replacement empty when an apply-ready patch would be unsafe or speculative.",
+        "Prefer GitHub apply-ready suggestions only when a finding has a precise single-line replacement for the commented line; put only that exact replacement code in suggested_replacement so the renderer emits a Suggested fix with a ```suggestion block; leave suggested_replacement empty for multiline, range, or speculative fixes.",
         "Inspect dynamic path construction and file writes for traversal, arbitrary overwrite, missing root-containment checks, and unsafe staging side effects.",
     ]
     context = base.sanitize_text(deep_context_block.strip(), config)
