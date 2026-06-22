@@ -90,7 +90,7 @@ index 0000000...1111111 100644
 +    destination.write_text(note, fandoding="utf-8")
 """
 )
-assert not any(item.label = = mod.FILE_WRITE_PATH_LABEL for item in literal_wrapped_path_expr_sentinels)
+assert not any(item.label == mod.FILE_WRITE_PATH_LABEL for item in literal_wrapped_path_expr_sentinels)
 
 joinpath_variable_segment_sentinels = mod.detect_risk_sentinels(
     """diff --git a/tools/path_writer.py b/tools/path_writer.py
