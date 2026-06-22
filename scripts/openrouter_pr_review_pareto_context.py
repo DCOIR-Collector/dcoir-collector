@@ -56,8 +56,9 @@ FILE_WRITE_PATH_DETAIL = (
     "and root containment checks before writing or staging files"
 )
 PYTHON_PATH_TARGET_PART = r"[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*"
+PYTHON_PATH_ASSIGNMENT_MAX_CHARS = 10000
 PYTHON_PATH_ASSIGNMENT_RE = re.compile(
-    rf"\b(?P<target>{PYTHON_PATH_TARGET_PART})\s*=\s*(?P<expr>.*(?:Path|os\.path\.join)\s*\(.*)"
+    rf"\b(?P<target>{PYTHON_PATH_TARGET_PART})\s*=\s*(?P<expr>[^\n#]*(?:Path|os\.path\.join)\s*\([^\n#]*)"
 )
 PYTHON_FILE_WRITE_RE = re.compile(rf"\b(?P<target>{PYTHON_PATH_TARGET_PART})\.write_(?:text|bytes)\s*\(")
 PYTHON_TRIPLE_QUOTE_RE = re.compile(r"(?<!\\)(?:'''|\"\"\")")
@@ -122,8 +123,6 @@ def python_assignment_target_names(text: str) -> set[str]:
         target_key = python_target_key(node)
         if target_key:
             names.add(target_key)
-            root = target_key.split(".", 1)[0]
-            names.add(root)
             return
         if isinstance(node, (ast.Tuple, ast.List)):
             for item in node.elts:
@@ -219,7 +218,13 @@ def python_single_dynamic_path_expr(node: ast.AST) -> bool:
     if not (python_is_path_constructor(node) or python_is_os_path_join(node)):
         return False
     args = list(node.args)
-    return len(args) == 1 and python_is_dynamic_path_segment(args[0])
+    if len(args) != 1:
+        return False
+    arg = args[0]
+    arg_is_path, arg_has_dynamic = python_path_expr_info(arg)
+    if arg_is_path or (isinstance(arg, ast.BinOp) and isinstance(arg.op, ast.Div)):
+        return arg_has_dynamic
+    return python_is_dynamic_path_segment(arg)
 
 
 def python_dynamic_path_target(text: str) -> str | None:
@@ -228,6 +233,10 @@ def python_dynamic_path_target(text: str) -> str | None:
         target, expr_node = assignment
         if python_path_expr_has_dynamic_write_segment(expr_node) or python_single_dynamic_path_expr(expr_node):
             return target
+    if len(text) > PYTHON_PATH_ASSIGNMENT_MAX_CHARS:
+        return None
+    if "Path" not in text and "os.path.join" not in text:
+        return None
     match = PYTHON_PATH_ASSIGNMENT_RE.search(text)
     if not match:
         return None
