@@ -108,6 +108,7 @@ assert mod.review_mode_for_command("/dcoir-review diff", "/dcoir-review", config
 unauthorized_config = mod.copy.copy(config)
 unauthorized_config.allowed_authors = ["allowed-operator"]
 original_load_pareto_context_config = mod.load_pareto_context_config
+# Placeholder token only; this test never prints or validates a real secret.
 unauthorized_env = {
     "GITHUB_REPOSITORY": "DCOIR-Collector/dcoir-collector",
     "PR_NUMBER": "287",
@@ -136,7 +137,7 @@ index 0000000..1111111 100644
 +def write_triage_note(case_id, note, output_dir):
 +    destination = Path(output_dir) / f"{case_id}.txt"
 +    destination.write_text(note, encoding="utf-8")
-+    subprocess.run(f"git add {destination}", shell=True, check=False)
++    subprocess.run(["git", "add", str(destination)], check=True)
 """
 )
 assert any(
@@ -241,6 +242,29 @@ assert any(
     and item.line == 3
     and item.label == mod.FILE_WRITE_PATH_LABEL
     for item in join_variable_segment_sentinels
+)
+
+multiline_path_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,8 @@
++from pathlib import Path
++def write_triage_note(filename, note, output_dir):
++    destination = Path(
++        output_dir,
++        filename,
++    )
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert mod.python_dynamic_path_target("destination = Path(\n    output_dir,\n    filename,\n)") == "destination"
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 3
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in multiline_path_sentinels
 )
 
 literal_root_path_sentinels = mod.detect_risk_sentinels(
@@ -352,7 +376,8 @@ fixture_string_sentinels = mod.detect_risk_sentinels(
 index 0000000..1111111 100644
 --- /dev/null
 +++ b/scripts/openrouter_pr_review_pareto_context_selftest.py
-@@ -0,0 +1,5 @@
+@@ -0,0 +1,6 @@
++# Intentionally unsafe sentinel fixture string; never executed by this selftest.
 +fixture = """diff --git a/probe.py b/probe.py
 ++    subprocess.run(f"git add {destination}", shell=True, check=False)
 +"""
@@ -365,7 +390,8 @@ split_fixture_marker_sentinels = mod.detect_risk_sentinels(
 index 0000000..1111111 100644
 --- /dev/null
 +++ b/scripts/openrouter_pr_review_pareto_context_selftest.py
-@@ -0,0 +1,6 @@
+@@ -0,0 +1,7 @@
++# Intentionally unsafe sentinel fixture string; never executed by this selftest.
 +fixture = """
 +diff --git a/probe.py b/probe.py
 ++    subprocess.run(f"git add {destination}", shell=True, check=False)
@@ -382,7 +408,7 @@ index 0000000..1111111 100644
 @@ -0,0 +1,5 @@
 +def load_case(case_id):
 +    query = f"""
-+SELECT * FROM cases WHERE id = {case_id}
++SELECT * FROM cases WHERE id = {case_id}  -- intentionally unsafe for sentinel testing only
 +"""
 '''
 )
@@ -742,6 +768,7 @@ assert "Deep changed-file context" in prompt
 assert "subprocess.run(command, shell=True)" in prompt
 assert "exact correction guidance" in prompt
 assert "smallest safe patch direction" in prompt
+assert "GitHub apply-ready suggestions" in prompt
 
 small_config = mod.copy.copy(config)
 small_config.max_prompt_chars = 900
