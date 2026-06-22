@@ -61,7 +61,7 @@ PYTHON_PATH_ASSIGNMENT_RE = re.compile(
     rf"^\s*(?P<target>{PYTHON_PATH_TARGET_PART})\s*=\s*(?P<expr>[^\n#]*(?:Path|os\.path\.join)\s*\([^\n#]*)"
 )
 PYTHON_PATH_ASSIGNMENT_START_RE = re.compile(
-    rf"^\s*{PYTHON_PATH_TARGET_PART}\s*(?::\s*[^=]+)?=\s*(?:Path|os\.path\.join)\s*\("
+    rf"^\s*{PYTHON_PATH_TARGET_PART}\s*(?::\s*[^=]+)?=\s*(?:Path|pathlib\.Path|os\.path\.join)\s*\("
 )
 PYTHON_FILE_WRITE_RE = re.compile(rf"\b(?P<target>{PYTHON_PATH_TARGET_PART})\.write_(?:text|bytes)\s*\(")
 PYTHON_SCOPE_BOUNDARY_RE = re.compile(r"^\s*(?:async\s+def|def|class)\s+[A-Za-z_][A-Za-z0-9_]*\b")
