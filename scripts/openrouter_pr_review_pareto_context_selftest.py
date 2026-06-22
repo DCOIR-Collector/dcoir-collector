@@ -877,6 +877,26 @@ assert any(
     for item in cross_hunk_assignment_write_sentinels
 )
 
+disconnected_cross_hunk_multiline_assignment_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,3 @@
++from pathlib import Path
++def write_triage_note(filename, note, output_dir):
++    destination = (
+@@ -20,2 +20,3 @@ def write_triage_note(filename, note, output_dir):
++        Path(output_dir) / filename
++    )
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert not any(
+    item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in disconnected_cross_hunk_multiline_assignment_sentinels
+)
+
 cross_file_sentinels = mod.detect_risk_sentinels(
     """diff --git a/tools/path_builder.py b/tools/path_builder.py
 index 0000000..1111111 100644

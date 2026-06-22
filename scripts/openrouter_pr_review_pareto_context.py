@@ -477,6 +477,7 @@ def detect_python_file_write_path_sentinels(diff: str) -> list[hardened.RiskSent
     assigned_paths: dict[str, PythonDiffLine] = {}
     path_constructor_names = set(DEFAULT_PYTHON_PATH_CONSTRUCTORS)
     current_path = ""
+    current_hunk = 0
     current_alias_path = ""
     pending_path_assignment: list[PythonDiffLine] = []
 
@@ -498,7 +499,11 @@ def detect_python_file_write_path_sentinels(diff: str) -> list[hardened.RiskSent
         if diff_line.path != current_path:
             flush_pending_path_assignment()
             current_path = diff_line.path
+            current_hunk = diff_line.hunk
             assigned_paths.clear()
+        elif diff_line.hunk != current_hunk:
+            flush_pending_path_assignment()
+            current_hunk = diff_line.hunk
         if diff_line.inside_multiline_string:
             continue
         if hardened.is_comment_only_added_line(diff_line.path, diff_line.text):
