@@ -138,6 +138,40 @@ index 0000000..1111111 100644
 )
 assert not any(item.label == mod.FILE_WRITE_PATH_LABEL for item in nested_scope_inner_assignment_sentinels)
 
+block_scope_assignment_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,7 @@
++from pathlib import Path
++def write_triage_note(filename, note, output_dir):
++    if filename:
++        destination = Path(output_dir) / filename
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 4
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in block_scope_assignment_sentinels
+)
+
+unrelated_cross_hunk_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- a/tools/path_writer.py
++++ b/tools/path_writer.py
+@@ -10,2 +10,4 @@ def build_path(filename, output_dir):
++    destination = Path(output_dir) / filename
++    return destination
+@@ -30,2 +32,3 @@ def write_supplied_path(destination, note):
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert not any(item.label == mod.FILE_WRITE_PATH_LABEL for item in unrelated_cross_hunk_sentinels)
+
 shadowed_parameter_sentinels = mod.detect_risk_sentinels(
     """diff --git a/tools/path_writer.py b/tools/path_writer.py
 index 0000000..1111111 100644
