@@ -86,6 +86,11 @@ class PythonDiffLine(NamedTuple):
     inside_diff_fixture_string: bool
 
 
+class PythonTrackedPath(NamedTuple):
+    assignment: PythonDiffLine | None
+    indent: int
+
+
 def build_openrouter_payload(
     prompt: str,
     schema: dict[str, Any],
@@ -406,12 +411,13 @@ def python_code_line_indent(text: str) -> int | None:
     return len(text) - len(text.lstrip(" \t"))
 
 
-def prune_assigned_paths_for_indent(assigned_paths: dict[str, PythonDiffLine], indent: int | None) -> None:
+def prune_assigned_paths_for_indent(assigned_paths: dict[str, list[PythonTrackedPath]], indent: int | None) -> None:
     if indent is None:
         return
-    for target, assignment in list(assigned_paths.items()):
-        assignment_indent = python_code_line_indent(assignment.text)
-        if assignment_indent is not None and assignment_indent > indent:
+    for target, assignments in list(assigned_paths.items()):
+        while assignments and assignments[-1].indent > indent:
+            assignments.pop()
+        if not assignments:
             assigned_paths.pop(target, None)
 
 
@@ -439,13 +445,63 @@ def python_scope_boundary_shadowed_names(text: str) -> set[str]:
     return set()
 
 
-def remove_shadowed_assigned_paths(assigned_paths: dict[str, PythonDiffLine], shadowed_names: set[str]) -> None:
+def push_assigned_path(assigned_paths: dict[str, list[PythonTrackedPath]], target: str, assignment: PythonDiffLine) -> None:
+    indent = python_code_line_indent(assignment.text) or 0
+    assignments = assigned_paths.setdefault(target, [])
+    while assignments and assignments[-1].indent >= indent:
+        assignments.pop()
+    assignments.append(PythonTrackedPath(assignment, indent))
+
+
+def push_shadowed_assigned_path(assigned_paths: dict[str, list[PythonTrackedPath]], target: str, line: PythonDiffLine) -> None:
+    indent = (python_code_line_indent(line.text) or 0) + 1
+    assignments = assigned_paths.setdefault(target, [])
+    while assignments and assignments[-1].indent >= indent:
+        assignments.pop()
+    assignments.append(PythonTrackedPath(None, indent))
+
+
+def clear_assigned_path_at_indent(
+    assigned_paths: dict[str, list[PythonTrackedPath]],
+    target: str,
+    indent: int,
+) -> None:
+    assignments = assigned_paths.get(target)
+    if assignments is not None:
+        while assignments and assignments[-1].indent >= indent:
+            assignments.pop()
+        if assignments:
+            assignments.append(PythonTrackedPath(None, indent))
+        else:
+            assigned_paths[target] = [PythonTrackedPath(None, indent)]
+    prefix = f"{target}."
+    for tracked_target, tracked_assignments in list(assigned_paths.items()):
+        if not tracked_target.startswith(prefix):
+            continue
+        while tracked_assignments and tracked_assignments[-1].indent >= indent:
+            tracked_assignments.pop()
+        if not tracked_assignments:
+            assigned_paths.pop(tracked_target, None)
+
+
+def current_assigned_path(assigned_paths: dict[str, list[PythonTrackedPath]], target: str) -> PythonDiffLine | None:
+    assignments = assigned_paths.get(target)
+    if not assignments:
+        return None
+    return assignments[-1].assignment
+
+
+def remove_shadowed_assigned_paths(
+    assigned_paths: dict[str, list[PythonTrackedPath]],
+    shadowed_names: set[str],
+    line: PythonDiffLine,
+) -> None:
     for shadowed_name in shadowed_names:
-        assigned_paths.pop(shadowed_name, None)
+        push_shadowed_assigned_path(assigned_paths, shadowed_name, line)
         prefix = f"{shadowed_name}."
         for tracked_target in list(assigned_paths):
             if tracked_target.startswith(prefix):
-                assigned_paths.pop(tracked_target, None)
+                push_shadowed_assigned_path(assigned_paths, tracked_target, line)
 
 
 def update_python_multiline_string_state(active_delimiter: str | None, active_diff_fixture: bool, text: str) -> tuple[str | None, bool]:
@@ -532,7 +588,7 @@ def python_diff_fixture_added_line_keys(diff: str) -> set[tuple[str, int]]:
 
 def detect_python_file_write_path_sentinels(diff: str) -> list[hardened.RiskSentinel]:
     sentinels: list[hardened.RiskSentinel] = []
-    assigned_paths: dict[str, PythonDiffLine] = {}
+    assigned_paths: dict[str, list[PythonTrackedPath]] = {}
     path_constructor_names = set(DEFAULT_PYTHON_PATH_CONSTRUCTORS)
     current_path = ""
     current_hunk = 0
@@ -546,7 +602,7 @@ def detect_python_file_write_path_sentinels(diff: str) -> list[hardened.RiskSent
         statement = "\n".join(line.text for line in pending_path_assignment)
         dynamic_target = python_dynamic_path_target(statement, path_constructor_names)
         if dynamic_target:
-            assigned_paths[dynamic_target] = pending_path_assignment[0]
+            push_assigned_path(assigned_paths, dynamic_target, pending_path_assignment[0])
         pending_path_assignment = []
 
     for diff_line in iter_python_diff_lines_with_context(diff):
@@ -575,21 +631,26 @@ def detect_python_file_write_path_sentinels(diff: str) -> list[hardened.RiskSent
                 flush_pending_path_assignment()
             continue
         if python_is_scope_boundary(diff_line.text):
-            remove_shadowed_assigned_paths(assigned_paths, python_scope_boundary_shadowed_names(diff_line.text))
+            remove_shadowed_assigned_paths(
+                assigned_paths,
+                python_scope_boundary_shadowed_names(diff_line.text),
+                diff_line,
+            )
         dynamic_target = python_dynamic_path_target(diff_line.text, path_constructor_names)
         if dynamic_target:
-            assigned_paths[dynamic_target] = diff_line
+            push_assigned_path(assigned_paths, dynamic_target, diff_line)
             continue
         augmented_dynamic_target = python_augmented_dynamic_path_target(diff_line.text, path_constructor_names)
         if augmented_dynamic_target:
-            assigned_paths[augmented_dynamic_target] = diff_line
+            push_assigned_path(assigned_paths, augmented_dynamic_target, diff_line)
             continue
         if python_path_assignment_start(diff_line.text, path_constructor_names) and not python_statement_is_complete(diff_line.text):
             pending_path_assignment = [diff_line]
             continue
         augmented_targets = python_augmented_assignment_targets(diff_line.text)
+        diff_line_indent = python_code_line_indent(diff_line.text) or 0
         for assigned_target in python_assignment_target_names(diff_line.text):
-            keep_exact_target = assigned_target in assigned_paths and (
+            keep_exact_target = current_assigned_path(assigned_paths, assigned_target) is not None and (
                 assigned_target in augmented_targets
                 or python_assignment_value_references_target(
                     diff_line.text,
@@ -597,18 +658,15 @@ def detect_python_file_write_path_sentinels(diff: str) -> list[hardened.RiskSent
                 )
             )
             if keep_exact_target:
-                if diff_line.is_added and not assigned_paths[assigned_target].is_added:
-                    assigned_paths[assigned_target] = diff_line
+                assignment = current_assigned_path(assigned_paths, assigned_target)
+                if diff_line.is_added and assignment is not None and not assignment.is_added:
+                    push_assigned_path(assigned_paths, assigned_target, diff_line)
             else:
-                assigned_paths.pop(assigned_target, None)
-            prefix = f"{assigned_target}."
-            for tracked_target in list(assigned_paths):
-                if tracked_target.startswith(prefix):
-                    assigned_paths.pop(tracked_target, None)
+                clear_assigned_path_at_indent(assigned_paths, assigned_target, diff_line_indent)
         write_target = python_file_write_target(diff_line.text, path_constructor_names)
         if not write_target:
             continue
-        assignment = assigned_paths.get(write_target)
+        assignment = current_assigned_path(assigned_paths, write_target)
         if not assignment:
             continue
         if not assignment.is_added and not diff_line.is_added:

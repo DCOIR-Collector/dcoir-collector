@@ -99,6 +99,29 @@ assert any(
     for item in nested_scope_outer_assignment_sentinels
 )
 
+nested_same_name_assignment_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,9 @@
++from pathlib import Path
++def write_triage_note(filename, note, output_dir):
++    destination = Path(output_dir) / filename
++    def helper(other_output_dir):
++        destination = Path(other_output_dir) / "helper.txt"
++        return destination
++    helper(output_dir)
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 3
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in nested_same_name_assignment_sentinels
+)
+
 nested_scope_inner_assignment_sentinels = mod.detect_risk_sentinels(
     """diff --git a/tools/path_writer.py b/tools/path_writer.py
 index 0000000..1111111 100644
