@@ -52,8 +52,8 @@ _original_detect_risk_sentinels = hardened.detect_risk_sentinels
 
 FILE_WRITE_PATH_LABEL = "unsafe file-write path construction"
 FILE_WRITE_PATH_DETAIL = (
-    "dynamic path segments used for file writes need segment validation, normalization, "
-    "and root containment checks before writing or staging files"
+    "dynamic path segments reached a file write; verify or add segment validation, "
+    "normalization, and root containment checks before writing or staging files"
 )
 PYTHON_PATH_TARGET_PART = r"[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*"
 PYTHON_PATH_ASSIGNMENT_MAX_CHARS = 10000
@@ -146,7 +146,7 @@ def python_assignment_target_names(text: str) -> set[str]:
         if isinstance(statement, ast.Assign):
             for target in statement.targets:
                 collect(target)
-        elif isinstance(statement, ast.AnnAssign):
+        elif isinstance(statement, ast.AnnAssign) and statement.value is not None:
             collect(statement.target)
         elif isinstance(statement, ast.AugAssign):
             collect(statement.target)
@@ -165,7 +165,7 @@ def python_simple_assignment(text: str) -> tuple[str, ast.AST] | None:
         target_key = python_target_key(statement.targets[0])
         if target_key:
             return target_key, statement.value
-    if isinstance(statement, ast.AnnAssign):
+    if isinstance(statement, ast.AnnAssign) and statement.value is not None:
         target_key = python_target_key(statement.target)
         if target_key:
             return target_key, statement.value
@@ -324,6 +324,26 @@ def python_dynamic_path_target(text: str, path_constructor_names: set[str] | Non
     return match.group("target")
 
 
+def python_augmented_dynamic_path_target(text: str, path_constructor_names: set[str] | None = None) -> str | None:
+    try:
+        module = ast.parse(text.lstrip())
+    except SyntaxError:
+        return None
+    if not module.body or not isinstance(module.body[0], ast.AugAssign):
+        return None
+    statement = module.body[0]
+    target = python_target_key(statement.target)
+    if not target:
+        return None
+    if isinstance(statement.op, ast.Div) and python_is_dynamic_path_segment(statement.value):
+        return target
+    if isinstance(statement.op, ast.Add):
+        value_is_path, value_has_dynamic = python_path_expr_info(statement.value, path_constructor_names)
+        if value_is_path and value_has_dynamic:
+            return target
+    return None
+
+
 def python_file_write_target(text: str, path_constructor_names: set[str] | None = None) -> str | None:
     write_match = PYTHON_FILE_WRITE_RE.search(text)
     if not write_match:
@@ -477,6 +497,10 @@ def detect_python_file_write_path_sentinels(diff: str) -> list[hardened.RiskSent
         dynamic_target = python_dynamic_path_target(diff_line.text, path_constructor_names)
         if dynamic_target:
             assigned_paths[dynamic_target] = diff_line
+            continue
+        augmented_dynamic_target = python_augmented_dynamic_path_target(diff_line.text, path_constructor_names)
+        if augmented_dynamic_target:
+            assigned_paths[augmented_dynamic_target] = diff_line
             continue
         if python_path_assignment_start(diff_line.text, path_constructor_names) and not python_statement_is_complete(diff_line.text):
             pending_path_assignment = [diff_line]
