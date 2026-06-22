@@ -58,14 +58,16 @@ FILE_WRITE_PATH_DETAIL = (
 PYTHON_PATH_TARGET_PART = r"[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*"
 PYTHON_PATH_ASSIGNMENT_MAX_CHARS = 10000
 PYTHON_PATH_ASSIGNMENT_RE = re.compile(
-    rf"\b(?P<target>{PYTHON_PATH_TARGET_PART})\s*=\s*(?P<expr>[^\n#]*(?:Path|os\.path\.join)\s*\([^\n#]*)"
+    rf"^\s*(?P<target>{PYTHON_PATH_TARGET_PART})\s*=\s*(?P<expr>[^\n#]*(?:Path|os\.path\.join)\s*\([^\n#]*)"
 )
 PYTHON_FILE_WRITE_RE = re.compile(rf"\b(?P<target>{PYTHON_PATH_TARGET_PART})\.write_(?:text|bytes)\s*\(")
+PYTHON_SCOPE_BOUNDARY_RE = re.compile(r"^\s*(?:async\s+def|def|class)\s+[A-Za-z_][A-Za-z0-9_]*\b")
 PYTHON_TRIPLE_QUOTE_RE = re.compile(r"(?<!\\)(?:'''|\"\"\")")
 
 
 class PythonDiffLine(NamedTuple):
     path: str
+    hunk: int
     line: int
     text: str
     is_added: bool
@@ -248,6 +250,10 @@ def python_dynamic_path_target(text: str) -> str | None:
     return match.group("target")
 
 
+def python_is_scope_boundary(text: str) -> bool:
+    return bool(PYTHON_SCOPE_BOUNDARY_RE.match(text))
+
+
 def update_python_multiline_string_state(active_delimiter: str | None, active_diff_fixture: bool, text: str) -> tuple[str | None, bool]:
     if active_delimiter is not None and not active_diff_fixture and "diff --git " in text:
         active_diff_fixture = True
@@ -266,12 +272,14 @@ def iter_python_diff_lines_with_context(diff: str) -> list[PythonDiffLine]:
     lines: list[PythonDiffLine] = []
     current_path: str | None = None
     right_line: int | None = None
+    hunk_index = 0
     active_delimiter: str | None = None
     active_diff_fixture = False
     for raw_line in diff.splitlines():
         if raw_line.startswith("diff --git "):
             current_path = None
             right_line = None
+            hunk_index = 0
             active_delimiter = None
             active_diff_fixture = False
             continue
@@ -283,6 +291,7 @@ def iter_python_diff_lines_with_context(diff: str) -> list[PythonDiffLine]:
         if raw_line.startswith("@@"):
             match = re.search(r"\+(\d+)(?:,\d+)?", raw_line)
             right_line = int(match.group(1)) if match else None
+            hunk_index += 1
             active_delimiter = None
             active_diff_fixture = False
             continue
@@ -298,14 +307,18 @@ def iter_python_diff_lines_with_context(diff: str) -> list[PythonDiffLine]:
             continue
         if raw_line.startswith("+") and not raw_line.startswith("+++"):
             text = raw_line[1:]
-            lines.append(PythonDiffLine(current_path, right_line, text, True, active_delimiter is not None, active_diff_fixture))
+            lines.append(
+                PythonDiffLine(current_path, hunk_index, right_line, text, True, active_delimiter is not None, active_diff_fixture)
+            )
             if active_delimiter is not None or not hardened.is_comment_only_added_line(current_path, text):
                 active_delimiter, active_diff_fixture = update_python_multiline_string_state(active_delimiter, active_diff_fixture, text)
             right_line += 1
             continue
         if raw_line.startswith(" "):
             text = raw_line[1:]
-            lines.append(PythonDiffLine(current_path, right_line, text, False, active_delimiter is not None, active_diff_fixture))
+            lines.append(
+                PythonDiffLine(current_path, hunk_index, right_line, text, False, active_delimiter is not None, active_diff_fixture)
+            )
             if active_delimiter is not None or not hardened.is_comment_only_added_line(current_path, text):
                 active_delimiter, active_diff_fixture = update_python_multiline_string_state(active_delimiter, active_diff_fixture, text)
             right_line += 1
@@ -326,15 +339,18 @@ def python_diff_fixture_added_line_keys(diff: str) -> set[tuple[str, int]]:
 def detect_python_file_write_path_sentinels(diff: str) -> list[hardened.RiskSentinel]:
     sentinels: list[hardened.RiskSentinel] = []
     assigned_paths: dict[str, PythonDiffLine] = {}
-    current_path = ""
+    current_scope: tuple[str, int] = ("", 0)
     for diff_line in iter_python_diff_lines_with_context(diff):
-        if diff_line.path != current_path:
-            current_path = diff_line.path
+        scope = (diff_line.path, diff_line.hunk)
+        if scope != current_scope:
+            current_scope = scope
             assigned_paths.clear()
         if diff_line.inside_multiline_string:
             continue
         if hardened.is_comment_only_added_line(diff_line.path, diff_line.text):
             continue
+        if python_is_scope_boundary(diff_line.text):
+            assigned_paths.clear()
         dynamic_target = python_dynamic_path_target(diff_line.text)
         if dynamic_target:
             assigned_paths[dynamic_target] = diff_line
@@ -571,6 +587,7 @@ def build_prompt(
         f"{CONTEXT_REVIEW_MARKER} {review_mode}",
         f"Context readback: {context_summary}",
         "When deep context is present, use it to reason about full changed-file behavior, but anchor actionable findings to changed lines when practical.",
+        "Every finding must include exact correction guidance or the smallest safe patch direction, plus validation/readback guidance.",
         "Inspect dynamic path construction and file writes for traversal, arbitrary overwrite, missing root-containment checks, and unsafe staging side effects.",
     ]
     context = base.sanitize_text(deep_context_block.strip(), config)
