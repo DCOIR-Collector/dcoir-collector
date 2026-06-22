@@ -21,7 +21,7 @@ spec.loader.exec_module(mod)
 
 os.environ["GITHUB_REPOSITORY"] = "DCOIR-Collector/dcoir-collector"
 os.environ["PR_NUMBER"] = "296"
-os.environ["OPENROUTER_API_KEY"] = "test-openrouter-key"
+os.environ["OPENROUTER_API_KEY"] = "offline-test-placeholder"
 
 assert mod.python_file_write_target('destination.write_text(note, encoding="utf-8")') == "destination"
 assert mod.python_file_write_target("Path(destination).write_bytes(note)") == "destination"
