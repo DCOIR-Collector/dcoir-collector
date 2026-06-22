@@ -60,6 +60,9 @@ PYTHON_PATH_ASSIGNMENT_MAX_CHARS = 10000
 PYTHON_PATH_ASSIGNMENT_RE = re.compile(
     rf"^\s*(?P<target>{PYTHON_PATH_TARGET_PART})\s*=\s*(?P<expr>[^\n#]*(?:Path|os\.path\.join)\s*\([^\n#]*)"
 )
+PYTHON_PATH_ASSIGNMENT_START_RE = re.compile(
+    rf"^\s*{PYTHON_PATH_TARGET_PART}\s*(?::\s*[^=]+)?=\s*(?:Path|os\.path\.join)\s*\("
+)
 PYTHON_FILE_WRITE_RE = re.compile(rf"\b(?P<target>{PYTHON_PATH_TARGET_PART})\.write_(?:text|bytes)\s*\(")
 PYTHON_SCOPE_BOUNDARY_RE = re.compile(r"^\s*(?:async\s+def|def|class)\s+[A-Za-z_][A-Za-z0-9_]*\b")
 PYTHON_TRIPLE_QUOTE_RE = re.compile(r"(?<!\\)(?:'''|\"\"\")")
@@ -162,6 +165,18 @@ def python_simple_assignment(text: str) -> tuple[str, ast.AST] | None:
         if target_key:
             return target_key, statement.value
     return None
+
+
+def python_statement_is_complete(text: str) -> bool:
+    try:
+        ast.parse(text.lstrip())
+    except SyntaxError:
+        return False
+    return True
+
+
+def python_path_assignment_start(text: str) -> bool:
+    return bool(PYTHON_PATH_ASSIGNMENT_START_RE.search(text))
 
 
 def python_is_literal_path_segment(node: ast.AST) -> bool:
@@ -340,20 +355,42 @@ def detect_python_file_write_path_sentinels(diff: str) -> list[hardened.RiskSent
     sentinels: list[hardened.RiskSentinel] = []
     assigned_paths: dict[str, PythonDiffLine] = {}
     current_scope: tuple[str, int] = ("", 0)
+    pending_path_assignment: list[PythonDiffLine] = []
+
+    def flush_pending_path_assignment() -> None:
+        nonlocal pending_path_assignment
+        if not pending_path_assignment:
+            return
+        statement = "\n".join(line.text for line in pending_path_assignment)
+        dynamic_target = python_dynamic_path_target(statement)
+        if dynamic_target:
+            assigned_paths[dynamic_target] = pending_path_assignment[0]
+        pending_path_assignment = []
+
     for diff_line in iter_python_diff_lines_with_context(diff):
         scope = (diff_line.path, diff_line.hunk)
         if scope != current_scope:
+            flush_pending_path_assignment()
             current_scope = scope
             assigned_paths.clear()
         if diff_line.inside_multiline_string:
             continue
         if hardened.is_comment_only_added_line(diff_line.path, diff_line.text):
             continue
+        if pending_path_assignment:
+            pending_path_assignment.append(diff_line)
+            statement = "\n".join(line.text for line in pending_path_assignment)
+            if python_statement_is_complete(statement):
+                flush_pending_path_assignment()
+            continue
         if python_is_scope_boundary(diff_line.text):
             assigned_paths.clear()
         dynamic_target = python_dynamic_path_target(diff_line.text)
         if dynamic_target:
             assigned_paths[dynamic_target] = diff_line
+            continue
+        if python_path_assignment_start(diff_line.text) and not python_statement_is_complete(diff_line.text):
+            pending_path_assignment = [diff_line]
             continue
         for assigned_target in python_assignment_target_names(diff_line.text):
             assigned_paths.pop(assigned_target, None)
@@ -379,6 +416,7 @@ def detect_python_file_write_path_sentinels(diff: str) -> list[hardened.RiskSent
                 text=anchor.text,
             )
         )
+    flush_pending_path_assignment()
     return sentinels
 
 
@@ -588,6 +626,7 @@ def build_prompt(
         f"Context readback: {context_summary}",
         "When deep context is present, use it to reason about full changed-file behavior, but anchor actionable findings to changed lines when practical.",
         "Every finding must include exact correction guidance or the smallest safe patch direction, plus validation/readback guidance.",
+        "Prefer GitHub apply-ready suggestions: when a finding has a precise replacement for the commented line or selected range, put only that exact replacement code in suggested_replacement so the renderer emits a Suggested fix with a ```suggestion block; leave suggested_replacement empty when an apply-ready patch would be unsafe or speculative.",
         "Inspect dynamic path construction and file writes for traversal, arbitrary overwrite, missing root-containment checks, and unsafe staging side effects.",
     ]
     context = base.sanitize_text(deep_context_block.strip(), config)
