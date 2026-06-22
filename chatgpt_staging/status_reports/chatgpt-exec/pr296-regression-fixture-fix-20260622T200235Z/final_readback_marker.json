@@ -1,0 +1,15 @@
+{
+  "schema": "dcoir.chatgpt_staging.exec_final_readback_marker.v2",
+  "request_id": "pr296-regression-fixture-fix-20260622T200235Z",
+  "result": "failure",
+  "exit_code": "1",
+  "artifact_name": "chatgpt-exec-pr296-regression-fixture-fix-20260622T200235Z",
+  "artifact_readback_committed": false,
+  "artifact_readback_policy": "not_committed_for_chatgpt_exec; .gitignore intentionally excludes artifact_readback to avoid long-path checkout problems",
+  "tracked_summary_policy": "requests/tools should write concise sanitized summaries beside workflow_report.md when ChatGPT connector-readable results are needed",
+  "github_run_id": "27980415781",
+  "github_run_attempt": "1",
+  "github_sha": "7ff5fba07ee428554f35bc20873da5f237a28138",
+  "github_ref": "refs/heads/main",
+  "created_utc": "2026-06-22T20:04:31Z"
+}
