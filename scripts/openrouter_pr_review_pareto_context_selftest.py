@@ -121,7 +121,7 @@ unauthorized_env = {
 unauthorized_stdout = io.StringIO()
 mod.load_pareto_context_config = lambda _path: unauthorized_config
 try:
-    with mock.patch.dict(os.environ, unauthorized_env, clear=False), contextlib.redirect_stdout(unauthorized_stdout):
+    with mock.patch.dict(os.environ, unauthorized_env, clear=True), contextlib.redirect_stdout(unauthorized_stdout):
         mod.main()
 finally:
     mod.load_pareto_context_config = original_load_pareto_context_config
@@ -242,6 +242,46 @@ assert any(
     and item.line == 3
     and item.label == mod.FILE_WRITE_PATH_LABEL
     for item in join_variable_segment_sentinels
+)
+
+path_wrapped_join_write_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,7 @@
++import os
++from pathlib import Path
++def write_triage_note(filename, note, output_dir):
++    destination = os.path.join(output_dir, filename)
++    Path(destination).write_text(note, encoding="utf-8")
+"""
+)
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 4
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in path_wrapped_join_write_sentinels
+)
+
+qualified_path_wrapped_join_write_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,7 @@
++import os
++import pathlib
++def write_triage_note(filename, note, output_dir):
++    destination = os.path.join(output_dir, filename)
++    pathlib.Path(destination).write_bytes(note)
+"""
+)
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 4
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in qualified_path_wrapped_join_write_sentinels
 )
 
 multiline_path_sentinels = mod.detect_risk_sentinels(
@@ -512,6 +552,25 @@ index 0000000..1111111 100644
 """
 )
 assert not any(item.label == mod.FILE_WRITE_PATH_LABEL for item in safe_reassign_sentinels)
+self_derived_reassign_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,7 @@
++from pathlib import Path
++def write_triage_note(filename, note, output_dir):
++    destination = Path(output_dir) / filename
++    destination = destination.resolve()
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 3
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in self_derived_reassign_sentinels
+)
 cross_file_sentinels = mod.detect_risk_sentinels(
     """diff --git a/tools/path_builder.py b/tools/path_builder.py
 index 0000000..1111111 100644
