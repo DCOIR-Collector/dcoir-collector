@@ -452,12 +452,12 @@ def detect_python_file_write_path_sentinels(diff: str) -> list[hardened.RiskSent
 def detect_risk_sentinels(diff: str, max_anchors: int | None = None) -> list[hardened.RiskSentinel]:
     diff_fixture_added_lines = python_diff_fixture_added_line_keys(diff)
     combined = [
+        *detect_python_file_write_path_sentinels(diff),
         *[
             sentinel
             for sentinel in _original_detect_risk_sentinels(diff, max_anchors)
             if (sentinel.path, sentinel.line) not in diff_fixture_added_lines
         ],
-        *detect_python_file_write_path_sentinels(diff),
     ]
     deduped: list[hardened.RiskSentinel] = []
     seen: set[tuple[str, int, str]] = set()

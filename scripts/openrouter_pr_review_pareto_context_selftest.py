@@ -731,15 +731,38 @@ original_detect_risk_sentinels = mod._original_detect_risk_sentinels
 
 def fake_original_detect_risk_sentinels(_diff, max_anchors=None):
     captured_max_anchors.append(max_anchors)
-    return []
+    return [
+        mod.hardened.RiskSentinel(
+            path=f"tools/original_{index}.py",
+            line=index,
+            label=f"original sentinel {index}",
+            detail="original sentinel detail",
+            text="original sentinel text",
+        )
+        for index in range(1, 4)
+    ]
 
 
 mod._original_detect_risk_sentinels = fake_original_detect_risk_sentinels
 try:
-    assert mod.detect_risk_sentinels("diff --git a/a.py b/a.py\n", max_anchors=3) == []
+    bounded_path_sentinels = mod.detect_risk_sentinels(
+        """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,5 @@
++from pathlib import Path
++def write_triage_note(filename, note, output_dir):
++    destination = Path(output_dir) / filename
++    destination.write_text(note, encoding="utf-8")
+""",
+        max_anchors=3,
+    )
 finally:
     mod._original_detect_risk_sentinels = original_detect_risk_sentinels
 assert captured_max_anchors == [3]
+assert len(bounded_path_sentinels) == 3
+assert bounded_path_sentinels[0].label == mod.FILE_WRITE_PATH_LABEL
 
 
 class FakeGitHubClient:
