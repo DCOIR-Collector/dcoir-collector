@@ -462,6 +462,41 @@ index 0000000..1111111 100644
 """
 )
 assert not any(item.label == mod.FILE_WRITE_PATH_LABEL for item in cross_file_sentinels)
+attribute_sibling_assignment_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,6 @@
++from pathlib import Path
++class Writer:
++    def write_triage_note(self, filename, note, output_dir):
++        self.destination = Path(output_dir) / filename
++        self.mode = "x"
++        self.destination.write_text(note, encoding="utf-8")
+"""
+)
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 4
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in attribute_sibling_assignment_sentinels
+)
+wrapped_literal_path_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/safe_writer.py b/tools/safe_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/safe_writer.py
+@@ -0,0 +1,5 @@
++from pathlib import Path
++def write_summary(output_dir, note):
++    destination = Path(output_dir / "summary.txt")
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert not any(item.label == mod.FILE_WRITE_PATH_LABEL for item in wrapped_literal_path_sentinels)
+long_path_assignment = "destination = " + ("a" * (mod.PYTHON_PATH_ASSIGNMENT_MAX_CHARS + 1)) + "Path(filename)"
+assert mod.python_dynamic_path_target(long_path_assignment) is None
 
 
 class FakeGitHubClient:
