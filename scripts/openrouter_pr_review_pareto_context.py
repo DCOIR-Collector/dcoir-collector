@@ -63,7 +63,10 @@ PYTHON_PATH_ASSIGNMENT_RE = re.compile(
 PYTHON_PATH_ASSIGNMENT_START_RE = re.compile(
     rf"^\s*{PYTHON_PATH_TARGET_PART}\s*(?::\s*[^=]+)?=\s*(?:Path|pathlib\.Path|os\.path\.join)\s*\("
 )
-PYTHON_FILE_WRITE_RE = re.compile(rf"\b(?P<target>{PYTHON_PATH_TARGET_PART})\.write_(?:text|bytes)\s*\(")
+PYTHON_FILE_WRITE_RE = re.compile(
+    rf"(?:\b(?P<target>{PYTHON_PATH_TARGET_PART})|\b(?:Path|pathlib\.Path)\s*\(\s*(?P<wrapped_target>{PYTHON_PATH_TARGET_PART})\s*\))"
+    r"\.write_(?:text|bytes)\s*\("
+)
 PYTHON_SCOPE_BOUNDARY_RE = re.compile(r"^\s*(?:async\s+def|def|class)\s+[A-Za-z_][A-Za-z0-9_]*\b")
 PYTHON_TRIPLE_QUOTE_RE = re.compile(r"(?<!\\)(?:'''|\"\"\")")
 
@@ -167,6 +170,17 @@ def python_simple_assignment(text: str) -> tuple[str, ast.AST] | None:
     return None
 
 
+def python_assignment_value_references_target(text: str, target: str) -> bool:
+    assignment = python_simple_assignment(text)
+    if not assignment or assignment[0] != target:
+        return False
+    for node in ast.walk(assignment[1]):
+        target_key = python_target_key(node)
+        if target_key == target or (target_key and target_key.startswith(f"{target}.")):
+            return True
+    return False
+
+
 def python_statement_is_complete(text: str) -> bool:
     try:
         ast.parse(text.lstrip())
@@ -263,6 +277,13 @@ def python_dynamic_path_target(text: str) -> str | None:
     if not (re.search(r"\bf['\"]", expr) and "{" in expr):
         return None
     return match.group("target")
+
+
+def python_file_write_target(text: str) -> str | None:
+    write_match = PYTHON_FILE_WRITE_RE.search(text)
+    if not write_match:
+        return None
+    return write_match.group("target") or write_match.group("wrapped_target")
 
 
 def python_is_scope_boundary(text: str) -> bool:
@@ -393,15 +414,20 @@ def detect_python_file_write_path_sentinels(diff: str) -> list[hardened.RiskSent
             pending_path_assignment = [diff_line]
             continue
         for assigned_target in python_assignment_target_names(diff_line.text):
-            assigned_paths.pop(assigned_target, None)
+            keep_exact_target = assigned_target in assigned_paths and python_assignment_value_references_target(
+                diff_line.text,
+                assigned_target,
+            )
+            if not keep_exact_target:
+                assigned_paths.pop(assigned_target, None)
             prefix = f"{assigned_target}."
             for tracked_target in list(assigned_paths):
                 if tracked_target.startswith(prefix):
                     assigned_paths.pop(tracked_target, None)
-        write_match = PYTHON_FILE_WRITE_RE.search(diff_line.text)
-        if not write_match:
+        write_target = python_file_write_target(diff_line.text)
+        if not write_target:
             continue
-        assignment = assigned_paths.get(write_match.group("target"))
+        assignment = assigned_paths.get(write_target)
         if not assignment:
             continue
         if not assignment.is_added and not diff_line.is_added:
