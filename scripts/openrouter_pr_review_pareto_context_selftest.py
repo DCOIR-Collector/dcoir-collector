@@ -571,6 +571,26 @@ assert any(
     and item.label == mod.FILE_WRITE_PATH_LABEL
     for item in self_derived_reassign_sentinels
 )
+self_derived_context_reassign_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- a/tools/path_writer.py
++++ b/tools/path_writer.py
+@@ -1,6 +1,7 @@
+ from pathlib import Path
+ def write_triage_note(filename, note, output_dir):
+     destination = Path(output_dir) / filename
++    destination = destination.resolve()
+     destination.write_text(note, encoding="utf-8")
+"""
+)
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 4
+    and item.text.strip() == "destination = destination.resolve()"
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in self_derived_context_reassign_sentinels
+)
 cross_file_sentinels = mod.detect_risk_sentinels(
     """diff --git a/tools/path_builder.py b/tools/path_builder.py
 index 0000000..1111111 100644
@@ -704,6 +724,22 @@ index 0000000..1111111 100644
 """
 )
 assert not any(item.label == mod.FILE_WRITE_PATH_LABEL for item in attribute_subscript_mutation_sentinels)
+
+captured_max_anchors = []
+original_detect_risk_sentinels = mod._original_detect_risk_sentinels
+
+
+def fake_original_detect_risk_sentinels(_diff, max_anchors=None):
+    captured_max_anchors.append(max_anchors)
+    return []
+
+
+mod._original_detect_risk_sentinels = fake_original_detect_risk_sentinels
+try:
+    assert mod.detect_risk_sentinels("diff --git a/a.py b/a.py\n", max_anchors=3) == []
+finally:
+    mod._original_detect_risk_sentinels = original_detect_risk_sentinels
+assert captured_max_anchors == [3]
 
 
 class FakeGitHubClient:

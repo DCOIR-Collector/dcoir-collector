@@ -418,7 +418,10 @@ def detect_python_file_write_path_sentinels(diff: str) -> list[hardened.RiskSent
                 diff_line.text,
                 assigned_target,
             )
-            if not keep_exact_target:
+            if keep_exact_target:
+                if diff_line.is_added and not assigned_paths[assigned_target].is_added:
+                    assigned_paths[assigned_target] = diff_line
+            else:
                 assigned_paths.pop(assigned_target, None)
             prefix = f"{assigned_target}."
             for tracked_target in list(assigned_paths):
@@ -451,7 +454,7 @@ def detect_risk_sentinels(diff: str, max_anchors: int | None = None) -> list[har
     combined = [
         *[
             sentinel
-            for sentinel in _original_detect_risk_sentinels(diff, None)
+            for sentinel in _original_detect_risk_sentinels(diff, max_anchors)
             if (sentinel.path, sentinel.line) not in diff_fixture_added_lines
         ],
         *detect_python_file_write_path_sentinels(diff),
