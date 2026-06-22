@@ -69,6 +69,7 @@ PYTHON_FILE_WRITE_RE = re.compile(
 )
 PYTHON_SCOPE_BOUNDARY_RE = re.compile(r"^\s*(?:async\s+def|def|class)\s+[A-Za-z_][A-Za-z0-9_]*\b")
 PYTHON_TRIPLE_QUOTE_RE = re.compile(r"(?<!\\)(?:'''|\"\"\")")
+DEFAULT_PYTHON_PATH_CONSTRUCTORS = frozenset({"Path", "pathlib.Path"})
 
 
 class PythonDiffLine(NamedTuple):
@@ -189,8 +190,37 @@ def python_statement_is_complete(text: str) -> bool:
     return True
 
 
-def python_path_assignment_start(text: str) -> bool:
-    return bool(PYTHON_PATH_ASSIGNMENT_START_RE.search(text))
+def python_path_constructor_aliases(text: str) -> set[str]:
+    aliases: set[str] = set()
+    try:
+        module = ast.parse(text.lstrip())
+    except SyntaxError:
+        return aliases
+    for statement in module.body:
+        if isinstance(statement, ast.ImportFrom) and statement.module == "pathlib":
+            for alias in statement.names:
+                if alias.name == "Path":
+                    aliases.add(alias.asname or alias.name)
+        elif isinstance(statement, ast.Import):
+            for alias in statement.names:
+                if alias.name == "pathlib":
+                    aliases.add(f"{alias.asname or alias.name}.Path")
+    return aliases
+
+
+def python_path_assignment_start(text: str, path_constructor_names: set[str] | None = None) -> bool:
+    if PYTHON_PATH_ASSIGNMENT_START_RE.search(text):
+        return True
+    names = sorted((path_constructor_names or set()) - DEFAULT_PYTHON_PATH_CONSTRUCTORS, key=len, reverse=True)
+    if not names:
+        return False
+    constructors = "|".join(re.escape(name) for name in names)
+    return bool(
+        re.search(
+            rf"^\s*{PYTHON_PATH_TARGET_PART}\s*(?::\s*[^=]+)?=\s*(?:{constructors})\s*\(",
+            text,
+        )
+    )
 
 
 def python_is_literal_path_segment(node: ast.AST) -> bool:
@@ -205,19 +235,20 @@ def python_is_dynamic_path_segment(node: ast.AST) -> bool:
     return True
 
 
-def python_is_path_constructor(node: ast.AST) -> bool:
-    return isinstance(node, ast.Call) and python_call_name(node.func) in {"Path", "pathlib.Path"}
+def python_is_path_constructor(node: ast.AST, path_constructor_names: set[str] | None = None) -> bool:
+    constructors = path_constructor_names or DEFAULT_PYTHON_PATH_CONSTRUCTORS
+    return isinstance(node, ast.Call) and python_call_name(node.func) in constructors
 
 
 def python_is_os_path_join(node: ast.AST) -> bool:
     return isinstance(node, ast.Call) and python_call_name(node.func) == "os.path.join"
 
 
-def python_path_expr_info(node: ast.AST) -> tuple[bool, bool]:
+def python_path_expr_info(node: ast.AST, path_constructor_names: set[str] | None = None) -> tuple[bool, bool]:
     if isinstance(node, ast.BinOp):
         if isinstance(node.op, ast.Add):
-            left_is_path, left_has_dynamic = python_path_expr_info(node.left)
-            right_is_path, right_has_dynamic = python_path_expr_info(node.right)
+            left_is_path, left_has_dynamic = python_path_expr_info(node.left, path_constructor_names)
+            right_is_path, right_has_dynamic = python_path_expr_info(node.right, path_constructor_names)
             if left_is_path or right_is_path:
                 return True, (
                     left_has_dynamic
@@ -227,12 +258,12 @@ def python_path_expr_info(node: ast.AST) -> tuple[bool, bool]:
                 )
             return False, False
         if isinstance(node.op, ast.Div):
-            left_is_path, left_has_dynamic = python_path_expr_info(node.left)
+            left_is_path, left_has_dynamic = python_path_expr_info(node.left, path_constructor_names)
             if not left_is_path:
                 right_is_dynamic = python_is_dynamic_path_segment(node.right)
                 return right_is_dynamic, right_is_dynamic
             return True, left_has_dynamic or python_is_dynamic_path_segment(node.right)
-    if python_is_path_constructor(node) or python_is_os_path_join(node):
+    if python_is_path_constructor(node, path_constructor_names) or python_is_os_path_join(node):
         args = list(node.args)
         if len(args) < 2:
             return True, False
@@ -240,33 +271,37 @@ def python_path_expr_info(node: ast.AST) -> tuple[bool, bool]:
     return False, False
 
 
-def python_path_expr_has_dynamic_write_segment(node: ast.AST) -> bool:
-    _is_path, has_dynamic = python_path_expr_info(node)
+def python_path_expr_has_dynamic_write_segment(node: ast.AST, path_constructor_names: set[str] | None = None) -> bool:
+    _is_path, has_dynamic = python_path_expr_info(node, path_constructor_names)
     return has_dynamic
 
 
-def python_single_dynamic_path_expr(node: ast.AST) -> bool:
-    if not (python_is_path_constructor(node) or python_is_os_path_join(node)):
+def python_single_dynamic_path_expr(node: ast.AST, path_constructor_names: set[str] | None = None) -> bool:
+    if not (python_is_path_constructor(node, path_constructor_names) or python_is_os_path_join(node)):
         return False
     args = list(node.args)
     if len(args) != 1:
         return False
     arg = args[0]
-    arg_is_path, arg_has_dynamic = python_path_expr_info(arg)
+    arg_is_path, arg_has_dynamic = python_path_expr_info(arg, path_constructor_names)
     if arg_is_path or (isinstance(arg, ast.BinOp) and isinstance(arg.op, ast.Div)):
         return arg_has_dynamic
     return python_is_dynamic_path_segment(arg)
 
 
-def python_dynamic_path_target(text: str) -> str | None:
+def python_dynamic_path_target(text: str, path_constructor_names: set[str] | None = None) -> str | None:
     assignment = python_simple_assignment(text)
     if assignment:
         target, expr_node = assignment
-        if python_path_expr_has_dynamic_write_segment(expr_node) or python_single_dynamic_path_expr(expr_node):
+        if python_path_expr_has_dynamic_write_segment(expr_node, path_constructor_names) or python_single_dynamic_path_expr(
+            expr_node,
+            path_constructor_names,
+        ):
             return target
     if len(text) > PYTHON_PATH_ASSIGNMENT_MAX_CHARS:
         return None
-    if "Path" not in text and "os.path.join" not in text:
+    constructor_names = path_constructor_names or DEFAULT_PYTHON_PATH_CONSTRUCTORS
+    if "Path" not in text and "os.path.join" not in text and not any(f"{name}(" in text for name in constructor_names):
         return None
     match = PYTHON_PATH_ASSIGNMENT_RE.search(text)
     if not match:
@@ -279,9 +314,25 @@ def python_dynamic_path_target(text: str) -> str | None:
     return match.group("target")
 
 
-def python_file_write_target(text: str) -> str | None:
+def python_file_write_target(text: str, path_constructor_names: set[str] | None = None) -> str | None:
     write_match = PYTHON_FILE_WRITE_RE.search(text)
     if not write_match:
+        try:
+            module = ast.parse(text.lstrip())
+        except SyntaxError:
+            return None
+        constructor_names = path_constructor_names or DEFAULT_PYTHON_PATH_CONSTRUCTORS
+        for node in ast.walk(module):
+            if not isinstance(node, ast.Call) or not isinstance(node.func, ast.Attribute):
+                continue
+            if node.func.attr not in {"write_text", "write_bytes"}:
+                continue
+            value = node.func.value
+            target = python_target_key(value)
+            if target:
+                return target
+            if python_is_path_constructor(value, constructor_names) and value.args:
+                return python_target_key(value.args[0])
         return None
     return write_match.group("target") or write_match.group("wrapped_target")
 
@@ -375,7 +426,9 @@ def python_diff_fixture_added_line_keys(diff: str) -> set[tuple[str, int]]:
 def detect_python_file_write_path_sentinels(diff: str) -> list[hardened.RiskSentinel]:
     sentinels: list[hardened.RiskSentinel] = []
     assigned_paths: dict[str, PythonDiffLine] = {}
+    path_constructor_names = set(DEFAULT_PYTHON_PATH_CONSTRUCTORS)
     current_scope: tuple[str, int] = ("", 0)
+    current_alias_path = ""
     pending_path_assignment: list[PythonDiffLine] = []
 
     def flush_pending_path_assignment() -> None:
@@ -383,12 +436,15 @@ def detect_python_file_write_path_sentinels(diff: str) -> list[hardened.RiskSent
         if not pending_path_assignment:
             return
         statement = "\n".join(line.text for line in pending_path_assignment)
-        dynamic_target = python_dynamic_path_target(statement)
+        dynamic_target = python_dynamic_path_target(statement, path_constructor_names)
         if dynamic_target:
             assigned_paths[dynamic_target] = pending_path_assignment[0]
         pending_path_assignment = []
 
     for diff_line in iter_python_diff_lines_with_context(diff):
+        if diff_line.path != current_alias_path:
+            path_constructor_names = set(DEFAULT_PYTHON_PATH_CONSTRUCTORS)
+            current_alias_path = diff_line.path
         scope = (diff_line.path, diff_line.hunk)
         if scope != current_scope:
             flush_pending_path_assignment()
@@ -398,6 +454,7 @@ def detect_python_file_write_path_sentinels(diff: str) -> list[hardened.RiskSent
             continue
         if hardened.is_comment_only_added_line(diff_line.path, diff_line.text):
             continue
+        path_constructor_names.update(python_path_constructor_aliases(diff_line.text))
         if pending_path_assignment:
             pending_path_assignment.append(diff_line)
             statement = "\n".join(line.text for line in pending_path_assignment)
@@ -406,11 +463,11 @@ def detect_python_file_write_path_sentinels(diff: str) -> list[hardened.RiskSent
             continue
         if python_is_scope_boundary(diff_line.text):
             assigned_paths.clear()
-        dynamic_target = python_dynamic_path_target(diff_line.text)
+        dynamic_target = python_dynamic_path_target(diff_line.text, path_constructor_names)
         if dynamic_target:
             assigned_paths[dynamic_target] = diff_line
             continue
-        if python_path_assignment_start(diff_line.text) and not python_statement_is_complete(diff_line.text):
+        if python_path_assignment_start(diff_line.text, path_constructor_names) and not python_statement_is_complete(diff_line.text):
             pending_path_assignment = [diff_line]
             continue
         for assigned_target in python_assignment_target_names(diff_line.text):
@@ -427,7 +484,7 @@ def detect_python_file_write_path_sentinels(diff: str) -> list[hardened.RiskSent
             for tracked_target in list(assigned_paths):
                 if tracked_target.startswith(prefix):
                     assigned_paths.pop(tracked_target, None)
-        write_target = python_file_write_target(diff_line.text)
+        write_target = python_file_write_target(diff_line.text, path_constructor_names)
         if not write_target:
             continue
         assignment = assigned_paths.get(write_target)
