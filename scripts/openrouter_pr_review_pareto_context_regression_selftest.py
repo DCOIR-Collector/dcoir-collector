@@ -1,0 +1,132 @@
+#!/usr/bin/env python3
+"""Focused regression checks for path-write review findings."""
+
+from __future__ import annotations
+
+import importlib.util
+import os
+import sys
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+SCRIPT = ROOT / "scripts" / "openrouter_pr_review_pareto_context.py"
+
+spec = importlib.util.spec_from_file_location("openrouter_pr_review_pareto_context", SCRIPT)
+if spec is None or spec.loader is None:
+    raise SystemExit("unable to load openrouter_pr_review_pareto_context.py")
+mod = importlib.util.module_from_spec(spec)
+sys.modules[spec.name] = mod
+spec.loader.exec_module(mod)
+
+os.environ["GITHUB_REPOSITORY"] = "DCOIR-Collector/dcoir-collector"
+os.environ["PR_NUMBER"] = "296"
+os.environ["OPENROUTER_API_KEY"] = "test-openrouter-key"
+
+assert mod.python_file_write_target('destination.write_text(note, encoding="utf-8")') == "destination"
+assert mod.python_file_write_target("Path(destination).write_bytes(note)") == "destination"
+
+joinpath_variable_segment_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,6 @@
++from pathlib import Path
++def write_triage_note(filename, note, output_dir):
++    destination = Path(output_dir).joinpath(filename)
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 3
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in joinpath_variable_segment_sentinels
+)
+
+qualified_joinpath_variable_segment_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,6 @@
++import pathlib
++def write_triage_note(filename, note, output_dir):
++    destination = pathlib.Path(output_dir).joinpath(filename)
++    destination.write_bytes(note)
+"""
+)
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 3
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in qualified_joinpath_variable_segment_sentinels
+)
+
+literal_joinpath_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/safe_writer.py b/tools/safe_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/safe_writer.py
+@@ -0,0 +1,6 @@
++from pathlib import Path
++def write_summary(note, output_dir):
++    destination = Path(output_dir).joinpath("summary.txt")
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert not any(item.label == mod.FILE_WRITE_PATH_LABEL for item in literal_joinpath_sentinels)
+
+nested_scope_outer_assignment_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,8 @@
++from pathlib import Path
++def write_triage_note(filename, note, output_dir):
++    destination = Path(output_dir) / filename
++    def normalize_note():
++        return note.strip()
++    destination.write_text(normalize_note(), encoding="utf-8")
+"""
+)
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 3
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in nested_scope_outer_assignment_sentinels
+)
+
+nested_scope_inner_assignment_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,8 @@
++from pathlib import Path
++def write_triage_note(filename, note, output_dir):
++    def build_path():
++        destination = Path(output_dir) / filename
++        return destination
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert not any(item.label == mod.FILE_WRITE_PATH_LABEL for item in nested_scope_inner_assignment_sentinels)
+
+shadowed_parameter_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,6 @@
++from pathlib import Path
++destination = Path(output_dir) / filename
++def write_supplied_path(destination, note):
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert not any(item.label == mod.FILE_WRITE_PATH_LABEL for item in shadowed_parameter_sentinels)
+
+print("Path-write review finding regression selftest passed")
