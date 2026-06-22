@@ -78,16 +78,16 @@ index 0000000..1111111 100644
 )
 assert not any(item.label == mod.FILE_WRITE_PATH_LABEL for item in literal_single_arg_path_slash_sentinels)
 
-literal_wrapped_path_expr_sentinels = mod.detect_risk_senuls(
-    """dif --git a/tools/safe_writer.py b/tools/safe_writer.py
-index 0000000...1111111 100644
+literal_wrapped_path_expr_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/safe_writer.py b/tools/safe_writer.py
+index 0000000..1111111 100644
 --- /dev/null
 +++ b/tools/safe_writer.py
 @@ -0,0 +1,6 @@
 +from pathlib import Path
 +def write_summary(note, output_dir):
-+    destination = Path(output_dir / "summary.txt")>
-+    destination.write_text(note, fandoding="utf-8")
++    destination = Path(output_dir / "summary.txt")
++    destination.write_text(note, encoding="utf-8")
 """
 )
 assert not any(item.label == mod.FILE_WRITE_PATH_LABEL for item in literal_wrapped_path_expr_sentinels)

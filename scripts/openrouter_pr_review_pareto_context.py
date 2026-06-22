@@ -278,6 +278,22 @@ def python_is_dynamic_path_segment(node: ast.AST) -> bool:
     return True
 
 
+def python_is_directory_base_path_name(name: str) -> bool:
+    leaf = name.rsplit(".", 1)[-1].lower()
+    return bool(re.search(r"(?:^|_)(?:base|dir|directory|folder|root|workspace|repo)(?:_|$)", leaf))
+
+
+def python_single_arg_path_has_dynamic_write_segment(node: ast.AST) -> bool:
+    if python_is_literal_path_segment(node):
+        return False
+    if isinstance(node, ast.Constant):
+        return False
+    target = python_target_key(node)
+    if target and python_is_directory_base_path_name(target):
+        return False
+    return python_is_dynamic_path_segment(node)
+
+
 def python_is_path_constructor(node: ast.AST, path_constructor_names: set[str] | None = None) -> bool:
     constructors = path_constructor_names or DEFAULT_PYTHON_PATH_CONSTRUCTORS
     return isinstance(node, ast.Call) and python_call_name(node.func) in constructors
@@ -322,7 +338,7 @@ def python_path_expr_info(node: ast.AST, path_constructor_names: set[str] | None
             arg_is_path, arg_has_dynamic = python_path_expr_info(arg, path_constructor_names)
             if arg_is_path or (isinstance(arg, ast.BinOp) and isinstance(arg.op, ast.Div)):
                 return True, arg_has_dynamic
-            return True, python_is_dynamic_path_segment(arg)
+            return True, python_single_arg_path_has_dynamic_write_segment(arg)
         if len(args) < 1:
             return True, False
         return True, any(python_is_dynamic_path_segment(arg) for arg in args[1:])
@@ -344,7 +360,7 @@ def python_single_dynamic_path_expr(node: ast.AST, path_constructor_names: set[s
     arg_is_path, arg_has_dynamic = python_path_expr_info(arg, path_constructor_names)
     if arg_is_path or (isinstance(arg, ast.BinOp) and isinstance(arg.op, ast.Div)):
         return arg_has_dynamic
-    return python_is_dynamic_path_segment(arg)
+    return python_single_arg_path_has_dynamic_write_segment(arg)
 
 
 def python_dynamic_path_target(text: str, path_constructor_names: set[str] | None = None) -> str | None:
