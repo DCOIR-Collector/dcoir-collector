@@ -273,6 +273,10 @@ def python_is_os_path_join(node: ast.AST) -> bool:
     return isinstance(node, ast.Call) and python_call_name(node.func) == "os.path.join"
 
 
+def python_is_joinpath_call(node: ast.AST) -> bool:
+    return isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute) and node.func.attr == "joinpath"
+
+
 def python_path_expr_info(node: ast.AST, path_constructor_names: set[str] | None = None) -> tuple[bool, bool]:
     if isinstance(node, ast.BinOp):
         if isinstance(node.op, ast.Add):
@@ -292,6 +296,11 @@ def python_path_expr_info(node: ast.AST, path_constructor_names: set[str] | None
                 right_is_dynamic = python_is_dynamic_path_segment(node.right)
                 return right_is_dynamic, right_is_dynamic
             return True, left_has_dynamic or python_is_dynamic_path_segment(node.right)
+    if python_is_joinpath_call(node):
+        base_is_path, base_has_dynamic = python_path_expr_info(node.func.value, path_constructor_names)
+        if not base_is_path:
+            return False, False
+        return True, base_has_dynamic or any(python_is_dynamic_path_segment(arg) for arg in node.args)
     if python_is_path_constructor(node, path_constructor_names) or python_is_os_path_join(node):
         args = list(node.args)
         if len(args) < 2:
@@ -388,6 +397,55 @@ def python_file_write_target(text: str, path_constructor_names: set[str] | None 
 
 def python_is_scope_boundary(text: str) -> bool:
     return bool(PYTHON_SCOPE_BOUNDARY_RE.match(text))
+
+
+def python_code_line_indent(text: str) -> int | None:
+    stripped = text.strip()
+    if not stripped or stripped.startswith("#"):
+        return None
+    return len(text) - len(text.lstrip(" \t"))
+
+
+def prune_assigned_paths_for_indent(assigned_paths: dict[str, PythonDiffLine], indent: int | None) -> None:
+    if indent is None:
+        return
+    for target, assignment in list(assigned_paths.items()):
+        assignment_indent = python_code_line_indent(assignment.text)
+        if assignment_indent is not None and assignment_indent > indent:
+            assigned_paths.pop(target, None)
+
+
+def python_scope_boundary_shadowed_names(text: str) -> set[str]:
+    stripped = text.lstrip()
+    if not re.match(r"^(?:async\s+def|def|class)\s+", stripped):
+        return set()
+    source = f"{stripped}\n    pass\n" if stripped.rstrip().endswith(":") else stripped
+    try:
+        module = ast.parse(source)
+    except SyntaxError:
+        return set()
+    if not module.body:
+        return set()
+    statement = module.body[0]
+    if isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef)):
+        names = {arg.arg for arg in [*statement.args.posonlyargs, *statement.args.args, *statement.args.kwonlyargs]}
+        if statement.args.vararg:
+            names.add(statement.args.vararg.arg)
+        if statement.args.kwarg:
+            names.add(statement.args.kwarg.arg)
+        return names
+    if isinstance(statement, ast.ClassDef):
+        return {statement.name}
+    return set()
+
+
+def remove_shadowed_assigned_paths(assigned_paths: dict[str, PythonDiffLine], shadowed_names: set[str]) -> None:
+    for shadowed_name in shadowed_names:
+        assigned_paths.pop(shadowed_name, None)
+        prefix = f"{shadowed_name}."
+        for tracked_target in list(assigned_paths):
+            if tracked_target.startswith(prefix):
+                assigned_paths.pop(tracked_target, None)
 
 
 def update_python_multiline_string_state(active_delimiter: str | None, active_diff_fixture: bool, text: str) -> tuple[str | None, bool]:
@@ -504,6 +562,7 @@ def detect_python_file_write_path_sentinels(diff: str) -> list[hardened.RiskSent
         elif diff_line.hunk != current_hunk:
             flush_pending_path_assignment()
             current_hunk = diff_line.hunk
+        prune_assigned_paths_for_indent(assigned_paths, python_code_line_indent(diff_line.text))
         if diff_line.inside_multiline_string:
             continue
         if hardened.is_comment_only_added_line(diff_line.path, diff_line.text):
@@ -516,7 +575,7 @@ def detect_python_file_write_path_sentinels(diff: str) -> list[hardened.RiskSent
                 flush_pending_path_assignment()
             continue
         if python_is_scope_boundary(diff_line.text):
-            assigned_paths.clear()
+            remove_shadowed_assigned_paths(assigned_paths, python_scope_boundary_shadowed_names(diff_line.text))
         dynamic_target = python_dynamic_path_target(diff_line.text, path_constructor_names)
         if dynamic_target:
             assigned_paths[dynamic_target] = diff_line
