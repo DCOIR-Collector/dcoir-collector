@@ -365,6 +365,44 @@ assert any(
     and item.label == mod.FILE_WRITE_PATH_LABEL
     for item in aliased_wrapped_path_write_sentinels
 )
+mod.set_python_path_alias_context({"tools/path_writer.py": {"P", "pl.Path"}})
+try:
+    existing_alias_path_sentinels = mod.detect_risk_sentinels(
+        """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- a/tools/path_writer.py
++++ b/tools/path_writer.py
+@@ -20,3 +20,4 @@
+ def write_triage_note(filename, note, output_dir):
++    destination = P(output_dir, filename)
+     destination.write_text(note, encoding="utf-8")
+"""
+    )
+    existing_module_alias_wrapped_sentinels = mod.detect_risk_sentinels(
+        """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- a/tools/path_writer.py
++++ b/tools/path_writer.py
+@@ -30,3 +30,4 @@
+ def write_triage_note(filename, note, output_dir):
++    destination = pl.Path(output_dir, filename)
+     pl.Path(destination).write_text(note, encoding="utf-8")
+"""
+    )
+finally:
+    mod.set_python_path_alias_context({})
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 21
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in existing_alias_path_sentinels
+)
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 31
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in existing_module_alias_wrapped_sentinels
+)
 cross_file_alias_sentinels = mod.detect_risk_sentinels(
     """diff --git a/tools/path_builder.py b/tools/path_builder.py
 index 0000000..1111111 100644
@@ -830,6 +868,7 @@ class FakeGitHubClient:
             "docs/review.md": "# Review\n\nKeep governed review evidence visible.\n",
             "tools/later_probe.py": "import subprocess\n\nsubprocess.run('whoami', shell=True)\n",
             "tools/huge_probe.py": "print('large context line')\n" * 1000,
+            "tools/aliased_writer.py": "from pathlib import Path as P\nimport pathlib as pl\n\ndef write_triage_note(filename, note, output_dir):\n    destination = P(output_dir, filename)\n    pl.Path(destination).write_text(note)\n",
         }
 
     def request(self, _method: str, path: str):
@@ -860,6 +899,16 @@ assert (
     is True
 )
 assert mod.has_prior_successful_context_review(FakeGitHubClient([{"body": mod.base.MARKER}] * 100), 287) is False
+
+alias_context = mod.build_python_path_alias_context(
+    FakeGitHubClient(),
+    {"head": {"sha": "abc123def4567890"}},
+    [
+        {"filename": "tools/aliased_writer.py", "status": "modified"},
+        {"filename": "docs/review.md", "status": "modified"},
+    ],
+)
+assert alias_context == {"tools/aliased_writer.py": {"P", "pl.Path"}}
 
 deep_block, deep_summary = mod.build_deep_context_block(
     FakeGitHubClient(),
