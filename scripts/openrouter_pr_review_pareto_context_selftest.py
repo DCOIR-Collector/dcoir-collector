@@ -166,6 +166,26 @@ assert any(
     for item in context_write_sentinels
 )
 
+added_write_context_assignment_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/validation-review-probes/intentional_flawed_review_baseline.py b/validation-review-probes/intentional_flawed_review_baseline.py
+index 0000000..1111111 100644
+--- a/validation-review-probes/intentional_flawed_review_baseline.py
++++ b/validation-review-probes/intentional_flawed_review_baseline.py
+@@ -1,4 +1,5 @@
+ from pathlib import Path
+ def write_triage_note(case_id, note, output_dir):
+     destination = Path(output_dir) / f"{case_id}.txt"
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert any(
+    item.path == "validation-review-probes/intentional_flawed_review_baseline.py"
+    and item.line == 4
+    and item.text.strip().startswith("destination.write_text")
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in added_write_context_assignment_sentinels
+)
+
 multi_arg_path_sentinels = mod.detect_risk_sentinels(
     """diff --git a/tools/path_writer.py b/tools/path_writer.py
 index 0000000..1111111 100644
@@ -498,6 +518,85 @@ assert not any(item.label == mod.FILE_WRITE_PATH_LABEL for item in wrapped_liter
 long_path_assignment = "destination = " + ("a" * (mod.PYTHON_PATH_ASSIGNMENT_MAX_CHARS + 1)) + "Path(filename)"
 assert mod.python_dynamic_path_target(long_path_assignment) is None
 
+scope_reset_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,8 @@
++from pathlib import Path
++def build_path(filename, output_dir):
++    destination = Path(output_dir) / filename
++
++def write_supplied_path(destination, note):
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert not any(item.label == mod.FILE_WRITE_PATH_LABEL for item in scope_reset_sentinels)
+
+comparison_path_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,5 @@
++from pathlib import Path
++def write_supplied_path(destination, filename, note):
++    if destination == Path(f"{filename}"):
++        destination.write_text(note, encoding="utf-8")
+"""
+)
+assert mod.python_dynamic_path_target("if destination == Path(f'{filename}'):") is None
+assert not any(item.label == mod.FILE_WRITE_PATH_LABEL for item in comparison_path_sentinels)
+
+attribute_exact_reassign_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,7 @@
++from pathlib import Path
++class Writer:
++    def write_triage_note(self, filename, note, output_dir):
++        self.destination = Path(output_dir) / filename
++        self.destination = Path(output_dir) / "summary.txt"
++        self.destination.write_text(note, encoding="utf-8")
+"""
+)
+assert not any(item.label == mod.FILE_WRITE_PATH_LABEL for item in attribute_exact_reassign_sentinels)
+
+attribute_root_rebind_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,8 @@
++from pathlib import Path
++class Writer:
++    def write_triage_note(self, filename, note, output_dir, replacement):
++        self.destination = Path(output_dir) / filename
++        self = replacement
++        self.destination.write_text(note, encoding="utf-8")
+"""
+)
+assert not any(item.label == mod.FILE_WRITE_PATH_LABEL for item in attribute_root_rebind_sentinels)
+
+attribute_subscript_mutation_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,8 @@
++from pathlib import Path
++class Writer:
++    def write_triage_note(self, filename, note, output_dir):
++        self.destination = Path(output_dir) / filename
++        self.destination[0] = "safe"
++        self.destination.write_text(note, encoding="utf-8")
+"""
+)
+assert not any(item.label == mod.FILE_WRITE_PATH_LABEL for item in attribute_subscript_mutation_sentinels)
+
 
 class FakeGitHubClient:
     repo = "DCOIR-Collector/dcoir-collector"
@@ -641,6 +740,8 @@ prompt = mod.build_prompt(
 assert "Context mode: first-pass-deep" in prompt
 assert "Deep changed-file context" in prompt
 assert "subprocess.run(command, shell=True)" in prompt
+assert "exact correction guidance" in prompt
+assert "smallest safe patch direction" in prompt
 
 small_config = mod.copy.copy(config)
 small_config.max_prompt_chars = 900
