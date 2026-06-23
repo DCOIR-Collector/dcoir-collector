@@ -273,6 +273,44 @@ index 0000000..1111111 100644
         for item in os_path_join_variable_segment_sentinels
     )
 
+    aliased_os_path_join_variable_segment_sentinels = mod.detect_risk_sentinels(
+        """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,6 @@
++import os as operating_system
++def write_triage_note(filename, note, output_dir):
++    destination = operating_system.path.join(output_dir, filename)
++    destination.write_text(note, encoding="utf-8")
+"""
+    )
+    assert any(
+        item.path == "tools/path_writer.py"
+        and item.line == 3
+        and item.label == mod.FILE_WRITE_PATH_LABEL
+        for item in aliased_os_path_join_variable_segment_sentinels
+    )
+
+    aliased_os_path_join_direct_receiver_sentinels = mod.detect_risk_sentinels(
+        """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,6 @@
++import os as operating_system
++from pathlib import Path
++def write_triage_note(filename, note, output_dir):
++    Path(operating_system.path.join(output_dir, filename)).write_text(note, encoding="utf-8")
+"""
+    )
+    assert any(
+        item.path == "tools/path_writer.py"
+        and item.line == 4
+        and item.label == mod.FILE_WRITE_PATH_LABEL
+        for item in aliased_os_path_join_direct_receiver_sentinels
+    )
+
     literal_joinpath_sentinels = mod.detect_risk_sentinels(
         """diff --git a/tools/safe_writer.py b/tools/safe_writer.py
 index 0000000..1111111 100644

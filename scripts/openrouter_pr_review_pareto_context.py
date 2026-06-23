@@ -74,7 +74,9 @@ PYTHON_SCOPE_BOUNDARY_RE = re.compile(r"^\s*(?:async\s+def|def|class)\s+[A-Za-z_
 PYTHON_HUNK_CONTEXT_RE = re.compile(r"^@@.*?@@\s*(?P<context>.*)$")
 PYTHON_TRIPLE_QUOTE_RE = re.compile(r"(?<!\\)(?:'''|\"\"\")")
 DEFAULT_PYTHON_PATH_CONSTRUCTORS = frozenset({"Path", "pathlib.Path"})
+DEFAULT_PYTHON_OS_MODULES = frozenset({"os"})
 PYTHON_PATH_ALIAS_CONTEXT: dict[str, set[str]] = {}
+PYTHON_OS_ALIAS_CONTEXT: dict[str, set[str]] = {}
 
 
 class PythonDiffLine(NamedTuple):
@@ -240,6 +242,20 @@ def python_path_constructor_aliases(text: str) -> set[str]:
     return aliases
 
 
+
+def python_os_module_aliases(text: str) -> set[str]:
+    aliases: set[str] = set()
+    try:
+        module = ast.parse(text.lstrip())
+    except SyntaxError:
+        return aliases
+    for statement in ast.walk(module):
+        if isinstance(statement, ast.Import):
+            for alias in statement.names:
+                if alias.name == "os":
+                    aliases.add(alias.asname or alias.name)
+    return aliases
+
 def set_python_path_alias_context(path_alias_context: dict[str, set[str]] | None) -> None:
     global PYTHON_PATH_ALIAS_CONTEXT
     PYTHON_PATH_ALIAS_CONTEXT = {
@@ -249,15 +265,27 @@ def set_python_path_alias_context(path_alias_context: dict[str, set[str]] | None
     }
 
 
-def python_path_assignment_start(text: str, path_constructor_names: set[str] | None = None) -> bool:
+def set_python_os_alias_context(os_alias_context: dict[str, set[str]] | None) -> None:
+    global PYTHON_OS_ALIAS_CONTEXT
+    PYTHON_OS_ALIAS_CONTEXT = {
+        path: set(aliases)
+        for path, aliases in (os_alias_context or {}).items()
+        if aliases
+    }
+
+
+def python_path_assignment_start(text: str, path_constructor_names: set[str] | None = None, os_module_names: set[str] | None = None) -> bool:
     if PYTHON_PATH_ASSIGNMENT_START_RE.search(text):
         return True
     if PYTHON_ASSIGNMENT_CONTINUATION_START_RE.search(text):
         return True
     names = sorted((path_constructor_names or set()) - DEFAULT_PYTHON_PATH_CONSTRUCTORS, key=len, reverse=True)
-    if not names:
+    os_join_names = sorted(
+        f"{name}.path.join" for name in (os_module_names or set()) - DEFAULT_PYTHON_OS_MODULES
+    )
+    if not names and not os_join_names:
         return False
-    constructors = "|".join(re.escape(name) for name in names)
+    constructors = "|".join(re.escape(name) for name in [*names, *os_join_names])
     return bool(
         re.search(
             rf"^\s*{PYTHON_PATH_TARGET_PART}\s*(?::\s*[^=]+)?=\s*(?:{constructors})\s*\(",
@@ -299,19 +327,20 @@ def python_is_path_constructor(node: ast.AST, path_constructor_names: set[str] |
     return isinstance(node, ast.Call) and python_call_name(node.func) in constructors
 
 
-def python_is_os_path_join(node: ast.AST) -> bool:
-    return isinstance(node, ast.Call) and python_call_name(node.func) == "os.path.join"
+def python_is_os_path_join(node: ast.AST, os_module_names: set[str] | None = None) -> bool:
+    modules = os_module_names or DEFAULT_PYTHON_OS_MODULES
+    return isinstance(node, ast.Call) and python_call_name(node.func) in {f"{name}.path.join" for name in modules}
 
 
 def python_is_joinpath_call(node: ast.AST) -> bool:
     return isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute) and node.func.attr == "joinpath"
 
 
-def python_path_expr_info(node: ast.AST, path_constructor_names: set[str] | None = None) -> tuple[bool, bool]:
+def python_path_expr_info(node: ast.AST, path_constructor_names: set[str] | None = None, os_module_names: set[str] | None = None) -> tuple[bool, bool]:
     if isinstance(node, ast.BinOp):
         if isinstance(node.op, ast.Add):
-            left_is_path, left_has_dynamic = python_path_expr_info(node.left, path_constructor_names)
-            right_is_path, right_has_dynamic = python_path_expr_info(node.right, path_constructor_names)
+            left_is_path, left_has_dynamic = python_path_expr_info(node.left, path_constructor_names, os_module_names)
+            right_is_path, right_has_dynamic = python_path_expr_info(node.right, path_constructor_names, os_module_names)
             if left_is_path or right_is_path:
                 return True, (
                     left_has_dynamic
@@ -321,21 +350,21 @@ def python_path_expr_info(node: ast.AST, path_constructor_names: set[str] | None
                 )
             return False, False
         if isinstance(node.op, ast.Div):
-            left_is_path, left_has_dynamic = python_path_expr_info(node.left, path_constructor_names)
+            left_is_path, left_has_dynamic = python_path_expr_info(node.left, path_constructor_names, os_module_names)
             if not left_is_path:
                 right_is_dynamic = python_is_dynamic_path_segment(node.right)
                 return right_is_dynamic, right_is_dynamic
             return True, left_has_dynamic or python_is_dynamic_path_segment(node.right)
     if python_is_joinpath_call(node):
-        base_is_path, base_has_dynamic = python_path_expr_info(node.func.value, path_constructor_names)
+        base_is_path, base_has_dynamic = python_path_expr_info(node.func.value, path_constructor_names, os_module_names)
         if not base_is_path:
             return False, False
         return True, base_has_dynamic or any(python_is_dynamic_path_segment(arg) for arg in node.args)
-    if python_is_path_constructor(node, path_constructor_names) or python_is_os_path_join(node):
+    if python_is_path_constructor(node, path_constructor_names) or python_is_os_path_join(node, os_module_names):
         args = list(node.args)
         if len(args) == 1:
             arg = args[0]
-            arg_is_path, arg_has_dynamic = python_path_expr_info(arg, path_constructor_names)
+            arg_is_path, arg_has_dynamic = python_path_expr_info(arg, path_constructor_names, os_module_names)
             if arg_is_path or (isinstance(arg, ast.BinOp) and isinstance(arg.op, ast.Div)):
                 return True, arg_has_dynamic
             return True, python_single_arg_path_has_dynamic_write_segment(arg)
@@ -345,50 +374,53 @@ def python_path_expr_info(node: ast.AST, path_constructor_names: set[str] | None
     return False, False
 
 
-def python_path_expr_has_dynamic_write_segment(node: ast.AST, path_constructor_names: set[str] | None = None) -> bool:
-    _is_path, has_dynamic = python_path_expr_info(node, path_constructor_names)
+def python_path_expr_has_dynamic_write_segment(node: ast.AST, path_constructor_names: set[str] | None = None, os_module_names: set[str] | None = None) -> bool:
+    _is_path, has_dynamic = python_path_expr_info(node, path_constructor_names, os_module_names)
     return has_dynamic
 
 
-def python_single_dynamic_path_expr(node: ast.AST, path_constructor_names: set[str] | None = None) -> bool:
-    if not (python_is_path_constructor(node, path_constructor_names) or python_is_os_path_join(node)):
+def python_single_dynamic_path_expr(node: ast.AST, path_constructor_names: set[str] | None = None, os_module_names: set[str] | None = None) -> bool:
+    if not (python_is_path_constructor(node, path_constructor_names) or python_is_os_path_join(node, os_module_names)):
         return False
     args = list(node.args)
     if len(args) != 1:
         return False
     arg = args[0]
-    arg_is_path, arg_has_dynamic = python_path_expr_info(arg, path_constructor_names)
+    arg_is_path, arg_has_dynamic = python_path_expr_info(arg, path_constructor_names, os_module_names)
     if arg_is_path or (isinstance(arg, ast.BinOp) and isinstance(arg.op, ast.Div)):
         return arg_has_dynamic
     return python_single_arg_path_has_dynamic_write_segment(arg)
 
 
-def python_dynamic_path_target(text: str, path_constructor_names: set[str] | None = None) -> str | None:
+def python_dynamic_path_target(text: str, path_constructor_names: set[str] | None = None, os_module_names: set[str] | None = None) -> str | None:
     assignment = python_simple_assignment(text)
     if assignment:
         target, expr_node = assignment
-        if python_path_expr_has_dynamic_write_segment(expr_node, path_constructor_names) or python_single_dynamic_path_expr(
+        if python_path_expr_has_dynamic_write_segment(expr_node, path_constructor_names, os_module_names) or python_single_dynamic_path_expr(
             expr_node,
             path_constructor_names,
+            os_module_names,
         ):
             return target
     if len(text) > PYTHON_PATH_ASSIGNMENT_MAX_CHARS:
         return None
     constructor_names = path_constructor_names or DEFAULT_PYTHON_PATH_CONSTRUCTORS
-    if "Path" not in text and "os.path.join" not in text and not any(f"{name}(" in text for name in constructor_names):
+    os_modules = os_module_names or DEFAULT_PYTHON_OS_MODULES
+    os_join_names = {f"{name}.path.join" for name in os_modules}
+    if "Path" not in text and not any(name in text for name in os_join_names) and not any(f"{name}(" in text for name in constructor_names):
         return None
     match = PYTHON_PATH_ASSIGNMENT_RE.search(text)
     if not match:
         return None
     expr = match.group("expr")
-    if "/" not in expr and "os.path.join" not in expr and not re.search(r"\bPath\s*\(", expr):
+    if "/" not in expr and not any(name in expr for name in os_join_names) and not re.search(r"\bPath\s*\(", expr):
         return None
     if not (re.search(r"\bf['\"]", expr) and "{" in expr):
         return None
     return match.group("target")
 
 
-def python_augmented_dynamic_path_target(text: str, path_constructor_names: set[str] | None = None) -> str | None:
+def python_augmented_dynamic_path_target(text: str, path_constructor_names: set[str] | None = None, os_module_names: set[str] | None = None) -> str | None:
     try:
         module = ast.parse(text.lstrip())
     except SyntaxError:
@@ -402,13 +434,13 @@ def python_augmented_dynamic_path_target(text: str, path_constructor_names: set[
     if isinstance(statement.op, ast.Div) and python_is_dynamic_path_segment(statement.value):
         return target
     if isinstance(statement.op, ast.Add):
-        value_is_path, value_has_dynamic = python_path_expr_info(statement.value, path_constructor_names)
+        value_is_path, value_has_dynamic = python_path_expr_info(statement.value, path_constructor_names, os_module_names)
         if value_is_path and value_has_dynamic:
             return target
     return None
 
 
-def python_direct_dynamic_file_write(text: str, path_constructor_names: set[str] | None = None) -> bool:
+def python_direct_dynamic_file_write(text: str, path_constructor_names: set[str] | None = None, os_module_names: set[str] | None = None) -> bool:
     try:
         module = ast.parse(text.lstrip())
     except SyntaxError:
@@ -422,13 +454,13 @@ def python_direct_dynamic_file_write(text: str, path_constructor_names: set[str]
         value = node.func.value
         if python_target_key(value):
             continue
-        value_is_path, value_has_dynamic = python_path_expr_info(value, constructor_names)
+        value_is_path, value_has_dynamic = python_path_expr_info(value, constructor_names, os_module_names)
         if value_is_path and value_has_dynamic:
             return True
     return False
 
 
-def python_file_write_target(text: str, path_constructor_names: set[str] | None = None) -> str | None:
+def python_file_write_target(text: str, path_constructor_names: set[str] | None = None, os_module_names: set[str] | None = None) -> str | None:
     try:
         module = ast.parse(text.lstrip())
     except SyntaxError:
@@ -447,7 +479,7 @@ def python_file_write_target(text: str, path_constructor_names: set[str] | None 
     return None
 
 
-def python_wrapped_file_write_target(text: str, path_constructor_names: set[str] | None = None) -> str | None:
+def python_wrapped_file_write_target(text: str, path_constructor_names: set[str] | None = None, os_module_names: set[str] | None = None) -> str | None:
     try:
         module = ast.parse(text.lstrip())
     except SyntaxError:
@@ -744,6 +776,7 @@ def detect_python_file_write_path_sentinels(diff: str) -> list[hardened.RiskSent
     scope_stack: list[PythonScope] = []
     next_scope_id = 0
     path_constructor_names = set(DEFAULT_PYTHON_PATH_CONSTRUCTORS)
+    os_module_names = set(DEFAULT_PYTHON_OS_MODULES)
     current_path = ""
     current_hunk = 0
     current_alias_path = ""
@@ -754,7 +787,7 @@ def detect_python_file_write_path_sentinels(diff: str) -> list[hardened.RiskSent
         if not pending_path_assignment:
             return
         statement = "\n".join(line.text for line in pending_path_assignment)
-        dynamic_target = python_dynamic_path_target(statement, path_constructor_names)
+        dynamic_target = python_dynamic_path_target(statement, path_constructor_names, os_module_names)
         if dynamic_target:
             push_assigned_path(
                 assigned_paths,
@@ -768,6 +801,8 @@ def detect_python_file_write_path_sentinels(diff: str) -> list[hardened.RiskSent
         if diff_line.path != current_alias_path:
             path_constructor_names = set(DEFAULT_PYTHON_PATH_CONSTRUCTORS)
             path_constructor_names.update(PYTHON_PATH_ALIAS_CONTEXT.get(diff_line.path, set()))
+            os_module_names = set(DEFAULT_PYTHON_OS_MODULES)
+            os_module_names.update(PYTHON_OS_ALIAS_CONTEXT.get(diff_line.path, set()))
             current_alias_path = diff_line.path
         if diff_line.path != current_path:
             flush_pending_path_assignment()
@@ -791,6 +826,7 @@ def detect_python_file_write_path_sentinels(diff: str) -> list[hardened.RiskSent
         if hardened.is_comment_only_added_line(diff_line.path, diff_line.text):
             continue
         path_constructor_names.update(python_path_constructor_aliases(diff_line.text))
+        os_module_names.update(python_os_module_aliases(diff_line.text))
         if pending_path_assignment:
             pending_path_assignment.append(diff_line)
             statement = "\n".join(line.text for line in pending_path_assignment)
@@ -808,15 +844,15 @@ def detect_python_file_write_path_sentinels(diff: str) -> list[hardened.RiskSent
                 current_python_scope_id(scope_stack),
             )
         current_scope_id = current_python_scope_id(scope_stack)
-        dynamic_target = python_dynamic_path_target(diff_line.text, path_constructor_names)
+        dynamic_target = python_dynamic_path_target(diff_line.text, path_constructor_names, os_module_names)
         if dynamic_target:
             push_assigned_path(assigned_paths, dynamic_target, diff_line, current_scope_id)
             continue
-        augmented_dynamic_target = python_augmented_dynamic_path_target(diff_line.text, path_constructor_names)
+        augmented_dynamic_target = python_augmented_dynamic_path_target(diff_line.text, path_constructor_names, os_module_names)
         if augmented_dynamic_target:
             push_assigned_path(assigned_paths, augmented_dynamic_target, diff_line, current_scope_id)
             continue
-        if python_path_assignment_start(diff_line.text, path_constructor_names) and not python_statement_is_complete(diff_line.text):
+        if python_path_assignment_start(diff_line.text, path_constructor_names, os_module_names) and not python_statement_is_complete(diff_line.text):
             pending_path_assignment = [diff_line]
             continue
         augmented_targets = python_augmented_assignment_targets(diff_line.text)
@@ -835,16 +871,16 @@ def detect_python_file_write_path_sentinels(diff: str) -> list[hardened.RiskSent
                     push_assigned_path(assigned_paths, assigned_target, diff_line, current_scope_id)
             else:
                 clear_assigned_path_in_scope(assigned_paths, assigned_target, assignment_indent, current_scope_id)
-        write_target = python_file_write_target(diff_line.text, path_constructor_names)
+        write_target = python_file_write_target(diff_line.text, path_constructor_names, os_module_names)
         if not write_target:
-            write_target = python_wrapped_file_write_target(diff_line.text, path_constructor_names)
+            write_target = python_wrapped_file_write_target(diff_line.text, path_constructor_names, os_module_names)
         if not write_target:
-            if diff_line.is_added and python_direct_dynamic_file_write(diff_line.text, path_constructor_names):
+            if diff_line.is_added and python_direct_dynamic_file_write(diff_line.text, path_constructor_names, os_module_names):
                 append_file_write_sentinel(sentinels, diff_line)
             continue
         assignment = current_assigned_path(assigned_paths, write_target)
         if not assignment:
-            if diff_line.is_added and python_direct_dynamic_file_write(diff_line.text, path_constructor_names):
+            if diff_line.is_added and python_direct_dynamic_file_write(diff_line.text, path_constructor_names, os_module_names):
                 append_file_write_sentinel(sentinels, diff_line)
             continue
         if not assignment.is_added and not diff_line.is_added:
@@ -979,6 +1015,25 @@ def build_python_path_alias_context(gh: Any, pr: dict[str, Any], files: list[dic
         if aliases:
             path_alias_context[path] = aliases
     return path_alias_context
+
+
+def build_python_os_alias_context(gh: Any, pr: dict[str, Any], files: list[dict[str, Any]]) -> dict[str, set[str]]:
+    head_sha = str(pr.get("head", {}).get("sha", "") or "")
+    if not head_sha:
+        return {}
+    os_alias_context: dict[str, set[str]] = {}
+    for item in files:
+        path = str(item.get("filename", "")).strip()
+        status = str(item.get("status", "")).strip()
+        if not path or status in {"removed", "deleted"} or Path(path).suffix.lower() != ".py":
+            continue
+        try:
+            aliases = python_os_module_aliases(fetch_pr_file_text(gh, path, head_sha))
+        except Exception:
+            continue
+        if aliases:
+            os_alias_context[path] = aliases
+    return os_alias_context
 
 
 def build_deep_context_block(gh: Any, pr: dict[str, Any], files: list[dict[str, Any]], config: Any, review_mode: str) -> tuple[str, str]:
@@ -1177,6 +1232,7 @@ def main() -> None:
         reporter.update("github", "fetching changed file list")
         files = gh.list_files(pr_number)
         set_python_path_alias_context(build_python_path_alias_context(gh, pr, files))
+        set_python_os_alias_context(build_python_os_alias_context(gh, pr, files))
         try:
             prior_successful_review = has_prior_successful_context_review(gh, pr_number)
             reporter.update("review-mode", f"prior context review found: {str(prior_successful_review).lower()}")
@@ -1222,6 +1278,7 @@ def main() -> None:
         raise
     finally:
         set_python_path_alias_context({})
+        set_python_os_alias_context({})
         if config.script_timeout_seconds > 0 and hasattr(signal, "SIGALRM"):
             signal.alarm(0)
 

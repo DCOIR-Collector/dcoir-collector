@@ -366,6 +366,7 @@ assert any(
     for item in aliased_wrapped_path_write_sentinels
 )
 mod.set_python_path_alias_context({"tools/path_writer.py": {"P", "pl.Path"}})
+mod.set_python_os_alias_context({"tools/path_writer.py": {"operating_system"}})
 try:
     existing_alias_path_sentinels = mod.detect_risk_sentinels(
         """diff --git a/tools/path_writer.py b/tools/path_writer.py
@@ -389,8 +390,20 @@ index 0000000..1111111 100644
      pl.Path(destination).write_text(note, encoding="utf-8")
 """
     )
+    existing_os_alias_path_sentinels = mod.detect_risk_sentinels(
+        """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- a/tools/path_writer.py
++++ b/tools/path_writer.py
+@@ -40,3 +40,4 @@
+ def write_triage_note(filename, note, output_dir):
++    destination = operating_system.path.join(output_dir, filename)
+     destination.write_text(note, encoding="utf-8")
+"""
+    )
 finally:
     mod.set_python_path_alias_context({})
+    mod.set_python_os_alias_context({})
 assert any(
     item.path == "tools/path_writer.py"
     and item.line == 21
@@ -402,6 +415,12 @@ assert any(
     and item.line == 31
     and item.label == mod.FILE_WRITE_PATH_LABEL
     for item in existing_module_alias_wrapped_sentinels
+)
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 41
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in existing_os_alias_path_sentinels
 )
 cross_file_alias_sentinels = mod.detect_risk_sentinels(
     """diff --git a/tools/path_builder.py b/tools/path_builder.py
@@ -422,6 +441,26 @@ index 0000000..1111111 100644
 """
 )
 assert not any(item.label == mod.FILE_WRITE_PATH_LABEL for item in cross_file_alias_sentinels)
+cross_file_os_alias_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_builder.py b/tools/path_builder.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_builder.py
+@@ -0,0 +1,4 @@
++import os as operating_system
++def build_path(filename, output_dir):
++    return operating_system.path.join(output_dir, filename)
+diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 2222222..3333333 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,4 @@
++def write_triage_note(filename, note, output_dir):
++    destination = operating_system.path.join(output_dir, filename)
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert not any(item.label == mod.FILE_WRITE_PATH_LABEL for item in cross_file_os_alias_sentinels)
 
 literal_root_path_sentinels = mod.detect_risk_sentinels(
     """diff --git a/tools/path_writer.py b/tools/path_writer.py
@@ -1108,7 +1147,7 @@ class FakeGitHubClient:
             "docs/review.md": "# Review\n\nKeep governed review evidence visible.\n",
             "tools/later_probe.py": "import subprocess\n\nsubprocess.run('whoami', shell=True)\n",
             "tools/huge_probe.py": "print('large context line')\n" * 1000,
-            "tools/aliased_writer.py": "from pathlib import Path as P\nimport pathlib as pl\n\ndef write_triage_note(filename, note, output_dir):\n    destination = P(output_dir, filename)\n    pl.Path(destination).write_text(note)\n",
+            "tools/aliased_writer.py": "from pathlib import Path as P\nimport pathlib as pl\nimport os as operating_system\n\ndef write_triage_note(filename, note, output_dir):\n    destination = P(output_dir, filename)\n    pl.Path(destination).write_text(note)\n",
         }
 
     def request(self, _method: str, path: str):
@@ -1149,6 +1188,15 @@ alias_context = mod.build_python_path_alias_context(
     ],
 )
 assert alias_context == {"tools/aliased_writer.py": {"P", "pl.Path"}}
+os_alias_context = mod.build_python_os_alias_context(
+    FakeGitHubClient(),
+    {"head": {"sha": "abc123def4567890"}},
+    [
+        {"filename": "tools/aliased_writer.py", "status": "modified"},
+        {"filename": "docs/review.md", "status": "modified"},
+    ],
+)
+assert os_alias_context == {"tools/aliased_writer.py": {"operating_system"}}
 
 deep_block, deep_summary = mod.build_deep_context_block(
     FakeGitHubClient(),
