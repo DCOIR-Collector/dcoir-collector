@@ -37,31 +37,239 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Run governed apply-patch request
+      - name: Resolve apply-patch request
         id: request
-        uses: ./.github/actions/run-ops-apply-patch-request
-        with:
-          operation: apply
-          caller-event-name: ${{ inputs.caller_event_name }}
-          request-path: ${{ inputs.request_path }}
-          default-branch: ${{ github.event.repository.default_branch || 'main' }}
-          report-root: ${{ runner.temp }}/ops-apply-patch
+        shell: bash
+        env:
+          CALLER_EVENT_NAME: ${{ inputs.caller_event_name }}
+          INPUT_REQUEST_PATH: ${{ inputs.request_path }}
+        run: |
+          set -euo pipefail
+
+          safe_request_path() {
+            local p="$1"
+            case "$p" in
+              ops/requests/apply_patch/*/request.json) return 0 ;;
+              *) return 1 ;;
+            esac
+          }
+
+          if [[ "$CALLER_EVENT_NAME" == "workflow_dispatch" ]]; then
+            REQUEST_PATH="$INPUT_REQUEST_PATH"
+            if ! safe_request_path "$REQUEST_PATH"; then
+              echo "request_path must match ops/requests/apply_patch/<request_id>/request.json" >&2
+              exit 1
+            fi
+          else
+            declare -A request_paths=()
+            removed_request_path_count=0
+            mapfile -t changed_records < <(
+              python - "$GITHUB_EVENT_PATH" "$GITHUB_SHA" <<'PY'
+          import json
+          import pathlib
+          import subprocess
+          import sys
+
+          event_path = pathlib.Path(sys.argv[1])
+          head_sha = sys.argv[2]
+          zero_sha = "0" * 40
+          changed = {}
+
+          def add(status, path):
+              if isinstance(path, str) and path:
+                  changed[path] = status
+
+          def add_name_status_line(line):
+              parts = line.split("\t")
+              if len(parts) < 2:
+                  return
+              status = parts[0]
+              if status.startswith(("R", "C")) and len(parts) >= 3:
+                  path = parts[2]
+              else:
+                  path = parts[1]
+              add(status, path)
+
+          try:
+              event = json.loads(event_path.read_text(encoding="utf-8"))
+          except (OSError, json.JSONDecodeError):
+              event = {}
+
+          for commit in event.get("commits", []):
+              if not isinstance(commit, dict):
+                  continue
+              for path in commit.get("added", []):
+                  add("A", path)
+              for path in commit.get("modified", []):
+                  add("M", path)
+              for path in commit.get("removed", []):
+                  add("D", path)
+
+          before = event.get("before")
+          after = event.get("after") or head_sha
+          if isinstance(before, str) and isinstance(after, str) and before and after and before != zero_sha:
+              proc = subprocess.run(
+                  ["git", "diff", "--name-status", f"{before}..{after}"],
+                  check=False,
+                  text=True,
+                  stdout=subprocess.PIPE,
+                  stderr=subprocess.PIPE,
+              )
+              if proc.returncode == 0:
+                  for line in proc.stdout.splitlines():
+                      add_name_status_line(line)
+
+          if not changed:
+              proc = subprocess.run(
+                  ["git", "diff-tree", "--no-commit-id", "--name-status", "-r", "-m", head_sha],
+                  check=False,
+                  text=True,
+                  stdout=subprocess.PIPE,
+                  stderr=subprocess.PIPE,
+              )
+              if proc.returncode == 0:
+                  for line in proc.stdout.splitlines():
+                      add_name_status_line(line)
+
+          for path in sorted(changed):
+              print(f"{changed[path]}\t{path}")
+          PY
+            )
+            for record in "${changed_records[@]}"; do
+              IFS=$'\t' read -r status changed _ <<< "$record"
+              if [[ -z "${changed:-}" ]]; then
+                continue
+              fi
+              case "$changed" in
+                ops/requests/apply_patch/*/request.json)
+                  if [[ "$status" == D* ]]; then
+                    removed_request_path_count=$((removed_request_path_count + 1))
+                  else
+                    request_paths["$changed"]=1
+                  fi
+                  ;;
+                ops/requests/apply_patch/*/*.patch|ops/requests/apply_patch/*/*.diff)
+                  if [[ "$status" == D* ]]; then
+                    removed_request_path_count=$((removed_request_path_count + 1))
+                  else
+                    request_paths["$(dirname "$changed")/request.json"]=1
+                  fi
+                  ;;
+              esac
+            done
+
+            if [[ "${#request_paths[@]}" -eq 0 ]]; then
+              if [[ "$removed_request_path_count" -gt 0 ]]; then
+                echo "Only removed apply-patch request files were found; treating this as cleanup and skipping."
+                echo "skip=true" >> "$GITHUB_OUTPUT"
+                exit 0
+              fi
+              if [[ "$CALLER_EVENT_NAME" == "push" ]]; then
+                echo "Apply-patch workflow was triggered by push, but no request path could be resolved from the push range." >&2
+                exit 1
+              fi
+              echo "No apply-patch request found in triggering event; exiting successfully."
+              echo "skip=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            if [[ "${#request_paths[@]}" -gt 1 ]]; then
+              printf 'Only one apply-patch request may be staged per triggering commit. Found:\n' >&2
+              printf '%s\n' "${!request_paths[@]}" >&2
+              exit 1
+            fi
+            REQUEST_PATH="${!request_paths[@]}"
+          fi
+
+          if [[ ! -f "$REQUEST_PATH" ]]; then
+            echo "Request file not found: $REQUEST_PATH" >&2
+            exit 1
+          fi
+          REQUEST_ID="$(basename "$(dirname "$REQUEST_PATH")")"
+          case "$REQUEST_ID" in
+            *[!A-Za-z0-9._-]*|'')
+              echo "Unsafe request id: $REQUEST_ID" >&2
+              exit 1
+              ;;
+          esac
+          echo "request_path=$REQUEST_PATH" >> "$GITHUB_OUTPUT"
+          echo "request_dir=$(dirname "$REQUEST_PATH")" >> "$GITHUB_OUTPUT"
+          echo "request_id=$REQUEST_ID" >> "$GITHUB_OUTPUT"
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+
+      - name: Apply governed patch request
+        if: steps.request.outputs.skip != 'true'
+        shell: bash
+        env:
+          REQUEST_PATH: ${{ steps.request.outputs.request_path }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch || 'main' }}
+          REPORT_DIR: ${{ runner.temp }}/ops-apply-patch/${{ steps.request.outputs.request_id }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$REPORT_DIR"
+          python ops/tools/apply_patch_request.py apply \
+            --repo . \
+            --request "$REQUEST_PATH" \
+            --default-branch "$DEFAULT_BRANCH" \
+            --report-dir "$REPORT_DIR"
 
       - name: Upload apply-patch report
-        if: always() && steps.request.outputs.skip != 'true' && steps.request.outputs.report_dir != ''
+        if: always() && steps.request.outputs.skip != 'true'
         uses: ./.github/actions/upload-chatgpt-artifact
         with:
           name: ops-apply-patch-${{ github.run_id }}
-          path: ${{ steps.request.outputs.report_dir }}/**
+          path: ${{ runner.temp }}/ops-apply-patch/${{ steps.request.outputs.request_id }}/**
           if-no-files-found: warn
           retention-days: 14
 
       - name: Cleanup staged apply-patch request
         if: success() && steps.request.outputs.skip != 'true'
-        uses: ./.github/actions/run-ops-apply-patch-request
-        with:
-          operation: cleanup
-          request-id: ${{ steps.request.outputs.request_id }}
-          request-dir: ${{ steps.request.outputs.request_dir }}
-          request-source-ref: ${{ github.ref_name }}
-          report-dir: ${{ steps.request.outputs.report_dir }}
+        shell: bash
+        env:
+          REQUEST_DIR: ${{ steps.request.outputs.request_dir }}
+          REQUEST_ID: ${{ steps.request.outputs.request_id }}
+          REQUEST_SOURCE_REF: ${{ github.ref_name }}
+          REPORT_DIR: ${{ runner.temp }}/ops-apply-patch/${{ steps.request.outputs.request_id }}
+        run: |
+          set -euo pipefail
+
+          should_cleanup="$(${{ '' }}python - "$REPORT_DIR/result.json" <<'PY'
+          import json
+          import pathlib
+          import sys
+
+          result_path = pathlib.Path(sys.argv[1])
+          try:
+              result = json.loads(result_path.read_text(encoding="utf-8"))
+          except (OSError, json.JSONDecodeError):
+              print("false")
+              raise SystemExit
+
+          print("true" if result.get("result") == "success" and result.get("mode") == "apply" else "false")
+          PY
+          )"
+          if [[ "$should_cleanup" != "true" ]]; then
+            echo "Apply-patch request was not a successful apply operation; leaving request files for review."
+            exit 0
+          fi
+
+          if [[ -z "$REQUEST_SOURCE_REF" ]]; then
+            echo "Could not determine request source ref for cleanup." >&2
+            exit 1
+          fi
+
+          git fetch --no-tags origin "refs/heads/$REQUEST_SOURCE_REF:refs/remotes/origin/$REQUEST_SOURCE_REF"
+          git checkout -B ops-apply-patch-request-source "origin/$REQUEST_SOURCE_REF"
+          if [[ ! -d "$REQUEST_DIR" ]]; then
+            echo "Request directory is already absent: $REQUEST_DIR"
+            exit 0
+          fi
+
+          rm -rf "$REQUEST_DIR"
+          git add -A -- "$REQUEST_DIR"
+          if git diff --cached --quiet -- "$REQUEST_DIR"; then
+            echo "No staged request files needed cleanup."
+            exit 0
+          fi
+
+          git commit -m "Clean applied ops patch request $REQUEST_ID [skip ci]"
+          git push origin "HEAD:refs/heads/$REQUEST_SOURCE_REF"
