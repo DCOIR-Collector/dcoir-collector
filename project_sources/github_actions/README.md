@@ -35,7 +35,7 @@ Entry workflows must keep operator-visible contract surfaces visible: workflow n
 Phase 1 established the inventory, contract registry, and audit foundation.
 The bundled Phase 2+ implementation now makes the architecture executable:
 
-- all 29 primary entry workflows call repo-local `reusable-*` workflows;
+- primary entry workflows call repo-local `reusable-*` workflows;
 - reusable workflows own moved job bodies while entry workflows retain triggers,
   path filters, schedules, dispatch inputs, permissions, concurrency, and
   operator-facing headers;
