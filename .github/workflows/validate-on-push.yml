@@ -2,13 +2,13 @@
 # Workflow key:
 # - workflow-validation-validate-on-push-0023
 # Purpose:
-# - Automatic fast validation for collector, Gemini, validation, maintained knowledge, supporting asset, and workflow definition changes.
+# - Automatic fast validation for collector, Gemini, validation, maintained knowledge, supporting asset, operator patch tooling, and workflow definition changes.
 # Use when:
 # - Use as the normal fast validation gate for relevant push paths and manual smoke validation.
 # Do not use when:
 # - Do not treat as full regression or pre-merge proof; validate-on-pr owns the heavier PR-focused runtime and harness validation.
 # Trigger model:
-# - push paths: project_sources/collector/source/**, project_sources/collector/harness/**, project_sources/collector/tools/**, project_sources/collector/manifests/**, project_sources/gemini/bundle_source/**, project_sources/gemini/tools/**, project_sources/validation/**, knowledge/Knowledge - *.md, knowledge/README.md, docs/validation/dcoir_collector_capability_coverage_matrix.md, governed workflow definitions ...; workflow_dispatch
+# - push paths: project_sources/collector/source/**, project_sources/collector/harness/**, project_sources/collector/tools/**, project_sources/collector/manifests/**, project_sources/gemini/bundle_source/**, project_sources/gemini/tools/**, project_sources/validation/**, knowledge/Knowledge - *.md, knowledge/README.md, docs/validation/dcoir_collector_capability_coverage_matrix.md, operator patch tooling, governed workflow definitions ...; workflow_dispatch
 # Required inputs:
 # - none
 # Required secrets/config:
@@ -66,6 +66,8 @@ on:
       - '.github/workflows/**'
       - '.github/actions/**'
       - 'project_sources/github_actions/**'
+      - 'ops/tools/**'
+      - 'ops/requests/apply_patch/**'
       - '.github/README.md'
   workflow_dispatch:
 
