@@ -19,10 +19,15 @@
 # - Requires ops/tools/apply_patch_request.py and a request JSON with schema dcoir.ops.apply_patch_request.v1.
 # Expected outputs/readback:
 # - Target branch commit when mode=apply; ops-apply-patch workflow artifact with result.json and workflow_report.md; central repo-workflows completed-run report.
+# - Successful mode=apply runs remove the staged ops/requests/apply_patch/<request_id>/ directory from the request source branch with a [skip ci] cleanup commit.
+# Cleanup behavior:
+# - Successful apply requests are housekept automatically after the report artifact is uploaded.
+# - Failed apply requests and dry-runs leave request files in place for operator review.
+# - Cleanup-only deletion pushes are treated as no-op cleanup runs if they are ever evaluated by the push trigger.
 # Safety notes:
 # - Rejects unsafe request ids, unsafe target paths, missing stale-base hashes, default-branch targets without explicit reason, workflow targets without explicit reason, multi-file patches, binary patches, renames, deletes, mode changes, and unexpected changed paths after apply.
 # Maintenance notes:
-# - Keep this header aligned with executable behavior whenever triggers, inputs, scripts, reports, artifacts, permissions, or safety checks change.
+# - Keep this header aligned with executable behavior whenever triggers, inputs, scripts, reports, artifacts, permissions, cleanup, or safety checks change.
 # - Keep this header aligned with current repo-root GitHub guidance and the active `ircore` operating model when authority or routing language changes.
 # Authority routing:
 # - GitHub is canonical for workflow/source truth and this header owns workflow-specific execution guidance.
