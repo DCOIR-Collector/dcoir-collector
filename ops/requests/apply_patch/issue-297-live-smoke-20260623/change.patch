@@ -1,0 +1,13 @@
+diff --git a/knowledge/README.md b/knowledge/README.md
+--- a/knowledge/README.md
++++ b/knowledge/README.md
+@@ -1,6 +1,8 @@
+ # DCOIR Maintained Knowledge Set
+ 
+ This folder is the maintained readable source for the shared DCOIR knowledge set that feeds operator guidance and Gemini bundle attachments.
+ 
++Smoke-test note: ops apply-patch live request exercised this disposable branch on 2026-06-23.
++
+ Use this README as the knowledge-set entry point. Keep detailed operating guidance in the owned `Knowledge - <Group> - <Topic>.md` pages below instead of recreating a second repo-root index.
+ 
+ ## Authority
