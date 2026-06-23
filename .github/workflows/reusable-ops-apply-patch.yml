@@ -191,8 +191,26 @@ jobs:
               exit 1
               ;;
           esac
+          REQUEST_DIR="$(dirname "$REQUEST_PATH")"
+          REQUEST_DIR_TREE_SHA256="$(${{ '' }}python - "$REQUEST_DIR" <<'PY'
+          import hashlib
+          import pathlib
+          import sys
+
+          root = pathlib.Path(sys.argv[1])
+          digest = hashlib.sha256()
+          for path in sorted(p for p in root.rglob("*") if p.is_file()):
+              rel = path.relative_to(root).as_posix()
+              digest.update(rel.encode("utf-8"))
+              digest.update(b"\0")
+              digest.update(hashlib.sha256(path.read_bytes()).hexdigest().encode("ascii"))
+              digest.update(b"\0")
+          print(digest.hexdigest())
+          PY
+          )"
           echo "request_path=$REQUEST_PATH" >> "$GITHUB_OUTPUT"
-          echo "request_dir=$(dirname "$REQUEST_PATH")" >> "$GITHUB_OUTPUT"
+          echo "request_dir=$REQUEST_DIR" >> "$GITHUB_OUTPUT"
+          echo "request_dir_tree_sha256=$REQUEST_DIR_TREE_SHA256" >> "$GITHUB_OUTPUT"
           echo "request_id=$REQUEST_ID" >> "$GITHUB_OUTPUT"
           echo "skip=false" >> "$GITHUB_OUTPUT"
 
@@ -226,6 +244,7 @@ jobs:
         shell: bash
         env:
           REQUEST_DIR: ${{ steps.request.outputs.request_dir }}
+          REQUEST_DIR_TREE_SHA256: ${{ steps.request.outputs.request_dir_tree_sha256 }}
           REQUEST_ID: ${{ steps.request.outputs.request_id }}
           REQUEST_SOURCE_REF: ${{ github.ref_name }}
           REPORT_DIR: ${{ runner.temp }}/ops-apply-patch/${{ steps.request.outputs.request_id }}
@@ -256,12 +275,37 @@ jobs:
             echo "Could not determine request source ref for cleanup." >&2
             exit 1
           fi
+          if [[ -z "$REQUEST_DIR_TREE_SHA256" ]]; then
+            echo "Missing triggering request directory fingerprint; refusing cleanup." >&2
+            exit 1
+          fi
 
           git fetch --no-tags origin "refs/heads/$REQUEST_SOURCE_REF:refs/remotes/origin/$REQUEST_SOURCE_REF"
           git checkout -B ops-apply-patch-request-source "origin/$REQUEST_SOURCE_REF"
           if [[ ! -d "$REQUEST_DIR" ]]; then
             echo "Request directory is already absent: $REQUEST_DIR"
             exit 0
+          fi
+
+          CURRENT_REQUEST_DIR_TREE_SHA256="$(${{ '' }}python - "$REQUEST_DIR" <<'PY'
+          import hashlib
+          import pathlib
+          import sys
+
+          root = pathlib.Path(sys.argv[1])
+          digest = hashlib.sha256()
+          for path in sorted(p for p in root.rglob("*") if p.is_file()):
+              rel = path.relative_to(root).as_posix()
+              digest.update(rel.encode("utf-8"))
+              digest.update(b"\0")
+              digest.update(hashlib.sha256(path.read_bytes()).hexdigest().encode("ascii"))
+              digest.update(b"\0")
+          print(digest.hexdigest())
+          PY
+          )"
+          if [[ "$CURRENT_REQUEST_DIR_TREE_SHA256" != "$REQUEST_DIR_TREE_SHA256" ]]; then
+            echo "Request directory changed after this run was triggered; refusing cleanup for reused request id: $REQUEST_ID" >&2
+            exit 1
           fi
 
           rm -rf "$REQUEST_DIR"
