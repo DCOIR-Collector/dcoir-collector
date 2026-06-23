@@ -2,13 +2,13 @@
 # Workflow key:
 # - workflow-validation-validate-on-pr-0001
 # Purpose:
-# - Automatic PR-focused validation for collector, Gemini, packaging, validation, maintained knowledge, supporting asset, GitHub intake, and workflow definition changes.
+# - Automatic PR-focused validation for collector, Gemini, packaging, validation, maintained knowledge, supporting asset, GitHub intake, operator patch tooling, and workflow definition changes.
 # Use when:
 # - Use at meaningful PR checkpoints to run the heavier runtime build and core harness proof before merge.
 # Do not use when:
 # - Do not use as the quick push gate when validate-on-push is sufficient, and do not treat it as a replacement for deeper manual-full-validation coverage.
 # Trigger model:
-# - pull_request types: opened, reopened, synchronize, ready_for_review; scoped paths include maintained source, GitHub intake templates, knowledge/README.md, docs/validation/dcoir_collector_capability_coverage_matrix.md, and governed workflow definitions.
+# - pull_request types: opened, reopened, synchronize, ready_for_review; scoped paths include maintained source, GitHub intake templates, operator patch tooling, knowledge/README.md, docs/validation/dcoir_collector_capability_coverage_matrix.md, and governed workflow definitions.
 # Required inputs:
 # - none
 # Required secrets/config:
@@ -73,6 +73,8 @@ on:
       - '.github/workflows/**'
       - '.github/actions/**'
       - 'project_sources/github_actions/**'
+      - 'ops/tools/**'
+      - 'ops/requests/apply_patch/**'
       - '.github/README.md'
 
 concurrency:
