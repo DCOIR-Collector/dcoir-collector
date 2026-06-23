@@ -12,13 +12,15 @@ The workflow only looks for requests under `ops/requests/apply_patch/<request_id
 
 ## Implementation Surfaces
 
-The apply-patch lane follows the repo workflow/module/action pattern:
+The apply-patch lane follows the repo workflow/module/script pattern:
 
 - Entry workflow: `.github/workflows/ops-apply-patch.yml`
 - Reusable workflow: `.github/workflows/reusable-ops-apply-patch.yml`
-- Composite action: `.github/actions/run-ops-apply-patch-request/action.yml`
 - Patch validation/apply script: `ops/tools/apply_patch_request.py`
 - Request lookup folder: `ops/requests/apply_patch/<request_id>/`
+
+The workflow and reusable workflow are tracked in the GitHub workflow inventory
+and modularization contract under the `ops-apply-patch` family.
 
 ## Request Schema
 
