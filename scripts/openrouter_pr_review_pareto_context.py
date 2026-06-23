@@ -408,6 +408,26 @@ def python_augmented_dynamic_path_target(text: str, path_constructor_names: set[
     return None
 
 
+def python_direct_dynamic_file_write(text: str, path_constructor_names: set[str] | None = None) -> bool:
+    try:
+        module = ast.parse(text.lstrip())
+    except SyntaxError:
+        return False
+    constructor_names = path_constructor_names or DEFAULT_PYTHON_PATH_CONSTRUCTORS
+    for node in ast.walk(module):
+        if not isinstance(node, ast.Call) or not isinstance(node.func, ast.Attribute):
+            continue
+        if node.func.attr not in {"write_text", "write_bytes"}:
+            continue
+        value = node.func.value
+        if python_target_key(value):
+            continue
+        value_is_path, value_has_dynamic = python_path_expr_info(value, constructor_names)
+        if value_is_path and value_has_dynamic:
+            return True
+    return False
+
+
 def python_file_write_target(text: str, path_constructor_names: set[str] | None = None) -> str | None:
     write_match = PYTHON_FILE_WRITE_RE.search(text)
     if not write_match:
@@ -792,6 +812,16 @@ def detect_python_file_write_path_sentinels(diff: str) -> list[hardened.RiskSent
                 clear_assigned_path_in_scope(assigned_paths, assigned_target, assignment_indent, current_scope_id)
         write_target = python_file_write_target(diff_line.text, path_constructor_names)
         if not write_target:
+            if diff_line.is_added and python_direct_dynamic_file_write(diff_line.text, path_constructor_names):
+                sentinels.append(
+                    hardened.RiskSentinel(
+                        path=diff_line.path,
+                        line=diff_line.line,
+                        label=FILE_WRITE_PATH_LABEL,
+                        detail=FILE_WRITE_PATH_DETAIL,
+                        text=diff_line.text,
+                    )
+                )
             continue
         assignment = current_assigned_path(assigned_paths, write_target)
         if not assignment:
