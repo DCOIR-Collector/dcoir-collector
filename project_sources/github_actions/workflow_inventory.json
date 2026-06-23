@@ -1,13 +1,13 @@
 {
   "composite_action_count": 16,
   "contract_registry": "project_sources/github_actions/workflow_modularization_contracts.json",
-  "existing_workflow_count_expected": 32,
+  "existing_workflow_count_expected": 33,
   "governing_issue": 194,
-  "local_composite_action_calls": 111,
-  "local_reusable_workflow_calls": 31,
-  "reusable_workflow_count": 30,
+  "local_composite_action_calls": 113,
+  "local_reusable_workflow_calls": 32,
+  "reusable_workflow_count": 31,
   "schema_version": "dcoir_workflow_inventory_v1",
-  "workflow_count": 32,
+  "workflow_count": 33,
   "workflows": [
     {
       "artifacts": [
@@ -439,6 +439,28 @@
       "workflow_name": "OpenRouter PR Review"
     },
     {
+      "artifacts": [
+        "ops-apply-patch-${{ github.run_id }}"
+      ],
+      "concurrency_declared": true,
+      "contract_family": "ops-apply-patch",
+      "file": ".github/workflows/ops-apply-patch.yml",
+      "migration_status": "active",
+      "operator_purpose": "Apply one reviewed .patch or .diff request to one tracked file on one specified branch with branch, path, hash, and workflow-change guards.",
+      "permissions": {
+        "contents": "write"
+      },
+      "report_family": "standalone workflow report",
+      "risk": "high",
+      "schedules": [],
+      "secret_or_var_count": 0,
+      "trigger_events": [
+        "push",
+        "workflow_dispatch"
+      ],
+      "workflow_name": "64 Ops - Apply Patch Request"
+    },
+    {
       "artifacts": [],
       "concurrency_declared": false,
       "contract_family": "ops-guard",
@@ -630,7 +652,7 @@
       "contract_family": "static-validation",
       "file": ".github/workflows/validate-on-pr.yml",
       "migration_status": "active",
-      "operator_purpose": "Automatic PR-focused validation for collector, Gemini, packaging, validation, maintained knowledge, supporting asset, GitHub intake, and workflow definition changes.",
+      "operator_purpose": "Automatic PR-focused validation for collector, Gemini, packaging, validation, maintained knowledge, supporting asset, GitHub intake, operator patch tooling, and workflow definition changes.",
       "permissions": {
         "contents": "read"
       },
@@ -652,7 +674,7 @@
       "contract_family": "required-surfaces",
       "file": ".github/workflows/validate-on-push.yml",
       "migration_status": "active",
-      "operator_purpose": "Automatic fast validation for collector, Gemini, validation, maintained knowledge, supporting asset, and workflow definition changes.",
+      "operator_purpose": "Automatic fast validation for collector, Gemini, validation, maintained knowledge, supporting asset, operator patch tooling, and workflow definition changes.",
       "permissions": {
         "contents": "read"
       },

@@ -1,6 +1,7 @@
-# Governed OpenRouter PR Review configuration for DCOIR-Collector/dcoir-collector.
-# This is the production review-assist config used by .github/workflows/openrouter-pr-review.yml.
-# The legacy .github/openrouter-pr-review.yml remains the explicit smoke-test/free-router config.
+# Legacy governed OpenRouter PR Review baseline for DCOIR-Collector/dcoir-collector.
+# The active production workflow now uses .github/openrouter-pr-review-pareto.yml
+# through scripts/openrouter_pr_review_pareto_context.py.
+# Retained for hardened-runner selftests, comparison, and rollback reference.
 
 commands:
   - /or-review

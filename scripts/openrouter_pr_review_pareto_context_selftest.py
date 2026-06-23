@@ -1,0 +1,322 @@
+#!/usr/bin/env python3
+"""Offline checks for Pareto routing and first-pass context wrapper."""
+
+from __future__ import annotations
+
+import base64
+import importlib.util
+import json
+import os
+import urllib.error
+from email.message import Message
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+SCRIPT = ROOT / "scripts" / "openrouter_pr_review_pareto_context.py"
+
+spec = importlib.util.spec_from_file_location("openrouter_pr_review_pareto_context", SCRIPT)
+if spec is None or spec.loader is None:
+    raise SystemExit("unable to load openrouter_pr_review_pareto_context.py")
+mod = importlib.util.module_from_spec(spec)
+import sys
+
+sys.modules[spec.name] = mod
+spec.loader.exec_module(mod)
+
+os.environ["GITHUB_REPOSITORY"] = "DCOIR-Collector/dcoir-collector"
+os.environ["PR_NUMBER"] = "287"
+os.environ["OPENROUTER_API_KEY"] = "test-openrouter-key"
+
+config = mod.load_pareto_context_config(str(ROOT / ".github" / "openrouter-pr-review-pareto.yml"))
+assert config.model == "openrouter/pareto-code"
+assert config.model_stack == ["openrouter/pareto-code", "openrouter/auto"]
+assert config.pareto_min_coding_score == 0.80
+assert config.auto_cost_quality_tradeoff == 2
+assert "google/gemini-*" not in config.auto_allowed_models
+assert "google/gemini-3.1-pro-preview*" in config.auto_allowed_models
+assert "google/gemini-3.1-pro*" not in config.auto_allowed_models
+assert config.first_pass_deep_review is True
+assert config.deep_review_max_files == 8
+
+try:
+    mod.optional_float({"pareto_min_coding_score": "high"}, "pareto_min_coding_score")
+except ValueError as exc:
+    assert "pareto_min_coding_score" in str(exc)
+else:
+    raise AssertionError("malformed optional float should fail with a clear config error")
+
+schema = json.loads((ROOT / "schemas" / "openrouter-pr-review.schema.json").read_text(encoding="utf-8"))
+pareto_payload = mod.build_openrouter_payload("review prompt", schema, config, [], "openrouter/pareto-code")
+assert pareto_payload["model"] == "openrouter/pareto-code"
+assert pareto_payload["provider"]["require_parameters"] is True
+assert pareto_payload["response_format"]["json_schema"]["strict"] is True
+assert pareto_payload["plugins"] == [{"id": "pareto-router", "min_coding_score": 0.80}]
+
+
+class FakeOpenRouterResponse:
+    def __enter__(self):
+        return self
+
+    def __exit__(self, _exc_type, _exc, _tb) -> None:
+        return None
+
+    def read(self) -> bytes:
+        return json.dumps(
+            {
+                "model": "served-pareto-model",
+                "choices": [{"message": {"content": json.dumps({"summary": "No findings.", "findings": []})}}],
+            }
+        ).encode("utf-8")
+
+
+captured_payloads: list[dict] = []
+original_urlopen = mod.hardened.urllib.request.urlopen
+
+
+def fake_urlopen(request, timeout=0):
+    captured_payloads.append(json.loads(request.data.decode("utf-8")))
+    return FakeOpenRouterResponse()
+
+
+mod.hardened.urllib.request.urlopen = fake_urlopen
+try:
+    parsed_response, served_model, service_tier = mod.hardened.openrouter_request_once("review prompt", schema, config, [], "openrouter/pareto-code")
+finally:
+    mod.hardened.urllib.request.urlopen = original_urlopen
+assert parsed_response["findings"] == []
+assert served_model == "served-pareto-model"
+assert service_tier == ""
+assert captured_payloads[0]["plugins"] == [{"id": "pareto-router", "min_coding_score": 0.80}]
+assert captured_payloads[0]["response_format"]["json_schema"]["strict"] is True
+
+auto_payload = mod.build_openrouter_payload("review prompt", schema, config, ["venice"], "openrouter/auto")
+assert auto_payload["model"] == "openrouter/auto"
+assert auto_payload["provider"]["ignore"] == ["venice"]
+assert auto_payload["plugins"][0]["id"] == "auto-router"
+assert auto_payload["plugins"][0]["cost_quality_tradeoff"] == 2
+
+assert mod.review_mode_for_command("/dcoir-review", "/dcoir-review", config, False) == "first-pass-deep"
+assert mod.review_mode_for_command("/dcoir-review", "/dcoir-review", config, True) == "diff"
+assert mod.review_mode_for_command("/dcoir-review deep", "/dcoir-review", config, True) == "deep-forced"
+assert mod.review_mode_for_command("/dcoir-review exhaustive", "/dcoir-review", config, True) == "deep-forced"
+assert mod.review_mode_for_command("/dcoir-review diff", "/dcoir-review", config, False) == "diff"
+
+
+class FakeGitHubClient:
+    repo = "DCOIR-Collector/dcoir-collector"
+
+    def __init__(self, reviews: list[dict[str, str]] | None = None) -> None:
+        self.reviews = reviews or []
+        self.files = {
+            "tools/review_probe.py": "def run_probe(command):\n    return subprocess.run(command, shell=True)\n",
+            "docs/review.md": "# Review\n\nKeep governed review evidence visible.\n",
+            "tools/later_probe.py": "import subprocess\n\nsubprocess.run('whoami', shell=True)\n",
+            "tools/huge_probe.py": "print('large context line')\n" * 1000,
+        }
+
+    def request(self, _method: str, path: str):
+        if path.startswith("/repos/DCOIR-Collector/dcoir-collector/pulls/287/reviews"):
+            params = mod.urllib.parse.parse_qs(mod.urllib.parse.urlparse(path).query)
+            page = int(params.get("page", ["1"])[0])
+            return self.reviews if page == 1 else []
+        if "/contents/" not in path:
+            raise AssertionError(f"unexpected GitHub path: {path}")
+        encoded_path = path.split("/contents/", 1)[1].split("?", 1)[0]
+        file_path = mod.urllib.parse.unquote(encoded_path)
+        if file_path == "large/oversized.py":
+            return {"type": "file", "encoding": "none", "content": ""}
+        content = self.files[file_path].encode("utf-8")
+        return {
+            "type": "file",
+            "encoding": "base64",
+            "content": base64.b64encode(content).decode("ascii"),
+        }
+
+
+assert mod.has_prior_successful_context_review(FakeGitHubClient([{"body": mod.base.MARKER}]), 287) is False
+assert (
+    mod.has_prior_successful_context_review(
+        FakeGitHubClient([{"body": f"{mod.base.MARKER}\n\n{mod.CONTEXT_REVIEW_MARKER} `first-pass-deep`"}]),
+        287,
+    )
+    is True
+)
+assert mod.has_prior_successful_context_review(FakeGitHubClient([{"body": mod.base.MARKER}] * 100), 287) is False
+
+deep_block, deep_summary = mod.build_deep_context_block(
+    FakeGitHubClient(),
+    {"head": {"sha": "abc123def4567890"}},
+    [
+        {"filename": "tools/review_probe.py", "status": "added"},
+        {"filename": "docs/review.md", "status": "modified"},
+        {"filename": "old/deleted.py", "status": "removed"},
+    ],
+    config,
+    "first-pass-deep",
+)
+assert "Deep changed-file context" in deep_block
+assert "tools/review_probe.py" in deep_block
+assert "subprocess.run(command, shell=True)" in deep_block
+assert "included 2 file context block" in deep_summary
+assert "old/deleted.py (deleted)" in deep_summary
+
+diff_block, diff_summary = mod.build_deep_context_block(FakeGitHubClient(), {}, [], config, "diff")
+assert diff_block == ""
+assert "diff-focused" in diff_summary
+
+limited_config = mod.copy.copy(config)
+limited_config.deep_review_max_files = 1
+mixed_block, mixed_summary = mod.build_deep_context_block(
+    FakeGitHubClient(),
+    {"head": {"sha": "abc123def4567890"}},
+    [
+        {"filename": "old/deleted.py", "status": "removed"},
+        {"filename": "missing/unavailable.py", "status": "modified"},
+        {"filename": "tools/later_probe.py", "status": "modified"},
+    ],
+    limited_config,
+    "first-pass-deep",
+)
+assert "tools/later_probe.py" in mixed_block
+assert "included 1 file context block" in mixed_summary
+assert "old/deleted.py (deleted)" in mixed_summary
+assert "missing/unavailable.py" in mixed_summary
+
+large_block, large_summary = mod.build_deep_context_block(
+    FakeGitHubClient(),
+    {"head": {"sha": "abc123def4567890"}},
+    [
+        {"filename": "large/oversized.py", "status": "modified"},
+        {"filename": "tools/later_probe.py", "status": "modified"},
+    ],
+    limited_config,
+    "first-pass-deep",
+)
+assert "tools/later_probe.py" in large_block
+assert "large/oversized.py (file exceeds GitHub content API limit (>1 MB)" in large_summary
+
+budget_config = mod.copy.copy(config)
+budget_config.deep_review_max_files = 1
+budget_config.deep_review_max_file_chars = 5000
+budget_config.deep_review_max_total_chars = 520
+budget_block, budget_summary = mod.build_deep_context_block(
+    FakeGitHubClient(),
+    {"head": {"sha": "abc123def4567890"}},
+    [{"filename": "tools/huge_probe.py", "status": "modified"}],
+    budget_config,
+    "first-pass-deep",
+)
+assert "tools/huge_probe.py" in budget_summary
+assert "[deep context budget exhausted]" in budget_block
+assert budget_block.count("~~~") % 2 == 0
+
+prompt_context = (
+    "Deep changed-file context:\n\n"
+    "### tools/huge_probe.py\n"
+    "Status: modified; head ref: abc123def456\n"
+    "~~~python\n"
+    + ("print('large prompt context')\n" * 3000)
+    + "\n~~~"
+)
+prompt_truncated = mod.build_prompt(
+    {"number": 287, "title": "Prompt fence balance", "body": "Exercise prompt-level context truncation."},
+    [{"filename": "tools/huge_probe.py", "status": "modified", "additions": 500, "deletions": 0, "changes": 500}],
+    "diff --git a/tools/huge_probe.py b/tools/huge_probe.py\n",
+    config,
+    [],
+    prompt_context,
+    "first-pass-deep",
+    "first-pass-deep; included 1 file context block(s): tools/huge_probe.py (truncated)",
+)
+assert mod.DEEP_CONTEXT_PROMPT_TRUNCATED_MARKER.strip() in prompt_truncated
+assert prompt_truncated.count("~~~") % 2 == 0
+
+prompt = mod.build_prompt(
+    {"number": 287, "title": "Deep context probe", "body": "Test first-pass context."},
+    [{"filename": "tools/review_probe.py", "status": "added", "additions": 2, "deletions": 0, "changes": 2}],
+    "diff --git a/tools/review_probe.py b/tools/review_probe.py\n",
+    config,
+    [],
+    deep_block,
+    "first-pass-deep",
+    deep_summary,
+)
+assert "Context mode: first-pass-deep" in prompt
+assert "Deep changed-file context" in prompt
+assert "subprocess.run(command, shell=True)" in prompt
+
+small_config = mod.copy.copy(config)
+small_config.max_prompt_chars = 900
+small_prompt = mod.build_prompt(
+    {"number": 287, "title": "Small prompt", "body": "Ensure hardening survives."},
+    [{"filename": "tools/review_probe.py", "status": "added", "additions": 2, "deletions": 0, "changes": 2}],
+    "diff --git a/tools/review_probe.py b/tools/review_probe.py\n",
+    small_config,
+    [],
+    deep_block + ("\nextra context" * 500),
+    "first-pass-deep",
+    deep_summary,
+)
+assert len(small_prompt) <= small_config.max_prompt_chars
+assert small_prompt.startswith("Governed review hardening requirements:")
+assert "Every semantic, Markdown, governance, validation, or review-gate concern" in small_prompt
+assert mod.CONTEXT_REVIEW_MARKER not in small_prompt
+assert mod.DEEP_CONTEXT_PROMPT_TRUNCATED_MARKER.strip() not in small_prompt
+
+
+class FakeErrorBody:
+    def read(self) -> bytes:
+        return json.dumps({"error": {"message": "No endpoints found that can handle the requested parameters."}}).encode("utf-8")
+
+    def close(self) -> None:
+        return None
+
+
+called_models: list[str] = []
+original_request_once = mod.hardened.openrouter_request_once
+empty_headers = Message()
+
+
+def fake_request_once(_prompt: str, _schema: dict, _config: object, _ignored: list[str], model: str):
+    called_models.append(model)
+    if model == "openrouter/pareto-code":
+        raise urllib.error.HTTPError(
+            url="https://openrouter.ai/api/v1/chat/completions",
+            code=404,
+            msg="No endpoints found",
+            hdrs=empty_headers,
+            fp=FakeErrorBody(),
+        )
+    return {"summary": "No findings.", "findings": []}, "fallback-model", ""
+
+
+mod.hardened.openrouter_request_once = fake_request_once
+try:
+    result, model_used, _tier = mod.hardened.openrouter_review("prompt", schema, config, None)
+finally:
+    mod.hardened.openrouter_request_once = original_request_once
+assert called_models == ["openrouter/pareto-code", "openrouter/auto"]
+assert model_used == "fallback-model"
+assert result["findings"] == []
+
+unsafe_context_summary = "included hostile/@codex.py and @malwaredevil-owned/file.py"
+safe_context_summary = mod.sanitize_context_summary(unsafe_context_summary, config)
+assert "@codex" not in safe_context_summary
+assert "@malwaredevil" not in safe_context_summary
+assert "@<!-- -->codex" in safe_context_summary
+
+review_body = mod.append_context_to_review_body(mod.base.MARKER, "first-pass-deep", deep_summary, config)
+assert "Context mode: `first-pass-deep`" in review_body
+assert "Context readback:" in review_body
+unsafe_review_body = mod.append_context_to_review_body(
+    mod.base.MARKER,
+    "first-pass-deep",
+    unsafe_context_summary,
+    config,
+)
+assert "@codex" not in unsafe_review_body
+assert "@malwaredevil" not in unsafe_review_body
+assert "@<!-- -->codex" in unsafe_review_body
+
+print("Pareto context OpenRouter selftest passed")
