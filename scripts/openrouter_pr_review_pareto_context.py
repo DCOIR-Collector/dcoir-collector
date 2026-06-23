@@ -1252,9 +1252,9 @@ def main() -> None:
             reporter.update("risk-sentinel", f"detected {len(risk_sentinels)} high-risk changed-line signals: {hardened.risk_sentinel_digest(risk_sentinels)}")
         reporter.update("prompt", f"building bounded prompt from {len(files)} changed files")
         prompt = build_prompt(pr, files, diff, config, risk_sentinels, deep_context_block, review_mode, context_summary)
-        result, model_used, service_tier = hardened.openrouter_review_with_quality_retry(prompt, schema, config, reporter, risk_sentinels)
-        reporter.update("normalize", "mapping model findings to changed diff lines")
         line_index = base.build_diff_line_index(diff)
+        result, model_used, service_tier = hardened.openrouter_review_with_quality_retry(prompt, schema, config, reporter, risk_sentinels, line_index)
+        reporter.update("normalize", "mapping model findings to changed diff lines")
         findings = hardened.normalize_findings(result, config, line_index)
         hardened.enforce_risk_sentinel_findings(findings, risk_sentinels, config)
 

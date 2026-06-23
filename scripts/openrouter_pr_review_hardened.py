@@ -518,7 +518,34 @@ def has_minimum_confidence_finding(result: dict[str, Any], config: Any) -> bool:
     return False
 
 
-def review_quality_retry_reason(result: dict[str, Any], config: Any, risk_sentinels: list[RiskSentinel]) -> str:
+def has_actionable_changed_line_finding(
+    result: dict[str, Any],
+    config: Any,
+    line_index: dict[tuple[str, int], int],
+) -> bool:
+    raw_findings = result.get("findings", [])
+    if not isinstance(raw_findings, list):
+        return False
+    for item in raw_findings:
+        if not isinstance(item, dict):
+            continue
+        try:
+            confidence = float(item.get("confidence", 0))
+            line = int(item.get("line", 0))
+            path = str(item.get("path", "")).strip()
+        except (TypeError, ValueError):
+            continue
+        if confidence >= config.minimum_confidence and (path, line) in line_index:
+            return True
+    return False
+
+
+def review_quality_retry_reason(
+    result: dict[str, Any],
+    config: Any,
+    risk_sentinels: list[RiskSentinel],
+    line_index: dict[tuple[str, int], int] | None = None,
+) -> str:
     if (
         risk_sentinels
         and getattr(config, "risk_sentinel_quality_gate", True)
@@ -537,11 +564,17 @@ def review_quality_retry_reason(result: dict[str, Any], config: Any, risk_sentin
         return ""
 
     raw_findings = result.get("findings", [])
-    if raw_findings and getattr(config, "fail_on_unanchored_findings", True) and not has_minimum_confidence_finding(result, config):
-        return (
-            "model returned structured findings, but none met the configured minimum confidence "
-            f"{config.minimum_confidence:.2f}: {raw_findings_digest(result)}"
-        )
+    if raw_findings and getattr(config, "fail_on_unanchored_findings", True):
+        if not has_minimum_confidence_finding(result, config):
+            return (
+                "model returned structured findings, but none met the configured minimum confidence "
+                f"{config.minimum_confidence:.2f}: {raw_findings_digest(result)}"
+            )
+        if line_index is not None and not has_actionable_changed_line_finding(result, config, line_index):
+            return (
+                "model returned high-confidence structured findings, but none were anchored to changed diff lines: "
+                f"{raw_findings_digest(result)}"
+            )
 
     return ""
 
@@ -743,9 +776,10 @@ def openrouter_review_with_quality_retry(
     config: Any,
     reporter: Any | None,
     risk_sentinels: list[RiskSentinel],
+    line_index: dict[tuple[str, int], int] | None = None,
 ) -> tuple[dict[str, Any], str, str]:
     result, model_used, service_tier = openrouter_review(prompt, schema, config, reporter)
-    retry_reason = review_quality_retry_reason(result, config, risk_sentinels)
+    retry_reason = review_quality_retry_reason(result, config, risk_sentinels, line_index)
     if retry_reason:
         if reporter:
             safe_reason = sanitize_github_output(retry_reason, config)
@@ -966,9 +1000,9 @@ def main() -> None:
             reporter.update("risk-sentinel", f"detected {len(risk_sentinels)} high-risk changed-line signals: {risk_sentinel_digest(risk_sentinels)}")
         reporter.update("prompt", f"building bounded prompt from {len(files)} changed files")
         prompt = build_prompt(pr, files, diff, config, risk_sentinels)
-        result, model_used, service_tier = openrouter_review_with_quality_retry(prompt, schema, config, reporter, risk_sentinels)
-        reporter.update("normalize", "mapping model findings to changed diff lines")
         line_index = base.build_diff_line_index(diff)
+        result, model_used, service_tier = openrouter_review_with_quality_retry(prompt, schema, config, reporter, risk_sentinels, line_index)
+        reporter.update("normalize", "mapping model findings to changed diff lines")
         findings = normalize_findings(result, config, line_index)
         enforce_risk_sentinel_findings(findings, risk_sentinels, config)
 

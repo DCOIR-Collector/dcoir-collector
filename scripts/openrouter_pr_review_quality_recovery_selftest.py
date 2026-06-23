@@ -76,6 +76,7 @@ def run_recovery_case(first_result: dict, expected_reason: str) -> None:
             config,
             None,
             [],
+            line_index,
         )
     finally:
         mod.openrouter_review = original_openrouter_review
@@ -111,6 +112,26 @@ run_recovery_case(
     "none met the configured minimum confidence",
 )
 
+
+run_recovery_case(
+    {
+        "summary": "One actionable review-gate regression, but the anchor is wrong.",
+        "findings": [
+            {
+                "title": "Review gate bypass",
+                "severity": "high",
+                "confidence": 0.95,
+                "path": "docs/review.md",
+                "line": 99,
+                "body": "The changed line weakens governed review ordering.",
+                "suggested_replacement": "",
+                "validation": "Read back issue and PR review gates.",
+            }
+        ],
+    },
+    "none were anchored to changed diff lines",
+)
+
 retry_disabled = copy.copy(config)
 retry_disabled.review_quality_retry_on_rejected_output = False
 calls: list[str] = []
@@ -130,6 +151,7 @@ try:
         retry_disabled,
         None,
         [],
+        line_index,
     )
 finally:
     mod.openrouter_review = original_openrouter_review
