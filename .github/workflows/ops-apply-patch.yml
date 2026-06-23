@@ -22,11 +22,12 @@
 # - Request JSON schema: dcoir.ops.apply_patch_request.v1 under ops/requests/apply_patch/<request_id>/request.json.
 # Expected outputs/readback:
 # - Target branch commit when mode=apply; ops-apply-patch workflow artifact with result.json and workflow_report.md; central repo-workflows completed-run report.
-# - Successful mode=apply runs remove the staged ops/requests/apply_patch/<request_id>/ directory from the request source branch with a [skip ci] cleanup commit.
+# - Successful mode=apply runs remove the staged ops/requests/apply_patch/<request_id>/ directory from the request source branch with a [skip ci] cleanup commit after verifying the directory still matches the triggering request fingerprint.
 # Cleanup behavior:
-# - Successful apply requests are housekept automatically after the report artifact is uploaded.
+# - Successful apply requests are housekept automatically after the report artifact is uploaded and the staged request directory fingerprint still matches the triggering input.
 # - Failed apply requests and dry-runs leave request files in place for operator review.
 # - Cleanup-only deletion pushes are treated as no-op cleanup runs if they are ever evaluated by the push trigger.
+# - If a reused request id changes the staged request directory before cleanup, cleanup refuses deletion and leaves the current request files for review.
 # Safety notes:
 # - Rejects unsafe request ids, unsafe target paths, missing stale-base hashes, default-branch targets without explicit reason, workflow targets without explicit reason, multi-file patches, binary patches, renames, deletes, mode changes, and unexpected changed paths after apply.
 # Maintenance notes:
