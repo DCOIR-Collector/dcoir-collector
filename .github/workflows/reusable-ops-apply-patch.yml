@@ -62,6 +62,59 @@ jobs:
             fi
           else
             declare -A request_paths=()
+            mapfile -t changed_files < <(
+              python - "$GITHUB_EVENT_PATH" "$GITHUB_SHA" <<'PY'
+import json
+import pathlib
+import subprocess
+import sys
+
+event_path = pathlib.Path(sys.argv[1])
+head_sha = sys.argv[2]
+zero_sha = "0" * 40
+changed = set()
+
+try:
+    event = json.loads(event_path.read_text(encoding="utf-8"))
+except (OSError, json.JSONDecodeError):
+    event = {}
+
+for commit in event.get("commits", []):
+    if not isinstance(commit, dict):
+        continue
+    for key in ("added", "modified", "removed"):
+        for path in commit.get(key, []):
+            if isinstance(path, str) and path:
+                changed.add(path)
+
+before = event.get("before")
+after = event.get("after") or head_sha
+if isinstance(before, str) and isinstance(after, str) and before and after and before != zero_sha:
+    proc = subprocess.run(
+        ["git", "diff", "--name-only", f"{before}..{after}"],
+        check=False,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    if proc.returncode == 0:
+        changed.update(path for path in proc.stdout.splitlines() if path)
+
+if not changed:
+    proc = subprocess.run(
+        ["git", "diff-tree", "--no-commit-id", "--name-only", "-r", "-m", head_sha],
+        check=False,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    if proc.returncode == 0:
+        changed.update(path for path in proc.stdout.splitlines() if path)
+
+for path in sorted(changed):
+    print(path)
+PY
+            )
             while IFS= read -r changed; do
               case "$changed" in
                 ops/requests/apply_patch/*/request.json)
@@ -71,10 +124,14 @@ jobs:
                   request_paths["$(dirname "$changed")/request.json"]=1
                   ;;
               esac
-            done < <(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA")
+            done < <(printf '%s\n' "${changed_files[@]}")
 
             if [[ "${#request_paths[@]}" -eq 0 ]]; then
-              echo "No apply-patch request found in triggering commit; exiting successfully."
+              if [[ "$CALLER_EVENT_NAME" == "push" ]]; then
+                echo "Apply-patch workflow was triggered by push, but no request path could be resolved from the push range." >&2
+                exit 1
+              fi
+              echo "No apply-patch request found in triggering event; exiting successfully."
               echo "skip=true" >> "$GITHUB_OUTPUT"
               exit 0
             fi
