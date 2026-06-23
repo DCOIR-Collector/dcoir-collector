@@ -32,6 +32,18 @@ with patch.dict(
     assert mod.python_file_write_target('destination.write_text(note, encoding="utf-8")') == "destination"
     assert mod.python_file_write_target("Path(destination).write_bytes(note)") is None
     assert mod.python_direct_dynamic_file_write("Path(destination).write_bytes(note)")
+    assert not mod.python_path_assignment_start("target = ")
+    assert mod.python_path_assignment_start("target = (")
+    assert mod.python_path_assignment_start("target: Path = (  ")
+    assert mod.python_path_assignment_start("target = \\")
+    assert mod.python_path_assignment_start("target: Path = \\  ")
+    oversized_alias_text = (
+        "from pathlib import Path as P\n"
+        "import os as operating_system\n"
+        + ("#" * (mod.PYTHON_PATH_ASSIGNMENT_MAX_CHARS + 1))
+    )
+    assert mod.python_path_constructor_aliases(oversized_alias_text) == set()
+    assert mod.python_os_module_aliases(oversized_alias_text) == set()
 
     single_arg_path_slash_literal_sentinels = mod.detect_risk_sentinels(
         """diff --git a/tools/path_writer.py b/tools/path_writer.py

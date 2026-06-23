@@ -64,7 +64,7 @@ PYTHON_PATH_ASSIGNMENT_START_RE = re.compile(
     rf"^\s*{PYTHON_PATH_TARGET_PART}\s*(?::\s*[^=]+)?=\s*(?:Path|pathlib\.Path|os\.path\.join)\s*\("
 )
 PYTHON_ASSIGNMENT_CONTINUATION_START_RE = re.compile(
-    rf"^\s*{PYTHON_PATH_TARGET_PART}\s*(?::\s*[^=]+)?=\s*(?:\(|\\\s*)?$"
+    rf"^\s*{PYTHON_PATH_TARGET_PART}\s*(?::\s*[^=]+)?=\s*(?:\(|\\)\s*$"
 )
 PYTHON_FILE_WRITE_RE = re.compile(
     rf"(?:\b(?P<target>{PYTHON_PATH_TARGET_PART})|\b(?:Path|pathlib\.Path)\s*\(\s*(?P<wrapped_target>{PYTHON_PATH_TARGET_PART})\s*\))"
@@ -226,6 +226,8 @@ def python_statement_is_complete(text: str) -> bool:
 
 def python_path_constructor_aliases(text: str) -> set[str]:
     aliases: set[str] = set()
+    if len(text) > PYTHON_PATH_ASSIGNMENT_MAX_CHARS:
+        return aliases
     try:
         module = ast.parse(text.lstrip())
     except SyntaxError:
@@ -245,6 +247,8 @@ def python_path_constructor_aliases(text: str) -> set[str]:
 
 def python_os_module_aliases(text: str) -> set[str]:
     aliases: set[str] = set()
+    if len(text) > PYTHON_PATH_ASSIGNMENT_MAX_CHARS:
+        return aliases
     try:
         module = ast.parse(text.lstrip())
     except SyntaxError:

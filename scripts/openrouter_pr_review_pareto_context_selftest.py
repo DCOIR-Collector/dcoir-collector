@@ -994,6 +994,18 @@ index 0000000..1111111 100644
 assert not any(item.label == mod.FILE_WRITE_PATH_LABEL for item in wrapped_literal_path_sentinels)
 long_path_assignment = "destination = " + ("a" * (mod.PYTHON_PATH_ASSIGNMENT_MAX_CHARS + 1)) + "Path(filename)"
 assert mod.python_dynamic_path_target(long_path_assignment) is None
+assert not mod.python_path_assignment_start("target = ")
+assert mod.python_path_assignment_start("target = (")
+assert mod.python_path_assignment_start("target: Path = (  ")
+assert mod.python_path_assignment_start("target = \\")
+assert mod.python_path_assignment_start("target: Path = \\  ")
+oversized_alias_text = (
+    "from pathlib import Path as P\n"
+    "import os as operating_system\n"
+    + ("#" * (mod.PYTHON_PATH_ASSIGNMENT_MAX_CHARS + 1))
+)
+assert mod.python_path_constructor_aliases(oversized_alias_text) == set()
+assert mod.python_os_module_aliases(oversized_alias_text) == set()
 
 scope_reset_sentinels = mod.detect_risk_sentinels(
     """diff --git a/tools/path_writer.py b/tools/path_writer.py
