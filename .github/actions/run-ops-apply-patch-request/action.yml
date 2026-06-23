@@ -2,7 +2,7 @@ name: Run ops apply-patch request
 description: Resolve, apply, and clean up governed ops apply-patch requests.
 inputs:
   operation:
-    description: Action operation to run: apply or cleanup.
+    description: "Action operation to run: apply or cleanup."
     required: true
     default: apply
   caller-event-name:
