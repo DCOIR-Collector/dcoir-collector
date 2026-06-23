@@ -193,6 +193,7 @@ def load_hardened_config(path: str) -> Any:
     config.smoke_test_free_model = bool_value(data, "smoke_test_free_model", False)
     config.fail_on_unanchored_findings = bool_value(data, "fail_on_unanchored_findings", True)
     config.fail_on_summary_only_problem = bool_value(data, "fail_on_summary_only_problem", True)
+    config.review_quality_retry_on_rejected_output = bool_value(data, "review_quality_retry_on_rejected_output", True)
     config.risk_sentinel_quality_gate = bool_value(data, "risk_sentinel_quality_gate", True)
     config.risk_sentinel_retry_on_empty = bool_value(data, "risk_sentinel_retry_on_empty", True)
     config.risk_sentinel_max_anchors = int(data.get("risk_sentinel_max_anchors", 12))
@@ -345,6 +346,16 @@ def iter_added_diff_lines(diff: str) -> list[ChangedLine]:
     return lines
 
 
+def build_added_line_index(diff: str) -> dict[tuple[str, int], int]:
+    right_line_index = base.build_diff_line_index(diff)
+    added_line_index: dict[tuple[str, int], int] = {}
+    for changed_line in iter_added_diff_lines(diff):
+        key = (changed_line.path, changed_line.line)
+        if key in right_line_index:
+            added_line_index[key] = right_line_index[key]
+    return added_line_index
+
+
 def is_comment_only_added_line(path: str, text: str) -> bool:
     stripped = text.strip()
     if not stripped:
@@ -481,22 +492,136 @@ Governed review hardening requirements:
     return base.sanitize_text(combined, config)
 
 
+def raw_findings_digest(result: dict[str, Any]) -> str:
+    raw_findings = result.get("findings", [])
+    if not isinstance(raw_findings, list):
+        return "findings field was not a list"
+    details: list[str] = []
+    for item in raw_findings[:6]:
+        if not isinstance(item, dict):
+            details.append("invalid finding shape")
+            continue
+        path = str(item.get("path", "<missing-path>") or "<missing-path>").strip()
+        line = str(item.get("line", "<missing-line>") or "<missing-line>").strip()
+        title = str(item.get("title", "untitled") or "untitled").strip()[:80]
+        try:
+            confidence = float(item.get("confidence", 0))
+            confidence_text = f"{confidence:.2f}"
+        except (TypeError, ValueError):
+            confidence_text = "invalid"
+        details.append(f"{path}:{line} confidence {confidence_text} ({title})")
+    return "; ".join(details) if details else "no structured findings"
+
+
+def has_minimum_confidence_finding(result: dict[str, Any], config: Any) -> bool:
+    raw_findings = result.get("findings", [])
+    if not isinstance(raw_findings, list):
+        return False
+    for item in raw_findings:
+        if not isinstance(item, dict):
+            continue
+        try:
+            if float(item.get("confidence", 0)) >= config.minimum_confidence:
+                return True
+        except (TypeError, ValueError):
+            continue
+    return False
+
+
+def has_actionable_changed_line_finding(
+    result: dict[str, Any],
+    config: Any,
+    line_index: dict[tuple[str, int], int],
+) -> bool:
+    raw_findings = result.get("findings", [])
+    if not isinstance(raw_findings, list):
+        return False
+    for item in raw_findings:
+        if not isinstance(item, dict):
+            continue
+        try:
+            confidence = float(item.get("confidence", 0))
+            line = int(item.get("line", 0))
+            path = str(item.get("path", "")).strip()
+        except (TypeError, ValueError):
+            continue
+        if confidence >= config.minimum_confidence and (path, line) in line_index:
+            return True
+    return False
+
+
+def review_quality_retry_reason(
+    result: dict[str, Any],
+    config: Any,
+    risk_sentinels: list[RiskSentinel],
+    line_index: dict[tuple[str, int], int] | None = None,
+) -> str:
+    if (
+        risk_sentinels
+        and getattr(config, "risk_sentinel_quality_gate", True)
+        and getattr(config, "risk_sentinel_retry_on_empty", True)
+        and has_no_structured_findings(result)
+    ):
+        return "model returned zero findings despite high-risk changed-line signals"
+
+    if not getattr(config, "review_quality_retry_on_rejected_output", True):
+        return ""
+
+    summary = str(result.get("summary", "")).strip()
+    if has_no_structured_findings(result):
+        if getattr(config, "fail_on_summary_only_problem", True) and summary_suggests_problem(summary):
+            return "model summary indicated a possible issue while the structured findings array was empty"
+        return ""
+
+    raw_findings = result.get("findings", [])
+    if raw_findings and getattr(config, "fail_on_unanchored_findings", True):
+        if not has_minimum_confidence_finding(result, config):
+            return (
+                "model returned structured findings, but none met the configured minimum confidence "
+                f"{config.minimum_confidence:.2f}: {raw_findings_digest(result)}"
+            )
+        if line_index is not None and not has_actionable_changed_line_finding(result, config, line_index):
+            return (
+                "model returned high-confidence structured findings, but none were anchored to changed diff lines: "
+                f"{raw_findings_digest(result)}"
+            )
+
+    return ""
+
+
 def build_quality_retry_prompt(
     prompt: str,
     previous_result: dict[str, Any],
     risk_sentinels: list[RiskSentinel],
     config: Any,
+    quality_issue: str | None = None,
 ) -> str:
     previous_summary = str(previous_result.get("summary", "")).strip() or "No previous summary returned."
+    raw_findings = previous_result.get("findings", [])
+    try:
+        previous_findings = json.dumps(raw_findings[:6] if isinstance(raw_findings, list) else raw_findings, ensure_ascii=False, indent=2)
+    except TypeError:
+        previous_findings = str(raw_findings)
+    if len(previous_findings) > 1800:
+        previous_findings = f"{previous_findings[:1770]}... [truncated]"
+    issue_line = quality_issue or "the previous response did not clear review-quality checks"
+    anchor_block = risk_sentinel_block(risk_sentinels, config) if risk_sentinels else "No high-risk changed-line anchors were detected."
     retry_guidance = f"""
 Review quality retry:
-The previous response returned zero structured findings even though the changed diff contains high-risk review anchors.
-Re-review the exact anchors below. Return actionable findings for true issues. If you decide an anchor is safe, the summary must explain why that specific anchor is safe.
+The previous response failed review-quality checks: {issue_line}.
+Re-review the changed diff and return one of two valid outputs:
+- Actionable findings anchored to changed right-side file/line entries with confidence at or above {config.minimum_confidence:.2f}; or
+- An empty findings array with a clean summary that does not imply a remaining issue.
+Do not place actionable concerns only in the summary. Do not return low-confidence, unanchored, or speculative findings.
+If a previous finding was real but poorly anchored or below confidence threshold, convert it into a valid finding with exact file, changed line, observed behavior, impact, correction guidance, and validation/readback guidance.
 
-{risk_sentinel_block(risk_sentinels, config)}
+{anchor_block}
 
-Previous zero-finding summary:
+Previous summary:
 {previous_summary}
+
+Previous structured findings:
+{previous_findings}
 """.strip()
     return append_with_budget(prompt, base.sanitize_text(retry_guidance, config), config.max_prompt_chars)
 
@@ -661,20 +786,15 @@ def openrouter_review_with_quality_retry(
     config: Any,
     reporter: Any | None,
     risk_sentinels: list[RiskSentinel],
+    line_index: dict[tuple[str, int], int] | None = None,
 ) -> tuple[dict[str, Any], str, str]:
     result, model_used, service_tier = openrouter_review(prompt, schema, config, reporter)
-    if (
-        risk_sentinels
-        and getattr(config, "risk_sentinel_quality_gate", True)
-        and getattr(config, "risk_sentinel_retry_on_empty", True)
-        and has_no_structured_findings(result)
-    ):
+    retry_reason = review_quality_retry_reason(result, config, risk_sentinels, line_index)
+    if retry_reason:
         if reporter:
-            reporter.update(
-                "quality-retry",
-                "model returned zero findings despite high-risk changed-line signals; retrying with explicit anchors",
-            )
-        retry_prompt = build_quality_retry_prompt(prompt, result, risk_sentinels, config)
+            safe_reason = sanitize_github_output(retry_reason, config)
+            reporter.update("quality-retry", f"{safe_reason}; retrying with stricter actionable-output guidance")
+        retry_prompt = build_quality_retry_prompt(prompt, result, risk_sentinels, config, retry_reason)
         result, model_used, service_tier = openrouter_review(retry_prompt, schema, config, reporter)
     return result, model_used, service_tier
 
@@ -890,9 +1010,9 @@ def main() -> None:
             reporter.update("risk-sentinel", f"detected {len(risk_sentinels)} high-risk changed-line signals: {risk_sentinel_digest(risk_sentinels)}")
         reporter.update("prompt", f"building bounded prompt from {len(files)} changed files")
         prompt = build_prompt(pr, files, diff, config, risk_sentinels)
-        result, model_used, service_tier = openrouter_review_with_quality_retry(prompt, schema, config, reporter, risk_sentinels)
+        line_index = build_added_line_index(diff)
+        result, model_used, service_tier = openrouter_review_with_quality_retry(prompt, schema, config, reporter, risk_sentinels, line_index)
         reporter.update("normalize", "mapping model findings to changed diff lines")
-        line_index = base.build_diff_line_index(diff)
         findings = normalize_findings(result, config, line_index)
         enforce_risk_sentinel_findings(findings, risk_sentinels, config)
 

@@ -4,12 +4,15 @@
 from __future__ import annotations
 
 import base64
+import contextlib
 import importlib.util
+import io
 import json
 import os
 import urllib.error
 from email.message import Message
 from pathlib import Path
+from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -102,6 +105,1049 @@ assert mod.review_mode_for_command("/dcoir-review deep", "/dcoir-review", config
 assert mod.review_mode_for_command("/dcoir-review exhaustive", "/dcoir-review", config, True) == "deep-forced"
 assert mod.review_mode_for_command("/dcoir-review diff", "/dcoir-review", config, False) == "diff"
 
+unauthorized_config = mod.copy.copy(config)
+unauthorized_config.allowed_authors = ["allowed-operator"]
+original_load_pareto_context_config = mod.load_pareto_context_config
+# Placeholder token only; this test never prints or validates a real secret.
+unauthorized_env = {
+    "GITHUB_REPOSITORY": "DCOIR-Collector/dcoir-collector",
+    "PR_NUMBER": "287",
+    "GITHUB_TOKEN": "test-token",
+    "TRIGGER_COMMENT_ID": "123",
+    "TRIGGER_COMMENT_BODY": "/dcoir-review",
+    "TRIGGER_AUTHOR": "not-allowed",
+    "OPENROUTER_REVIEW_CONFIG": "test-config.yml",
+}
+unauthorized_stdout = io.StringIO()
+mod.load_pareto_context_config = lambda _path: unauthorized_config
+try:
+    with mock.patch.dict(getattr(os, "environ"), unauthorized_env, clear=True), contextlib.redirect_stdout(unauthorized_stdout):
+        mod.main()
+finally:
+    mod.load_pareto_context_config = original_load_pareto_context_config
+assert "Ignoring unauthorized author not-allowed" in unauthorized_stdout.getvalue()
+
+path_write_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/validation-review-probes/intentional_flawed_review_baseline.py b/validation-review-probes/intentional_flawed_review_baseline.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/validation-review-probes/intentional_flawed_review_baseline.py
+@@ -0,0 +1,6 @@
++from pathlib import Path
++def write_triage_note(case_id, note, output_dir):
++    destination = Path(output_dir) / f"{case_id}.txt"
++    destination.write_text(note, encoding="utf-8")
++    subprocess.run(["git", "add", str(destination)], check=True)
+"""
+)
+assert any(
+    item.path == "validation-review-probes/intentional_flawed_review_baseline.py"
+    and item.line == 3
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in path_write_sentinels
+)
+
+context_write_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/validation-review-probes/intentional_flawed_review_baseline.py b/validation-review-probes/intentional_flawed_review_baseline.py
+index 0000000..1111111 100644
+--- a/validation-review-probes/intentional_flawed_review_baseline.py
++++ b/validation-review-probes/intentional_flawed_review_baseline.py
+@@ -1,5 +1,5 @@
+ from pathlib import Path
+ def write_triage_note(case_id, note, output_dir):
+-    destination = Path(output_dir) / "summary.txt"
++    destination = Path(output_dir) / f"{case_id}.txt"
+     destination.write_text(note, encoding="utf-8")
+"""
+)
+assert any(
+    item.path == "validation-review-probes/intentional_flawed_review_baseline.py"
+    and item.line == 3
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in context_write_sentinels
+)
+
+added_write_context_assignment_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/validation-review-probes/intentional_flawed_review_baseline.py b/validation-review-probes/intentional_flawed_review_baseline.py
+index 0000000..1111111 100644
+--- a/validation-review-probes/intentional_flawed_review_baseline.py
++++ b/validation-review-probes/intentional_flawed_review_baseline.py
+@@ -1,4 +1,5 @@
+ from pathlib import Path
+ def write_triage_note(case_id, note, output_dir):
+     destination = Path(output_dir) / f"{case_id}.txt"
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert any(
+    item.path == "validation-review-probes/intentional_flawed_review_baseline.py"
+    and item.line == 4
+    and item.text.strip().startswith("destination.write_text")
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in added_write_context_assignment_sentinels
+)
+
+multi_arg_path_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,5 @@
++from pathlib import Path
++def write_triage_note(case_id, note, output_dir):
++    destination = Path(output_dir, f"{case_id}.txt")
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 3
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in multi_arg_path_sentinels
+)
+
+variable_segment_path_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,6 @@
++from pathlib import Path
++def write_triage_note(filename, note, output_dir):
++    destination = Path(output_dir) / filename
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 3
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in variable_segment_path_sentinels
+)
+
+join_variable_segment_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,6 @@
++import os
++def write_triage_note(filename, note, output_dir):
++    destination = os.path.join(output_dir, filename)
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 3
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in join_variable_segment_sentinels
+)
+
+path_wrapped_join_write_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,7 @@
++import os
++from pathlib import Path
++def write_triage_note(filename, note, output_dir):
++    destination = os.path.join(output_dir, filename)
++    Path(destination).write_text(note, encoding="utf-8")
+"""
+)
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 4
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in path_wrapped_join_write_sentinels
+)
+
+qualified_path_wrapped_join_write_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,7 @@
++import os
++import pathlib
++def write_triage_note(filename, note, output_dir):
++    destination = os.path.join(output_dir, filename)
++    pathlib.Path(destination).write_bytes(note)
+"""
+)
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 4
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in qualified_path_wrapped_join_write_sentinels
+)
+
+multiline_path_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,8 @@
++from pathlib import Path
++def write_triage_note(filename, note, output_dir):
++    destination = Path(
++        output_dir,
++        filename,
++    )
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert mod.python_dynamic_path_target("destination = Path(\n    output_dir,\n    filename,\n)") == "destination"
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 3
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in multiline_path_sentinels
+)
+
+qualified_multiline_path_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,7 @@
++import pathlib
++def write_triage_note(filename, note, output_dir):
++    destination = pathlib.Path(
++        output_dir,
++        filename,
++    )
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert mod.python_dynamic_path_target("destination = pathlib.Path(\n    output_dir,\n    filename,\n)") == "destination"
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 3
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in qualified_multiline_path_sentinels
+)
+aliased_path_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,6 @@
++from pathlib import Path as P
++def write_triage_note(filename, note, output_dir):
++    destination = P(output_dir, filename)
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 3
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in aliased_path_sentinels
+)
+aliased_wrapped_path_write_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,7 @@
++import pathlib as pl
++def write_triage_note(filename, note, output_dir):
++    destination = pl.Path(output_dir, filename)
++    pl.Path(destination).write_text(note, encoding="utf-8")
+"""
+)
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 3
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in aliased_wrapped_path_write_sentinels
+)
+mod.set_python_path_alias_context({"tools/path_writer.py": {"P", "pl.Path"}})
+mod.set_python_os_alias_context({"tools/path_writer.py": {"operating_system"}})
+try:
+    existing_alias_path_sentinels = mod.detect_risk_sentinels(
+        """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- a/tools/path_writer.py
++++ b/tools/path_writer.py
+@@ -20,3 +20,4 @@
+ def write_triage_note(filename, note, output_dir):
++    destination = P(output_dir, filename)
+     destination.write_text(note, encoding="utf-8")
+"""
+    )
+    existing_module_alias_wrapped_sentinels = mod.detect_risk_sentinels(
+        """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- a/tools/path_writer.py
++++ b/tools/path_writer.py
+@@ -30,3 +30,4 @@
+ def write_triage_note(filename, note, output_dir):
++    destination = pl.Path(output_dir, filename)
+     pl.Path(destination).write_text(note, encoding="utf-8")
+"""
+    )
+    existing_os_alias_path_sentinels = mod.detect_risk_sentinels(
+        """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- a/tools/path_writer.py
++++ b/tools/path_writer.py
+@@ -40,3 +40,4 @@
+ def write_triage_note(filename, note, output_dir):
++    destination = operating_system.path.join(output_dir, filename)
+     destination.write_text(note, encoding="utf-8")
+"""
+    )
+finally:
+    mod.set_python_path_alias_context({})
+    mod.set_python_os_alias_context({})
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 21
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in existing_alias_path_sentinels
+)
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 31
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in existing_module_alias_wrapped_sentinels
+)
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 41
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in existing_os_alias_path_sentinels
+)
+cross_file_alias_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_builder.py b/tools/path_builder.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_builder.py
+@@ -0,0 +1,2 @@
++from pathlib import Path as P
++SAFE = P("summary.txt")
+diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,4 @@
++def write_triage_note(filename, note, output_dir):
++    destination = P(output_dir, filename)
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert not any(item.label == mod.FILE_WRITE_PATH_LABEL for item in cross_file_alias_sentinels)
+cross_file_os_alias_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_builder.py b/tools/path_builder.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_builder.py
+@@ -0,0 +1,4 @@
++import os as operating_system
++def build_path(filename, output_dir):
++    return operating_system.path.join(output_dir, filename)
+diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 2222222..3333333 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,4 @@
++def write_triage_note(filename, note, output_dir):
++    destination = operating_system.path.join(output_dir, filename)
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert not any(item.label == mod.FILE_WRITE_PATH_LABEL for item in cross_file_os_alias_sentinels)
+
+literal_root_path_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,7 @@
++import os
++from pathlib import Path
++def write_triage_note(filename, note):
++    destination = Path("/safe", filename)
++    backup = os.path.join("/safe", filename)
++    destination.write_text(note, encoding="utf-8")
++    backup.write_text(note, encoding="utf-8")
+"""
+)
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 4
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in literal_root_path_sentinels
+)
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 5
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in literal_root_path_sentinels
+)
+
+multi_variable_fstring_path_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,5 @@
++from pathlib import Path
++def write_triage_note(base, filename, note):
++    destination = Path(f"{base}/{filename}")
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 3
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in multi_variable_fstring_path_sentinels
+)
+
+single_dynamic_path_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,6 @@
++from pathlib import Path
++def write_triage_note(filename, note):
++    destination = Path(filename)
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 3
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in single_dynamic_path_sentinels
+)
+
+chained_literal_then_variable_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,6 @@
++from pathlib import Path
++def write_triage_note(filename, note, output_dir):
++    destination = Path(output_dir) / "cases" / filename
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 3
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in chained_literal_then_variable_sentinels
+)
+
+chained_variable_then_literal_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,6 @@
++from pathlib import Path
++def write_triage_note(filename, note, output_dir):
++    destination = Path(output_dir) / filename / "note.txt"
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 3
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in chained_variable_then_literal_sentinels
+)
+
+fixture_string_sentinels = mod.detect_risk_sentinels(
+    '''diff --git a/scripts/openrouter_pr_review_pareto_context_selftest.py b/scripts/openrouter_pr_review_pareto_context_selftest.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/scripts/openrouter_pr_review_pareto_context_selftest.py
+@@ -0,0 +1,6 @@
++# Intentionally unsafe sentinel fixture string; never executed by this selftest.
++fixture = """diff --git a/probe.py b/probe.py
+++    subprocess.run(f"git add {destination}", shell=True, check=False)
++"""
+'''
+)
+assert not any(item.label == "shell=True subprocess invocation" for item in fixture_string_sentinels)
+
+split_fixture_marker_sentinels = mod.detect_risk_sentinels(
+    '''diff --git a/scripts/openrouter_pr_review_pareto_context_selftest.py b/scripts/openrouter_pr_review_pareto_context_selftest.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/scripts/openrouter_pr_review_pareto_context_selftest.py
+@@ -0,0 +1,7 @@
++# Intentionally unsafe sentinel fixture string; never executed by this selftest.
++fixture = """
++diff --git a/probe.py b/probe.py
+++    subprocess.run(f"git add {destination}", shell=True, check=False)
++"""
+'''
+)
+assert not any(item.label == "shell=True subprocess invocation" for item in split_fixture_marker_sentinels)
+
+real_multiline_sql_sentinels = mod.detect_risk_sentinels(
+    (
+        '''diff --git a/tools/query_builder.py b/tools/query_builder.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/query_builder.py
+@@ -0,0 +1,5 @@
++def load_case(case_id):
++    query = f"""
++SELECT * FROM cases WHERE id = '''
+        "{case_id}"
+        '''  -- intentionally unsafe for sentinel testing only
++"""
+'''
+    )
+)
+assert any(
+    item.path == "tools/query_builder.py"
+    and item.line == 3
+    and item.label == "raw SQL/query string interpolation"
+    for item in real_multiline_sql_sentinels
+)
+
+comment_like_string_close_sentinels = mod.detect_risk_sentinels(
+    '''diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,6 @@
++def write_triage_note(case_id, note, output_dir):
++    doc = """open text
++    # """
++    destination = Path(output_dir) / f"{case_id}.txt"
++    destination.write_text(note, encoding="utf-8")
+'''
+)
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 4
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in comment_like_string_close_sentinels
+)
+
+assert mod.detect_risk_sentinels(
+    """diff --git a/tools/comment_examples.py b/tools/comment_examples.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/comment_examples.py
+@@ -0,0 +1,3 @@
++# destination = Path(output_dir) / f"{case_id}.txt"
++# destination.write_text(note, encoding="utf-8")
+"""
+) == []
+literal_path_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/safe_writer.py b/tools/safe_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/safe_writer.py
+@@ -0,0 +1,5 @@
++from pathlib import Path
++def write_summary(output_dir, note):
++    destination = Path(output_dir) / "summary.txt"
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert not any(item.label == mod.FILE_WRITE_PATH_LABEL for item in literal_path_sentinels)
+literal_single_path_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/safe_writer.py b/tools/safe_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/safe_writer.py
+@@ -0,0 +1,5 @@
++from pathlib import Path
++def write_summary(note):
++    destination = Path("summary.txt")
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert not any(item.label == mod.FILE_WRITE_PATH_LABEL for item in literal_single_path_sentinels)
+safe_reassign_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/safe_writer.py b/tools/safe_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/safe_writer.py
+@@ -0,0 +1,6 @@
++from pathlib import Path
++def write_summary(output_dir, note, case_id):
++    destination = Path(output_dir) / f"{case_id}.txt"
++    destination = Path(output_dir) / "summary.txt"
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert not any(item.label == mod.FILE_WRITE_PATH_LABEL for item in safe_reassign_sentinels)
+self_derived_reassign_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,7 @@
++from pathlib import Path
++def write_triage_note(filename, note, output_dir):
++    destination = Path(output_dir) / filename
++    destination = destination.resolve()
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 3
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in self_derived_reassign_sentinels
+)
+self_derived_context_reassign_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- a/tools/path_writer.py
++++ b/tools/path_writer.py
+@@ -1,6 +1,7 @@
+ from pathlib import Path
+ def write_triage_note(filename, note, output_dir):
+     destination = Path(output_dir) / filename
++    destination = destination.resolve()
+     destination.write_text(note, encoding="utf-8")
+"""
+)
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 4
+    and item.text.strip() == "destination = destination.resolve()"
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in self_derived_context_reassign_sentinels
+)
+value_less_annotation_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,7 @@
++from pathlib import Path
++def write_triage_note(filename, note, output_dir):
++    destination = Path(output_dir) / filename
++    destination: Path
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert mod.python_simple_assignment("destination: Path") is None
+assert "destination" not in mod.python_assignment_target_names("destination: Path")
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 3
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in value_less_annotation_sentinels
+)
+
+augmented_dynamic_path_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,7 @@
++from pathlib import Path
++def write_triage_note(filename, note):
++    destination = Path("/safe")
++    destination /= filename
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 4
+    and item.text.strip() == "destination /= filename"
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in augmented_dynamic_path_sentinels
+)
+
+augmented_context_dynamic_path_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- a/tools/path_writer.py
++++ b/tools/path_writer.py
+@@ -1,5 +1,6 @@
+ from pathlib import Path
+ def write_triage_note(filename, note):
+     destination = Path("/safe")
++    destination /= filename
+     destination.write_text(note, encoding="utf-8")
+"""
+)
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 4
+    and item.text.strip() == "destination /= filename"
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in augmented_context_dynamic_path_sentinels
+)
+
+augmented_literal_preserves_dynamic_path_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,7 @@
++from pathlib import Path
++def write_triage_note(filename, note, output_dir):
++    destination = Path(output_dir) / filename
++    destination /= "summary.txt"
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 3
+    and item.text.strip() == "destination = Path(output_dir) / filename"
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in augmented_literal_preserves_dynamic_path_sentinels
+)
+
+augmented_literal_context_base_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- a/tools/path_writer.py
++++ b/tools/path_writer.py
+@@ -1,5 +1,6 @@
+ from pathlib import Path
+ def write_triage_note(filename, note, output_dir):
+     destination = Path(output_dir) / filename
++    destination /= "summary.txt"
+     destination.write_text(note, encoding="utf-8")
+"""
+)
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 4
+    and item.text.strip() == 'destination /= "summary.txt"'
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in augmented_literal_context_base_sentinels
+)
+
+paren_next_line_path_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,8 @@
++from pathlib import Path
++def write_triage_note(filename, note, output_dir):
++    destination = (
++        Path(output_dir) / filename
++    )
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 3
+    and item.text.strip() == "destination = ("
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in paren_next_line_path_sentinels
+)
+
+backslash_next_line_path_diff = (
+    "diff --git a/tools/path_writer.py b/tools/path_writer.py\n"
+    "index 0000000..1111111 100644\n"
+    "--- /dev/null\n"
+    "+++ b/tools/path_writer.py\n"
+    "@@ -0,0 +1,6 @@\n"
+    "+from pathlib import Path\n"
+    "+def write_triage_note(filename, note, output_dir):\n"
+    "+    destination = \\\n"
+    "+        Path(output_dir) / filename\n"
+    "+    destination.write_text(note, encoding=\"utf-8\")\n"
+)
+backslash_next_line_path_sentinels = mod.detect_risk_sentinels(backslash_next_line_path_diff)
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 3
+    and item.text.strip() == "destination = \\"
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in backslash_next_line_path_sentinels
+)
+
+paren_next_line_join_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,8 @@
++import os
++def write_triage_note(filename, note, output_dir):
++    destination = (
++        os.path.join(output_dir, filename)
++    )
++    destination.write_bytes(note)
+"""
+)
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 3
+    and item.text.strip() == "destination = ("
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in paren_next_line_join_sentinels
+)
+
+cross_hunk_assignment_write_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,5 @@
++from pathlib import Path
++def write_triage_note(filename, note, output_dir):
++    destination = Path(output_dir) / filename
++    note = note.strip()
+@@ -20,2 +20,3 @@ def write_triage_note(filename, note, output_dir):
++    destination.write_text(note, encoding="utf-8")
++    destination.write_bytes(note)
+"""
+)
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 3
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in cross_hunk_assignment_write_sentinels
+)
+
+disconnected_cross_hunk_multiline_assignment_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,3 @@
++from pathlib import Path
++def write_triage_note(filename, note, output_dir):
++    destination = (
+@@ -20,2 +20,3 @@ def write_triage_note(filename, note, output_dir):
++        Path(output_dir) / filename
++    )
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert not any(
+    item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in disconnected_cross_hunk_multiline_assignment_sentinels
+)
+
+cross_file_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_builder.py b/tools/path_builder.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_builder.py
+@@ -0,0 +1,3 @@
++from pathlib import Path
++def build_path(output_dir, case_id):
++    destination = Path(output_dir) / f"{case_id}.txt"
+diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,3 @@
++def write_path(destination, note):
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert not any(item.label == mod.FILE_WRITE_PATH_LABEL for item in cross_file_sentinels)
+attribute_sibling_assignment_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,6 @@
++from pathlib import Path
++class Writer:
++    def write_triage_note(self, filename, note, output_dir):
++        self.destination = Path(output_dir) / filename
++        self.mode = "x"
++        self.destination.write_text(note, encoding="utf-8")
+"""
+)
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 4
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in attribute_sibling_assignment_sentinels
+)
+wrapped_literal_path_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/safe_writer.py b/tools/safe_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/safe_writer.py
+@@ -0,0 +1,5 @@
++from pathlib import Path
++def write_summary(output_dir, note):
++    destination = Path(output_dir / "summary.txt")
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert not any(item.label == mod.FILE_WRITE_PATH_LABEL for item in wrapped_literal_path_sentinels)
+long_path_assignment = "destination = " + ("a" * (mod.PYTHON_PATH_ASSIGNMENT_MAX_CHARS + 1)) + "Path(filename)"
+assert mod.python_dynamic_path_target(long_path_assignment) is None
+assert not mod.python_path_assignment_start("target = ")
+assert mod.python_path_assignment_start("target = (")
+assert mod.python_path_assignment_start("target: Path = (  ")
+assert mod.python_path_assignment_start("target = \\")
+assert mod.python_path_assignment_start("target: Path = \\  ")
+oversized_alias_text = (
+    "from pathlib import Path as P\n"
+    "import os as operating_system\n"
+    + ("#" * (mod.PYTHON_PATH_ASSIGNMENT_MAX_CHARS + 1))
+)
+assert mod.python_path_constructor_aliases(oversized_alias_text) == set()
+assert mod.python_os_module_aliases(oversized_alias_text) == set()
+
+scope_reset_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,8 @@
++from pathlib import Path
++def build_path(filename, output_dir):
++    destination = Path(output_dir) / filename
++
++def write_supplied_path(destination, note):
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert not any(item.label == mod.FILE_WRITE_PATH_LABEL for item in scope_reset_sentinels)
+
+outer_path_survives_nested_same_name_assignment_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,9 @@
++from pathlib import Path
++def write_triage_note(filename, note, output_dir):
++    destination = Path(output_dir) / filename
++    def helper(other_output_dir):
++        destination = Path(other_output_dir) / "helper.txt"
++        return destination
++    helper(output_dir)
++    destination.write_text(note, encoding="utf-8")
+"""
+)
+assert any(
+    item.path == "tools/path_writer.py"
+    and item.line == 3
+    and item.label == mod.FILE_WRITE_PATH_LABEL
+    for item in outer_path_survives_nested_same_name_assignment_sentinels
+)
+
+comparison_path_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,5 @@
++from pathlib import Path
++def write_supplied_path(destination, filename, note):
++    if destination == Path(f"{filename}"):
++        destination.write_text(note, encoding="utf-8")
+"""
+)
+assert mod.python_dynamic_path_target("if destination == Path(f'{filename}'):") is None
+assert not any(item.label == mod.FILE_WRITE_PATH_LABEL for item in comparison_path_sentinels)
+
+attribute_exact_reassign_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,7 @@
++from pathlib import Path
++class Writer:
++    def write_triage_note(self, filename, note, output_dir):
++        self.destination = Path(output_dir) / filename
++        self.destination = Path(output_dir) / "summary.txt"
++        self.destination.write_text(note, encoding="utf-8")
+"""
+)
+assert not any(item.label == mod.FILE_WRITE_PATH_LABEL for item in attribute_exact_reassign_sentinels)
+
+attribute_root_rebind_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,8 @@
++from pathlib import Path
++class Writer:
++    def write_triage_note(self, filename, note, output_dir, replacement):
++        self.destination = Path(output_dir) / filename
++        self = replacement
++        self.destination.write_text(note, encoding="utf-8")
+"""
+)
+assert not any(item.label == mod.FILE_WRITE_PATH_LABEL for item in attribute_root_rebind_sentinels)
+
+attribute_subscript_mutation_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,8 @@
++from pathlib import Path
++class Writer:
++    def write_triage_note(self, filename, note, output_dir):
++        self.destination = Path(output_dir) / filename
++        self.destination[0] = "safe"
++        self.destination.write_text(note, encoding="utf-8")
+"""
+)
+assert not any(item.label == mod.FILE_WRITE_PATH_LABEL for item in attribute_subscript_mutation_sentinels)
+
+captured_max_anchors = []
+original_detect_risk_sentinels = mod._original_detect_risk_sentinels
+
+
+def fake_original_detect_risk_sentinels(_diff, max_anchors=None):
+    captured_max_anchors.append(max_anchors)
+    return [
+        mod.hardened.RiskSentinel(
+            path=f"tools/original_{index}.py",
+            line=index,
+            label=f"original sentinel {index}",
+            detail="original sentinel detail",
+            text="original sentinel text",
+        )
+        for index in range(1, 4)
+    ]
+
+
+mod._original_detect_risk_sentinels = fake_original_detect_risk_sentinels
+try:
+    bounded_path_sentinels = mod.detect_risk_sentinels(
+        """diff --git a/tools/path_writer.py b/tools/path_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/path_writer.py
+@@ -0,0 +1,5 @@
++from pathlib import Path
++def write_triage_note(filename, note, output_dir):
++    destination = Path(output_dir) / filename
++    destination.write_text(note, encoding="utf-8")
+""",
+        max_anchors=3,
+    )
+finally:
+    mod._original_detect_risk_sentinels = original_detect_risk_sentinels
+assert captured_max_anchors == [3]
+assert len(bounded_path_sentinels) == 3
+assert bounded_path_sentinels[0].label == mod.FILE_WRITE_PATH_LABEL
+
 
 class FakeGitHubClient:
     repo = "DCOIR-Collector/dcoir-collector"
@@ -113,6 +1159,7 @@ class FakeGitHubClient:
             "docs/review.md": "# Review\n\nKeep governed review evidence visible.\n",
             "tools/later_probe.py": "import subprocess\n\nsubprocess.run('whoami', shell=True)\n",
             "tools/huge_probe.py": "print('large context line')\n" * 1000,
+            "tools/aliased_writer.py": "from pathlib import Path as P\nimport pathlib as pl\nimport os as operating_system\n\ndef write_triage_note(filename, note, output_dir):\n    destination = P(output_dir, filename)\n    pl.Path(destination).write_text(note)\n",
         }
 
     def request(self, _method: str, path: str):
@@ -143,6 +1190,25 @@ assert (
     is True
 )
 assert mod.has_prior_successful_context_review(FakeGitHubClient([{"body": mod.base.MARKER}] * 100), 287) is False
+
+alias_context = mod.build_python_path_alias_context(
+    FakeGitHubClient(),
+    {"head": {"sha": "abc123def4567890"}},
+    [
+        {"filename": "tools/aliased_writer.py", "status": "modified"},
+        {"filename": "docs/review.md", "status": "modified"},
+    ],
+)
+assert alias_context == {"tools/aliased_writer.py": {"P", "pl.Path"}}
+os_alias_context = mod.build_python_os_alias_context(
+    FakeGitHubClient(),
+    {"head": {"sha": "abc123def4567890"}},
+    [
+        {"filename": "tools/aliased_writer.py", "status": "modified"},
+        {"filename": "docs/review.md", "status": "modified"},
+    ],
+)
+assert os_alias_context == {"tools/aliased_writer.py": {"operating_system"}}
 
 deep_block, deep_summary = mod.build_deep_context_block(
     FakeGitHubClient(),
@@ -245,6 +1311,12 @@ prompt = mod.build_prompt(
 assert "Context mode: first-pass-deep" in prompt
 assert "Deep changed-file context" in prompt
 assert "subprocess.run(command, shell=True)" in prompt
+assert "exact correction guidance" in prompt
+assert "smallest safe patch direction" in prompt
+assert "GitHub apply-ready suggestions" in prompt
+assert "precise single-line replacement for the commented line" in prompt
+assert "multiline, range, or speculative fixes" in prompt
+assert "selected range" not in prompt
 
 small_config = mod.copy.copy(config)
 small_config.max_prompt_chars = 900

@@ -55,6 +55,7 @@ request_changes_on_findings: false
 minimum_confidence: 0.70
 fail_on_unanchored_findings: true
 fail_on_summary_only_problem: true
+review_quality_retry_on_rejected_output: true
 
 risk_sentinel_quality_gate: true
 risk_sentinel_retry_on_empty: true
@@ -74,6 +75,7 @@ ignored_providers:
 validation_commands:
   - python3 scripts/openrouter_pr_review_pareto_context_selftest.py
   - python3 scripts/openrouter_pr_review_hardened_selftest.py
+  - python3 scripts/openrouter_pr_review_quality_recovery_selftest.py
   # Requires a real git checkout for full changed-file discovery; extracted
   # workspaces may only exercise this as a smoke check.
   - bash scripts/validate-codex-local.sh
