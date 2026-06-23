@@ -429,26 +429,51 @@ def python_direct_dynamic_file_write(text: str, path_constructor_names: set[str]
 
 
 def python_file_write_target(text: str, path_constructor_names: set[str] | None = None) -> str | None:
-    write_match = PYTHON_FILE_WRITE_RE.search(text)
-    if not write_match:
-        try:
-            module = ast.parse(text.lstrip())
-        except SyntaxError:
+    try:
+        module = ast.parse(text.lstrip())
+    except SyntaxError:
+        write_match = PYTHON_FILE_WRITE_RE.search(text)
+        if not write_match:
             return None
-        constructor_names = path_constructor_names or DEFAULT_PYTHON_PATH_CONSTRUCTORS
-        for node in ast.walk(module):
-            if not isinstance(node, ast.Call) or not isinstance(node.func, ast.Attribute):
-                continue
-            if node.func.attr not in {"write_text", "write_bytes"}:
-                continue
-            value = node.func.value
-            target = python_target_key(value)
-            if target:
-                return target
-            if python_is_path_constructor(value, constructor_names) and value.args:
-                return python_target_key(value.args[0])
+        return write_match.group("target") or write_match.group("wrapped_target")
+    for node in ast.walk(module):
+        if not isinstance(node, ast.Call) or not isinstance(node.func, ast.Attribute):
+            continue
+        if node.func.attr not in {"write_text", "write_bytes"}:
+            continue
+        target = python_target_key(node.func.value)
+        if target:
+            return target
+    return None
+
+
+def python_wrapped_file_write_target(text: str, path_constructor_names: set[str] | None = None) -> str | None:
+    try:
+        module = ast.parse(text.lstrip())
+    except SyntaxError:
         return None
-    return write_match.group("target") or write_match.group("wrapped_target")
+    constructor_names = path_constructor_names or DEFAULT_PYTHON_PATH_CONSTRUCTORS
+    for node in ast.walk(module):
+        if not isinstance(node, ast.Call) or not isinstance(node.func, ast.Attribute):
+            continue
+        if node.func.attr not in {"write_text", "write_bytes"}:
+            continue
+        value = node.func.value
+        if python_is_path_constructor(value, constructor_names) and value.args:
+            return python_target_key(value.args[0])
+    return None
+
+
+def append_file_write_sentinel(sentinels: list[hardened.RiskSentinel], anchor: PythonDiffLine) -> None:
+    sentinels.append(
+        hardened.RiskSentinel(
+            path=anchor.path,
+            line=anchor.line,
+            label=FILE_WRITE_PATH_LABEL,
+            detail=FILE_WRITE_PATH_DETAIL,
+            text=anchor.text,
+        )
+    )
 
 
 def python_is_scope_boundary(text: str) -> bool:
@@ -812,32 +837,20 @@ def detect_python_file_write_path_sentinels(diff: str) -> list[hardened.RiskSent
                 clear_assigned_path_in_scope(assigned_paths, assigned_target, assignment_indent, current_scope_id)
         write_target = python_file_write_target(diff_line.text, path_constructor_names)
         if not write_target:
+            write_target = python_wrapped_file_write_target(diff_line.text, path_constructor_names)
+        if not write_target:
             if diff_line.is_added and python_direct_dynamic_file_write(diff_line.text, path_constructor_names):
-                sentinels.append(
-                    hardened.RiskSentinel(
-                        path=diff_line.path,
-                        line=diff_line.line,
-                        label=FILE_WRITE_PATH_LABEL,
-                        detail=FILE_WRITE_PATH_DETAIL,
-                        text=diff_line.text,
-                    )
-                )
+                append_file_write_sentinel(sentinels, diff_line)
             continue
         assignment = current_assigned_path(assigned_paths, write_target)
         if not assignment:
+            if diff_line.is_added and python_direct_dynamic_file_write(diff_line.text, path_constructor_names):
+                append_file_write_sentinel(sentinels, diff_line)
             continue
         if not assignment.is_added and not diff_line.is_added:
             continue
         anchor = assignment if assignment.is_added else diff_line
-        sentinels.append(
-            hardened.RiskSentinel(
-                path=anchor.path,
-                line=anchor.line,
-                label=FILE_WRITE_PATH_LABEL,
-                detail=FILE_WRITE_PATH_DETAIL,
-                text=anchor.text,
-            )
-        )
+        append_file_write_sentinel(sentinels, anchor)
     flush_pending_path_assignment()
     return sentinels
 
