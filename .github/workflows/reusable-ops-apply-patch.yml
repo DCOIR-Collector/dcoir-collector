@@ -113,7 +113,7 @@ jobs:
 
               for path in sorted(changed):
                   print(path)
-PY
+            PY
             )
             while IFS= read -r changed; do
               case "$changed" in
