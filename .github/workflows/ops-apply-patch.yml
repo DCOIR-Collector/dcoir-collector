@@ -1,0 +1,64 @@
+# DCOIR WORKFLOW OPERATOR NOTES
+# Workflow key:
+# - workflow-ops-apply-patch-00297
+# Purpose:
+# - Apply one reviewed .patch or .diff request to one tracked file on one specified branch with branch, path, hash, and workflow-change guards.
+# Use when:
+# - Use after the GitHub connector or an operator stages a bounded request under ops/requests/apply_patch/<request_id>/request.json plus a same-directory .patch or .diff file.
+# - Use when full-file chatgpt-apply-in replacement is too large or too risky for the connector, and a small diff can safely express the intended change.
+# Do not use when:
+# - Do not use for unreviewed patches, multi-file changes, binary patches, renames, deletes, broad repo rewrites, or default-branch writes without an explicit allow-default-branch reason.
+# - Do not use as a substitute for chatgpt-apply-in when the full target file can be staged and verified safely.
+# Trigger model:
+# - workflow_dispatch input: request_path; push branches: main paths: ops/requests/apply_patch/*/request.json, ops/requests/apply_patch/*/*.patch, ops/requests/apply_patch/*/*.diff
+# Required inputs:
+# - request_path: Repo-relative path to ops/requests/apply_patch/<request_id>/request.json when manually dispatched.
+# Required secrets/config:
+# - Uses GITHUB_TOKEN through workflow token only; do not add external secrets or secret values to requests, reports, logs, or artifacts.
+# Runtime dependencies:
+# - Requires ops/tools/apply_patch_request.py and a request JSON with schema dcoir.ops.apply_patch_request.v1.
+# Expected outputs/readback:
+# - Target branch commit when mode=apply; ops-apply-patch workflow artifact with result.json and workflow_report.md; central repo-workflows completed-run report.
+# Safety notes:
+# - Rejects unsafe request ids, unsafe target paths, missing stale-base hashes, default-branch targets without explicit reason, workflow targets without explicit reason, multi-file patches, binary patches, renames, deletes, mode changes, and unexpected changed paths after apply.
+# Maintenance notes:
+# - Keep this header aligned with executable behavior whenever triggers, inputs, scripts, reports, artifacts, permissions, or safety checks change.
+# - Keep this header aligned with current repo-root GitHub guidance and the active `ircore` operating model when authority or routing language changes.
+# Authority routing:
+# - GitHub is canonical for workflow/source truth and this header owns workflow-specific execution guidance.
+# - Supabase `ircore` owns operational routing, validation rules, reusable lessons, and active state.
+# - Use legacy Airtable only when a file explicitly requires a migration or historical lookup.
+name: 64 Ops - Apply Patch Request
+run-name: Apply Patch | ${{ github.event.inputs.request_path || github.event.head_commit.id || 'manual' }} | #${{ github.run_number }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      request_path:
+        description: "Repo-relative request JSON under ops/requests/apply_patch/<request_id>/request.json"
+        required: true
+        default: "ops/requests/apply_patch/request/request.json"
+        type: string
+  push:
+    branches:
+      - main
+    paths:
+      - "ops/requests/apply_patch/*/request.json"
+      - "ops/requests/apply_patch/*/*.patch"
+      - "ops/requests/apply_patch/*/*.diff"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ops-apply-patch-${{ github.event.inputs.request_path || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  apply_patch:
+    uses: ./.github/workflows/reusable-ops-apply-patch.yml
+    permissions:
+      contents: write
+    with:
+      caller_event_name: ${{ github.event_name }}
+      request_path: ${{ inputs.request_path || 'ops/requests/apply_patch/request/request.json' }}

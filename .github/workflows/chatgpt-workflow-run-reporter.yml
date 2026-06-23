@@ -57,6 +57,7 @@ on:
       - 61 Ops - Dispatch Request Scaffold
       - 62 Ops - File Delete Request Scaffold
       - 63 Ops - Restructure Map Scaffold
+      - 64 Ops - Apply Patch Request
       - 20 Operator - Publish Knowledge to Wiki
       - 24 Validation - Workflow Reporting
       - 26 Validation - Windows PowerShell 5.1
