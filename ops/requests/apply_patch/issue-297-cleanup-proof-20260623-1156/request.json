@@ -1,0 +1,16 @@
+{
+  "schema": "dcoir.ops.apply_patch_request.v1",
+  "request_id": "issue-297-cleanup-proof-20260623-1156",
+  "mode": "apply",
+  "target_branch": "test/issue-297-ops-apply-patch-cleanup-1156",
+  "target_path": "knowledge/README.md",
+  "allowed_roots": [
+    "knowledge"
+  ],
+  "patch_path": "ops/requests/apply_patch/issue-297-cleanup-proof-20260623-1156/change.patch",
+  "expected_patch_sha256": "25138f0e75857535ae96f7afeb682ac04f810722bd9d6d2758603febee9cb2cd",
+  "expected_target_blob_sha": "5adf8c9295884fdba09a0ef255befd97539c0d79",
+  "expected_current_sha256": "cbac4bb94d5775fe6394c9220168c1186d7a9c204e3916db032436a652e9b688",
+  "expected_new_sha256": "a8d106adc2ef61cbd0fd05fe89ed6fe7a14dff6d2241b77f73c85914178d27f4",
+  "commit_message": "Apply issue 297 cleanup proof patch"
+}
