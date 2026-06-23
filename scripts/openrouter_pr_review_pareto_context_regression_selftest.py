@@ -124,12 +124,14 @@ index 0000000..1111111 100644
 index 0000000..1111111 100644
 --- /dev/null
 +++ b/tools/commented_writer.py
-@@ -0,0 +1,5 @@
+@@ -0,0 +1,7 @@
 +from pathlib import Path
-+# destination = Path(filename) / "note.txt"
-+# destination.write_text(note, encoding="utf-8")
-+# (Path(filename) / "note.txt").write_text(note, encoding="utf-8")
-+# Path(filename).joinpath("note.txt").write_bytes(note)
++def write_triage_note(filename, note):
++    destination = Path(filename) / "note.txt"
++    # destination.write_text(note, encoding="utf-8")
++    # destination.write_bytes(note)
++    # (Path(filename) / "note.txt").write_text(note, encoding="utf-8")
++    # Path(filename).joinpath("note.txt").write_bytes(note)
 """
     )
     assert not any(item.label == mod.FILE_WRITE_PATH_LABEL for item in comment_only_path_write_sentinels)
