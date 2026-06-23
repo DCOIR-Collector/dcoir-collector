@@ -101,18 +101,18 @@ jobs:
                       changed.update(path for path in proc.stdout.splitlines() if path)
 
               if not changed:
-    proc = subprocess.run(
-        ["git", "diff-tree", "--no-commit-id", "--name-only", "-r", "-m", head_sha],
-        check=False,
-        text=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-    )
-    if proc.returncode == 0:
-        changed.update(path for path in proc.stdout.splitlines() if path)
+                  proc = subprocess.run(
+                      ["git", "diff-tree", "--no-commit-id", "--name-only", "-r", "-m", head_sha],
+                      check=False,
+                      text=True,
+                      stdout=subprocess.PIPE,
+                      stderr=subprocess.PIPE,
+                  )
+                  if proc.returncode == 0:
+                      changed.update(path for path in proc.stdout.splitlines() if path)
 
-for path in sorted(changed):
-    print(path)
+              for path in sorted(changed):
+                  print(path)
 PY
             )
             while IFS= read -r changed; do
