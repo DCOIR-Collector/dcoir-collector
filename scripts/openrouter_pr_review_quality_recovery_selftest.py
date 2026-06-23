@@ -37,7 +37,10 @@ index 1111111..2222222 100644
 +External review may be skipped after local checks.
  Keep issue receipts current.
 """
-line_index = mod.base.build_diff_line_index(sample_diff)
+line_index = mod.build_added_line_index(sample_diff)
+assert ("docs/review.md", 2) in line_index
+assert ("docs/review.md", 1) not in line_index
+assert ("docs/review.md", 3) not in line_index
 
 
 def accepted_result(confidence: float = 0.94) -> dict:
@@ -124,6 +127,25 @@ run_recovery_case(
                 "path": "docs/review.md",
                 "line": 99,
                 "body": "The changed line weakens governed review ordering.",
+                "suggested_replacement": "",
+                "validation": "Read back issue and PR review gates.",
+            }
+        ],
+    },
+    "none were anchored to changed diff lines",
+)
+
+run_recovery_case(
+    {
+        "summary": "One actionable review-gate regression, but the anchor is on context.",
+        "findings": [
+            {
+                "title": "Review gate bypass",
+                "severity": "high",
+                "confidence": 0.95,
+                "path": "docs/review.md",
+                "line": 1,
+                "body": "The changed line weakens governed review ordering, but this anchor is unchanged context.",
                 "suggested_replacement": "",
                 "validation": "Read back issue and PR review gates.",
             }
