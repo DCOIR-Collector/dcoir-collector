@@ -16,7 +16,11 @@
 # Required secrets/config:
 # - Uses GITHUB_TOKEN through workflow token only; do not add external secrets or secret values to requests, reports, logs, or artifacts.
 # Runtime dependencies:
-# - Requires ops/tools/apply_patch_request.py and a request JSON with schema dcoir.ops.apply_patch_request.v1.
+# - Entry workflow: .github/workflows/ops-apply-patch.yml.
+# - Reusable workflow: .github/workflows/reusable-ops-apply-patch.yml.
+# - Composite action: .github/actions/run-ops-apply-patch-request/action.yml.
+# - Patch validation/apply script: ops/tools/apply_patch_request.py.
+# - Request JSON schema: dcoir.ops.apply_patch_request.v1 under ops/requests/apply_patch/<request_id>/request.json.
 # Expected outputs/readback:
 # - Target branch commit when mode=apply; ops-apply-patch workflow artifact with result.json and workflow_report.md; central repo-workflows completed-run report.
 # - Successful mode=apply runs remove the staged ops/requests/apply_patch/<request_id>/ directory from the request source branch with a [skip ci] cleanup commit.
