@@ -18,7 +18,6 @@
 # Runtime dependencies:
 # - Entry workflow: .github/workflows/ops-apply-patch.yml.
 # - Reusable workflow: .github/workflows/reusable-ops-apply-patch.yml.
-# - Composite action: .github/actions/run-ops-apply-patch-request/action.yml.
 # - Patch validation/apply script: ops/tools/apply_patch_request.py.
 # - Request JSON schema: dcoir.ops.apply_patch_request.v1 under ops/requests/apply_patch/<request_id>/request.json.
 # Expected outputs/readback:
