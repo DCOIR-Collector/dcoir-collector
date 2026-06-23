@@ -119,6 +119,21 @@ index 0000000..1111111 100644
     )
     assert not any(item.label == mod.FILE_WRITE_PATH_LABEL for item in direct_literal_path_write_sentinels)
 
+    comment_only_path_write_sentinels = mod.detect_risk_sentinels(
+        """diff --git a/tools/commented_writer.py b/tools/commented_writer.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/commented_writer.py
+@@ -0,0 +1,5 @@
++from pathlib import Path
++# destination = Path(filename) / "note.txt"
++# destination.write_text(note, encoding="utf-8")
++# (Path(filename) / "note.txt").write_text(note, encoding="utf-8")
++# Path(filename).joinpath("note.txt").write_bytes(note)
+"""
+    )
+    assert not any(item.label == mod.FILE_WRITE_PATH_LABEL for item in comment_only_path_write_sentinels)
+
     literal_single_arg_path_slash_sentinels = mod.detect_risk_sentinels(
         """diff --git a/tools/safe_writer.py b/tools/safe_writer.py
 index 0000000..1111111 100644
