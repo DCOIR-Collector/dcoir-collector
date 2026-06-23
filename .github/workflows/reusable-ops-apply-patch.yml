@@ -62,7 +62,8 @@ jobs:
             fi
           else
             declare -A request_paths=()
-            mapfile -t changed_files < <(
+            removed_request_path_count=0
+            mapfile -t changed_records < <(
               python - "$GITHUB_EVENT_PATH" "$GITHUB_SHA" <<'PY'
           import json
           import pathlib
@@ -72,7 +73,22 @@ jobs:
           event_path = pathlib.Path(sys.argv[1])
           head_sha = sys.argv[2]
           zero_sha = "0" * 40
-          changed = set()
+          changed = {}
+
+          def add(status, path):
+              if isinstance(path, str) and path:
+                  changed[path] = status
+
+          def add_name_status_line(line):
+              parts = line.split("\t")
+              if len(parts) < 2:
+                  return
+              status = parts[0]
+              if status.startswith(("R", "C")) and len(parts) >= 3:
+                  path = parts[2]
+              else:
+                  path = parts[1]
+              add(status, path)
 
           try:
               event = json.loads(event_path.read_text(encoding="utf-8"))
@@ -82,51 +98,72 @@ jobs:
           for commit in event.get("commits", []):
               if not isinstance(commit, dict):
                   continue
-              for key in ("added", "modified", "removed"):
-                  for path in commit.get(key, []):
-                      if isinstance(path, str) and path:
-                          changed.add(path)
+              for path in commit.get("added", []):
+                  add("A", path)
+              for path in commit.get("modified", []):
+                  add("M", path)
+              for path in commit.get("removed", []):
+                  add("D", path)
 
           before = event.get("before")
           after = event.get("after") or head_sha
           if isinstance(before, str) and isinstance(after, str) and before and after and before != zero_sha:
               proc = subprocess.run(
-                  ["git", "diff", "--name-only", f"{before}..{after}"],
+                  ["git", "diff", "--name-status", f"{before}..{after}"],
                   check=False,
                   text=True,
                   stdout=subprocess.PIPE,
                   stderr=subprocess.PIPE,
               )
               if proc.returncode == 0:
-                  changed.update(path for path in proc.stdout.splitlines() if path)
+                  for line in proc.stdout.splitlines():
+                      add_name_status_line(line)
 
           if not changed:
               proc = subprocess.run(
-                  ["git", "diff-tree", "--no-commit-id", "--name-only", "-r", "-m", head_sha],
+                  ["git", "diff-tree", "--no-commit-id", "--name-status", "-r", "-m", head_sha],
                   check=False,
                   text=True,
                   stdout=subprocess.PIPE,
                   stderr=subprocess.PIPE,
               )
               if proc.returncode == 0:
-                  changed.update(path for path in proc.stdout.splitlines() if path)
+                  for line in proc.stdout.splitlines():
+                      add_name_status_line(line)
 
           for path in sorted(changed):
-              print(path)
+              print(f"{changed[path]}\t{path}")
           PY
             )
-            while IFS= read -r changed; do
+            for record in "${changed_records[@]}"; do
+              IFS=$'\t' read -r status changed _ <<< "$record"
+              if [[ -z "${changed:-}" ]]; then
+                continue
+              fi
               case "$changed" in
                 ops/requests/apply_patch/*/request.json)
-                  request_paths["$changed"]=1
+                  if [[ "$status" == D* ]]; then
+                    removed_request_path_count=$((removed_request_path_count + 1))
+                  else
+                    request_paths["$changed"]=1
+                  fi
                   ;;
                 ops/requests/apply_patch/*/*.patch|ops/requests/apply_patch/*/*.diff)
-                  request_paths["$(dirname "$changed")/request.json"]=1
+                  if [[ "$status" == D* ]]; then
+                    removed_request_path_count=$((removed_request_path_count + 1))
+                  else
+                    request_paths["$(dirname "$changed")/request.json"]=1
+                  fi
                   ;;
               esac
-            done < <(printf '%s\n' "${changed_files[@]}")
+            done
 
             if [[ "${#request_paths[@]}" -eq 0 ]]; then
+              if [[ "$removed_request_path_count" -gt 0 ]]; then
+                echo "Only removed apply-patch request files were found; treating this as cleanup and skipping."
+                echo "skip=true" >> "$GITHUB_OUTPUT"
+                exit 0
+              fi
               if [[ "$CALLER_EVENT_NAME" == "push" ]]; then
                 echo "Apply-patch workflow was triggered by push, but no request path could be resolved from the push range." >&2
                 exit 1
@@ -154,7 +191,26 @@ jobs:
               exit 1
               ;;
           esac
+          REQUEST_DIR="$(dirname "$REQUEST_PATH")"
+          REQUEST_DIR_TREE_SHA256="$(${{ '' }}python - "$REQUEST_DIR" <<'PY'
+          import hashlib
+          import pathlib
+          import sys
+
+          root = pathlib.Path(sys.argv[1])
+          digest = hashlib.sha256()
+          for path in sorted(p for p in root.rglob("*") if p.is_file()):
+              rel = path.relative_to(root).as_posix()
+              digest.update(rel.encode("utf-8"))
+              digest.update(b"\0")
+              digest.update(hashlib.sha256(path.read_bytes()).hexdigest().encode("ascii"))
+              digest.update(b"\0")
+          print(digest.hexdigest())
+          PY
+          )"
           echo "request_path=$REQUEST_PATH" >> "$GITHUB_OUTPUT"
+          echo "request_dir=$REQUEST_DIR" >> "$GITHUB_OUTPUT"
+          echo "request_dir_tree_sha256=$REQUEST_DIR_TREE_SHA256" >> "$GITHUB_OUTPUT"
           echo "request_id=$REQUEST_ID" >> "$GITHUB_OUTPUT"
           echo "skip=false" >> "$GITHUB_OUTPUT"
 
@@ -182,3 +238,82 @@ jobs:
           path: ${{ runner.temp }}/ops-apply-patch/${{ steps.request.outputs.request_id }}/**
           if-no-files-found: warn
           retention-days: 14
+
+      - name: Cleanup staged apply-patch request
+        if: success() && steps.request.outputs.skip != 'true'
+        shell: bash
+        env:
+          REQUEST_DIR: ${{ steps.request.outputs.request_dir }}
+          REQUEST_DIR_TREE_SHA256: ${{ steps.request.outputs.request_dir_tree_sha256 }}
+          REQUEST_ID: ${{ steps.request.outputs.request_id }}
+          REQUEST_SOURCE_REF: ${{ github.ref_name }}
+          REPORT_DIR: ${{ runner.temp }}/ops-apply-patch/${{ steps.request.outputs.request_id }}
+        run: |
+          set -euo pipefail
+
+          should_cleanup="$(${{ '' }}python - "$REPORT_DIR/result.json" <<'PY'
+          import json
+          import pathlib
+          import sys
+
+          result_path = pathlib.Path(sys.argv[1])
+          try:
+              result = json.loads(result_path.read_text(encoding="utf-8"))
+          except (OSError, json.JSONDecodeError):
+              print("false")
+              raise SystemExit
+
+          print("true" if result.get("result") == "success" and result.get("mode") == "apply" else "false")
+          PY
+          )"
+          if [[ "$should_cleanup" != "true" ]]; then
+            echo "Apply-patch request was not a successful apply operation; leaving request files for review."
+            exit 0
+          fi
+
+          if [[ -z "$REQUEST_SOURCE_REF" ]]; then
+            echo "Could not determine request source ref for cleanup." >&2
+            exit 1
+          fi
+          if [[ -z "$REQUEST_DIR_TREE_SHA256" ]]; then
+            echo "Missing triggering request directory fingerprint; refusing cleanup." >&2
+            exit 1
+          fi
+
+          git fetch --no-tags origin "refs/heads/$REQUEST_SOURCE_REF:refs/remotes/origin/$REQUEST_SOURCE_REF"
+          git checkout -B ops-apply-patch-request-source "origin/$REQUEST_SOURCE_REF"
+          if [[ ! -d "$REQUEST_DIR" ]]; then
+            echo "Request directory is already absent: $REQUEST_DIR"
+            exit 0
+          fi
+
+          CURRENT_REQUEST_DIR_TREE_SHA256="$(${{ '' }}python - "$REQUEST_DIR" <<'PY'
+          import hashlib
+          import pathlib
+          import sys
+
+          root = pathlib.Path(sys.argv[1])
+          digest = hashlib.sha256()
+          for path in sorted(p for p in root.rglob("*") if p.is_file()):
+              rel = path.relative_to(root).as_posix()
+              digest.update(rel.encode("utf-8"))
+              digest.update(b"\0")
+              digest.update(hashlib.sha256(path.read_bytes()).hexdigest().encode("ascii"))
+              digest.update(b"\0")
+          print(digest.hexdigest())
+          PY
+          )"
+          if [[ "$CURRENT_REQUEST_DIR_TREE_SHA256" != "$REQUEST_DIR_TREE_SHA256" ]]; then
+            echo "Request directory changed after this run was triggered; refusing cleanup for reused request id: $REQUEST_ID" >&2
+            exit 1
+          fi
+
+          rm -rf "$REQUEST_DIR"
+          git add -A -- "$REQUEST_DIR"
+          if git diff --cached --quiet -- "$REQUEST_DIR"; then
+            echo "No staged request files needed cleanup."
+            exit 0
+          fi
+
+          git commit -m "Clean applied ops patch request $REQUEST_ID [skip ci]"
+          git push origin "HEAD:refs/heads/$REQUEST_SOURCE_REF"
