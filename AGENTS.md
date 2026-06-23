@@ -209,7 +209,7 @@ Expected helper commands:
 
 When an operator-approved top-level GitHub PR comment invokes `@codex` and asks for code changes, review-comment fixes, requested changes, patches, or PR updates, complete the requested work and push back to the PR branch using the helper command.
 
-When addressing inline PR review conversations, use the GitHub connector to keep conversation state current. After making code changes or commits that attempt to resolve an actionable review conversation, or after reasonably dismissing an actionable review comment with a documented rationale, add a follow-up reply in that review conversation that states the resolving commit SHA(s) or dismissal rationale without using the literal `@codex` handle, then resolve the review thread through the GitHub connector. Apply the same rule to actionable Codi, Adva, or Prog review conversations that require code changes. Do not resolve unrelated, unaddressed, or still-disputed review conversations; report them as remaining gaps.
+When addressing inline PR review conversations, follow the canonical review conversation resolution rule in this file.
 
 Before changing files for a PR task, run `codex-pr-context` when available to capture PR metadata, comments, reviews, changed-file names, and patch context.
 
@@ -311,6 +311,20 @@ If the branch cannot be detected, use the PR branch from live context:
 codex-pr-finish -b <pr-branch-name> -m "Address PR review comments"
 ```
 
+## Review conversation resolution
+
+Use this canonical rule whenever actionable external Codex, Codi, Adva, or Prog PR review conversations are addressed or reasonably dismissed.
+
+Before claiming a review finding or conversation is addressed or reasonably dismissed:
+
+* Read back the relevant GitHub review thread state.
+* For each addressed actionable thread, add a non-triggering follow-up reply in that review conversation that avoids the literal `@codex` handle and states the resolving commit SHA(s).
+* For each reasonably dismissed actionable thread, add a non-triggering follow-up reply in that review conversation that avoids the literal `@codex` handle and states the dismissal rationale.
+* Resolve the review thread through the GitHub connector only after the required follow-up reply and supporting evidence exist.
+* Do not resolve unrelated, unaddressed, still-disputed, or only partially addressed review conversations.
+* State any unresolved or disputed review thread ids and reasons before readiness, completion, or external-review gate claims.
+* When a governed GitHub work item exists, record or refresh Supabase readback evidence for resolved and unresolved review-thread state.
+
 ## Working rules
 
 * Start substantive `ircore` work with compact preflight, startup-pack read, targeted retrieval, action, validation/readback, and optional short lesson capture only when reusable.
@@ -358,7 +372,7 @@ codex-pr-finish -b <pr-branch-name> -m "Address PR review comments"
 * When a governed workflow liveness check uses Gmail, use the human-facing search label `label:GitHub`; connector metadata and returned message labels may show the same mailbox label as `Label_125`. Treat Gmail as an early signal only, and use request-scoped heartbeat files, workflow reports, status summaries, and artifacts as execution evidence.
 * Every repeated `@codex` review request in the same PR thread must use varied wording instead of reusing one exact sentence, regardless of whether the PR is still draft or ready to move from draft to ready.
 * Before moving a governed draft PR to ready, complete Prog/Adva, Codi, and `/dcoir-review deep` internal review gates unless explicitly waived for the task. The `/dcoir-review deep` gate must run after Prog/Adva and Codi clear, and after each update or commit made to address its findings, until the latest run reports no findings. Only then draft the exact top-level PR comment that explicitly invokes `@codex` for a P0/P1-focused external review, show it to the operator, receive approval in the current session, post only after approval, read the formal `@codex` response live, and disposition valid findings.
-* After making code changes or commits that attempt to resolve an actionable PR review conversation, or after reasonably dismissing an actionable PR review comment with documented rationale, add a non-triggering follow-up reply in that review conversation that states the resolving commit SHA(s) or dismissal rationale, then resolve the GitHub review thread through the GitHub connector. Use the same process for actionable Codi, Adva, or Prog review conversations that require code changes. Do not include the literal `@codex` handle in the follow-up reply, and do not resolve conversations that remain unaddressed or disputed.
+* Apply the canonical review conversation resolution rule whenever actionable external Codex, Codi, Adva, or Prog review conversations are addressed or reasonably dismissed.
 * If the operator approves an external `@codex` fix request, include exact scope, files, ordered instructions, and a direct instruction to finish with `codex-pr-finish -m "Address PR review comments"` when a push back to the PR branch is expected.
 
 ## Validation and readback
