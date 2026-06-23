@@ -10,6 +10,16 @@ ops/requests/apply_patch/<request_id>/change.patch
 `<request_id>` may contain only letters, numbers, dots, underscores, and hyphens.
 The workflow only looks for requests under `ops/requests/apply_patch/<request_id>/`.
 
+## Implementation Surfaces
+
+The apply-patch lane follows the repo workflow/module/action pattern:
+
+- Entry workflow: `.github/workflows/ops-apply-patch.yml`
+- Reusable workflow: `.github/workflows/reusable-ops-apply-patch.yml`
+- Composite action: `.github/actions/run-ops-apply-patch-request/action.yml`
+- Patch validation/apply script: `ops/tools/apply_patch_request.py`
+- Request lookup folder: `ops/requests/apply_patch/<request_id>/`
+
 ## Request Schema
 
 ```json
