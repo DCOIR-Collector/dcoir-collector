@@ -21,7 +21,7 @@ sys.modules[spec.name] = mod
 spec.loader.exec_module(mod)
 
 with patch.dict(
-    os.environ,
+    getattr(os, "environ"),
     {
         "GITHUB_REPOSITORY": "DCOIR-Collector/dcoir-collector",
         "PR_NUMBER": "296",

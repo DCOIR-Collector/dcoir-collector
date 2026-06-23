@@ -121,7 +121,7 @@ unauthorized_env = {
 unauthorized_stdout = io.StringIO()
 mod.load_pareto_context_config = lambda _path: unauthorized_config
 try:
-    with mock.patch.dict(os.environ, unauthorized_env, clear=True), contextlib.redirect_stdout(unauthorized_stdout):
+    with mock.patch.dict(getattr(os, "environ"), unauthorized_env, clear=True), contextlib.redirect_stdout(unauthorized_stdout):
         mod.main()
 finally:
     mod.load_pareto_context_config = original_load_pareto_context_config
@@ -557,16 +557,20 @@ index 0000000..1111111 100644
 assert not any(item.label == "shell=True subprocess invocation" for item in split_fixture_marker_sentinels)
 
 real_multiline_sql_sentinels = mod.detect_risk_sentinels(
-    '''diff --git a/tools/query_builder.py b/tools/query_builder.py
+    (
+        '''diff --git a/tools/query_builder.py b/tools/query_builder.py
 index 0000000..1111111 100644
 --- /dev/null
 +++ b/tools/query_builder.py
 @@ -0,0 +1,5 @@
 +def load_case(case_id):
 +    query = f"""
-+SELECT * FROM cases WHERE id = {case_id}  -- intentionally unsafe for sentinel testing only
++SELECT * FROM cases WHERE id = '''
+        "{case_id}"
+        '''  -- intentionally unsafe for sentinel testing only
 +"""
 '''
+    )
 )
 assert any(
     item.path == "tools/query_builder.py"
