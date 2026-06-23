@@ -346,6 +346,16 @@ def iter_added_diff_lines(diff: str) -> list[ChangedLine]:
     return lines
 
 
+def build_added_line_index(diff: str) -> dict[tuple[str, int], int]:
+    right_line_index = base.build_diff_line_index(diff)
+    added_line_index: dict[tuple[str, int], int] = {}
+    for changed_line in iter_added_diff_lines(diff):
+        key = (changed_line.path, changed_line.line)
+        if key in right_line_index:
+            added_line_index[key] = right_line_index[key]
+    return added_line_index
+
+
 def is_comment_only_added_line(path: str, text: str) -> bool:
     stripped = text.strip()
     if not stripped:
@@ -1000,7 +1010,7 @@ def main() -> None:
             reporter.update("risk-sentinel", f"detected {len(risk_sentinels)} high-risk changed-line signals: {risk_sentinel_digest(risk_sentinels)}")
         reporter.update("prompt", f"building bounded prompt from {len(files)} changed files")
         prompt = build_prompt(pr, files, diff, config, risk_sentinels)
-        line_index = base.build_diff_line_index(diff)
+        line_index = build_added_line_index(diff)
         result, model_used, service_tier = openrouter_review_with_quality_retry(prompt, schema, config, reporter, risk_sentinels, line_index)
         reporter.update("normalize", "mapping model findings to changed diff lines")
         findings = normalize_findings(result, config, line_index)
