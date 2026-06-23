@@ -25,8 +25,9 @@ with patch.dict(
     {
         "GITHUB_REPOSITORY": "DCOIR-Collector/dcoir-collector",
         "PR_NUMBER": "296",
-        "OPENROUTER_API_KEY": "offline-test-placeholder",
+        "OPENROUTER_API_KEY": "test-key-placeholder",
     },
+    clear=True,
 ):
     assert mod.python_file_write_target('destination.write_text(note, encoding="utf-8")') == "destination"
     assert mod.python_file_write_target("Path(destination).write_bytes(note)") == "destination"
