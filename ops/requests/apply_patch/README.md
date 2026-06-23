@@ -8,6 +8,7 @@ ops/requests/apply_patch/<request_id>/change.patch
 ```
 
 `<request_id>` may contain only letters, numbers, dots, underscores, and hyphens.
+The workflow only looks for requests under `ops/requests/apply_patch/<request_id>/`.
 
 ## Request Schema
 
@@ -40,3 +41,20 @@ Workflow-file targets are blocked unless the request sets
 The v1 lane accepts only one text patch for one existing tracked file. It rejects
 multi-file patches, binary patches, renames, copies, deletes, mode changes,
 unsafe paths, missing stale-base hashes, and unexpected changed paths.
+
+## Cleanup Lifecycle
+
+Request files are staging inputs, not durable repo records.
+
+- Successful `mode: "apply"` runs upload the report artifact first, then remove
+  `ops/requests/apply_patch/<request_id>/` from the branch that staged the
+  request using a `[skip ci]` cleanup commit.
+- Failed `mode: "apply"` runs leave the request directory in place so the
+  operator can inspect and fix the request.
+- Successful `mode: "dry-run"` requests leave the request directory in place
+  because no target-branch change was implemented.
+- Report files are uploaded as GitHub Actions artifacts, not committed under the
+  repo tree. The workflow uses 14-day artifact retention for the apply report.
+- If a cleanup-only deletion push is evaluated by the workflow trigger, the
+  reusable workflow treats it as a no-op cleanup run instead of failing because
+  the deleted `request.json` is no longer present.
