@@ -61,6 +61,10 @@ Request files are staging inputs, not durable repo records.
 - Successful `mode: "apply"` runs upload the report artifact first, then remove
   `ops/requests/apply_patch/<request_id>/` from the branch that staged the
   request using a `[skip ci]` cleanup commit.
+- Before deletion, cleanup hashes the current staged request directory and
+  compares it with the triggering request input. If the directory changed, such
+  as from a reused request id, cleanup refuses deletion and leaves the current
+  request files for review.
 - Failed `mode: "apply"` runs leave the request directory in place so the
   operator can inspect and fix the request.
 - Successful `mode: "dry-run"` requests leave the request directory in place
