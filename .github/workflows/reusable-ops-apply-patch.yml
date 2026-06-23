@@ -1,0 +1,127 @@
+# DCOIR REUSABLE WORKFLOW CONTRACT
+# Source entry workflow: ops-apply-patch.yml
+# Purpose: reusable implementation module for Ops apply-patch request; entry workflow retains triggers, permissions, concurrency, and operator-visible contract notes.
+name: 99 Module - Ops Apply Patch
+run-name: Module Ops Apply Patch | ${{ github.workflow }} | #${{ github.run_number }}
+
+on:
+  workflow_call:
+    inputs:
+      caller_event_name:
+        description: Original caller event name so the reusable body can preserve push/workflow_dispatch branching.
+        required: false
+        type: string
+        default: 'workflow_call'
+      request_path:
+        description: Forwarded request JSON path from the entry workflow.
+        required: false
+        type: string
+        default: 'ops/requests/apply_patch/request/request.json'
+    outputs: {}
+    secrets: {}
+
+permissions:
+  contents: write
+
+jobs:
+  apply_patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Set up workflow runtime
+        uses: ./.github/actions/setup-workflow-runtime
+        with:
+          python-version: '3.11'
+
+      - name: Resolve apply-patch request
+        id: request
+        shell: bash
+        env:
+          CALLER_EVENT_NAME: ${{ inputs.caller_event_name }}
+          INPUT_REQUEST_PATH: ${{ inputs.request_path }}
+        run: |
+          set -euo pipefail
+
+          safe_request_path() {
+            local p="$1"
+            case "$p" in
+              ops/requests/apply_patch/*/request.json) return 0 ;;
+              *) return 1 ;;
+            esac
+          }
+
+          if [[ "$CALLER_EVENT_NAME" == "workflow_dispatch" ]]; then
+            REQUEST_PATH="$INPUT_REQUEST_PATH"
+            if ! safe_request_path "$REQUEST_PATH"; then
+              echo "request_path must match ops/requests/apply_patch/<request_id>/request.json" >&2
+              exit 1
+            fi
+          else
+            declare -A request_paths=()
+            while IFS= read -r changed; do
+              case "$changed" in
+                ops/requests/apply_patch/*/request.json)
+                  request_paths["$changed"]=1
+                  ;;
+                ops/requests/apply_patch/*/*.patch|ops/requests/apply_patch/*/*.diff)
+                  request_paths["$(dirname "$changed")/request.json"]=1
+                  ;;
+              esac
+            done < <(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA")
+
+            if [[ "${#request_paths[@]}" -eq 0 ]]; then
+              echo "No apply-patch request found in triggering commit; exiting successfully."
+              echo "skip=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            if [[ "${#request_paths[@]}" -gt 1 ]]; then
+              printf 'Only one apply-patch request may be staged per triggering commit. Found:\n' >&2
+              printf '%s\n' "${!request_paths[@]}" >&2
+              exit 1
+            fi
+            REQUEST_PATH="${!request_paths[@]}"
+          fi
+
+          if [[ ! -f "$REQUEST_PATH" ]]; then
+            echo "Request file not found: $REQUEST_PATH" >&2
+            exit 1
+          fi
+          REQUEST_ID="$(basename "$(dirname "$REQUEST_PATH")")"
+          case "$REQUEST_ID" in
+            *[!A-Za-z0-9._-]*|'')
+              echo "Unsafe request id: $REQUEST_ID" >&2
+              exit 1
+              ;;
+          esac
+          echo "request_path=$REQUEST_PATH" >> "$GITHUB_OUTPUT"
+          echo "request_id=$REQUEST_ID" >> "$GITHUB_OUTPUT"
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+
+      - name: Apply governed patch request
+        if: steps.request.outputs.skip != 'true'
+        shell: bash
+        env:
+          REQUEST_PATH: ${{ steps.request.outputs.request_path }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch || 'main' }}
+          REPORT_DIR: ${{ runner.temp }}/ops-apply-patch/${{ steps.request.outputs.request_id }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$REPORT_DIR"
+          python ops/tools/apply_patch_request.py apply \
+            --repo . \
+            --request "$REQUEST_PATH" \
+            --default-branch "$DEFAULT_BRANCH" \
+            --report-dir "$REPORT_DIR"
+
+      - name: Upload apply-patch report
+        if: always() && steps.request.outputs.skip != 'true'
+        uses: ./.github/actions/upload-chatgpt-artifact
+        with:
+          name: ops-apply-patch-${{ github.run_id }}
+          path: ${{ runner.temp }}/ops-apply-patch/${{ steps.request.outputs.request_id }}/**
+          if-no-files-found: warn
+          retention-days: 14
