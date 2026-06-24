@@ -372,7 +372,9 @@ FUNCTION_RE = re.compile(r"(?i)(?<![-\w])function\s+([A-Za-z_][A-Za-z0-9_-]*)")
 TOKEN_RE = re.compile(r"(?<![-\w])([A-Za-z_][A-Za-z0-9_-]*)(?![-\w])")
 INVOKE_EXPRESSION_RE = re.compile(
     rf"(?<![-\w]){powershell_backtick_tolerant_literal('Invoke-Expression')}(?!`?[-\w])",
-    re.IGNORECASE,
+rf"(?i)(?<![-
+w]){powershell_backtick_tolerant_literal('Invoke-Expression')}(?!'?[-
+w])",
 )
 AST_DYNAMIC_TEXT_RE = re.compile(r"(?i)(^|\s)(&\s*\$|\.\s*\$|\[ScriptBlock\]::Create)")
 DYNAMIC_PATTERNS = (
