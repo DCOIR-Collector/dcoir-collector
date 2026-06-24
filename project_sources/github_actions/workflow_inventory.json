@@ -654,8 +654,7 @@
       "migration_status": "active",
       "operator_purpose": "Automatic PR-focused validation for collector, Gemini, packaging, validation, maintained knowledge, supporting asset, GitHub intake, operator patch tooling, and workflow definition changes.",
       "permissions": {
-        "contents": "read",
-        "pull-requests": "write"
+        "contents": "read"
       },
       "report_family": "chatgpt workflow report section",
       "risk": "medium",
