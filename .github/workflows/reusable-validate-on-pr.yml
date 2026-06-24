@@ -82,6 +82,9 @@ jobs:
       - name: Run PSScriptAnalyzer on collector source
         uses: ./.github/actions/run-psscriptanalyzer
 
+      - name: Check for duplicate function definitions
+        uses: ./.github/actions/run-duplicate-function-check
+
       - name: Run PowerShell review-assist report
         uses: ./.github/actions/run-powershell-review-assist
 
@@ -182,6 +185,8 @@ jobs:
           - artifact_note: includes Gemini smoke-build output, collector runtime output, validate_DCOIR_Run fixture output, documentation-quality output, PSScriptAnalyzer JSON, PowerShell review-assist JSON/Markdown, and TestResults when produced.
           - pr_comment: review-assist report posted as PR comment when pull-requests write permission is granted.
           - job_summary: review-assist report written to GITHUB_STEP_SUMMARY.
+          - duplicate_function_check: blocks merge on any cross-file function name collision in collector source.
+          - psscriptanalyzer_gate: blocks merge on any Error-severity finding; Warnings reported but non-blocking.
 
           The workflow conclusion is the authoritative pass/fail signal for the PR validation lane. Use artifact readback for package, harness, or report-specific claims.
           "@ | Set-Content -Path chatgpt_workflow_report_section/chatgpt_workflow_report_section.md -Encoding utf8
