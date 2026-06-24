@@ -238,6 +238,46 @@ class PowerShellFunctionReachabilityReportTests(unittest.TestCase):
         self.assertFalse(report["validation"]["success"])
         self.assertTrue(any("collector runtime source is missing" in error for error in report["validation"]["errors"]))
 
+    def test_manifest_source_traversal_fails_closed_before_read(self) -> None:
+        with self.make_repo(
+            wrapper_text="function Invoke-Wrapper { }\n",
+            part_texts={"PartA.ps1": "function Invoke-PartOne { }\n"},
+        ) as temp:
+            root = Path(temp)
+            manifest = json.loads((root / reach.DEFAULT_MANIFEST).read_text(encoding="utf-8"))
+            manifest["collector_part_files"].append("../../etc/passwd")
+            write(root / reach.DEFAULT_MANIFEST, json.dumps(manifest, indent=2) + "\n")
+            report = self.build(root)
+
+        self.assertFalse(report["validation"]["success"])
+        self.assertTrue(
+            any("collector runtime source must be a repo-relative path without traversal" in error for error in report["validation"]["errors"])
+        )
+
+    def test_manifest_source_symlink_escape_fails_closed_before_read(self) -> None:
+        with self.make_repo(
+            wrapper_text="function Invoke-Wrapper { }\n",
+            part_texts={"PartA.ps1": "function Invoke-PartOne { }\n"},
+        ) as temp:
+            root = Path(temp)
+            outside = root.parent / f"{root.name}-outside.ps1"
+            write(outside, "function Invoke-Outside { }\n")
+            try:
+                link = root / "project_sources/collector/source/parts/Escape.ps1"
+                try:
+                    link.symlink_to(outside)
+                except OSError as exc:
+                    self.skipTest(f"symlink unavailable: {exc}")
+                manifest = json.loads((root / reach.DEFAULT_MANIFEST).read_text(encoding="utf-8"))
+                manifest["collector_part_files"].append("project_sources/collector/source/parts/Escape.ps1")
+                write(root / reach.DEFAULT_MANIFEST, json.dumps(manifest, indent=2) + "\n")
+                report = self.build(root)
+            finally:
+                outside.unlink(missing_ok=True)
+
+        self.assertFalse(report["validation"]["success"])
+        self.assertTrue(any("collector runtime source must resolve inside the repository root" in error for error in report["validation"]["errors"]))
+
     def test_unsafe_output_and_output_alias_are_rejected_before_write(self) -> None:
         with self.make_repo(
             wrapper_text="function Invoke-Wrapper { }\n",
