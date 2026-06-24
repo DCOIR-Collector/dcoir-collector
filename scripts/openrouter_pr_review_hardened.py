@@ -890,9 +890,29 @@ def summary_suggests_problem(summary: str) -> bool:
 
 
 def normalize_findings(result: dict[str, Any], config: Any, line_index: dict[tuple[str, int], int]) -> list[dict[str, Any]]:
+    findings, _unanchored_findings = split_findings(result, config, line_index)
+    return findings
+
+
+def severity_sort_key(finding: dict[str, Any]) -> tuple[int, float]:
+    severity_order = {"critical": 0, "high": 1, "medium": 2, "low": 3}
+    try:
+        confidence = float(finding.get("confidence", 0))
+    except (TypeError, ValueError):
+        confidence = 0.0
+    return severity_order.get(str(finding.get("severity", "low")).lower(), 9), -confidence
+
+
+def split_findings(
+    result: dict[str, Any],
+    config: Any,
+    line_index: dict[tuple[str, int], int],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     findings: list[dict[str, Any]] = []
+    unanchored_findings: list[dict[str, Any]] = []
     rejected: list[str] = []
     raw_findings = result.get("findings", [])
+    changed_paths = {path for path, _line in line_index}
     for item in raw_findings:
         try:
             confidence = float(item.get("confidence", 0))
@@ -906,15 +926,21 @@ def normalize_findings(result: dict[str, Any], config: Any, line_index: dict[tup
             rejected.append(f"{path or '<missing-path>'}:{line or '<missing-line>'} low confidence {confidence:.2f} ({title})")
             continue
         if (path, line) not in line_index:
+            if path and path in changed_paths:
+                unanchored = dict(item)
+                unanchored["_unanchored_reason"] = f"{path}:{line} is in a changed file but not an added changed line"
+                unanchored_findings.append(unanchored)
+                continue
             rejected.append(f"{path or '<missing-path>'}:{line or '<missing-line>'} not in changed diff ({title})")
             continue
         findings.append(item)
 
-    severity_order = {"critical": 0, "high": 1, "medium": 2, "low": 3}
-    findings.sort(key=lambda f: (severity_order.get(str(f.get("severity", "low")), 9), -float(f.get("confidence", 0))))
+    findings.sort(key=severity_sort_key)
     findings = findings[: config.max_inline_comments]
-    if findings:
-        return findings
+    unanchored_findings.sort(key=severity_sort_key)
+    unanchored_findings = unanchored_findings[: config.max_inline_comments]
+    if findings or unanchored_findings:
+        return findings, unanchored_findings
 
     if raw_findings and getattr(config, "fail_on_unanchored_findings", True):
         details = "; ".join(rejected[:6]) if rejected else "no accepted findings"
@@ -930,16 +956,84 @@ def normalize_findings(result: dict[str, Any], config: Any, line_index: dict[tup
             "array was empty. The review must produce actionable file/line findings or a clean summary."
         )
 
-    return []
+    return [], []
 
 
-def enforce_risk_sentinel_findings(findings: list[dict[str, Any]], risk_sentinels: list[RiskSentinel], config: Any) -> None:
-    if findings or not risk_sentinels or not getattr(config, "risk_sentinel_quality_gate", True):
+def enforce_risk_sentinel_findings(
+    findings: list[dict[str, Any]],
+    risk_sentinels: list[RiskSentinel],
+    config: Any,
+    unanchored_findings: list[dict[str, Any]] | None = None,
+) -> None:
+    if findings or unanchored_findings or not risk_sentinels or not getattr(config, "risk_sentinel_quality_gate", True):
         return
     raise ReviewQualityError(
         "OpenRouter review quality failure: the changed diff contained high-risk changed-line signals, but the model "
         "produced no actionable inline findings after quality retry. Signals: "
         f"{risk_sentinel_digest(risk_sentinels)}."
+    )
+
+
+def format_unanchored_finding(finding: dict[str, Any], model_used: str, config: Any) -> str:
+    title = sanitize_github_output(str(finding.get("title", "Finding")).strip(), config)
+    severity = str(finding.get("severity", "medium")).upper()
+    path = sanitize_github_output(str(finding.get("path", "<missing-path>")).strip(), config)
+    line = sanitize_github_output(str(finding.get("line", "<missing-line>")).strip(), config)
+    body = sanitize_github_output(str(finding.get("body", "")).strip(), config)
+    validation = sanitize_github_output(str(finding.get("validation", "")).strip(), config)
+    reason = sanitize_github_output(str(finding.get("_unanchored_reason", "not anchored to an added changed line")), config)
+    try:
+        confidence = float(finding.get("confidence", 0))
+    except (TypeError, ValueError):
+        confidence = 0.0
+    parts = [
+        f"**{severity}: {title}**",
+        f"- Location: `{path}:{line}`.",
+        f"- Inline anchor: {reason}.",
+        f"- Confidence: `{confidence:.2f}`.",
+    ]
+    if body:
+        parts.extend(["", body])
+    if validation:
+        parts.extend(["", "Validation expected after fix:", "", "```text", validation, "```"])
+    parts.extend(["", f"<sub>Model: `{model_used}`</sub>"])
+    return "\n".join(parts)
+
+
+def build_review_body_with_unanchored(
+    result: dict[str, Any],
+    findings: list[dict[str, Any]],
+    unanchored_findings: list[dict[str, Any]],
+    model_used: str,
+    config: Any,
+) -> str:
+    if not unanchored_findings:
+        return base.build_review_body(result, findings, model_used, config)
+    summary = sanitize_github_output(str(result.get("summary", "OpenRouter review completed.")).strip(), config)
+    inline_plural = "finding" if len(findings) == 1 else "findings"
+    body_plural = "finding" if len(unanchored_findings) == 1 else "findings"
+    formatted_unanchored = "\n\n".join(
+        format_unanchored_finding(finding, model_used, config) for finding in unanchored_findings
+    )
+    result_line = (
+        f"Review posted with `{len(findings)}` inline {inline_plural} and "
+        f"`{len(unanchored_findings)}` unanchored review-body {body_plural}."
+    )
+    return base.github_safe_body(
+        f"""{base.MARKER}
+OpenRouter PR review completed.
+
+{summary}
+
+Result: {result_line}
+
+Unanchored findings:
+
+{formatted_unanchored}
+
+Model: `{model_used}`
+""".strip(),
+        limit=12000,
     )
 
 
@@ -1013,8 +1107,8 @@ def main() -> None:
         line_index = build_added_line_index(diff)
         result, model_used, service_tier = openrouter_review_with_quality_retry(prompt, schema, config, reporter, risk_sentinels, line_index)
         reporter.update("normalize", "mapping model findings to changed diff lines")
-        findings = normalize_findings(result, config, line_index)
-        enforce_risk_sentinel_findings(findings, risk_sentinels, config)
+        findings, unanchored_findings = split_findings(result, config, line_index)
+        enforce_risk_sentinel_findings(findings, risk_sentinels, config, unanchored_findings)
 
         comments: list[dict[str, Any]] = []
         for finding in findings:
@@ -1023,8 +1117,9 @@ def main() -> None:
             comments.append({"path": path, "position": line_index[(path, line)], "body": base.build_inline_comment(finding, model_used, config)})
 
         event = "REQUEST_CHANGES" if comments and config.request_changes_on_findings else "COMMENT"
-        review_body = base.build_review_body(result, findings, model_used, config)
-        reporter.update("github-review", f"posting GitHub review with {len(comments)} inline comments")
+        review_body = build_review_body_with_unanchored(result, findings, unanchored_findings, model_used, config)
+        unanchored_note = f" and {len(unanchored_findings)} unanchored review-body findings" if unanchored_findings else ""
+        reporter.update("github-review", f"posting GitHub review with {len(comments)} inline comments{unanchored_note}")
         gh.create_review(pr_number, review_body, event, comments, str(pr.get("head", {}).get("sha", "")))
         remove_eyes_reaction(gh, trigger_comment_id, reaction_id, reaction_status)
         tier_note = f"; service_tier={service_tier}" if service_tier else ""
