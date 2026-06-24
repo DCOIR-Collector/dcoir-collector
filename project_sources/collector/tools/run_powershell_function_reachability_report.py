@@ -738,9 +738,9 @@ def build_report(args: argparse.Namespace) -> dict[str, Any]:
     references: list[Reference] = []
     dynamic_sites: list[dict[str, Any]] = []
     parser_warnings: list[dict[str, Any]] = []
-    parser_mode = args.parser_mode
+    parser_mode = "python_lexical_fallback" if getattr(args, "no_powershell", False) else args.parser_mode
     if not errors:
-        definitions, references, dynamic_sites, parser_warnings, parser_mode = parse_sources(sources, args.parser_mode)
+        definitions, references, dynamic_sites, parser_warnings, parser_mode = parse_sources(sources, parser_mode)
         warnings.extend(scalar(item.get("message")) for item in parser_warnings if isinstance(item, dict) and item.get("message"))
     seen_defs: set[tuple[str, str, int]] = set()
     for definition in definitions:
@@ -840,6 +840,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--json-output", default=DEFAULT_JSON_OUTPUT.as_posix(), help="Output JSON report path")
     parser.add_argument("--markdown-output", default=DEFAULT_MARKDOWN_OUTPUT.as_posix(), help="Output Markdown report path")
     parser.add_argument("--parser-mode", choices=("auto", "powershell_ast", "python_lexical_fallback"), default="auto")
+    parser.add_argument("--no-powershell", action="store_true", help="Force the deterministic Python lexical fallback and never invoke PowerShell.")
     parser.add_argument("--entrypoint", action="append", default=[], help="Known entrypoint function name; repeatable")
     parser.add_argument("--no-write", action="store_true", help="Build report without writing output files")
     return parser.parse_args(argv)
