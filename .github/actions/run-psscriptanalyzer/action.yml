@@ -133,6 +133,11 @@ runs:
 
         $report = [ordered]@{
           schema_version   = 'dcoir_powershell_analyzer_report_v1'
+          validation       = [ordered]@{
+            success  = $true
+            errors   = @()
+            warnings = @()
+          }
           summary          = [ordered]@{
             file_count         = [int]$sourceFiles.Count
             finding_count      = [int]$allFindings.Count
