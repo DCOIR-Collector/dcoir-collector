@@ -117,6 +117,26 @@ class PowerShellFunctionReachabilityReportTests(unittest.TestCase):
         self.assertEqual(by_name["Invoke-Uncalled"]["classification"], "dynamic_invocation_uncertain")
         self.assertEqual(by_name["Invoke-PartTwo"]["reference_count"], 1)
 
+    def test_python_fallback_detects_backtick_obfuscated_invoke_expression(self) -> None:
+        with self.make_repo(
+            wrapper_text="""
+            function Invoke-Wrapper { 'entry' }
+            """,
+            part_texts={
+                "PartA.ps1": """
+                function Invoke-Uncalled { 'not directly called' }
+                I`n`v`o`k`e`-`E`x`p`r`e`s`s`i`o`n $scriptText
+                """,
+            },
+        ) as temp:
+            report = self.build(Path(temp), entrypoint=["Invoke-Wrapper"])
+
+        self.assertTrue(report["validation"]["success"])
+        self.assertEqual(report["summary"]["dynamic_invocation_site_count"], 1)
+        self.assertEqual(report["dynamic_invocation_sites"][0]["kind"], "invoke_expression")
+        by_name = {item["name"]: item for item in report["functions"]}
+        self.assertEqual(by_name["Invoke-Uncalled"]["classification"], "dynamic_invocation_uncertain")
+
     def test_static_unreferenced_is_bounded_when_no_dynamic_sites_exist(self) -> None:
         with self.make_repo(
             wrapper_text="""
