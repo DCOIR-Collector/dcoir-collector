@@ -210,6 +210,14 @@ class PowerShellFunctionReachabilityReportTests(unittest.TestCase):
         self.assertEqual(reach.ast_definition_kind("  "), "top_level")
         self.assertEqual(reach.ast_definition_kind(None), "top_level")
 
+    def test_ast_invocation_kind_defaults_empty_values_to_not_extracted(self) -> None:
+        self.assertEqual(reach.ast_invocation_kind("Dot"), "Dot")
+        self.assertEqual(reach.ast_invocation_kind("  Ampersand  "), "Ampersand")
+        for value in ("", "  ", None):
+            with self.subTest(value=value):
+                self.assertEqual(reach.ast_invocation_kind(value), "not_extracted")
+                self.assertNotEqual(reach.ast_invocation_kind(value), "Unknown")
+
 
 if __name__ == "__main__":
     raise SystemExit(unittest.main())
