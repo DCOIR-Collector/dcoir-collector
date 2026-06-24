@@ -1,0 +1,16 @@
+{
+  "allowed_roots": [
+    "scripts"
+  ],
+  "commit_message": "Handle unanchored OpenRouter findings",
+  "expected_current_sha256": "9ce83c40c248580159a3f86f62d6243cdb6143554653b19f45fb4ba6c21ba4da",
+  "expected_new_sha256": "b9bd51d25a35e3c36ec54ac3d953ea690213c88fe8cdbac440c555974f3f8855",
+  "expected_patch_sha256": "54214245211476a5e76208035886a14349f20b545c11ffc0ea2409f15da3eee0",
+  "expected_target_blob_sha": "3ba7abd284a2b44e4745927d84b3e7e576ccde2d",
+  "mode": "apply",
+  "patch_path": "ops/requests/apply_patch/pr307-dcoir-review-unanchored-runner-001/change.patch",
+  "request_id": "pr307-dcoir-review-unanchored-runner-001",
+  "schema": "dcoir.ops.apply_patch_request.v1",
+  "target_branch": "codex/issue-306-function-reachability-report",
+  "target_path": "scripts/openrouter_pr_review_hardened.py"
+}
