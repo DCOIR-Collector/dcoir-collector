@@ -190,6 +190,33 @@ class PowerShellFunctionReachabilityReportTests(unittest.TestCase):
         self.assertEqual(report["summary"]["parser_mode"], "python_lexical_fallback")
         self.assertEqual(report["generated_from"]["parser_mode"], "python_lexical_fallback")
 
+    def test_powershell_ast_timeout_falls_back_with_text_warnings(self) -> None:
+        with self.make_repo(
+            wrapper_text="function Invoke-Wrapper { Invoke-PartOne }\n",
+            part_texts={"PartA.ps1": "function Invoke-PartOne { }\n"},
+        ) as temp:
+            root = Path(temp)
+            _manifest, sources, errors = reach.resolve_sources(root, root / reach.DEFAULT_MANIFEST)
+            self.assertEqual([], errors)
+            timeout = reach.subprocess.TimeoutExpired(
+                cmd=["pwsh"],
+                timeout=60,
+                output=b"stdout bytes",
+                stderr=b"stderr bytes",
+            )
+            with patch.object(reach, "powershell_executable", return_value="pwsh"):
+                with patch.object(reach.subprocess, "run", side_effect=timeout):
+                    definitions, references, dynamic_sites, warnings, parser_mode = reach.parse_with_powershell_ast(sources)
+
+        self.assertEqual([], definitions)
+        self.assertEqual([], references)
+        self.assertEqual([], dynamic_sites)
+        self.assertEqual("python_lexical_fallback", parser_mode)
+        self.assertEqual("stdout bytes", warnings[0]["stdout"])
+        self.assertEqual("stderr bytes", warnings[0]["stderr"])
+        json.dumps(warnings)
+
+
     def test_review_assist_mismatch_gate_flags_stale_committed_report(self) -> None:
         generated = self.build(REPO_ROOT)
         committed = json.loads(json.dumps(generated))

@@ -475,6 +475,14 @@ def fallback_parse_source(
     return definitions, references, dynamic_sites, []
 
 
+def captured_text(value: str | bytes | None) -> str:
+    if value is None:
+        return ""
+    if isinstance(value, bytes):
+        return value.decode("utf-8", errors="replace")
+    return value
+
+
 def powershell_executable() -> str | None:
     return shutil.which("pwsh") or shutil.which("powershell")
 
@@ -512,8 +520,8 @@ def parse_with_powershell_ast(sources: list[SourceFile]) -> tuple[list[Definitio
         except subprocess.TimeoutExpired as exc:
             warning = {
                 "message": "PowerShell AST parse timed out after 60 seconds; used Python lexical fallback.",
-                "stdout": (exc.stdout or "")[-1000:],
-                "stderr": (exc.stderr or "")[-1000:],
+                "stdout": captured_text(exc.stdout)[-1000:],
+                "stderr": captured_text(exc.stderr)[-1000:],
             }
             return [], [], [], [warning], "python_lexical_fallback"
         if proc.returncode != 0 or not output_json.exists():
