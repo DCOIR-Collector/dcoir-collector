@@ -15,6 +15,20 @@ CLASSIFICATIONS = (
     "static_unreferenced",
 )
 
+SUMMARY_FIELDS = (
+    ("source_file_count", "source file count"),
+    ("coverage_state", "coverage state"),
+)
+
+STRUCTURAL_REPORT_FIELDS = (
+    ("analysis_scope", "analysis scope"),
+    ("entrypoint_names", "entrypoint names"),
+    ("functions", "function records"),
+    ("dynamic_invocation_sites", "dynamic invocation site records"),
+    ("runtime_lane_coverage", "runtime-lane coverage"),
+    ("non_claims", "non-claims"),
+)
+
 REGENERATE_COMMAND = (
     "python project_sources/collector/tools/run_powershell_function_reachability_report.py "
     "--repo-root . --no-powershell "
@@ -45,6 +59,20 @@ def classification_counts(report: dict[str, Any]) -> dict[str, Any]:
     return value if isinstance(value, dict) else {}
 
 
+def validation_success(report: dict[str, Any]) -> Any:
+    value = report.get("validation")
+    if not isinstance(value, dict):
+        return None
+    return value.get("success")
+
+
+def stable_generated_from(report: dict[str, Any]) -> Any:
+    value = report.get("generated_from")
+    if not isinstance(value, dict):
+        return value
+    return {key: entry for key, entry in value.items() if key != "generated_at_utc"}
+
+
 def int_value(value: Any) -> int:
     if value is None:
         return 0
@@ -63,10 +91,18 @@ def mismatch_message(reason: str) -> str:
     )
 
 
+def append_value_mismatch(errors: list[str], label: str) -> None:
+    errors.append(mismatch_message(f"Regenerated PowerShell function reachability {label} did not match the committed report."))
+
+
 def compare_reports(generated: dict[str, Any], committed: dict[str, Any]) -> list[str]:
     errors: list[str] = []
     generated_summary = summary(generated)
     committed_summary = summary(committed)
+    if validation_success(generated) is not True:
+        errors.append(mismatch_message("Regenerated PowerShell function reachability report did not pass self-validation."))
+    if validation_success(committed) is not True:
+        errors.append(mismatch_message("Committed PowerShell function reachability report did not pass self-validation."))
     if generated_summary.get("parser_mode") != committed_summary.get("parser_mode"):
         errors.append(mismatch_message("Regenerated PowerShell function reachability parser mode did not match the committed report."))
     if generated_summary.get("function_count") != committed_summary.get("function_count"):
@@ -75,6 +111,9 @@ def compare_reports(generated: dict[str, Any], committed: dict[str, Any]) -> lis
         errors.append(
             mismatch_message("Regenerated PowerShell function reachability dynamic invocation site count did not match the committed report.")
         )
+    for summary_field, summary_label in SUMMARY_FIELDS:
+        if generated_summary.get(summary_field) != committed_summary.get(summary_field):
+            append_value_mismatch(errors, summary_label)
     for classification_name in CLASSIFICATIONS:
         generated_count = classification_count(generated, classification_name)
         committed_count = classification_count(committed, classification_name)
@@ -84,6 +123,11 @@ def compare_reports(generated: dict[str, Any], committed: dict[str, Any]) -> lis
                 f"{classification_name}: generated={generated_count} committed={committed_count}"
             )
             errors.append(mismatch_message(reason))
+    if stable_generated_from(generated) != stable_generated_from(committed):
+        append_value_mismatch(errors, "generator metadata")
+    for field_name, field_label in STRUCTURAL_REPORT_FIELDS:
+        if generated.get(field_name) != committed.get(field_name):
+            append_value_mismatch(errors, field_label)
     return errors
 
 
