@@ -42,6 +42,14 @@ runs:
           if (-not $normalized.EndsWith($ExpectedSuffix)) {
             throw "${Label} output path must end with ${ExpectedSuffix}: $PathValue"
           }
+          $repoRoot = (Get-Location).ProviderPath
+          $collectorRoot = [System.IO.Path]::GetFullPath((Join-Path $repoRoot 'project_sources/collector'))
+          $candidateFullPath = [System.IO.Path]::GetFullPath((Join-Path $repoRoot $normalized))
+          $separatorChars = [char[]]@([System.IO.Path]::DirectorySeparatorChar, [System.IO.Path]::AltDirectorySeparatorChar)
+          $collectorPrefix = $collectorRoot.TrimEnd($separatorChars) + [System.IO.Path]::DirectorySeparatorChar
+          if (-not $candidateFullPath.StartsWith($collectorPrefix, [System.StringComparison]::Ordinal)) {
+            throw "$Label output path must resolve under project_sources/collector: $PathValue"
+          }
           return $normalized
         }
 
