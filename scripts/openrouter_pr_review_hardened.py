@@ -103,6 +103,42 @@ RISK_SENTINEL_EXTENSIONS = {
 }
 
 
+NON_ACTIONABLE_FINDING_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
+    (
+        re.compile(r"(?:downgrades?|downgraded).{0,120}informational", re.IGNORECASE | re.DOTALL),
+        "finding downgrades itself to informational",
+    ),
+    (
+        re.compile(r"informational.{0,120}(?:note|signal|finding|only)", re.IGNORECASE | re.DOTALL),
+        "finding describes itself as informational",
+    ),
+    (
+        re.compile(
+            r"(?:risk|signal|finding).{0,120}(?:not realized|is not realized|was not realized)",
+            re.IGNORECASE | re.DOTALL,
+        ),
+        "finding says the risk is not realized",
+    ),
+    (
+        re.compile(
+            r"does not(?: itself)?\s+(?:introduce|create|pose|add).{0,120}"
+            r"(?:risk|issue|problem|defect|vulnerability|injection path)",
+            re.IGNORECASE | re.DOTALL,
+        ),
+        "finding says the changed code does not introduce the risk",
+    ),
+    (
+        re.compile(r"no.{0,80}(?:input|data|value|text).{0,80}reaches", re.IGNORECASE | re.DOTALL),
+        "finding says no input reaches the risky path",
+    ),
+    (
+        re.compile(r"no.{0,80}(?:execution|injection|exploit|vulnerability).{0,80}(?:path|risk)", re.IGNORECASE | re.DOTALL),
+        "finding says no execution or injection path exists",
+    ),
+)
+
+
+
 def sanitize_github_output(text: str, config: Any, neutralize_mentions: bool = True) -> str:
     if hasattr(base, "sanitize_github_output"):
         return base.sanitize_github_output(text, config, neutralize_mentions=neutralize_mentions)
@@ -475,6 +511,7 @@ Governed review hardening requirements:
 - For Markdown and governed-source findings, anchor the finding to the nearest changed right-side line that introduced or materially preserves the risky wording.
 - If a small suggestion block is not safe, leave suggested_replacement empty and put exact repair steps in the finding body.
 - Each finding body must include observed behavior, impact, exact correction guidance, and validation or readback guidance.
+- Do not return informational or advisory findings that say the risk is not realized, the changed code does not introduce the risk, or no input reaches the risky path. Put that in a clean summary instead.
 """.strip()
     if risk_sentinels and getattr(config, "risk_sentinel_quality_gate", True):
         hardening = f"{hardening}\n\n{risk_sentinel_block(risk_sentinels, config)}"
@@ -513,6 +550,51 @@ def raw_findings_digest(result: dict[str, Any]) -> str:
     return "; ".join(details) if details else "no structured findings"
 
 
+def finding_text_for_quality(item: dict[str, Any]) -> str:
+    parts = [
+        str(item.get("title", "") or ""),
+        str(item.get("body", "") or ""),
+        str(item.get("validation", "") or ""),
+    ]
+    return re.sub(r"\s+", " ", "
+".join(parts)).strip()
+
+
+def non_actionable_finding_reason(item: dict[str, Any]) -> str:
+    text = finding_text_for_quality(item)
+    if not text:
+        return ""
+    for pattern, reason in NON_ACTIONABLE_FINDING_PATTERNS:
+        if pattern.search(text):
+            return reason
+    return ""
+
+
+def non_actionable_findings_digest(result: dict[str, Any], config: Any) -> str:
+    raw_findings = result.get("findings", [])
+    if not isinstance(raw_findings, list):
+        return ""
+    details: list[str] = []
+    for item in raw_findings[:6]:
+        if not isinstance(item, dict):
+            continue
+        reason = non_actionable_finding_reason(item)
+        if not reason:
+            continue
+        try:
+            confidence = float(item.get("confidence", 0))
+        except (TypeError, ValueError):
+            confidence = 0.0
+        if confidence < config.minimum_confidence:
+            continue
+        path = str(item.get("path", "<missing-path>") or "<missing-path>").strip()
+        line = str(item.get("line", "<missing-line>") or "<missing-line>").strip()
+        title = str(item.get("title", "untitled") or "untitled").strip()[:80]
+        details.append(f"{path}:{line} {reason} ({title})")
+    return "; ".join(details)
+
+
+
 def has_minimum_confidence_finding(result: dict[str, Any], config: Any) -> bool:
     raw_findings = result.get("findings", [])
     if not isinstance(raw_findings, list):
@@ -528,6 +610,21 @@ def has_minimum_confidence_finding(result: dict[str, Any], config: Any) -> bool:
     return False
 
 
+
+def has_actionable_minimum_confidence_finding(result: dict[str, Any], config: Any) -> bool:
+    raw_findings = result.get("findings", [])
+    if not isinstance(raw_findings, list):
+        return False
+    for item in raw_findings:
+        if not isinstance(item, dict) or non_actionable_finding_reason(item):
+            continue
+        try:
+            if float(item.get("confidence", 0)) >= config.minimum_confidence:
+                return True
+        except (TypeError, ValueError):
+            continue
+    return False
+
 def has_actionable_changed_line_finding(
     result: dict[str, Any],
     config: Any,
@@ -537,7 +634,7 @@ def has_actionable_changed_line_finding(
     if not isinstance(raw_findings, list):
         return False
     for item in raw_findings:
-        if not isinstance(item, dict):
+        if not isinstance(item, dict) or non_actionable_finding_reason(item):
             continue
         try:
             confidence = float(item.get("confidence", 0))
@@ -575,6 +672,12 @@ def review_quality_retry_reason(
 
     raw_findings = result.get("findings", [])
     if raw_findings and getattr(config, "fail_on_unanchored_findings", True):
+        non_actionable_details = non_actionable_findings_digest(result, config)
+        if non_actionable_details and not has_actionable_minimum_confidence_finding(result, config):
+            return (
+                "model returned only self-described non-actionable or informational findings: "
+                f"{non_actionable_details}"
+            )
         if not has_minimum_confidence_finding(result, config):
             return (
                 "model returned structured findings, but none met the configured minimum confidence "
@@ -613,6 +716,7 @@ Re-review the changed diff and return one of two valid outputs:
 - Actionable findings anchored to changed right-side file/line entries with confidence at or above {config.minimum_confidence:.2f}; or
 - An empty findings array with a clean summary that does not imply a remaining issue.
 Do not place actionable concerns only in the summary. Do not return low-confidence, unanchored, or speculative findings.
+Do not return informational/advisory findings that explain there is no realized risk; use a clean summary for those.
 If a previous finding was real but poorly anchored or below confidence threshold, convert it into a valid finding with exact file, changed line, observed behavior, impact, correction guidance, and validation/readback guidance.
 
 {anchor_block}
@@ -924,6 +1028,10 @@ def split_findings(
         title = str(item.get("title", "untitled")).strip()[:80]
         if confidence < config.minimum_confidence:
             rejected.append(f"{path or '<missing-path>'}:{line or '<missing-line>'} low confidence {confidence:.2f} ({title})")
+            continue
+        non_actionable_reason = non_actionable_finding_reason(item)
+        if non_actionable_reason:
+            rejected.append(f"{path or '<missing-path>'}:{line or '<missing-line>'} non-actionable ({non_actionable_reason}; {title})")
             continue
         if (path, line) not in line_index:
             if path and path in changed_paths:
