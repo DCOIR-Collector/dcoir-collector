@@ -1184,6 +1184,21 @@ def append_context_to_review_body(body: str, review_mode: str, context_summary: 
     return base.github_safe_body(f"{body}\n\n{CONTEXT_REVIEW_MARKER} `{review_mode}`\n\nContext readback: {safe_context_summary}")
 
 
+
+def load_review_assist_context(config: Any) -> str:
+    """Read PSScriptAnalyzer/review-assist markdown from REVIEW_ASSIST_CONTEXT_PATH if set."""
+    context_path = os.environ.get("REVIEW_ASSIST_CONTEXT_PATH", "").strip()
+    if not context_path:
+        return ""
+    try:
+        content = Path(context_path).read_text(encoding="utf-8")
+        max_chars = int(getattr(config, "deep_review_max_total_chars", 24000)) // 2
+        if len(content) > max_chars:
+            content = content[:max_chars] + "\n...(review-assist context truncated)"
+        return content.strip()
+    except Exception as exc:
+        print(f"WARN: could not load review-assist context from {context_path}: {exc}", file=sys.stderr, flush=True)
+        return ""
 def main() -> None:
     repo = base.env_required("GITHUB_REPOSITORY")
     pr_number = int(base.env_required("PR_NUMBER"))
@@ -1245,6 +1260,11 @@ def main() -> None:
             reporter.update("review-mode", f"prior context review readback failed; using first-pass posture: {str(exc)[:240]}")
         review_mode = review_mode_for_command(comment_body, command, config, prior_successful_review)
         deep_context_block, context_summary = build_deep_context_block(gh, pr, files, config, review_mode)
+        review_assist_ctx = load_review_assist_context(config)
+        if review_assist_ctx:
+            ra_header = "PowerShell static analysis context from last validate-on-pr run (PSScriptAnalyzer + review-assist):"
+            deep_context_block = f"{ra_header}\n\n{review_assist_ctx}\n\n---\n\n{deep_context_block}".strip()
+            reporter.update("review-assist-context", f"injected {len(review_assist_ctx)} chars of PSScriptAnalyzer context")
         safe_context_summary = sanitize_context_summary(context_summary, config)
         reporter.update("context", safe_context_summary)
         risk_sentinels = hardened.detect_risk_sentinels(diff, getattr(config, "risk_sentinel_max_anchors", 12))
