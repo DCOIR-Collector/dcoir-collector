@@ -8,6 +8,7 @@ import tempfile
 import textwrap
 import unittest
 from pathlib import Path
+from unittest import mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import run_powershell_function_reachability_report as reach
@@ -56,6 +57,7 @@ class PowerShellFunctionReachabilityReportTests(unittest.TestCase):
             "parser_mode": "python_lexical_fallback",
             "entrypoint": [],
             "no_write": True,
+            "no_powershell": False,
         }
         values.update(overrides)
         return argparse.Namespace(**values)
@@ -156,6 +158,30 @@ class PowerShellFunctionReachabilityReportTests(unittest.TestCase):
         self.assertEqual(report["dynamic_invocation_sites"][0]["kind"], "invoke_expression")
         by_name = {item["name"]: item for item in report["functions"]}
         self.assertEqual(by_name["Invoke-Uncalled"]["classification"], "dynamic_invocation_uncertain")
+
+    def test_no_powershell_flag_forces_python_fallback_without_subprocess(self) -> None:
+        parsed = reach.parse_args(["--no-powershell"])
+        self.assertTrue(parsed.no_powershell)
+        with self.make_repo(
+            wrapper_text="""
+            function Invoke-Wrapper { Invoke-PartOne }
+            """,
+            part_texts={
+                "PartA.ps1": """
+                function Invoke-PartOne { 'called' }
+                """,
+            },
+        ) as temp:
+            with mock.patch.object(
+                reach,
+                "parse_with_powershell_ast",
+                side_effect=AssertionError("PowerShell AST path should not run when --no-powershell is set"),
+            ):
+                report = self.build(Path(temp), parser_mode="auto", no_powershell=True)
+
+        self.assertTrue(report["validation"]["success"])
+        self.assertEqual(report["summary"]["parser_mode"], "python_lexical_fallback")
+        self.assertEqual(report["generated_from"]["parser_mode"], "python_lexical_fallback")
 
     def test_static_unreferenced_is_bounded_when_no_dynamic_sites_exist(self) -> None:
         with self.make_repo(
