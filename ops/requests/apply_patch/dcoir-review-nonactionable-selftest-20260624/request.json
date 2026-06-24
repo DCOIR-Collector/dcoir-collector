@@ -1,0 +1,14 @@
+{
+  "schema": "dcoir.ops.apply_patch_request.v1",
+  "request_id": "dcoir-review-nonactionable-selftest-20260624",
+  "mode": "apply",
+  "target_branch": "codex/issue-306-function-reachability-report",
+  "target_path": "scripts/openrouter_pr_review_hardened_selftest.py",
+  "patch_path": "ops/requests/apply_patch/dcoir-review-nonactionable-selftest-20260624/dcoir-review-nonactionable-selftest.patch",
+  "expected_patch_sha256": "fa3ca4c9c428334781b57184d943172b78114dd494484e949e63cbe22ad006e7",
+  "expected_target_blob_sha": "317d863d8b3f94c7b122dc82a9e6573ba3c07833",
+  "allowed_roots": [
+    "scripts"
+  ],
+  "commit_message": "Test dcoir review non-actionable finding filter"
+}
