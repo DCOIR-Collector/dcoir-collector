@@ -364,14 +364,27 @@ def brace_depths(masked: str) -> list[int]:
     return depths
 
 
+def powershell_backtick_tolerant_literal(value: str) -> str:
+    return "".join(r"`?" + re.escape(character) for character in value)
+
+
 FUNCTION_RE = re.compile(r"(?i)(?<![-\w])function\s+([A-Za-z_][A-Za-z0-9_-]*)")
 TOKEN_RE = re.compile(r"(?<![-\w])([A-Za-z_][A-Za-z0-9_-]*)(?![-\w])")
+INVOKE_EXPRESSION_RE = re.compile(
+    rf"(?<![-\w]){powershell_backtick_tolerant_literal('Invoke-Expression')}(?!`?[-\w])",
+    re.IGNORECASE,
+)
+AST_DYNAMIC_TEXT_RE = re.compile(r"(?i)(^|\s)(&\s*\$|\.\s*\$|\[ScriptBlock\]::Create)")
 DYNAMIC_PATTERNS = (
     ("call_operator_variable", re.compile(r"&[ \t]*\$[A-Za-z_][A-Za-z0-9_]*", re.IGNORECASE)),
     ("dot_source_variable", re.compile(r"\.[ \t]*\$[A-Za-z_][A-Za-z0-9_]*", re.IGNORECASE)),
-    ("invoke_expression", re.compile(r"(?<![-\w])Invoke-Expression(?![-\w])", re.IGNORECASE)),
+    ("invoke_expression", INVOKE_EXPRESSION_RE),
     ("scriptblock_create", re.compile(r"\[ScriptBlock\]::Create", re.IGNORECASE)),
 )
+
+
+def has_dynamic_command_text(text: str) -> bool:
+    return bool(INVOKE_EXPRESSION_RE.search(text) or AST_DYNAMIC_TEXT_RE.search(text))
 
 
 def fallback_function_keys(sources: list[SourceFile]) -> set[str]:
@@ -547,7 +560,7 @@ def parse_with_powershell_ast(sources: list[SourceFile]) -> tuple[list[Definitio
                         parser="powershell_ast",
                     )
                 )
-            if not name or re.search(r"(?i)(^|\s)(Invoke-Expression|&\s*\$|\.\s*\$|\[ScriptBlock\]::Create)", text):
+            if not name or has_dynamic_command_text(text):
                 dynamic_sites.append(
                     {
                         "kind": "ast_dynamic_or_expression_command",
