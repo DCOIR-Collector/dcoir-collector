@@ -176,6 +176,13 @@ def ast_definition_kind(value: Any) -> str:
     return definition_kind
 
 
+def ast_invocation_kind(value: Any) -> str:
+    invocation_kind = scalar(value).strip()
+    if not invocation_kind:
+        return "not_extracted"
+    return invocation_kind
+
+
 def read_json(path: Path, label: str) -> Any:
     try:
         return json.loads(path.read_text(encoding="utf-8"))
@@ -528,7 +535,7 @@ def parse_with_powershell_ast(sources: list[SourceFile]) -> tuple[list[Definitio
             source_path = scalar(raw_cmd.get("source_path")).strip()
             line = int(raw_cmd.get("line") or 0)
             column = int(raw_cmd.get("column") or 0) or None
-            invocation = scalar(raw_cmd.get("invocation_operator")).strip()
+            invocation = ast_invocation_kind(raw_cmd.get("invocation_operator"))
             if name and name.casefold() in function_names:
                 references.append(
                     Reference(
@@ -536,7 +543,7 @@ def parse_with_powershell_ast(sources: list[SourceFile]) -> tuple[list[Definitio
                         source_path=source_path,
                         line=line,
                         column=column,
-                        invocation_kind=invocation or "Unknown",
+                        invocation_kind=invocation,
                         parser="powershell_ast",
                     )
                 )
