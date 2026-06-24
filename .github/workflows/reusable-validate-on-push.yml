@@ -73,8 +73,25 @@ jobs:
         with:
           output-json: project_sources/validation/out_validate_on_push_documentation_quality/collector_documentation_quality.json
 
+      - name: Run PSScriptAnalyzer on collector source
+        uses: ./.github/actions/run-psscriptanalyzer
+
       - name: Run PowerShell review-assist report
         uses: ./.github/actions/run-powershell-review-assist
+
+      - name: Write review-assist report to job summary
+        if: always()
+        shell: pwsh
+        run: |
+          $reportPath = 'project_sources/collector/powershell_review_assist_workflow_report.md'
+          if (Test-Path -LiteralPath $reportPath) {
+            $content = Get-Content -LiteralPath $reportPath -Raw
+            $header = "## PowerShell Review-Assist Report — Run #$env:GITHUB_RUN_NUMBER`n`n"
+            ($header + $content) | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY -Encoding utf8
+            Write-Host 'Review-assist report written to job summary.'
+          } else {
+            Write-Host 'Review-assist report not found; skipping job summary.'
+          }
 
       - name: Upload validation artifacts
         if: always()
@@ -88,6 +105,7 @@ jobs:
             project_sources/validation/out_validate_on_push_validate_dcoir_run_fixtures/**
             project_sources/validation/out_preflight_documentation_quality/**
             project_sources/validation/out_validate_on_push_documentation_quality/**
+            project_sources/collector/powershell_analyzer_report.json
             project_sources/collector/powershell_review_assist_workflow_report.json
             project_sources/collector/powershell_review_assist_workflow_report.md
           if-no-files-found: warn
@@ -108,7 +126,8 @@ jobs:
           - ref: $env:GITHUB_REF
           - event_name: $env:GITHUB_EVENT_NAME
           - primary_artifact: validate-on-push-results
-          - artifact_note: includes Gemini smoke-build output, collector package smoke-build output, validate_DCOIR_Run fixture output, documentation-quality output, PowerShell review-assist JSON/Markdown, and TestResults when produced.
+          - artifact_note: includes Gemini smoke-build output, collector package smoke-build output, validate_DCOIR_Run fixture output, documentation-quality output, PSScriptAnalyzer JSON, PowerShell review-assist JSON/Markdown, and TestResults when produced.
+          - job_summary: review-assist report written to GITHUB_STEP_SUMMARY.
 
           The workflow conclusion is the authoritative pass/fail signal for the push validation lane. Use artifact readback for harness, package, documentation, or report-specific claims.
           "@ | Set-Content -Path chatgpt_workflow_report_section/chatgpt_workflow_report_section.md -Encoding utf8
