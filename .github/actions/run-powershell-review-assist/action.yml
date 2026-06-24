@@ -45,6 +45,19 @@ runs:
           return $normalized
         }
 
+        function Get-ClassificationCount {
+          param(
+            [Parameter(Mandatory = $true)] [object] $Counts,
+            [Parameter(Mandatory = $true)] [string] $Name
+          )
+
+          $value = $Counts.$Name
+          if ($null -eq $value) {
+            return 0
+          }
+          return [int] $value
+        }
+
         $functionReachabilityJson = 'project_sources/collector/powershell_function_reachability_report.json'
         $functionReachabilityMarkdown = 'project_sources/collector/powershell_function_reachability_report.md'
         $generatedJson = 'project_sources/collector/powershell_review_assist_report.json'
@@ -54,6 +67,10 @@ runs:
         if ($reviewAssistJson -eq $reviewAssistMarkdown) {
           throw 'PowerShell review-assist JSON and Markdown outputs must be different paths.'
         }
+        if (-not (Test-Path -LiteralPath $functionReachabilityJson)) {
+          throw "Committed PowerShell function reachability JSON report is required before regeneration: $functionReachabilityJson"
+        }
+        $committedFunctionReport = Get-Content -LiteralPath $functionReachabilityJson -Raw | ConvertFrom-Json
         Remove-Item -LiteralPath $functionReachabilityJson -Force -ErrorAction SilentlyContinue
         Remove-Item -LiteralPath $functionReachabilityMarkdown -Force -ErrorAction SilentlyContinue
         Remove-Item -LiteralPath $generatedJson -Force -ErrorAction SilentlyContinue
@@ -70,11 +87,14 @@ runs:
           throw "PowerShell function reachability Markdown report was not produced: $functionReachabilityMarkdown"
         }
         $functionReport = Get-Content -LiteralPath $functionReachabilityJson -Raw | ConvertFrom-Json
+        $functionClassificationCounts = $functionReport.summary.classification_counts | ConvertTo-Json -Compress
         Write-Host "function-reachability-json: $functionReachabilityJson"
         Write-Host "function-reachability-markdown: $functionReachabilityMarkdown"
         Write-Host "function-reachability-validation-success: $($functionReport.validation.success)"
         Write-Host "function-reachability-functions: $($functionReport.summary.function_count)"
         Write-Host "function-reachability-parser-mode: $($functionReport.summary.parser_mode)"
+        Write-Host "function-reachability-classification-counts: $functionClassificationCounts"
+        Write-Host "function-reachability-dynamic-invocation-sites: $($functionReport.summary.dynamic_invocation_site_count)"
         Write-Host "function-reachability-coverage-state: $($functionReport.summary.coverage_state)"
         if ($functionExitCode -ne 0) {
           throw "PowerShell function reachability report generation failed with exit code $functionExitCode."
@@ -87,6 +107,22 @@ runs:
         }
         if ($functionReport.summary.coverage_state -ne 'not_collected') {
           throw 'PowerShell function reachability report must not claim runtime-lane coverage.'
+        }
+        if ($functionReport.summary.parser_mode -ne $committedFunctionReport.summary.parser_mode) {
+          throw 'Regenerated PowerShell function reachability parser mode did not match the committed report.'
+        }
+        if ($functionReport.summary.function_count -ne $committedFunctionReport.summary.function_count) {
+          throw 'Regenerated PowerShell function reachability function count did not match the committed report.'
+        }
+        if ($functionReport.summary.dynamic_invocation_site_count -ne $committedFunctionReport.summary.dynamic_invocation_site_count) {
+          throw 'Regenerated PowerShell function reachability dynamic invocation site count did not match the committed report.'
+        }
+        foreach ($classificationName in @('entrypoint', 'literal_referenced', 'dynamic_invocation_uncertain', 'static_unreferenced')) {
+          $generatedCount = Get-ClassificationCount -Counts $functionReport.summary.classification_counts -Name $classificationName
+          $committedCount = Get-ClassificationCount -Counts $committedFunctionReport.summary.classification_counts -Name $classificationName
+          if ($generatedCount -ne $committedCount) {
+            throw "Regenerated PowerShell function reachability classification count did not match committed report for ${classificationName}: generated=$generatedCount committed=$committedCount"
+          }
         }
 
         python project_sources/collector/tools/run_powershell_review_assist_report.py --repo-root .
