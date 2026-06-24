@@ -47,7 +47,7 @@ runs:
 
         $analyzerVersion = (Get-Module PSScriptAnalyzer).Version.ToString()
         $psVersion       = $PSVersionTable.PSVersion.ToString()
-        $psEdition       = [string]($PSVersionTable.PSEdition)
+        $psEditionStr       = [string]($PSVersionTable.PSEdition)
 
         # Discover collector PS1 source files.
         $sourceFiles = [System.Collections.Generic.List[string]]::new()
@@ -150,7 +150,7 @@ runs:
           }
           powershell       = [ordered]@{
             version = $psVersion
-            edition = $psEdition
+            edition = $psEditionStr
           }
           settings         = [ordered]@{
             ruleset              = 'all-builtin'
