@@ -17,7 +17,10 @@ CLASSIFICATIONS = (
 
 SUMMARY_FIELDS = (
     ("source_file_count", "source file count"),
+    ("nested_function_count", "nested function count"),
+    ("reference_count", "reference count"),
     ("coverage_state", "coverage state"),
+    ("validation_success", "validation success summary"),
 )
 
 STRUCTURAL_REPORT_FIELDS = (
