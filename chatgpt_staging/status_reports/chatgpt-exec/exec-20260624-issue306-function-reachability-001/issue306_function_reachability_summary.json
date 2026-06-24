@@ -1,0 +1,25 @@
+﻿{
+    "schema":  "dcoir.chatgpt_staging.issue306_function_reachability_summary.v1",
+    "request_id":  "exec-20260624-issue306-function-reachability-001",
+    "target_branch":  "codex/issue-306-function-reachability-report",
+    "expected_start_head":  "a04a447be79d1fe44e77f2e6c98222622a4680d6",
+    "result":  "failure",
+    "changed_paths":  [
+                          ".github/actions/run-powershell-review-assist/action.yml",
+                          "project_sources/collector/powershell_function_reachability_report.json",
+                          "project_sources/collector/powershell_function_reachability_report.md",
+                          "project_sources/collector/powershell_review_assist_report.json",
+                          "project_sources/collector/powershell_review_assist_report.md",
+                          "project_sources/collector/tools/run_powershell_function_reachability_report.py",
+                          "project_sources/collector/tools/run_powershell_review_assist_report.py",
+                          "project_sources/collector/tools/test_run_powershell_function_reachability_report.py",
+                          "project_sources/collector/tools/test_run_powershell_review_assist_report.py"
+                      ],
+    "validation_results":  [
+
+                           ],
+    "new_head":  null,
+    "pushed_head":  null,
+    "error":  "Python compile validation failed with exit code 1\r\n[Errno 2] No such file or directory: \u0027project_sources/collector/tools/run_powershell_function_reachability_report.py\u0027\r\nAt D:\\a\\dcoir-collector\\dcoir-collector\\chatgpt_staging\\exec_scripts\\exec-20260624-issue306-function-reachability-001.p\r\ns1:87 char:9\r\n+         throw \"$Description failed with exit code $exitCode`n$output\"\r\n+         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\r\n    + CategoryInfo          : OperationStopped: (Python compile ...lity_report.py\u0027:String) [], RuntimeException\r\n    + FullyQualifiedErrorId : Python compile validation failed with exit code 1\r\n    [Errno 2] No such file or directory: \u0027project_sources/collector/tools/run_powershell_function_reachability_report. \r\n   py\u0027",
+    "created_utc":  "2026-06-24T08:58:24Z"
+}
