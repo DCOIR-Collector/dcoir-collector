@@ -79,6 +79,12 @@ class PowerShellFunctionReachabilityReportTests(unittest.TestCase):
         self.assertEqual(report["summary"]["dynamic_invocation_site_count"], 1)
         self.assertTrue(any("safe to delete" in claim for claim in report["non_claims"]))
 
+    def test_real_reachability_report_matches_committed_summary_gate(self) -> None:
+        generated = self.build(REPO_ROOT)
+        committed = json.loads((REPO_ROOT / reach.DEFAULT_JSON_OUTPUT).read_text(encoding="utf-8"))
+
+        self.assertEqual([], reach_gate.compare_reports(generated, committed))
+
     def test_markdown_parity_carries_scope_counts_dynamic_sites_and_non_claims(self) -> None:
         report = self.build(REPO_ROOT)
         markdown = reach.render_markdown(report)
@@ -148,7 +154,7 @@ class PowerShellFunctionReachabilityReportTests(unittest.TestCase):
             part_texts={
                 "PartA.ps1": """
                 function Invoke-Uncalled { 'not directly called' }
-                iNvOkE-eXpReSsIoN $scriptText
+                invoke-expression $scriptText
                 """,
             },
         ) as temp:
