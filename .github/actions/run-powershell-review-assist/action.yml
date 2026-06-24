@@ -95,6 +95,9 @@ runs:
         if (-not (Test-Path -LiteralPath $functionGeneratedMarkdown)) {
           throw "PowerShell function reachability Markdown report was not produced: $functionGeneratedMarkdown"
         }
+        if ($functionExitCode -ne 0) {
+          throw "PowerShell function reachability report generation failed with exit code $functionExitCode."
+        }
         $functionReport = Get-Content -LiteralPath $functionGeneratedJson -Raw | ConvertFrom-Json
         $functionClassificationCounts = $functionReport.summary.classification_counts | ConvertTo-Json -Compress
         Write-Host "function-reachability-committed-json: $functionReachabilityJson"
@@ -107,9 +110,6 @@ runs:
         Write-Host "function-reachability-classification-counts: $functionClassificationCounts"
         Write-Host "function-reachability-dynamic-invocation-sites: $($functionReport.summary.dynamic_invocation_site_count)"
         Write-Host "function-reachability-coverage-state: $($functionReport.summary.coverage_state)"
-        if ($functionExitCode -ne 0) {
-          throw "PowerShell function reachability report generation failed with exit code $functionExitCode."
-        }
         if ($functionReport.validation.success -ne $true) {
           throw 'PowerShell function reachability report validation did not report success.'
         }

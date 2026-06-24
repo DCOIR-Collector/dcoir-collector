@@ -135,6 +135,10 @@ NON_ACTIONABLE_FINDING_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
         re.compile(r"\bno\b.{0,80}\b(?:execution|injection|exploit|vulnerability)\b.{0,80}\b(?:path|risk)\b", re.IGNORECASE | re.DOTALL),
         "finding says no execution or injection path exists",
     ),
+    (
+        re.compile(r"\b(?:out of scope|outside (?:the )?PR scope|no action is required)\b", re.IGNORECASE | re.DOTALL),
+        "finding describes itself as out of scope",
+    ),
 )
 
 
@@ -538,9 +542,12 @@ def raw_findings_digest(result: dict[str, Any]) -> str:
         if not isinstance(item, dict):
             details.append("invalid finding shape")
             continue
-        path = str(item.get("path", "<missing-path>") or "<missing-path>").strip()
-        line = str(item.get("line", "<missing-line>") or "<missing-line>").strip()
-        title = str(item.get("title", "untitled") or "untitled").strip()[:80]
+        raw_path = item.get("path")
+        raw_line = item.get("line")
+        raw_title = item.get("title")
+        path = str(raw_path).strip() if raw_path else "<missing-path>"
+        line = str(raw_line).strip() if raw_line else "<missing-line>"
+        title = (str(raw_title).strip() if raw_title else "untitled")[:80]
         try:
             confidence = float(item.get("confidence", 0))
             confidence_text = f"{confidence:.2f}"
@@ -586,9 +593,12 @@ def non_actionable_findings_digest(result: dict[str, Any], config: Any) -> str:
             confidence = 0.0
         if confidence < config.minimum_confidence:
             continue
-        path = str(item.get("path", "<missing-path>") or "<missing-path>").strip()
-        line = str(item.get("line", "<missing-line>") or "<missing-line>").strip()
-        title = str(item.get("title", "untitled") or "untitled").strip()[:80]
+        raw_path = item.get("path")
+        raw_line = item.get("line")
+        raw_title = item.get("title")
+        path = str(raw_path).strip() if raw_path else "<missing-path>"
+        line = str(raw_line).strip() if raw_line else "<missing-line>"
+        title = (str(raw_title).strip() if raw_title else "untitled")[:80]
         details.append(f"{path}:{line} {reason} ({title})")
     return "; ".join(details)
 
