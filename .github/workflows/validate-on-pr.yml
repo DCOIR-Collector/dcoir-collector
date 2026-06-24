@@ -16,7 +16,7 @@
 # Runtime dependencies:
 # - Uses syntax checks, harness assembly parity, required surface list, Gemini packaging smoke build, validation fixtures, documentation validation, collector runtime packaging, and the Core harness suite.
 # Expected outputs/readback:
-# - PR validation artifacts, ChatGPT workflow report section artifact, and repo-workflows report.
+# - PR validation artifacts, PR comment with review-assist report, job summary, ChatGPT workflow report section artifact, and repo-workflows report.
 # Safety notes:
 # - Skip heavy execution while the pull request is still draft; run when the PR becomes ready or later meaningful sync events occur.
 # Maintenance notes:
@@ -83,11 +83,13 @@ concurrency:
 
 permissions:
   contents: read
+  pull-requests: write
 
 jobs:
   validate:
     uses: ./.github/workflows/reusable-validate-on-pr.yml
     permissions:
       contents: read
+      pull-requests: write
     with:
       caller_event_name: ${{ github.event_name }}
