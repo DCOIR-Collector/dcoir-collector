@@ -204,6 +204,34 @@ class PowerShellFunctionReachabilityReportTests(unittest.TestCase):
         self.assertIn("--no-powershell", errors[0])
         self.assertIn("does not update committed artifacts", errors[0])
 
+    def test_review_assist_mismatch_gate_flags_same_count_function_record_drift(self) -> None:
+        generated = self.build(REPO_ROOT)
+        committed = json.loads(json.dumps(generated))
+        committed["functions"][0]["name"] = f"{committed['functions'][0]['name']}-stale"
+
+        self.assertEqual(generated["summary"]["function_count"], committed["summary"]["function_count"])
+        errors = reach_gate.compare_reports(generated, committed)
+
+        self.assertEqual(1, len(errors))
+        self.assertIn("function records did not match", errors[0])
+        self.assertIn("regenerate and commit the reachability reports", errors[0])
+
+    def test_review_assist_mismatch_gate_flags_same_count_dynamic_site_record_drift(self) -> None:
+        generated = self.build(REPO_ROOT)
+        committed = json.loads(json.dumps(generated))
+        self.assertTrue(committed["dynamic_invocation_sites"])
+        committed["dynamic_invocation_sites"][0]["kind"] = "stale_dynamic_site"
+
+        self.assertEqual(
+            generated["summary"]["dynamic_invocation_site_count"],
+            committed["summary"]["dynamic_invocation_site_count"],
+        )
+        errors = reach_gate.compare_reports(generated, committed)
+
+        self.assertEqual(1, len(errors))
+        self.assertIn("dynamic invocation site records did not match", errors[0])
+        self.assertIn("regenerate and commit the reachability reports", errors[0])
+
     def test_static_unreferenced_is_bounded_when_no_dynamic_sites_exist(self) -> None:
         with self.make_repo(
             wrapper_text="""
