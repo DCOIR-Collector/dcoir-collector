@@ -58,16 +58,35 @@ runs:
           return [int] $value
         }
 
+        function New-FunctionReachabilityMismatchMessage {
+          param(
+            [Parameter(Mandatory = $true)] [string] $Reason
+          )
+
+          $command = 'python project_sources/collector/tools/run_powershell_function_reachability_report.py --repo-root . --no-powershell --json-output project_sources/collector/powershell_function_reachability_report.json --markdown-output project_sources/collector/powershell_function_reachability_report.md'
+          return "$Reason If the collector function surface changed intentionally, regenerate and commit the reachability reports with: $($command). The review-assist gate compares regenerated workflow output to the committed reports and does not update committed artifacts."
+        }
+
         $functionReachabilityJson = 'project_sources/collector/powershell_function_reachability_report.json'
         $functionReachabilityMarkdown = 'project_sources/collector/powershell_function_reachability_report.md'
         $functionGeneratedJson = 'project_sources/collector/powershell_function_reachability_workflow_report.json'
         $functionGeneratedMarkdown = 'project_sources/collector/powershell_function_reachability_workflow_report.md'
-        $generatedJson = 'project_sources/collector/powershell_review_assist_report.json'
-        $generatedMarkdown = 'project_sources/collector/powershell_review_assist_report.md'
+        $generatedJson = 'project_sources/collector/powershell_review_assist_workflow_source_report.json'
+        $generatedMarkdown = 'project_sources/collector/powershell_review_assist_workflow_source_report.md'
         $reviewAssistJson = Assert-ReviewAssistOutputPath -PathValue $env:REVIEW_ASSIST_JSON_OUTPUT -ExpectedSuffix '.json' -Label 'JSON'
         $reviewAssistMarkdown = Assert-ReviewAssistOutputPath -PathValue $env:REVIEW_ASSIST_MARKDOWN_OUTPUT -ExpectedSuffix '.md' -Label 'Markdown'
+        $functionGeneratedJson = Assert-ReviewAssistOutputPath -PathValue $functionGeneratedJson -ExpectedSuffix '.json' -Label 'Function reachability generated JSON'
+        $functionGeneratedMarkdown = Assert-ReviewAssistOutputPath -PathValue $functionGeneratedMarkdown -ExpectedSuffix '.md' -Label 'Function reachability generated Markdown'
+        $generatedJson = Assert-ReviewAssistOutputPath -PathValue $generatedJson -ExpectedSuffix '.json' -Label 'Review-assist generated JSON'
+        $generatedMarkdown = Assert-ReviewAssistOutputPath -PathValue $generatedMarkdown -ExpectedSuffix '.md' -Label 'Review-assist generated Markdown'
         if ($reviewAssistJson -eq $reviewAssistMarkdown) {
           throw 'PowerShell review-assist JSON and Markdown outputs must be different paths.'
+        }
+        if ($functionGeneratedJson -eq $functionGeneratedMarkdown) {
+          throw 'PowerShell function reachability generated JSON and Markdown outputs must be different paths.'
+        }
+        if ($generatedJson -eq $generatedMarkdown) {
+          throw 'PowerShell review-assist generated JSON and Markdown outputs must be different paths.'
         }
         if (-not (Test-Path -LiteralPath $functionReachabilityJson)) {
           throw "Committed PowerShell function reachability JSON report is required before regeneration: $functionReachabilityJson"
@@ -93,8 +112,10 @@ runs:
         }
         $functionReport = Get-Content -LiteralPath $functionGeneratedJson -Raw | ConvertFrom-Json
         $functionClassificationCounts = $functionReport.summary.classification_counts | ConvertTo-Json -Compress
-        Write-Host "function-reachability-json: $functionGeneratedJson"
-        Write-Host "function-reachability-markdown: $functionGeneratedMarkdown"
+        Write-Host "function-reachability-committed-json: $functionReachabilityJson"
+        Write-Host "function-reachability-committed-markdown: $functionReachabilityMarkdown"
+        Write-Host "function-reachability-generated-json: $functionGeneratedJson"
+        Write-Host "function-reachability-generated-markdown: $functionGeneratedMarkdown"
         Write-Host "function-reachability-validation-success: $($functionReport.validation.success)"
         Write-Host "function-reachability-functions: $($functionReport.summary.function_count)"
         Write-Host "function-reachability-parser-mode: $($functionReport.summary.parser_mode)"
@@ -114,27 +135,26 @@ runs:
           throw 'PowerShell function reachability report must not claim runtime-lane coverage.'
         }
         if ($functionReport.summary.parser_mode -ne $committedFunctionReport.summary.parser_mode) {
-          throw 'Regenerated PowerShell function reachability parser mode did not match the committed report.'
+          throw (New-FunctionReachabilityMismatchMessage -Reason 'Regenerated PowerShell function reachability parser mode did not match the committed report.')
         }
         if ($functionReport.summary.function_count -ne $committedFunctionReport.summary.function_count) {
-          throw 'Regenerated PowerShell function reachability function count did not match the committed report.'
+          throw (New-FunctionReachabilityMismatchMessage -Reason 'Regenerated PowerShell function reachability function count did not match the committed report.')
         }
         if ($functionReport.summary.dynamic_invocation_site_count -ne $committedFunctionReport.summary.dynamic_invocation_site_count) {
-          throw 'Regenerated PowerShell function reachability dynamic invocation site count did not match the committed report.'
+          throw (New-FunctionReachabilityMismatchMessage -Reason 'Regenerated PowerShell function reachability dynamic invocation site count did not match the committed report.')
         }
         foreach ($classificationName in @('entrypoint', 'literal_referenced', 'dynamic_invocation_uncertain', 'static_unreferenced')) {
           $generatedCount = Get-ClassificationCount -Counts $functionReport.summary.classification_counts -Name $classificationName
           $committedCount = Get-ClassificationCount -Counts $committedFunctionReport.summary.classification_counts -Name $classificationName
           if ($generatedCount -ne $committedCount) {
-            throw "Regenerated PowerShell function reachability classification count did not match committed report for ${classificationName}: generated=$generatedCount committed=$committedCount"
+            $reason = "Regenerated PowerShell function reachability classification count did not match committed report for ${classificationName}: generated=$generatedCount committed=$committedCount"
+            throw (New-FunctionReachabilityMismatchMessage -Reason $reason)
           }
         }
-        Copy-Item -LiteralPath $functionGeneratedJson -Destination $functionReachabilityJson -Force
-        Copy-Item -LiteralPath $functionGeneratedMarkdown -Destination $functionReachabilityMarkdown -Force
         Remove-Item -LiteralPath $functionGeneratedJson -Force -ErrorAction SilentlyContinue
         Remove-Item -LiteralPath $functionGeneratedMarkdown -Force -ErrorAction SilentlyContinue
 
-        python project_sources/collector/tools/run_powershell_review_assist_report.py --repo-root .
+        python project_sources/collector/tools/run_powershell_review_assist_report.py --repo-root . --json-output $generatedJson --markdown-output $generatedMarkdown
         $exitCode = $LASTEXITCODE
 
         if (-not (Test-Path -LiteralPath $generatedJson)) {
@@ -195,6 +215,8 @@ runs:
         if ($wrapExitCode -ne 0) {
           throw "PowerShell review-assist workflow metadata wrapping failed with exit code $wrapExitCode."
         }
+        Remove-Item -LiteralPath $generatedJson -Force -ErrorAction SilentlyContinue
+        Remove-Item -LiteralPath $generatedMarkdown -Force -ErrorAction SilentlyContinue
 
         if (-not (Test-Path -LiteralPath $reviewAssistJson)) {
           throw "PowerShell review-assist JSON report was not produced: $reviewAssistJson"
@@ -204,6 +226,8 @@ runs:
         }
 
         $report = Get-Content -LiteralPath $reviewAssistJson -Raw | ConvertFrom-Json
+        Write-Host "review-assist-generated-json: $generatedJson"
+        Write-Host "review-assist-generated-markdown: $generatedMarkdown"
         Write-Host "review-assist-json: $reviewAssistJson"
         Write-Host "review-assist-markdown: $reviewAssistMarkdown"
         Write-Host "review-assist-workflow-behavior: $($report.artifact_contract.workflow_behavior)"
