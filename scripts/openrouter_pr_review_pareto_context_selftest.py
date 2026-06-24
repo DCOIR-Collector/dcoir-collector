@@ -9,6 +9,8 @@ import importlib.util
 import io
 import json
 import os
+import sys
+import tempfile
 import urllib.error
 from email.message import Message
 from pathlib import Path
@@ -22,7 +24,6 @@ spec = importlib.util.spec_from_file_location("openrouter_pr_review_pareto_conte
 if spec is None or spec.loader is None:
     raise SystemExit("unable to load openrouter_pr_review_pareto_context.py")
 mod = importlib.util.module_from_spec(spec)
-import sys
 
 sys.modules[spec.name] = mod
 spec.loader.exec_module(mod)
@@ -1336,6 +1337,41 @@ assert "Every semantic, Markdown, governance, validation, or review-gate concern
 assert mod.CONTEXT_REVIEW_MARKER not in small_prompt
 assert mod.DEEP_CONTEXT_PROMPT_TRUNCATED_MARKER.strip() not in small_prompt
 
+
+# Review-assist artifact context must only be loaded from the trusted extraction path.
+class ReviewAssistContextConfig:
+    deep_review_max_total_chars = 80
+
+
+original_context_root = mod.REVIEW_ASSIST_CONTEXT_ROOT
+original_context_report = mod.REVIEW_ASSIST_CONTEXT_REPORT
+original_context_env = os.environ.get("REVIEW_ASSIST_CONTEXT_PATH")
+try:
+    with tempfile.TemporaryDirectory() as context_tmp:
+        context_root = Path(context_tmp) / "review-assist-context"
+        report_rel = Path("project_sources/collector/powershell_review_assist_workflow_report.md")
+        report_path = context_root / report_rel
+        report_path.parent.mkdir(parents=True)
+        report_path.write_text("review assist findings\n" * 10, encoding="utf-8")
+
+        mod.REVIEW_ASSIST_CONTEXT_ROOT = context_root
+        mod.REVIEW_ASSIST_CONTEXT_REPORT = report_rel
+        os.environ["REVIEW_ASSIST_CONTEXT_PATH"] = str(report_path)
+        loaded_context = mod.load_review_assist_context(ReviewAssistContextConfig())
+        assert loaded_context.startswith("review assist findings")
+        assert "review-assist context truncated" in loaded_context
+
+        outside_path = Path(context_tmp) / "outside.md"
+        outside_path.write_text("secret-ish outside context", encoding="utf-8")
+        os.environ["REVIEW_ASSIST_CONTEXT_PATH"] = str(outside_path)
+        assert mod.load_review_assist_context(ReviewAssistContextConfig()) == ""
+finally:
+    mod.REVIEW_ASSIST_CONTEXT_ROOT = original_context_root
+    mod.REVIEW_ASSIST_CONTEXT_REPORT = original_context_report
+    if original_context_env is None:
+        os.environ.pop("REVIEW_ASSIST_CONTEXT_PATH", None)
+    else:
+        os.environ["REVIEW_ASSIST_CONTEXT_PATH"] = original_context_env
 
 class FakeErrorBody:
     def read(self) -> bytes:
