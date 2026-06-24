@@ -8,7 +8,7 @@ on:
   workflow_call:
     inputs:
       caller_event_name:
-        description: Original caller event name so the reusable body can preserve push/workflow_dispatch/workflow_run branching.
+        description: Original caller event name so the reusable body can preserve push/pull_request/workflow_dispatch branching.
         required: false
         type: string
         default: 'workflow_call'
@@ -17,6 +17,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: write
 
 jobs:
   validate:
@@ -24,6 +25,7 @@ jobs:
     runs-on: windows-latest
     permissions:
       contents: read
+      pull-requests: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
@@ -77,8 +79,58 @@ jobs:
         with:
           output-json: project_sources/validation/out_validate_on_pr_documentation_quality/collector_documentation_quality.json
 
+      - name: Run PSScriptAnalyzer on collector source
+        uses: ./.github/actions/run-psscriptanalyzer
+
       - name: Run PowerShell review-assist report
         uses: ./.github/actions/run-powershell-review-assist
+
+      - name: Write review-assist report to job summary
+        if: always()
+        shell: pwsh
+        run: |
+          $reportPath = 'project_sources/collector/powershell_review_assist_workflow_report.md'
+          if (Test-Path -LiteralPath $reportPath) {
+            $content = Get-Content -LiteralPath $reportPath -Raw
+            $header = "## PowerShell Review-Assist Report — Run #$env:GITHUB_RUN_NUMBER`n`n"
+            ($header + $content) | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY -Encoding utf8
+            Write-Host 'Review-assist report written to job summary.'
+          } else {
+            Write-Host 'Review-assist report not found; skipping job summary.'
+          }
+
+      - name: Post review-assist report as PR comment
+        if: always()
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          $reportPath = 'project_sources/collector/powershell_review_assist_workflow_report.md'
+          if (-not (Test-Path -LiteralPath $reportPath)) {
+            Write-Host 'Review-assist report not found; skipping PR comment.'
+            exit 0
+          }
+          $prNumber = $env:PR_NUMBER
+          if ([string]::IsNullOrWhiteSpace($prNumber) -or $prNumber -eq '0') {
+            Write-Host 'No PR number available; skipping PR comment.'
+            exit 0
+          }
+          $body    = Get-Content -LiteralPath $reportPath -Raw
+          $header  = "## :mag: PR Validation Report — Run [#$env:GITHUB_RUN_NUMBER]($env:GITHUB_SERVER_URL/$env:GITHUB_REPOSITORY/actions/runs/$env:GITHUB_RUN_ID)`n`n"
+          $full    = $header + $body
+          # GitHub comment limit is ~65,536 chars.
+          if ($full.Length -gt 64000) {
+            $full = $full.Substring(0, 63800) + "`n`n---`n_Report truncated. Download the `validate-on-pr-results` artifact for the full output._"
+          }
+          $tempFile = [System.IO.Path]::GetTempFileName()
+          try {
+            Set-Content -Path $tempFile -Value $full -Encoding utf8 -NoNewline
+            gh pr comment $prNumber --body-file $tempFile
+            Write-Host "Posted review-assist report as comment on PR #$prNumber."
+          } finally {
+            Remove-Item $tempFile -Force -ErrorAction SilentlyContinue
+          }
 
       - name: Build fresh collector runtime zip for harness
         uses: ./.github/actions/build-collector-runtime-for-harness
@@ -106,6 +158,7 @@ jobs:
             project_sources/validation/out_validate_on_pr_validate_dcoir_run_fixtures/**
             project_sources/validation/out_preflight_documentation_quality/**
             project_sources/validation/out_validate_on_pr_documentation_quality/**
+            project_sources/collector/powershell_analyzer_report.json
             project_sources/collector/powershell_review_assist_workflow_report.json
             project_sources/collector/powershell_review_assist_workflow_report.md
           if-no-files-found: warn
@@ -126,7 +179,9 @@ jobs:
           - ref: $env:GITHUB_REF
           - event_name: $env:GITHUB_EVENT_NAME
           - primary_artifact: validate-on-pr-results
-          - artifact_note: includes Gemini smoke-build output, collector runtime output, validate_DCOIR_Run fixture output, documentation-quality output, PowerShell review-assist JSON/Markdown, and TestResults when produced.
+          - artifact_note: includes Gemini smoke-build output, collector runtime output, validate_DCOIR_Run fixture output, documentation-quality output, PSScriptAnalyzer JSON, PowerShell review-assist JSON/Markdown, and TestResults when produced.
+          - pr_comment: review-assist report posted as PR comment when pull-requests write permission is granted.
+          - job_summary: review-assist report written to GITHUB_STEP_SUMMARY.
 
           The workflow conclusion is the authoritative pass/fail signal for the PR validation lane. Use artifact readback for package, harness, or report-specific claims.
           "@ | Set-Content -Path chatgpt_workflow_report_section/chatgpt_workflow_report_section.md -Encoding utf8
