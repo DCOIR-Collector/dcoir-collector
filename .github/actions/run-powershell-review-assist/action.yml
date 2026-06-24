@@ -61,7 +61,7 @@ runs:
         Remove-Item -LiteralPath $reviewAssistJson -Force -ErrorAction SilentlyContinue
         Remove-Item -LiteralPath $reviewAssistMarkdown -Force -ErrorAction SilentlyContinue
 
-        python project_sources/collector/tools/run_powershell_function_reachability_report.py --repo-root .
+        python project_sources/collector/tools/run_powershell_function_reachability_report.py --repo-root . --no-powershell
         $functionExitCode = $LASTEXITCODE
         if (-not (Test-Path -LiteralPath $functionReachabilityJson)) {
           throw "PowerShell function reachability JSON report was not produced: $functionReachabilityJson"
@@ -74,12 +74,16 @@ runs:
         Write-Host "function-reachability-markdown: $functionReachabilityMarkdown"
         Write-Host "function-reachability-validation-success: $($functionReport.validation.success)"
         Write-Host "function-reachability-functions: $($functionReport.summary.function_count)"
+        Write-Host "function-reachability-parser-mode: $($functionReport.summary.parser_mode)"
         Write-Host "function-reachability-coverage-state: $($functionReport.summary.coverage_state)"
         if ($functionExitCode -ne 0) {
           throw "PowerShell function reachability report generation failed with exit code $functionExitCode."
         }
         if ($functionReport.validation.success -ne $true) {
           throw 'PowerShell function reachability report validation did not report success.'
+        }
+        if ($functionReport.summary.parser_mode -ne 'python_lexical_fallback') {
+          throw 'PowerShell function reachability report must use python_lexical_fallback parser mode in the review-assist gate.'
         }
         if ($functionReport.summary.coverage_state -ne 'not_collected') {
           throw 'PowerShell function reachability report must not claim runtime-lane coverage.'
