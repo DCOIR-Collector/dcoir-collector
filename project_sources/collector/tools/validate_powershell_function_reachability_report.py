@@ -76,6 +76,26 @@ def stable_generated_from(report: dict[str, Any]) -> Any:
     return {key: entry for key, entry in value.items() if key != "generated_at_utc"}
 
 
+def stable_analysis_scope(report: dict[str, Any]) -> Any:
+    value = report.get("analysis_scope")
+    if not isinstance(value, dict):
+        return value
+    stable = dict(value)
+    source_files = stable.get("source_files")
+    if isinstance(source_files, list):
+        stable["source_files"] = [
+            {
+                key: item.get(key)
+                for key in ("path", "load_order")
+                if isinstance(item, dict) and key in item
+            }
+            if isinstance(item, dict)
+            else item
+            for item in source_files
+        ]
+    return stable
+
+
 def int_value(value: Any) -> int:
     if value is None:
         return 0
@@ -129,7 +149,9 @@ def compare_reports(generated: dict[str, Any], committed: dict[str, Any]) -> lis
     if stable_generated_from(generated) != stable_generated_from(committed):
         append_value_mismatch(errors, "generator metadata")
     for field_name, field_label in STRUCTURAL_REPORT_FIELDS:
-        if generated.get(field_name) != committed.get(field_name):
+        generated_value = stable_analysis_scope(generated) if field_name == "analysis_scope" else generated.get(field_name)
+        committed_value = stable_analysis_scope(committed) if field_name == "analysis_scope" else committed.get(field_name)
+        if generated_value != committed_value:
             append_value_mismatch(errors, field_label)
     return errors
 

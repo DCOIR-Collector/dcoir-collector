@@ -1002,6 +1002,12 @@ def summary_suggests_problem(summary: str) -> bool:
     return any(clause_suggests_problem(clause.strip()) for clause in clauses if clause.strip())
 
 
+def finding_location_text(path: str, line: int) -> str:
+    path_text = path if path else "<missing-path>"
+    line_text = str(line) if line else "<missing-line>"
+    return f"{path_text}:{line_text}"
+
+
 def normalize_findings(result: dict[str, Any], config: Any, line_index: dict[tuple[str, int], int]) -> list[dict[str, Any]]:
     findings, _unanchored_findings = split_findings(result, config, line_index)
     return findings
@@ -1036,11 +1042,13 @@ def split_findings(
             continue
         title = str(item.get("title", "untitled")).strip()[:80]
         if confidence < config.minimum_confidence:
-            rejected.append(f"{path or '<missing-path>'}:{line or '<missing-line>'} low confidence {confidence:.2f} ({title})")
+            location_text = finding_location_text(path, line)
+            rejected.append(f"{location_text} low confidence {confidence:.2f} ({title})")
             continue
         non_actionable_reason = non_actionable_finding_reason(item)
         if non_actionable_reason:
-            rejected.append(f"{path or '<missing-path>'}:{line or '<missing-line>'} non-actionable ({non_actionable_reason}; {title})")
+            location_text = finding_location_text(path, line)
+            rejected.append(f"{location_text} non-actionable ({non_actionable_reason}; {title})")
             continue
         if (path, line) not in line_index:
             if path and path in changed_paths:
@@ -1048,7 +1056,8 @@ def split_findings(
                 unanchored["_unanchored_reason"] = f"{path}:{line} is in a changed file but not an added changed line"
                 unanchored_findings.append(unanchored)
                 continue
-            rejected.append(f"{path or '<missing-path>'}:{line or '<missing-line>'} not in changed diff ({title})")
+            location_text = finding_location_text(path, line)
+            rejected.append(f"{location_text} not in changed diff ({title})")
             continue
         findings.append(item)
 
