@@ -4,11 +4,16 @@ description: >
   dcoir_powershell_analyzer_report_v1 JSON report.  The report is written
   to the output-json path so the run-powershell-review-assist action can
   promote it from optional_missing to present_validated.
+  Fails the step on any Error-severity finding.
 inputs:
   output-json:
     description: Repo-relative path for the JSON report.
     required: false
     default: project_sources/collector/powershell_analyzer_report.json
+  fail-on-error-severity:
+    description: Exit non-zero when any Error-severity finding is found.
+    required: false
+    default: 'true'
 runs:
   using: composite
   steps:
@@ -16,6 +21,7 @@ runs:
       shell: pwsh
       env:
         PSSCRIPTANALYZER_OUTPUT_JSON: ${{ inputs.output-json }}
+        FAIL_ON_ERROR_SEVERITY: ${{ inputs.fail-on-error-severity }}
       run: |
         $ErrorActionPreference = 'Stop'
 
@@ -71,7 +77,20 @@ runs:
           return $fullPath.Replace('\', '/')
         }
 
-        # Run analysis.
+        # Hardened rule set: run all built-in rules (PSScriptAnalyzer default) plus
+        # explicitly enable the correctness/security rules that are Warning-or-lower
+        # by default so they appear in the report with their natural severity.
+        # Rules we care most about for a security collector:
+        #   PSAvoidGlobalVars                         — global state leaks across sessions
+        #   PSAvoidUsingConvertToSecureStringWithPlainText — plaintext credential handling
+        #   PSAvoidUsingPlainTextForPassword           — plaintext password params
+        #   PSReviewUnusedParameter                   — dead function interface
+        #   PSUseDeclaredVarsMoreThanAssignments       — dead locals / copy-paste bugs
+        #   PSAvoidShouldContinueWithoutForce         — interactive prompt in automation
+        # All of the above are included in the PSScriptAnalyzer built-in rule set.
+        # Running without -IncludeRule/-ExcludeRule executes all built-in rules.
+
+        # Run analysis across all source files.
         $allFindings = [System.Collections.Generic.List[object]]::new()
         foreach ($file in $sourceFiles) {
           $results = @(Invoke-ScriptAnalyzer -Path $file -Recurse:$false -ErrorAction SilentlyContinue)
@@ -97,8 +116,17 @@ runs:
           }
         }
 
+        $errorFindings   = @($allFindings | Where-Object { $_.severity -eq 'Error' })
+        $warningFindings = @($allFindings | Where-Object { $_.severity -eq 'Warning' })
+        $infoFindings    = @($allFindings | Where-Object { $_.severity -eq 'Information' })
+
+        Write-Host ""
         Write-Host "PSScriptAnalyzer complete: $($allFindings.Count) finding(s) across $($sourceFiles.Count) file(s)"
-        $allFindings | ForEach-Object { Write-Host "  $($_.severity): $($_.rule_name) at $($_.path):$($_.line)" }
+        Write-Host "  Error:       $($errorFindings.Count)"
+        Write-Host "  Warning:     $($warningFindings.Count)"
+        Write-Host "  Information: $($infoFindings.Count)"
+        Write-Host ""
+        $allFindings | ForEach-Object { Write-Host "  [$($_.severity.ToUpper())] $($_.rule_name) at $($_.path):$($_.line)" }
 
         # Build repo-relative target list.
         $repoRelTargets = @($sourceFiles | ForEach-Object { Get-RepoRelativePath $_ })
@@ -106,9 +134,12 @@ runs:
         $report = [ordered]@{
           schema_version   = 'dcoir_powershell_analyzer_report_v1'
           summary          = [ordered]@{
-            file_count    = [int]$sourceFiles.Count
-            finding_count = [int]$allFindings.Count
-            skipped_count = 0
+            file_count         = [int]$sourceFiles.Count
+            finding_count      = [int]$allFindings.Count
+            error_count        = [int]$errorFindings.Count
+            warning_count      = [int]$warningFindings.Count
+            information_count  = [int]$infoFindings.Count
+            skipped_count      = 0
           }
           findings         = @($allFindings)
           targets          = @($repoRelTargets)
@@ -122,8 +153,9 @@ runs:
             edition = $psEdition
           }
           settings         = [ordered]@{
-            ruleset        = 'default'
-            excluded_rules = @()
+            ruleset              = 'all-builtin'
+            excluded_rules       = @()
+            fail_on_error        = ($env:FAIL_ON_ERROR_SEVERITY -ne 'false')
           }
           inventory        = [ordered]@{
             source_root = 'project_sources/collector/source'
@@ -144,5 +176,24 @@ runs:
         $report | ConvertTo-Json -Depth 10 | Set-Content -Path $outputJson -Encoding utf8
         Write-Host "PSScriptAnalyzer report written to: $outputJson"
 
-# Compensating evidence: step name, stdout finding summary, and generated JSON artifact
+        # ── Severity gate ─────────────────────────────────────────────────────────
+        # Fail on any Error-severity finding.  Warnings are reported but non-blocking
+        # for now; promote to blocking once the current Warning backlog is triaged.
+        if ($env:FAIL_ON_ERROR_SEVERITY -ne 'false' -and $errorFindings.Count -gt 0) {
+          Write-Host ""
+          Write-Host "SEVERITY GATE FAILED — $($errorFindings.Count) Error-severity finding(s):"
+          foreach ($f in $errorFindings) {
+            Write-Host "  [ERROR] $($f.rule_name) at $($f.path):$($f.line)"
+            Write-Host "          $($f.observed_problem)"
+          }
+          throw "PSScriptAnalyzer found $($errorFindings.Count) Error-severity violation(s). Fix before merging."
+        }
+
+        if ($allFindings.Count -eq 0) {
+          Write-Host "PASS: PSScriptAnalyzer found no findings."
+        } else {
+          Write-Host "PASS (gate): 0 Error-severity findings. $($warningFindings.Count) Warning(s) and $($infoFindings.Count) Information finding(s) noted above — not blocking."
+        }
+
+# Compensating evidence: step name, stdout severity breakdown, and generated JSON artifact
 # preserve review evidence despite composite action grouping.
