@@ -203,6 +203,13 @@ class PowerShellFunctionReachabilityReportTests(unittest.TestCase):
         self.assertEqual(written["outputs"]["json"], json_output.as_posix())
         self.assertEqual(written["outputs"]["markdown"], markdown_output.as_posix())
 
+    def test_ast_definition_kind_defaults_empty_values_explicitly(self) -> None:
+        self.assertEqual(reach.ast_definition_kind("nested"), "nested")
+        self.assertEqual(reach.ast_definition_kind(" top_level "), "top_level")
+        self.assertEqual(reach.ast_definition_kind(""), "top_level")
+        self.assertEqual(reach.ast_definition_kind("  "), "top_level")
+        self.assertEqual(reach.ast_definition_kind(None), "top_level")
+
 
 if __name__ == "__main__":
     raise SystemExit(unittest.main())
