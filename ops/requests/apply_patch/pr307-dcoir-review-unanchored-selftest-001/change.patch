@@ -1,0 +1,71 @@
+--- a/scripts/openrouter_pr_review_hardened_selftest.py
++++ b/scripts/openrouter_pr_review_hardened_selftest.py
+@@ -138,17 +138,48 @@
+ )
+ assert len(accepted) == 1
+ 
++unanchored_result = {
++    "summary": "The only high-signal finding is a review-gate regression.",
++    "findings": [
++        {
++            "title": "Review gate bypass",
++            "severity": "high",
++            "confidence": 0.95,
++            "path": "docs/review.md",
++            "line": 99,
++            "body": "The changed wording weakens governed review ordering.",
++            "suggested_replacement": "",
++            "validation": "Read back issue and PR review gates.",
++        }
++    ],
++}
++inline_findings, unanchored_findings = mod.split_findings(unanchored_result, config, line_index)
++assert inline_findings == []
++assert len(unanchored_findings) == 1
++assert "not an added changed line" in unanchored_findings[0]["_unanchored_reason"]
++assert mod.normalize_findings(unanchored_result, config, line_index) == []
++unanchored_body = mod.build_review_body_with_unanchored(
++    unanchored_result,
++    inline_findings,
++    unanchored_findings,
++    "test-model",
++    config,
++)
++assert "Unanchored findings:" in unanchored_body
++assert "Review gate bypass" in unanchored_body
++assert "docs/review.md:99" in unanchored_body
++
+ try:
+     mod.normalize_findings(
+         {
+-            "summary": "The only high-signal finding is a review-gate regression.",
++            "summary": "The only low-confidence finding is a review-gate regression.",
+             "findings": [
+                 {
+                     "title": "Review gate bypass",
+                     "severity": "high",
+-                    "confidence": 0.95,
++                    "confidence": 0.40,
+                     "path": "docs/review.md",
+-                    "line": 99,
++                    "line": 2,
+                     "body": "The changed wording weakens governed review ordering.",
+                     "suggested_replacement": "",
+                     "validation": "Read back issue and PR review gates.",
+@@ -161,7 +192,7 @@
+ except mod.ReviewQualityError as exc:
+     assert "none became actionable inline comments" in str(exc)
+ else:
+-    raise AssertionError("unanchored model finding should fail review quality")
++    raise AssertionError("low-confidence model finding should fail review quality")
+ 
+ 
+ def assert_clean(summary: str) -> None:
+@@ -376,6 +407,7 @@
+     raise AssertionError("empty findings after risk-sentinel retry should fail review quality")
+ 
+ mod.enforce_risk_sentinel_findings([{"title": "accepted"}], sentinels, config)
++mod.enforce_risk_sentinel_findings([], sentinels, config, [{"title": "unanchored but published"}])
+ mod.enforce_risk_sentinel_findings([], [], config)
+ 
+ print("hardened OpenRouter selftest passed")
