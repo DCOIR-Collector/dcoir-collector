@@ -105,34 +105,34 @@ RISK_SENTINEL_EXTENSIONS = {
 
 NON_ACTIONABLE_FINDING_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
     (
-        re.compile(r"(?:downgrades?|downgraded).{0,120}informational", re.IGNORECASE | re.DOTALL),
+        re.compile(r"\b(?:downgrades?|downgraded)\b.{0,120}\binformational\b", re.IGNORECASE | re.DOTALL),
         "finding downgrades itself to informational",
     ),
     (
-        re.compile(r"informational.{0,120}(?:note|signal|finding|only)", re.IGNORECASE | re.DOTALL),
+        re.compile(r"\binformational\b.{0,120}\b(?:note|signal|finding|only)\b", re.IGNORECASE | re.DOTALL),
         "finding describes itself as informational",
     ),
     (
         re.compile(
-            r"(?:risk|signal|finding).{0,120}(?:not realized|is not realized|was not realized)",
+            r"\b(?:risk|signal|finding)\b.{0,120}\b(?:not realized|is not realized|was not realized)\b",
             re.IGNORECASE | re.DOTALL,
         ),
         "finding says the risk is not realized",
     ),
     (
         re.compile(
-            r"does not(?: itself)?\s+(?:introduce|create|pose|add).{0,120}"
-            r"(?:risk|issue|problem|defect|vulnerability|injection path)",
+            r"\bdoes not(?: itself)?\s+(?:introduce|create|pose|add)\b.{0,120}"
+            r"\b(?:risk|issue|problem|defect|vulnerability|injection path)\b",
             re.IGNORECASE | re.DOTALL,
         ),
         "finding says the changed code does not introduce the risk",
     ),
     (
-        re.compile(r"no.{0,80}(?:input|data|value|text).{0,80}reaches", re.IGNORECASE | re.DOTALL),
+        re.compile(r"\bno\b.{0,80}\b(?:input|data|value|text)\b.{0,80}\breaches\b", re.IGNORECASE | re.DOTALL),
         "finding says no input reaches the risky path",
     ),
     (
-        re.compile(r"no.{0,80}(?:execution|injection|exploit|vulnerability).{0,80}(?:path|risk)", re.IGNORECASE | re.DOTALL),
+        re.compile(r"\bno\b.{0,80}\b(?:execution|injection|exploit|vulnerability)\b.{0,80}\b(?:path|risk)\b", re.IGNORECASE | re.DOTALL),
         "finding says no execution or injection path exists",
     ),
 )
@@ -556,8 +556,7 @@ def finding_text_for_quality(item: dict[str, Any]) -> str:
         str(item.get("body", "") or ""),
         str(item.get("validation", "") or ""),
     ]
-    return re.sub(r"\s+", " ", "
-".join(parts)).strip()
+    return re.sub(r"\s+", " ", "\n".join(parts)).strip()
 
 
 def non_actionable_finding_reason(item: dict[str, Any]) -> str:
