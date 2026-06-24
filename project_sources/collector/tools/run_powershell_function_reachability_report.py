@@ -500,13 +500,22 @@ def parse_with_powershell_ast(sources: list[SourceFile]) -> tuple[list[Definitio
         script_path = temp_dir / "parse.ps1"
         input_json.write_text(json.dumps(payload, indent=2), encoding="utf-8")
         script_path.write_text(POWERSHELL_AST_SCRIPT, encoding="utf-8")
-        proc = subprocess.run(
-            [exe, "-NoProfile", "-File", str(script_path), str(input_json), str(output_json)],
-            text=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            check=False,
-        )
+        try:
+            proc = subprocess.run(
+                [exe, "-NoProfile", "-File", str(script_path), str(input_json), str(output_json)],
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=False,
+                timeout=60,
+            )
+        except subprocess.TimeoutExpired as exc:
+            warning = {
+                "message": "PowerShell AST parse timed out after 60 seconds; used Python lexical fallback.",
+                "stdout": (exc.stdout or "")[-1000:],
+                "stderr": (exc.stderr or "")[-1000:],
+            }
+            return [], [], [], [warning], "python_lexical_fallback"
         if proc.returncode != 0 or not output_json.exists():
             warning = {
                 "message": "PowerShell AST parse failed; used Python lexical fallback.",
