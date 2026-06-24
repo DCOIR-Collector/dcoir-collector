@@ -98,8 +98,23 @@ runs:
 
         # Run analysis across all source files.
         $allFindings = [System.Collections.Generic.List[object]]::new()
+        $analysisErrors = [System.Collections.Generic.List[object]]::new()
         foreach ($file in $sourceFiles) {
-          $results = @(Invoke-ScriptAnalyzer -Path $file -Recurse:$false -ErrorAction SilentlyContinue)
+          $repoRelFilePath = Get-RepoRelativePath $file
+          try {
+            $results = @(
+              Invoke-ScriptAnalyzer `
+                -Path $file `
+                -Recurse:$false `
+                -ErrorAction Stop
+            )
+          } catch {
+            $analysisErrors.Add([ordered]@{
+              path    = $repoRelFilePath
+              message = [string]$_.Exception.Message
+            })
+            continue
+          }
           foreach ($r in $results) {
             $repoRelPath = Get-RepoRelativePath $r.ScriptPath
 
@@ -140,8 +155,10 @@ runs:
         $report = [ordered]@{
           schema_version   = 'dcoir_powershell_analyzer_report_v1'
           validation       = [ordered]@{
-            success  = $true
-            errors   = @()
+            success  = ($analysisErrors.Count -eq 0)
+            errors   = @(
+              $analysisErrors | ForEach-Object { "$($_.path): $($_.message)" }
+            )
             warnings = @()
           }
           summary          = [ordered]@{
@@ -150,11 +167,11 @@ runs:
             error_count        = [int]$errorFindings.Count
             warning_count      = [int]$warningFindings.Count
             information_count  = [int]$infoFindings.Count
-            skipped_count      = 0
+            skipped_count      = [int]$analysisErrors.Count
           }
           findings         = @($allFindings)
           targets          = @($repoRelTargets)
-          skipped_surfaces = @()
+          skipped_surfaces = @($analysisErrors)
           analyzer         = [ordered]@{
             name    = 'PSScriptAnalyzer'
             version = $analyzerVersion
@@ -184,8 +201,24 @@ runs:
         if ($outputDir -and -not (Test-Path -LiteralPath $outputDir)) {
           New-Item -ItemType Directory -Force -Path $outputDir | Out-Null
         }
-        $report | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath $resolvedOutputJson -Encoding utf8
+        $report | ConvertTo-Json -Depth 10 | Set-Content `
+          -LiteralPath $resolvedOutputJson `
+          -Encoding utf8
         Write-Host "PSScriptAnalyzer report written to: $normalized"
+
+        if ($analysisErrors.Count -gt 0) {
+          Write-Error (
+            "PSScriptAnalyzer failed while analyzing " +
+            "$($analysisErrors.Count) file(s):"
+          )
+          foreach ($analysisError in $analysisErrors) {
+            Write-Error "- $($analysisError.path): $($analysisError.message)"
+          }
+          throw (
+            "PSScriptAnalyzer invocation failed for " +
+            "$($analysisErrors.Count) file(s)."
+          )
+        }
 
         # ── Severity gate ─────────────────────────────────────────────────────────
         # Fail on any Error-severity finding.  Warnings are reported but non-blocking
