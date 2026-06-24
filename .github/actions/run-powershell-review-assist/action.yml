@@ -134,6 +134,11 @@ runs:
         if ($functionReport.summary.coverage_state -ne 'not_collected') {
           throw 'PowerShell function reachability report must not claim runtime-lane coverage.'
         }
+        python project_sources/collector/tools/validate_powershell_function_reachability_report.py --generated-json $functionGeneratedJson --committed-json $functionReachabilityJson
+        $functionCompareExitCode = $LASTEXITCODE
+        if ($functionCompareExitCode -ne 0) {
+          throw "PowerShell function reachability committed-report parity check failed with exit code $functionCompareExitCode."
+        }
         if ($functionReport.summary.parser_mode -ne $committedFunctionReport.summary.parser_mode) {
           throw (New-FunctionReachabilityMismatchMessage -Reason 'Regenerated PowerShell function reachability parser mode did not match the committed report.')
         }
