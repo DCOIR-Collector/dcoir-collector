@@ -40,7 +40,7 @@
 - [ ] Active path references were checked when files or folders were removed
 - [ ] Collector/Gemini behavior was not changed unintentionally
 - [ ] Supabase receipts were recorded when governed issue or PR readiness depends on them
-- [ ] If collector functions were added, removed, renamed, or materially rerouted, the committed reachability reports were regenerated with `python project_sources/collector/tools/run_powershell_function_reachability_report.py --repo-root . --no-powershell --json-output project_sources/collector/powershell_function_reachability_report.json --markdown-output project_sources/collector/powershell_function_reachability_report.md` and committed, or the validation gap is explained
+- [ ] If collector functions were added, removed, renamed, or materially rerouted, both committed reachability reports (`project_sources/collector/powershell_function_reachability_report.json` and `project_sources/collector/powershell_function_reachability_report.md`) were regenerated with `python project_sources/collector/tools/run_powershell_function_reachability_report.py --repo-root . --no-powershell --json-output project_sources/collector/powershell_function_reachability_report.json --markdown-output project_sources/collector/powershell_function_reachability_report.md`, committed, and verified by the review-assist committed-report parity check, or the validation gap is explained
 
 ## Governed Review Gates
 
