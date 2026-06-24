@@ -45,6 +45,8 @@ runs:
           return $normalized
         }
 
+        $functionReachabilityJson = 'project_sources/collector/powershell_function_reachability_report.json'
+        $functionReachabilityMarkdown = 'project_sources/collector/powershell_function_reachability_report.md'
         $generatedJson = 'project_sources/collector/powershell_review_assist_report.json'
         $generatedMarkdown = 'project_sources/collector/powershell_review_assist_report.md'
         $reviewAssistJson = Assert-ReviewAssistOutputPath -PathValue $env:REVIEW_ASSIST_JSON_OUTPUT -ExpectedSuffix '.json' -Label 'JSON'
@@ -52,10 +54,36 @@ runs:
         if ($reviewAssistJson -eq $reviewAssistMarkdown) {
           throw 'PowerShell review-assist JSON and Markdown outputs must be different paths.'
         }
+        Remove-Item -LiteralPath $functionReachabilityJson -Force -ErrorAction SilentlyContinue
+        Remove-Item -LiteralPath $functionReachabilityMarkdown -Force -ErrorAction SilentlyContinue
         Remove-Item -LiteralPath $generatedJson -Force -ErrorAction SilentlyContinue
         Remove-Item -LiteralPath $generatedMarkdown -Force -ErrorAction SilentlyContinue
         Remove-Item -LiteralPath $reviewAssistJson -Force -ErrorAction SilentlyContinue
         Remove-Item -LiteralPath $reviewAssistMarkdown -Force -ErrorAction SilentlyContinue
+
+        python project_sources/collector/tools/run_powershell_function_reachability_report.py --repo-root .
+        $functionExitCode = $LASTEXITCODE
+        if (-not (Test-Path -LiteralPath $functionReachabilityJson)) {
+          throw "PowerShell function reachability JSON report was not produced: $functionReachabilityJson"
+        }
+        if (-not (Test-Path -LiteralPath $functionReachabilityMarkdown)) {
+          throw "PowerShell function reachability Markdown report was not produced: $functionReachabilityMarkdown"
+        }
+        $functionReport = Get-Content -LiteralPath $functionReachabilityJson -Raw | ConvertFrom-Json
+        Write-Host "function-reachability-json: $functionReachabilityJson"
+        Write-Host "function-reachability-markdown: $functionReachabilityMarkdown"
+        Write-Host "function-reachability-validation-success: $($functionReport.validation.success)"
+        Write-Host "function-reachability-functions: $($functionReport.summary.function_count)"
+        Write-Host "function-reachability-coverage-state: $($functionReport.summary.coverage_state)"
+        if ($functionExitCode -ne 0) {
+          throw "PowerShell function reachability report generation failed with exit code $functionExitCode."
+        }
+        if ($functionReport.validation.success -ne $true) {
+          throw 'PowerShell function reachability report validation did not report success.'
+        }
+        if ($functionReport.summary.coverage_state -ne 'not_collected') {
+          throw 'PowerShell function reachability report must not claim runtime-lane coverage.'
+        }
 
         python project_sources/collector/tools/run_powershell_review_assist_report.py --repo-root .
         $exitCode = $LASTEXITCODE

@@ -45,6 +45,7 @@ class PowerShellReviewAssistReportTests(unittest.TestCase):
             review.DEFAULT_ASSEMBLY_PARITY_REPORT,
             review.DEFAULT_GOVERNANCE_REPORT,
             review.DEFAULT_ENGINE_BOUNDARY_REPORT,
+            review.DEFAULT_FUNCTION_REACHABILITY_REPORT,
         ):
             target = root / path
             target.parent.mkdir(parents=True, exist_ok=True)
@@ -62,6 +63,7 @@ class PowerShellReviewAssistReportTests(unittest.TestCase):
             "assembly_parity_report": review.DEFAULT_ASSEMBLY_PARITY_REPORT.as_posix(),
             "governance_report": review.DEFAULT_GOVERNANCE_REPORT.as_posix(),
             "engine_boundary_report": review.DEFAULT_ENGINE_BOUNDARY_REPORT.as_posix(),
+            "function_reachability_report": review.DEFAULT_FUNCTION_REACHABILITY_REPORT.as_posix(),
             "analyzer_report": review.DEFAULT_ANALYZER_REPORT.as_posix(),
             "json_output": review.DEFAULT_JSON_OUTPUT.as_posix(),
             "markdown_output": review.DEFAULT_MARKDOWN_OUTPUT.as_posix(),
@@ -82,7 +84,7 @@ class PowerShellReviewAssistReportTests(unittest.TestCase):
         self.assertEqual(report["summary"]["normalized_finding_count"], 22)
         self.assertEqual(report["evidence_channels"]["analyzer"]["state"], "optional_missing")
         self.assertEqual(report["changed_file_context"]["changed_file_count"], None)
-        self.assertEqual(report["summary"]["required_source_reports_present"], 7)
+        self.assertEqual(report["summary"]["required_source_reports_present"], 8)
         self.assertEqual(report["summary"]["optional_source_reports_missing"], 1)
         self.assertGreaterEqual(report["summary"]["carried_forward_warning_count"], 8)
         self.assertTrue(any("No workflow YAML" in claim for claim in report["non_claims"]))
@@ -95,6 +97,9 @@ class PowerShellReviewAssistReportTests(unittest.TestCase):
         )
         self.assertEqual(report["evidence_channels"]["finding_governance"]["baseline_delta"]["baseline_record_count"], 0)
         self.assertEqual(report["evidence_channels"]["finding_governance"]["baseline_delta"]["suppression_count"], 0)
+        self.assertEqual(report["evidence_channels"]["function_reachability"]["function_count"], 159)
+        self.assertEqual(report["evidence_channels"]["function_reachability"]["classification_counts"]["literal_referenced"], 155)
+        self.assertEqual(report["evidence_channels"]["function_reachability"]["coverage_state"], "not_collected")
 
     def test_schema_validates_generated_report_and_seeded_good_example(self) -> None:
         schema = read_json(REPO_ROOT / review.DEFAULT_SCHEMA_PATH)
@@ -142,6 +147,8 @@ class PowerShellReviewAssistReportTests(unittest.TestCase):
             "No #269, #270, PR/workflow readiness, or parent #260 closeability claim is made by #268.",
             "compiled_runtime/DCOIR_Collector.ps1",
             "Baseline records: `0`",
+            "function_reachability",
+            "coverage not_collected",
         ):
             self.assertIn(fragment, markdown)
 

@@ -11,14 +11,14 @@
 
 | Metric | Value |
 | --- | ---: |
-| required_source_report_count | 7 |
-| required_source_reports_present | 7 |
+| required_source_report_count | 8 |
+| required_source_reports_present | 8 |
 | optional_source_reports_missing | 1 |
 | normalized_finding_count | 22 |
 | carried_forward_warning_count | 10 |
 | missing_artifact_count | 1 |
 | unclaimed_artifact_count | 3 |
-| non_claim_count | 9 |
+| non_claim_count | 10 |
 
 ## Source Reports
 
@@ -31,6 +31,7 @@
 | #265 project_sources/collector/powershell_assembly_parity_report.json | True | success | dcoir_powershell_assembly_parity_report_v1 |  |
 | #266 project_sources/collector/powershell_finding_governance_report.json | True | success | dcoir_powershell_finding_governance_report_v1 | 22 |
 | #267 project_sources/collector/powershell_engine_pester_boundary_report.json | True | success | dcoir_powershell_engine_pester_boundary_report_v1 |  |
+| #306 project_sources/collector/powershell_function_reachability_report.json | True | success | dcoir_powershell_function_reachability_report_v1 | 159 |
 | #262 project_sources/collector/powershell_analyzer_report.json | False | optional_missing | not present | 0 |
 
 ## Evidence Channels
@@ -43,6 +44,7 @@
 | assembly_parity | success | 2 generated outputs; pass |
 | finding_governance | success | 0 baseline records; 0 suppressions |
 | engine_boundary | success | 2 unclaimed blocking artifacts |
+| function_reachability | success | 159 functions; 155 literal referenced; 4 dynamic uncertain; coverage not_collected |
 | pester_boundary | supporting_non_blocking | Pester may support later runtime or wrapper evidence but is not blocking static-validation evidence in #268. |
 
 ## Findings
@@ -206,6 +208,7 @@
 - No live PSScriptAnalyzer evidence is claimed when the #262 analyzer report is absent.
 - No Windows PowerShell 5.1 runtime validation is claimed by #268.
 - No #269, #270, PR/workflow readiness, or parent #260 closeability claim is made by #268.
+- No function deletion readiness or dead-code removal claim is made by #306 reachability reporting.
 
 ## Artifact Contract
 
