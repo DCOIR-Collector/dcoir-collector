@@ -232,6 +232,18 @@ def safe_output_path(repo_root: Path, value: str | Path, label: str, suffix: str
     return path, repo_path
 
 
+def safe_manifest_source_path(repo_root: Path, value: str) -> tuple[Path, str]:
+    try:
+        path = repo_relative_input_path(repo_root, value, "collector runtime source")
+    except AnalyzerContractError as exc:
+        raise ReachabilityError(str(exc)) from exc
+    try:
+        repo_path = path.resolve().relative_to(repo_root.resolve()).as_posix()
+    except (OSError, RuntimeError, ValueError) as exc:
+        raise ReachabilityError(f"collector runtime source must resolve inside the repository root: {value}") from exc
+    return path, repo_path
+
+
 def resolve_sources(repo_root: Path, manifest_path: Path) -> tuple[dict[str, Any], list[SourceFile], list[str]]:
     manifest = read_json(manifest_path, "collector runtime manifest")
     if not isinstance(manifest, dict):
@@ -255,14 +267,14 @@ def resolve_sources(repo_root: Path, manifest_path: Path) -> tuple[dict[str, Any
     sources: list[SourceFile] = []
     for load_order, raw in enumerate(source_values):
         try:
-            path = repo_relative_input_path(repo_root, raw, "collector runtime source")
-        except AnalyzerContractError as exc:
+            path, repo_path = safe_manifest_source_path(repo_root, raw)
+        except ReachabilityError as exc:
             errors.append(str(exc))
             continue
         if not path.is_file():
             errors.append(f"collector runtime source is missing: {raw}")
             continue
-        sources.append(SourceFile(repo_path=path.resolve().relative_to(repo_root.resolve()).as_posix(), path=path, load_order=load_order))
+        sources.append(SourceFile(repo_path=repo_path, path=path, load_order=load_order))
     return manifest, sources, errors
 
 
