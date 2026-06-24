@@ -36,6 +36,14 @@ runs:
         if ($normalized -match '(^|/)\.\.($|/)') {
           throw "Output path must not contain traversal: $outputJson"
         }
+        if (-not $normalized.StartsWith('project_sources/collector/', [System.StringComparison]::Ordinal)) {
+          throw "Output path must remain under project_sources/collector/: $outputJson"
+        }
+        $repoRoot = [System.IO.Path]::GetFullPath((Get-Location).Path).TrimEnd([char]'\', [char]'/') + [System.IO.Path]::DirectorySeparatorChar
+        $resolvedOutputJson = [System.IO.Path]::GetFullPath((Join-Path -Path (Get-Location).Path -ChildPath $normalized))
+        if (-not $resolvedOutputJson.StartsWith($repoRoot, [System.StringComparison]::OrdinalIgnoreCase)) {
+          throw "Output path resolves outside the repository: $outputJson"
+        }
 
         # Install PSScriptAnalyzer if not already present.
         if (-not (Get-Module -ListAvailable -Name PSScriptAnalyzer)) {
@@ -66,8 +74,6 @@ runs:
           throw 'No collector PS1 source files found for PSScriptAnalyzer.'
         }
         Write-Host "PSScriptAnalyzer targets: $($sourceFiles.Count) file(s)"
-
-        $repoRoot = [System.IO.Path]::GetFullPath((Get-Location).Path).TrimEnd([char]'\', [char]'/') + [System.IO.Path]::DirectorySeparatorChar
 
         function Get-RepoRelativePath([string]$fullPath) {
           $normalized = [System.IO.Path]::GetFullPath($fullPath)
@@ -174,12 +180,12 @@ runs:
           }
         }
 
-        $outputDir = Split-Path -Parent $outputJson
+        $outputDir = Split-Path -Parent $resolvedOutputJson
         if ($outputDir -and -not (Test-Path -LiteralPath $outputDir)) {
           New-Item -ItemType Directory -Force -Path $outputDir | Out-Null
         }
-        $report | ConvertTo-Json -Depth 10 | Set-Content -Path $outputJson -Encoding utf8
-        Write-Host "PSScriptAnalyzer report written to: $outputJson"
+        $report | ConvertTo-Json -Depth 10 | Set-Content -LiteralPath $resolvedOutputJson -Encoding utf8
+        Write-Host "PSScriptAnalyzer report written to: $normalized"
 
         # ── Severity gate ─────────────────────────────────────────────────────────
         # Fail on any Error-severity finding.  Warnings are reported but non-blocking

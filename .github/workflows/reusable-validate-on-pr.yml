@@ -17,7 +17,6 @@ on:
 
 permissions:
   contents: read
-  pull-requests: write
 
 jobs:
   validate:
@@ -25,7 +24,6 @@ jobs:
     runs-on: windows-latest
     permissions:
       contents: read
-      pull-requests: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
@@ -102,39 +100,6 @@ jobs:
             Write-Host 'Review-assist report not found; skipping job summary.'
           }
 
-      - name: Post review-assist report as PR comment
-        if: always()
-        shell: pwsh
-        env:
-          GH_TOKEN: ${{ github.token }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-        run: |
-          $reportPath = 'project_sources/collector/powershell_review_assist_workflow_report.md'
-          if (-not (Test-Path -LiteralPath $reportPath)) {
-            Write-Host 'Review-assist report not found; skipping PR comment.'
-            exit 0
-          }
-          $prNumber = $env:PR_NUMBER
-          if ([string]::IsNullOrWhiteSpace($prNumber) -or $prNumber -eq '0') {
-            Write-Host 'No PR number available; skipping PR comment.'
-            exit 0
-          }
-          $body    = Get-Content -LiteralPath $reportPath -Raw
-          $header  = "## :mag: PR Validation Report — Run [#$env:GITHUB_RUN_NUMBER]($env:GITHUB_SERVER_URL/$env:GITHUB_REPOSITORY/actions/runs/$env:GITHUB_RUN_ID)`n`n"
-          $full    = $header + $body
-          # GitHub comment limit is ~65,536 chars.
-          if ($full.Length -gt 64000) {
-            $full = $full.Substring(0, 63800) + "`n`n---`n_Report truncated. Download the `validate-on-pr-results` artifact for the full output._"
-          }
-          $tempFile = [System.IO.Path]::GetTempFileName()
-          try {
-            Set-Content -Path $tempFile -Value $full -Encoding utf8 -NoNewline
-            gh pr comment $prNumber --body-file $tempFile
-            Write-Host "Posted review-assist report as comment on PR #$prNumber."
-          } finally {
-            Remove-Item $tempFile -Force -ErrorAction SilentlyContinue
-          }
-
       - name: Build fresh collector runtime zip for harness
         uses: ./.github/actions/build-collector-runtime-for-harness
         with:
@@ -183,7 +148,6 @@ jobs:
           - event_name: $env:GITHUB_EVENT_NAME
           - primary_artifact: validate-on-pr-results
           - artifact_note: includes Gemini smoke-build output, collector runtime output, validate_DCOIR_Run fixture output, documentation-quality output, PSScriptAnalyzer JSON, PowerShell review-assist JSON/Markdown, and TestResults when produced.
-          - pr_comment: review-assist report posted as PR comment when pull-requests write permission is granted.
           - job_summary: review-assist report written to GITHUB_STEP_SUMMARY.
           - duplicate_function_check: blocks merge on any cross-file function name collision in collector source.
           - psscriptanalyzer_gate: blocks merge on any Error-severity finding; Warnings reported but non-blocking.
