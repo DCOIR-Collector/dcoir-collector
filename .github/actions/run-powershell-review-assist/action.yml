@@ -60,6 +60,8 @@ runs:
 
         $functionReachabilityJson = 'project_sources/collector/powershell_function_reachability_report.json'
         $functionReachabilityMarkdown = 'project_sources/collector/powershell_function_reachability_report.md'
+        $functionGeneratedJson = 'project_sources/collector/powershell_function_reachability_workflow_report.json'
+        $functionGeneratedMarkdown = 'project_sources/collector/powershell_function_reachability_workflow_report.md'
         $generatedJson = 'project_sources/collector/powershell_review_assist_report.json'
         $generatedMarkdown = 'project_sources/collector/powershell_review_assist_report.md'
         $reviewAssistJson = Assert-ReviewAssistOutputPath -PathValue $env:REVIEW_ASSIST_JSON_OUTPUT -ExpectedSuffix '.json' -Label 'JSON'
@@ -70,26 +72,29 @@ runs:
         if (-not (Test-Path -LiteralPath $functionReachabilityJson)) {
           throw "Committed PowerShell function reachability JSON report is required before regeneration: $functionReachabilityJson"
         }
+        if (-not (Test-Path -LiteralPath $functionReachabilityMarkdown)) {
+          throw "Committed PowerShell function reachability Markdown report is required before regeneration: $functionReachabilityMarkdown"
+        }
         $committedFunctionReport = Get-Content -LiteralPath $functionReachabilityJson -Raw | ConvertFrom-Json
-        Remove-Item -LiteralPath $functionReachabilityJson -Force -ErrorAction SilentlyContinue
-        Remove-Item -LiteralPath $functionReachabilityMarkdown -Force -ErrorAction SilentlyContinue
+        Remove-Item -LiteralPath $functionGeneratedJson -Force -ErrorAction SilentlyContinue
+        Remove-Item -LiteralPath $functionGeneratedMarkdown -Force -ErrorAction SilentlyContinue
         Remove-Item -LiteralPath $generatedJson -Force -ErrorAction SilentlyContinue
         Remove-Item -LiteralPath $generatedMarkdown -Force -ErrorAction SilentlyContinue
         Remove-Item -LiteralPath $reviewAssistJson -Force -ErrorAction SilentlyContinue
         Remove-Item -LiteralPath $reviewAssistMarkdown -Force -ErrorAction SilentlyContinue
 
-        python project_sources/collector/tools/run_powershell_function_reachability_report.py --repo-root . --no-powershell
+        python project_sources/collector/tools/run_powershell_function_reachability_report.py --repo-root . --no-powershell --json-output $functionGeneratedJson --markdown-output $functionGeneratedMarkdown
         $functionExitCode = $LASTEXITCODE
-        if (-not (Test-Path -LiteralPath $functionReachabilityJson)) {
-          throw "PowerShell function reachability JSON report was not produced: $functionReachabilityJson"
+        if (-not (Test-Path -LiteralPath $functionGeneratedJson)) {
+          throw "PowerShell function reachability JSON report was not produced: $functionGeneratedJson"
         }
-        if (-not (Test-Path -LiteralPath $functionReachabilityMarkdown)) {
-          throw "PowerShell function reachability Markdown report was not produced: $functionReachabilityMarkdown"
+        if (-not (Test-Path -LiteralPath $functionGeneratedMarkdown)) {
+          throw "PowerShell function reachability Markdown report was not produced: $functionGeneratedMarkdown"
         }
-        $functionReport = Get-Content -LiteralPath $functionReachabilityJson -Raw | ConvertFrom-Json
+        $functionReport = Get-Content -LiteralPath $functionGeneratedJson -Raw | ConvertFrom-Json
         $functionClassificationCounts = $functionReport.summary.classification_counts | ConvertTo-Json -Compress
-        Write-Host "function-reachability-json: $functionReachabilityJson"
-        Write-Host "function-reachability-markdown: $functionReachabilityMarkdown"
+        Write-Host "function-reachability-json: $functionGeneratedJson"
+        Write-Host "function-reachability-markdown: $functionGeneratedMarkdown"
         Write-Host "function-reachability-validation-success: $($functionReport.validation.success)"
         Write-Host "function-reachability-functions: $($functionReport.summary.function_count)"
         Write-Host "function-reachability-parser-mode: $($functionReport.summary.parser_mode)"
@@ -124,6 +129,10 @@ runs:
             throw "Regenerated PowerShell function reachability classification count did not match committed report for ${classificationName}: generated=$generatedCount committed=$committedCount"
           }
         }
+        Copy-Item -LiteralPath $functionGeneratedJson -Destination $functionReachabilityJson -Force
+        Copy-Item -LiteralPath $functionGeneratedMarkdown -Destination $functionReachabilityMarkdown -Force
+        Remove-Item -LiteralPath $functionGeneratedJson -Force -ErrorAction SilentlyContinue
+        Remove-Item -LiteralPath $functionGeneratedMarkdown -Force -ErrorAction SilentlyContinue
 
         python project_sources/collector/tools/run_powershell_review_assist_report.py --repo-root .
         $exitCode = $LASTEXITCODE
