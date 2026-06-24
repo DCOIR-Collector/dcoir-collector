@@ -8,7 +8,7 @@ import tempfile
 import textwrap
 import unittest
 from pathlib import Path
-from unittest import mock
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import run_powershell_function_reachability_report as reach
@@ -172,7 +172,7 @@ class PowerShellFunctionReachabilityReportTests(unittest.TestCase):
                 """,
             },
         ) as temp:
-            with mock.patch.object(
+            with patch.object(
                 reach,
                 "parse_with_powershell_ast",
                 side_effect=AssertionError("PowerShell AST path should not run when --no-powershell is set"),
