@@ -169,6 +169,13 @@ def scalar(value: Any) -> str:
     return "" if value is None else str(value)
 
 
+def ast_definition_kind(value: Any) -> str:
+    definition_kind = scalar(value).strip()
+    if not definition_kind:
+        return "top_level"
+    return definition_kind
+
+
 def read_json(path: Path, label: str) -> Any:
     try:
         return json.loads(path.read_text(encoding="utf-8"))
@@ -506,7 +513,7 @@ def parse_with_powershell_ast(sources: list[SourceFile]) -> tuple[list[Definitio
                     line=int(raw_def.get("line") or 0),
                     column=int(raw_def.get("column") or 0) or None,
                     end_line=int(raw_def.get("end_line") or 0) or None,
-                    definition_kind=scalar(raw_def.get("definition_kind")).strip() or "top_level",
+                    definition_kind=ast_definition_kind(raw_def.get("definition_kind")),
                     load_order=int(raw_def.get("load_order") or 0),
                 )
             )
