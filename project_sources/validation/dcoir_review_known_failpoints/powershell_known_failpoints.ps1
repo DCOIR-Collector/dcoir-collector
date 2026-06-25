@@ -45,7 +45,7 @@ function Remove-RequestedPath {
 }
 
 function Export-ReviewEnvironment {
-  $env:GetEnumerator() |
+  Get-ChildItem Env: |
     Sort-Object Name |
     ForEach-Object { '{0}={1}' -f $_.Name, $_.Value } |
     Set-Content -Path '.\review_environment_dump.txt' -Encoding utf8
