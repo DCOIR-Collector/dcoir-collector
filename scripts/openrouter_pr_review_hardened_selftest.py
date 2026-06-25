@@ -335,9 +335,82 @@ risk_prompt = mod.build_prompt(
     sentinels,
 )
 assert "Changed-code risk signals detected before model review" in risk_prompt
+assert "command/process execution" in risk_prompt
+assert "container/orchestration privilege escalation" in risk_prompt
 assert "shell=True subprocess invocation" in risk_prompt
 assert "PowerShell Invoke-Expression" in risk_prompt
 assert "PowerShell unsafe file-write path" in risk_prompt
+
+diverse_risk_diff = """diff --git a/probes/kubernetes.yml b/probes/kubernetes.yml
+index 0000000..1111111 100644
+--- /dev/null
++++ b/probes/kubernetes.yml
+@@ -0,0 +1,14 @@
++apiVersion: v1
++kind: Pod
++spec:
++  hostNetwork: true
++  containers:
++    - securityContext:
++        privileged: true
++        allowPrivilegeEscalation: true
++        runAsUser: 0
++  volumes:
++    - name: host-root
++      hostPath:
++        path: /
+diff --git a/probes/operator.ps1 b/probes/operator.ps1
+index 0000000..2222222 100644
+--- /dev/null
++++ b/probes/operator.ps1
+@@ -0,0 +1,8 @@
++Expand-Archive -Path $Request.Archive -DestinationPath $Request.ExtractTo -Force
++Start-Process -FilePath $Request.Tool -ArgumentList $Request.Arguments -Wait
++Invoke-WebRequest -Uri $Request.CallbackUrl -Headers @{ Authorization = "Bearer $($Request.Token)" } -OutFile (Join-Path $env:TEMP $Request.OutputName)
++$acl = Get-Acl -LiteralPath $Request.TargetPath
++$rule = New-Object System.Security.AccessControl.FileSystemAccessRule("Everyone", "FullControl", "Allow")
++$acl.SetAccessRule($rule)
++Set-Acl -LiteralPath $Request.TargetPath -AclObject $acl
+diff --git a/probes/pipeline.ts b/probes/pipeline.ts
+index 0000000..3333333 100644
+--- /dev/null
++++ b/probes/pipeline.ts
+@@ -0,0 +1,12 @@
++const destination = path.join(workspace, request.destination);
++writeFileSync(destination, request.body, "utf8");
++exec(`powershell -NoProfile ${request.command}`);
++const mapper = new Function("record", request.expression);
++const query = `select * from alerts where owner = '${request.userId}' and ${request.sqlFilter}`;
++await fetch(request.url, { headers: { Authorization: process.env.PROVIDER_TOKEN } });
+diff --git a/probes/workflow.yml b/probes/workflow.yml
+index 0000000..4444444 100644
+--- /dev/null
++++ b/probes/workflow.yml
+@@ -0,0 +1,10 @@
++on:
++  pull_request_target:
++jobs:
++  unsafe:
++    steps:
++      - uses: actions/checkout@v7
++        with:
++          ref: ${{ github.event.pull_request.head.ref }}
++      - run: bash -c "${{ github.event.pull_request.title }}"
++      - run: curl -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "${{ github.event.pull_request.body }}"
+"""
+diverse_sentinels = mod.detect_risk_sentinels(diverse_risk_diff, 12)
+diverse_labels = {item.label for item in diverse_sentinels}
+assert "TypeScript/JavaScript unsafe path construction" in diverse_labels
+assert "TypeScript/JavaScript unsafe file write" in diverse_labels
+assert "Node.js command execution" in diverse_labels
+assert "PowerShell process launch" in diverse_labels
+assert "PowerShell unsafe archive extraction" in diverse_labels
+assert "PowerShell outbound request or download" in diverse_labels
+assert "CI token exfiltration primitive" in diverse_labels
+assert "GitHub Actions privileged PR context" in diverse_labels
+assert "Kubernetes privileged container setting" in diverse_labels
+assert "Kubernetes host filesystem exposure" in diverse_labels
+assert len({item.path for item in diverse_sentinels}) >= 4
 
 calls: list[str] = []
 original_openrouter_review = mod.openrouter_review
