@@ -1,0 +1,17 @@
+{
+  "schema": "dcoir.ops.apply_patch_request.v1",
+  "request_id": "dcoir-hardened-20260625d",
+  "mode": "apply",
+  "target_branch": "main",
+  "target_path": "scripts/openrouter_pr_review_hardened.py",
+  "patch_path": "ops/requests/apply_patch/dcoir-hardened-20260625d/hardened.patch",
+  "expected_patch_sha256": "0921e18b23fa5d6c62a5fb3e8fb0bc70dd7dba631ac75af14f72865eb95583f0",
+  "allowed_roots": [
+    "scripts"
+  ],
+  "expected_target_blob_sha": "4a04ee0409a02300b56f75281e0f9f5e7eeb7fa3",
+  "commit_message": "Harden dcoir-review sentinel coverage",
+  "allow_default_branch": true,
+  "default_branch_reason": "Operator explicitly approved direct-main live-test hardening for dcoir-review on 2026-06-25.",
+  "allow_workflow_changes": false
+}
