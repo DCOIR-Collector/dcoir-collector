@@ -423,7 +423,7 @@
       "contract_family": "openrouter-pr-review",
       "file": ".github/workflows/openrouter-pr-review.yml",
       "migration_status": "intentionally-inline",
-      "operator_purpose": "Run an operator-triggered OpenRouter-assisted PR review for approved PR comment commands.",
+      "operator_purpose": "Run an operator-triggered DCOIR Review for approved PR comment commands.",
       "permissions": {
         "actions": "read",
         "contents": "read",
@@ -437,7 +437,7 @@
       "trigger_events": [
         "issue_comment"
       ],
-      "workflow_name": "28 Review - OpenRouter PR Review"
+      "workflow_name": "28 Review - DCOIR Review"
     },
     {
       "artifacts": [
@@ -453,10 +453,13 @@
       },
       "report_family": "standalone workflow report",
       "risk": "high",
-      "schedules": [],
+      "schedules": [
+        "*/5 * * * *"
+      ],
       "secret_or_var_count": 0,
       "trigger_events": [
         "push",
+        "schedule",
         "workflow_dispatch"
       ],
       "workflow_name": "64 Ops - Apply Patch Request"
