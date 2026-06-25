@@ -675,10 +675,16 @@ assert "@<!-- -->codex" in comment
 assert "Model:" not in comment
 assert "openrouter/free" not in comment
 assert "<sub>DCOIR Review</sub>" in comment
-sanitized_identity = mod.sanitize_github_output("OpenRouter review quality failure from openrouter/auto", config)
+sanitized_identity = mod.sanitize_github_output(
+    "OpenRouter review quality failure from openrouter/auto using OPENROUTER_API_KEY and openrouter_key",
+    config,
+)
 assert "OpenRouter" not in sanitized_identity
 assert "openrouter/" not in sanitized_identity
+assert "OPENROUTER_API_KEY" not in sanitized_identity
+assert "openrouter_key" not in sanitized_identity
 assert "DCOIR Review" in sanitized_identity
+assert "REVIEW_PROVIDER_API_KEY" in sanitized_identity
 
 review_body = mod.build_review_body({"summary": "No findings. Ask @codex and @malwaredevil to review."}, [], "openrouter/free", config)
 assert "💡 DCOIR Review" in review_body
