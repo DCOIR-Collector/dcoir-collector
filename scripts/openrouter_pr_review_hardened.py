@@ -408,6 +408,11 @@ class SimpleProgressReporter:
             "",
             f"- Command: `{self.command}`.",
             f"- Debug progress: `{str(getattr(self.config, 'debug', False)).lower()}`.",
+            *(
+                base.workflow_run_status_lines(self.config)
+                if hasattr(base, "workflow_run_status_lines")
+                else []
+            ),
             "- Branch changes: none; this workflow only posts review output.",
             "- Gate role: internal review-assist signal before any separately approved external review request.",
         ]
