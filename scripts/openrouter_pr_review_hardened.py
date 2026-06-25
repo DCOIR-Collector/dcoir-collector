@@ -413,6 +413,27 @@ RISK_SENTINEL_LABEL_PRIORITY = {
 }
 
 
+OPTIONAL_RISK_SENTINEL_LABEL_PREFIXES = (
+    "TypeScript/JavaScript ",
+    "Kubernetes ",
+)
+OPTIONAL_RISK_SENTINEL_LABELS = {
+    "Node.js command execution",
+}
+YAML_REQUIRED_RISK_SENTINEL_LABEL_PREFIXES = (
+    "GitHub Actions ",
+)
+YAML_REQUIRED_RISK_SENTINEL_LABELS = {
+    "CI token exfiltration primitive",
+}
+PROJECT_TARGET_RISK_SENTINEL_EXTENSIONS = {
+    ".ps1",
+    ".psd1",
+    ".psm1",
+    ".py",
+}
+
+
 POWERSHELL_REQUEST_PATH_ASSIGNMENT = re.compile(
     r"^\s*\$(?P<name>[A-Za-z_][A-Za-z0-9_]*)\s*=\s*"
     r"(?P<value>.*(?:\bJoin-Path\b[^\n]*\$Request\.|\$Request\.(?:Path|RelativePath|FilePath|OutputPath|Destination)\b).*)$",
@@ -925,6 +946,26 @@ def finding_covers_risk_sentinel(finding: dict[str, Any], sentinel: RiskSentinel
     return any(normalized_quality_text(term) in finding_text for term in risk_sentinel_terms(sentinel))
 
 
+def is_required_risk_sentinel(sentinel: RiskSentinel) -> bool:
+    label = sentinel.label
+    if label in OPTIONAL_RISK_SENTINEL_LABELS or any(
+        label.startswith(prefix) for prefix in OPTIONAL_RISK_SENTINEL_LABEL_PREFIXES
+    ):
+        return False
+    suffix = Path(sentinel.path).suffix.lower()
+    if suffix in PROJECT_TARGET_RISK_SENTINEL_EXTENSIONS:
+        return True
+    if suffix in {".yml", ".yaml"}:
+        return label in YAML_REQUIRED_RISK_SENTINEL_LABELS or any(
+            label.startswith(prefix) for prefix in YAML_REQUIRED_RISK_SENTINEL_LABEL_PREFIXES
+        )
+    return False
+
+
+def required_risk_sentinels(sentinels: list[RiskSentinel]) -> list[RiskSentinel]:
+    return [sentinel for sentinel in sentinels if is_required_risk_sentinel(sentinel)]
+
+
 def uncovered_risk_sentinels(
     findings: list[dict[str, Any]],
     risk_sentinels: list[RiskSentinel],
@@ -936,7 +977,7 @@ def uncovered_risk_sentinels(
     candidate_findings = [*findings, *(unanchored_findings or [])]
     return [
         sentinel
-        for sentinel in risk_sentinels
+        for sentinel in required_risk_sentinels(risk_sentinels)
         if not any(finding_covers_risk_sentinel(finding, sentinel) for finding in candidate_findings)
     ]
 
@@ -1071,7 +1112,7 @@ Governed review hardening requirements:
 - Do not return informational or advisory findings that say the risk is not realized, the changed code does not introduce the risk, or no input reaches the risky path. Put that in a clean summary instead.
 - Treat changed tests, fixtures, validation probes, examples, workflow snippets, infrastructure config, and generated-looking files as review targets when they contain executable behavior, security policy, credential handling, or operator guidance. Do not dismiss a finding merely because the file appears non-production.
 - Review across languages and file types for command/process execution, dynamic code evaluation, request-controlled path reads/writes/extraction, raw query construction, unsafe deserialization, outbound requests or SSRF, token/secret persistence or forwarding, CI/CD privilege boundaries, broad ACL or permission grants, and container/orchestration privilege escalation.
-- Project emphasis: pay extra attention to PowerShell collectors, Python tooling, GitHub Actions/YAML, and Kubernetes-style YAML. For PowerShell inspect Invoke-Expression, Start-Process, Invoke-WebRequest/Invoke-RestMethod, Expand-Archive, Set-Content/Out-File/Copy-Item, Remove-Item, and Set-Acl. For Python inspect subprocess shell usage, unsafe deserialization, archive extraction, request-controlled paths, raw query construction, and secret/env persistence. For YAML inspect privileged PR triggers, checkout of untrusted refs, secret/token forwarding, broad permissions, privileged containers, host networking, hostPath mounts, and missing read-only/rootless constraints.
+- Project emphasis: pay extra attention to PowerShell collectors, Python tooling, and GitHub Actions/YAML. For PowerShell inspect Invoke-Expression, Start-Process, Invoke-WebRequest/Invoke-RestMethod, Expand-Archive, Set-Content/Out-File/Copy-Item, Remove-Item, and Set-Acl. For Python inspect subprocess shell usage, unsafe deserialization, archive extraction, request-controlled paths, raw query construction, and secret/env persistence. For GitHub Actions/YAML inspect privileged PR triggers, checkout of untrusted refs, secret/token forwarding, broad permissions, and untrusted event metadata in shell commands.
 """.strip()
     validation_hints = validation_hint_block(files)
     if validation_hints:
@@ -1221,8 +1262,9 @@ def review_quality_retry_reason(
     risk_sentinels: list[RiskSentinel],
     line_index: dict[tuple[str, int], int] | None = None,
 ) -> str:
+    gated_sentinels = required_risk_sentinels(risk_sentinels)
     if (
-        risk_sentinels
+        gated_sentinels
         and getattr(config, "risk_sentinel_quality_gate", True)
         and getattr(config, "risk_sentinel_retry_on_empty", True)
         and has_no_structured_findings(result)
@@ -1257,7 +1299,7 @@ def review_quality_retry_reason(
                 f"{raw_findings_digest(result)}"
             )
         if (
-            risk_sentinels
+            gated_sentinels
             and line_index is not None
             and getattr(config, "risk_sentinel_quality_gate", True)
         ):
@@ -1265,7 +1307,7 @@ def review_quality_retry_reason(
                 findings, unanchored_findings = split_findings(result, config, line_index)
             except ReviewQualityError:
                 findings, unanchored_findings = [], []
-            uncovered = uncovered_risk_sentinels(findings, risk_sentinels, config, unanchored_findings)
+            uncovered = uncovered_risk_sentinels(findings, gated_sentinels, config, unanchored_findings)
             if uncovered:
                 return (
                     "model returned actionable findings, but they did not cover high-risk changed-line signals: "
@@ -1613,7 +1655,8 @@ def openrouter_review_with_quality_retry(
         if reporter:
             safe_reason = sanitize_github_output(retry_reason, config)
             reporter.update("quality-retry", f"{safe_reason}; retrying with stricter actionable-output guidance")
-        retry_prompt = build_quality_retry_prompt(prompt, result, risk_sentinels, config, retry_reason)
+        retry_sentinels = required_risk_sentinels(risk_sentinels) or risk_sentinels
+        retry_prompt = build_quality_retry_prompt(prompt, result, retry_sentinels, config, retry_reason)
         write_debug_text_artifact_safely(config, "prompts/02-quality-retry-prompt.txt", retry_prompt)
         write_debug_json_artifact_safely(
             config,
@@ -1621,8 +1664,8 @@ def openrouter_review_with_quality_retry(
             {
                 "retry_reason": retry_reason,
                 "prompt_chars": len(retry_prompt),
-                "risk_sentinel_count": len(risk_sentinels),
-                "risk_sentinel_digest": risk_sentinel_digest(risk_sentinels) if risk_sentinels else "",
+                "risk_sentinel_count": len(retry_sentinels),
+                "risk_sentinel_digest": risk_sentinel_digest(retry_sentinels) if retry_sentinels else "",
             },
         )
         result, model_used, service_tier = openrouter_review(retry_prompt, schema, config, reporter)
