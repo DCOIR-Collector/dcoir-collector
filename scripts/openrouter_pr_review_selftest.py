@@ -703,6 +703,11 @@ assert "OPENROUTER_API_KEY" not in sanitized_identity
 assert "openrouter_key" not in sanitized_identity
 assert "DCOIR Review" in sanitized_identity
 assert "REVIEW_PROVIDER_API_KEY" in sanitized_identity
+sanitized_progress_identity = mod.sanitize_github_output(
+    "openrouter openrouter-attempt openrouter-result openrouter-retry openrouter/pareto-code",
+    config,
+)
+assert sanitized_progress_identity == "provider provider-attempt provider-result provider-retry provider/pareto-code"
 
 review_body = mod.build_review_body({"summary": "No findings. Ask @codex and @malwaredevil to review."}, [], "openrouter/free", config)
 assert "💡 DCOIR Review" in review_body
