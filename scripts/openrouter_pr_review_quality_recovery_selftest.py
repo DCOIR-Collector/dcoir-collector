@@ -8,6 +8,7 @@ import importlib.util
 import json
 import os
 import sys
+import tempfile
 from pathlib import Path
 
 
@@ -153,6 +154,38 @@ run_recovery_case(
     },
     "none were anchored to changed diff lines",
 )
+
+debug_artifact_config = copy.copy(config)
+debug_artifact_config.debug = True
+with tempfile.TemporaryDirectory() as tmp:
+    previous_debug_artifact_dir = os.environ.get("DCOIR_REVIEW_DEBUG_ARTIFACT_DIR")
+    os.environ["DCOIR_REVIEW_DEBUG_ARTIFACT_DIR"] = tmp
+    calls: list[str] = []
+    original_openrouter_review = mod.openrouter_review
+
+    def fake_debug_artifact_review(prompt: str, _schema: dict, _config: object, _reporter: object | None = None):
+        calls.append(prompt)
+        if len(calls) == 1:
+            return {"summary": "A governance regression remains in the review gate.", "findings": []}, "first-model", ""
+        return accepted_result(), "recovery-model", ""
+
+    mod.openrouter_review = fake_debug_artifact_review
+    try:
+        mod.openrouter_review_with_quality_retry("initial prompt", schema, debug_artifact_config, None, [], line_index)
+    finally:
+        mod.openrouter_review = original_openrouter_review
+        if previous_debug_artifact_dir is None:
+            os.environ.pop("DCOIR_REVIEW_DEBUG_ARTIFACT_DIR", None)
+        else:
+            os.environ["DCOIR_REVIEW_DEBUG_ARTIFACT_DIR"] = previous_debug_artifact_dir
+
+    assert (Path(tmp) / "prompts/01-initial-prompt.txt").read_text(encoding="utf-8") == "initial prompt"
+    retry_prompt = (Path(tmp) / "prompts/02-quality-retry-prompt.txt").read_text(encoding="utf-8")
+    assert "Review quality retry" in retry_prompt
+    assert "summary indicated a possible issue" in retry_prompt
+    retry_metadata = json.loads((Path(tmp) / "metadata/02-quality-retry-request.json").read_text(encoding="utf-8"))
+    assert "summary indicated a possible issue" in retry_metadata["retry_reason"]
+    assert json.loads((Path(tmp) / "responses/02-quality-retry-result.json").read_text(encoding="utf-8"))["model_used"] == "recovery-model"
 
 retry_disabled = copy.copy(config)
 retry_disabled.review_quality_retry_on_rejected_output = False
