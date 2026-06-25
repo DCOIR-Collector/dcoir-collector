@@ -1,0 +1,101 @@
+diff --git a/scripts/openrouter_pr_review_hardened.py b/scripts/openrouter_pr_review_hardened.py
+index d8b72e6..1f76d04 100644
+--- a/scripts/openrouter_pr_review_hardened.py
++++ b/scripts/openrouter_pr_review_hardened.py
+@@ -1024,15 +1024,16 @@ def add_risk_sentinel_fallback_findings(
+     inline_limit = int(getattr(config, "max_inline_comments", 12))
+     if inline_limit <= 0:
+         return findings
+-    fallback_findings = [risk_sentinel_fallback_finding(sentinel, config) for sentinel in uncovered[:inline_limit]]
++    required_uncovered = required_risk_sentinels(uncovered)
++    fallback_source = required_uncovered if required_uncovered else uncovered
++    fallback_findings = [risk_sentinel_fallback_finding(sentinel, config) for sentinel in fallback_source[:inline_limit]]
+     if len(findings) + len(fallback_findings) <= inline_limit:
+         augmented = [*findings, *fallback_findings]
+     else:
+         existing_budget = max(0, inline_limit - len(fallback_findings))
+-        existing_findings = sorted(findings, key=severity_sort_key)[:existing_budget]
++        existing_findings = select_findings_for_inline(findings, existing_budget)
+         augmented = [*existing_findings, *fallback_findings]
+-    augmented.sort(key=severity_sort_key)
+-    return augmented[:inline_limit]
++    return select_findings_for_inline(augmented, inline_limit)
+ 
+ 
+ def append_with_budget(prefix: str, suffix: str, max_chars: int) -> str:
+@@ -1801,6 +1802,62 @@ def severity_sort_key(finding: dict[str, Any]) -> tuple[int, float]:
+     return severity_order.get(str(finding.get("severity", "low")).lower(), 9), -confidence
+ 
+ 
++def is_github_actions_yaml_path(path: str) -> bool:
++    lower_path = path.lower()
++    suffix = Path(lower_path).suffix
++    if suffix not in {".yml", ".yaml"}:
++        return False
++    name = Path(lower_path).name
++    return (
++        lower_path.startswith(".github/workflows/")
++        or "workflow" in name
++        or "github" in lower_path
++        or "actions" in lower_path
++    )
++
++
++def is_required_review_target_path(path: str) -> bool:
++    suffix = Path(path.lower()).suffix
++    if suffix in PROJECT_TARGET_RISK_SENTINEL_EXTENSIONS:
++        return True
++    return is_github_actions_yaml_path(path)
++
++
++def is_required_review_target_finding(finding: dict[str, Any]) -> bool:
++    path = str(finding.get("path", "") or "").strip()
++    if is_required_review_target_path(path):
++        return True
++    text = normalized_quality_text(
++        "\n".join(
++            [
++                str(finding.get("title", "") or ""),
++                str(finding.get("body", "") or ""),
++                str(finding.get("validation", "") or ""),
++            ]
++        )
++    )
++    required_terms = (
++        "powershell",
++        "python",
++        "github actions",
++        "pull_request_target",
++        "github.event.pull_request",
++        "github_token",
++        "ci token",
++    )
++    return any(term in text for term in required_terms)
++
++
++def select_findings_for_inline(findings: list[dict[str, Any]], limit: int) -> list[dict[str, Any]]:
++    if limit <= 0:
++        return []
++    required = [finding for finding in findings if is_required_review_target_finding(finding)]
++    optional = [finding for finding in findings if not is_required_review_target_finding(finding)]
++    required.sort(key=severity_sort_key)
++    optional.sort(key=severity_sort_key)
++    return [*required, *optional][:limit]
++
++
+ def split_findings(
+     result: dict[str, Any],
+     config: Any,
+@@ -1840,10 +1897,8 @@ def split_findings(
+             continue
+         findings.append(item)
+ 
+-    findings.sort(key=severity_sort_key)
+-    findings = findings[: config.max_inline_comments]
+-    unanchored_findings.sort(key=severity_sort_key)
+-    unanchored_findings = unanchored_findings[: config.max_inline_comments]
++    findings = select_findings_for_inline(findings, int(config.max_inline_comments))
++    unanchored_findings = select_findings_for_inline(unanchored_findings, int(config.max_inline_comments))
+     if findings or unanchored_findings:
+         return findings, unanchored_findings
+ 
