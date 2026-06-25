@@ -1348,6 +1348,8 @@ def main() -> None:
                 "reviewed_head_sha": str(pr.get("head", {}).get("sha", "") or ""),
                 "command": command,
                 "debug": bool(getattr(config, "debug", False)),
+                "workflow_run_id": base.workflow_run_id() if hasattr(base, "workflow_run_id") else os.environ.get("GITHUB_RUN_ID", ""),
+                "workflow_run_url": base.workflow_run_url() if hasattr(base, "workflow_run_url") else "",
                 "review_mode": review_mode,
                 "context_summary": context_summary,
                 "review_assist_context_chars": len(review_assist_ctx),
