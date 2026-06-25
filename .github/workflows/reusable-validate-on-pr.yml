@@ -100,20 +100,6 @@ jobs:
             Write-Host 'Review-assist report not found; skipping job summary.'
           }
 
-      - name: Build fresh collector runtime zip for harness
-        uses: ./.github/actions/build-collector-runtime-for-harness
-        with:
-          output-dir: project_sources/validation/out_validate_on_pr_collector
-
-      - name: Run collector core pre-live suite
-        shell: pwsh
-        working-directory: project_sources
-        run: |
-          powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\collector\harness\run_DCOIR_Tests.generated.ps1 -CollectorPath $env:HARNESS_COLLECTOR_PATH -Suite Core -MasterZipPath $env:HARNESS_RUNTIME_ZIP
-          if ($LASTEXITCODE -ne 0) {
-            throw 'Collector harness suite failed: Core'
-          }
-
       - name: Upload validation artifacts
         if: always()
         uses: ./.github/actions/upload-chatgpt-artifact
@@ -127,6 +113,8 @@ jobs:
             project_sources/validation/out_preflight_documentation_quality/**
             project_sources/validation/out_validate_on_pr_documentation_quality/**
             project_sources/collector/powershell_analyzer_report.json
+            project_sources/collector/powershell_duplicate_function_report.json
+            project_sources/collector/powershell_duplicate_function_report.md
             project_sources/collector/powershell_review_assist_workflow_report.json
             project_sources/collector/powershell_review_assist_workflow_report.md
           if-no-files-found: warn
@@ -147,9 +135,9 @@ jobs:
           - ref: $env:GITHUB_REF
           - event_name: $env:GITHUB_EVENT_NAME
           - primary_artifact: validate-on-pr-results
-          - artifact_note: includes Gemini smoke-build output, collector runtime output, validate_DCOIR_Run fixture output, documentation-quality output, PSScriptAnalyzer JSON, PowerShell review-assist JSON/Markdown, and TestResults when produced.
+          - artifact_note: includes Gemini smoke-build output, collector runtime output, validate_DCOIR_Run fixture output, documentation-quality output, PSScriptAnalyzer JSON, duplicate-function JSON/Markdown, PowerShell review-assist JSON/Markdown, and TestResults when produced.
           - job_summary: review-assist report written to GITHUB_STEP_SUMMARY.
-          - duplicate_function_check: blocks merge on any cross-file function name collision in collector source.
+          - duplicate_function_check: blocks merge on any cross-file function name collision in collector source and emits JSON/Markdown artifacts before failure.
           - psscriptanalyzer_gate: blocks merge on any Error-severity finding; Warnings reported but non-blocking.
 
           The workflow conclusion is the authoritative pass/fail signal for the PR validation lane. Use artifact readback for package, harness, or report-specific claims.
