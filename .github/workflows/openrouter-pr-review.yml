@@ -318,30 +318,30 @@ jobs:
           REPORT_PATH="/tmp/review-assist-context/project_sources/collector/powershell_review_assist_workflow_report.md"
           if [ -f "$REPORT_PATH" ]; then
             python - <<'PY'
-import os
-import re
-from pathlib import Path
+            import os
+            import re
+            from pathlib import Path
 
-report_path = Path("/tmp/review-assist-context/project_sources/collector/powershell_review_assist_workflow_report.md")
-if not report_path.is_file():
-    raise SystemExit("static validation context file disappeared before env export")
+            report_path = Path("/tmp/review-assist-context/project_sources/collector/powershell_review_assist_workflow_report.md")
+            if not report_path.is_file():
+                raise SystemExit("static validation context file disappeared before env export")
 
-def safe_value(name: str, pattern: str) -> str:
-    value = os.getenv(name, "")
-    return value if re.fullmatch(pattern, value) else "invalid-metadata"
+            def safe_value(name: str, pattern: str) -> str:
+                value = os.getenv(name, "")
+                return value if re.fullmatch(pattern, value) else "invalid-metadata"
 
-run_id = safe_value("RUN_ID", r"[0-9]{1,20}")
-run_conclusion = safe_value("RUN_CONCLUSION", r"[a-z_]{1,32}")
-github_env = os.getenv("GITHUB_ENV", "")
-if not github_env:
-    raise SystemExit("GITHUB_ENV is not set; cannot export review context path")
-with open(github_env, "a", encoding="utf-8") as env_file:
-    env_file.write(f"REVIEW_ASSIST_CONTEXT_PATH={report_path.as_posix()}\n")
-print(
-    "Static validation context loaded from validate-on-pr run "
-    f"{run_id} ({run_conclusion}), {report_path.stat().st_size} bytes."
-)
-PY
+            run_id = safe_value("RUN_ID", r"[0-9]{1,20}")
+            run_conclusion = safe_value("RUN_CONCLUSION", r"[a-z_]{1,32}")
+            github_env = os.getenv("GITHUB_ENV", "")
+            if not github_env:
+                raise SystemExit("GITHUB_ENV is not set; cannot export review context path")
+            with open(github_env, "a", encoding="utf-8") as env_file:
+                env_file.write(f"REVIEW_ASSIST_CONTEXT_PATH={report_path.as_posix()}\n")
+            print(
+                "Static validation context loaded from validate-on-pr run "
+                f"{run_id} ({run_conclusion}), {report_path.stat().st_size} bytes."
+            )
+            PY
           else
             echo "No static validation context file generated; no context injection."
           fi
