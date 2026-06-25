@@ -1206,6 +1206,8 @@ def split_findings_with_review_body_fallback(
                 path = str(item.get("path", "")).strip()
             except (AttributeError, TypeError, ValueError):
                 continue
+            if not path or line <= 0:
+                continue
             if confidence < config.minimum_confidence or hardened.non_actionable_finding_reason(item):
                 continue
             if (path, line) in line_index:
