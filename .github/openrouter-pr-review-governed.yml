@@ -1,4 +1,4 @@
-# Legacy governed OpenRouter PR Review baseline for DCOIR-Collector/dcoir-collector.
+# Legacy governed DCOIR Review baseline for DCOIR-Collector/dcoir-collector.
 # The active production workflow now uses .github/openrouter-pr-review-pareto.yml
 # through scripts/openrouter_pr_review_pareto_context.py.
 # Retained for hardened-runner selftests, comparison, and rollback reference.
@@ -58,11 +58,12 @@ risk_sentinel_quality_gate: true
 risk_sentinel_retry_on_empty: true
 risk_sentinel_max_anchors: 12
 
-# Keep the GitHub thread quiet. Inline findings include the model name.
-# A top-level summary is posted only when no inline findings are generated.
+# Keep the GitHub thread quiet by default. Debug progress comments are opt-in.
+# A top-level review body is posted with inline findings or a no-findings summary.
 post_summary_when_findings: false
 include_confidence: false
 redact_secret_literals: true
+debug: false
 
 # Retry temporary OpenRouter/provider failures and skip a provider that reports
 # rate limiting during retry.
@@ -70,9 +71,10 @@ openrouter_max_attempts: 4
 openrouter_retry_max_seconds: 45
 
 # Keep this lower than the workflow timeout so the script can remove the eyes
-# reaction and update the progress comment with a visible failure.
+# reaction and report failures through Actions notices; debug runs also update
+# the progress comment.
 script_timeout_seconds: 1500
-post_progress_comment: true
+post_progress_comment: false
 
 # Optional provider denylist. Leave empty by default; the script also adds
 # temporarily failing providers to the retry ignore list automatically.
