@@ -5,14 +5,18 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import tempfile
 from pathlib import Path
+from pathlib import PurePosixPath
 from typing import Any
 
 
 DEFAULT_JSON = Path("project_sources/collector/powershell_duplicate_function_report.json")
 DEFAULT_MARKDOWN = Path("project_sources/collector/powershell_duplicate_function_report.md")
 SCHEMA_VERSION = "dcoir_powershell_duplicate_function_report_v1"
+REPORT_ROOT = PurePosixPath("project_sources/collector")
+CONTROL_CHARS = re.compile(r"[\x00-\x1f\x7f]")
 
 
 class ValidationError(RuntimeError):
@@ -29,6 +33,31 @@ def require_int_mapping(mapping: dict[str, Any], key: str) -> int:
     require(isinstance(value, int), f"summary.{key} must be an integer")
     require(value >= 0, f"summary.{key} must not be negative")
     return value
+
+
+def resolve_report_path(path: Path, expected_suffix: Path, label: str, root: Path | None = None) -> Path:
+    raw = str(path)
+    require(raw, f"{label} path is required")
+    require(CONTROL_CHARS.search(raw) is None, f"{label} path contains control characters")
+
+    normalized = raw.replace("\\", "/").strip()
+    require(normalized, f"{label} path is required")
+    candidate = PurePosixPath(normalized)
+
+    require(not candidate.is_absolute(), f"{label} path must be repository-relative")
+    require(".." not in candidate.parts, f"{label} path must not contain traversal segments")
+    require(candidate.parts[: len(REPORT_ROOT.parts)] == REPORT_ROOT.parts, f"{label} path must be under {REPORT_ROOT}")
+    require(candidate.name == expected_suffix.name, f"{label} path must end with {expected_suffix.name}")
+
+    repo_root = (root or Path.cwd()).resolve()
+    allowed_root = (repo_root / Path(REPORT_ROOT.as_posix())).resolve()
+    resolved = (repo_root / Path(candidate.as_posix())).resolve()
+    try:
+        resolved.relative_to(allowed_root)
+    except ValueError as exc:
+        raise ValidationError(f"{label} path escapes {REPORT_ROOT}") from exc
+
+    return Path(candidate.as_posix())
 
 
 def load_report(path: Path) -> dict[str, Any]:
@@ -125,6 +154,8 @@ def validate_markdown_report(text: str, data: dict[str, Any], json_path: Path, m
 
 
 def validate_reports(json_path: Path, markdown_path: Path) -> None:
+    json_path = resolve_report_path(json_path, DEFAULT_JSON, "JSON report")
+    markdown_path = resolve_report_path(markdown_path, DEFAULT_MARKDOWN, "Markdown report")
     data = load_report(json_path)
     require(markdown_path.is_file(), f"Markdown report missing: {markdown_path}")
     markdown = markdown_path.read_text(encoding="utf-8-sig")
@@ -194,6 +225,23 @@ def run_self_test() -> None:
                 pass
             else:
                 raise AssertionError("invalid schema self-test should fail")
+
+            rejected_paths = (
+                Path("../etc/passwd"),
+                Path("../../../../tmp/evil.md"),
+                Path("/tmp/evil.md"),
+                Path("project_sources/collector/../validation/powershell_duplicate_function_report.json"),
+                Path("project_sources/collector/not_the_report.json"),
+                Path("project_sources/validation/powershell_duplicate_function_report.json"),
+                Path("project_sources/collector/powershell_duplicate_function_report.json\nextra"),
+            )
+            for rejected_path in rejected_paths:
+                try:
+                    resolve_report_path(rejected_path, DEFAULT_JSON, "JSON report", root=root)
+                except ValidationError:
+                    pass
+                else:
+                    raise AssertionError(f"unsafe path self-test should fail: {rejected_path!s}")
         finally:
             os.chdir(previous_cwd)
 
