@@ -288,7 +288,7 @@ def load_hardened_config(path: str) -> Any:
     config.openrouter_route = str(data.get("openrouter_route", "") or "").strip()
     config.openrouter_service_tier = str(data.get("openrouter_service_tier", "") or "").strip()
     config.openrouter_session_id_prefix = str(
-        data.get("openrouter_session_id_prefix", "dcoir-openrouter-pr-review") or ""
+        data.get("openrouter_session_id_prefix", "dcoir-review") or ""
     ).strip()
     config.smoke_test_free_model = bool_value(data, "smoke_test_free_model", False)
     config.fail_on_unanchored_findings = bool_value(data, "fail_on_unanchored_findings", True)
@@ -1031,7 +1031,7 @@ def openrouter_request_once(
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json",
         "HTTP-Referer": "https://github.com/DCOIR-Collector/dcoir-collector",
-        "X-OpenRouter-Title": "DCOIR OpenRouter PR Review",
+        "X-OpenRouter-Title": base.REVIEW_DISPLAY_NAME,
     }
     sticky_session = session_id(config)
     if sticky_session:
@@ -1299,14 +1299,14 @@ def split_findings(
     if raw_findings and getattr(config, "fail_on_unanchored_findings", True):
         details = "; ".join(rejected[:6]) if rejected else "no accepted findings"
         raise ReviewQualityError(
-            "OpenRouter review quality failure: the model returned findings, but none became actionable inline comments. "
+            f"{base.REVIEW_DISPLAY_NAME} quality failure: the model returned findings, but none became actionable inline comments. "
             f"Rejected findings: {details}."
         )
 
     summary = str(result.get("summary", "")).strip()
     if getattr(config, "fail_on_summary_only_problem", True) and summary_suggests_problem(summary):
         raise ReviewQualityError(
-            "OpenRouter review quality failure: the model summary indicated a possible issue, but the structured findings "
+            f"{base.REVIEW_DISPLAY_NAME} quality failure: the model summary indicated a possible issue, but the structured findings "
             "array was empty. The review must produce actionable file/line findings or a clean summary."
         )
 
@@ -1325,7 +1325,7 @@ def enforce_risk_sentinel_findings(
     if not uncovered:
         return
     raise ReviewQualityError(
-        "OpenRouter review quality failure: the changed diff contained high-risk changed-line signals, but the model "
+        f"{base.REVIEW_DISPLAY_NAME} quality failure: the changed diff contained high-risk changed-line signals, but the model "
         "did not produce actionable findings covering those signals after quality retry. Uncovered signals: "
         f"{risk_sentinel_coverage_digest(uncovered)}."
     )
@@ -1437,7 +1437,7 @@ def main() -> None:
         base.apply_debug_flag(config, comment_body, command)
 
     def timeout_handler(_signum: int, _frame: Any) -> None:
-        raise ReviewTimeoutError(f"OpenRouter PR review exceeded script timeout of {config.script_timeout_seconds} seconds")
+        raise ReviewTimeoutError(f"{base.REVIEW_DISPLAY_NAME} exceeded script timeout of {config.script_timeout_seconds} seconds")
 
     schema = json.loads(base.read_text("schemas/openrouter-pr-review.schema.json"))
     gh = base.GitHubClient(token, repo)
