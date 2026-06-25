@@ -29,8 +29,8 @@
 # - GitHub is canonical for workflow/source truth and this header owns workflow-specific execution guidance.
 # - Supabase `ircore` owns operational routing, validation rules, reusable lessons, and active state.
 # - Use legacy Airtable only when a file explicitly requires a migration or historical lookup.
-name: OpenRouter PR Review
-run-name: "OpenRouter PR Review | PR #${{ github.event.issue.number }} | ${{ github.event.comment.user.login }}"
+name: 28 Review - OpenRouter PR Review
+run-name: "28 Review - OpenRouter PR Review | PR #${{ github.event.issue.number }} | ${{ github.event.comment.user.login }}"
 
 on:
   issue_comment:
