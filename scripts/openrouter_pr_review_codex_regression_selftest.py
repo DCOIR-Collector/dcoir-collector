@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import ast
 import importlib.util
 import sys
 from pathlib import Path
@@ -62,5 +63,17 @@ curl_short_continuation = "curl -u" + line_continuation + "  dcoir:continued-sho
 cleaned_curl_short = sanitized(curl_short_continuation)
 assert "continued-short-option-secret-12345" not in cleaned_curl_short, cleaned_curl_short
 assert "dcoir:[redacted-secret]" in cleaned_curl_short, cleaned_curl_short
+
+python_env_context = '''    return {
+        "github_token": os.environ.get("GITHUB_TOKEN", ""),
+        "openrouter_key": os.environ.get("OPENROUTER_API_KEY", ""),
+        "all_environment": "\\n".join(f"{key}={value}" for key, value in sorted(os.environ.items())),
+    }
+'''
+cleaned_python_env_context = sanitized(python_env_context)
+assert '"github_token": os.environ.get("GITHUB_TOKEN", ""),' in cleaned_python_env_context, cleaned_python_env_context
+assert '"openrouter_key": os.environ.get("OPENROUTER_API_KEY", ""),' in cleaned_python_env_context, cleaned_python_env_context
+assert '"github_token": [redacted-secret]' not in cleaned_python_env_context, cleaned_python_env_context
+ast.parse("import os\n\ndef build_review_context():\n" + cleaned_python_env_context)
 
 print("openrouter_pr_review_codex_regression_selftest.py: ok")
