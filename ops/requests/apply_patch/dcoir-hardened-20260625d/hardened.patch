@@ -1,0 +1,256 @@
+diff --git a/scripts/openrouter_pr_review_hardened.py b/scripts/openrouter_pr_review_hardened.py
+--- a/scripts/openrouter_pr_review_hardened.py
++++ b/scripts/openrouter_pr_review_hardened.py
+@@ -102,6 +102,66 @@
+     ".yml",
+ }
+ 
++RISK_SENTINEL_COVERAGE_LINE_WINDOW = 4
++
++RISK_SENTINEL_FINDING_TERMS: dict[str, tuple[str, ...]] = {
++    "PowerShell Invoke-Expression": (
++        "invoke-expression",
++        "constructed text",
++        "command injection",
++        "code execution",
++    ),
++    "raw SQL/query string interpolation": (
++        "sql",
++        "query",
++        "interpolation",
++        "parameter",
++    ),
++    "shell=True subprocess invocation": (
++        "shell=true",
++        "shell true",
++        "shell execution",
++        "subprocess",
++        "command injection",
++    ),
++    "truthy literal branch condition": (
++        "truthy",
++        "always true",
++        "literal branch",
++        "bypass",
++    ),
++    "recursive delete primitive": (
++        "recursive delete",
++        "remove-item",
++        "rmtree",
++        "deletion",
++        "path root",
++    ),
++    "environment dump or exfiltration primitive": (
++        "environment",
++        "os.environ",
++        "get-childitem env",
++        "secret",
++        "exfiltration",
++    ),
++    "unsafe file-write path construction": (
++        "path traversal",
++        "file write",
++        "arbitrary overwrite",
++        "root containment",
++        "dynamic path",
++    ),
++}
++
++RISK_SENTINEL_HIGH_SEVERITY_LABELS = {
++    "PowerShell Invoke-Expression",
++    "raw SQL/query string interpolation",
++    "shell=True subprocess invocation",
++    "environment dump or exfiltration primitive",
++    "unsafe file-write path construction",
++}
++
++
+ NON_ACTIONABLE_FINDING_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
+     (
+         re.compile(r"\b(?:downgrades?|downgraded)\b.{0,120}\binformational\b", re.IGNORECASE | re.DOTALL),
+@@ -479,7 +539,7 @@
+ def risk_sentinel_block(sentinels: list[RiskSentinel], config: Any) -> str:
+     lines = [
+         "Changed-code risk signals detected before model review:",
+-        "These are not automatic findings, but a zero-finding review must explicitly survive review of these anchors.",
++        "Any non-empty findings response must cover these anchors by path, nearby line, and risk class. Unrelated findings do not satisfy this gate.",
+     ]
+     for item in sentinels[: getattr(config, "risk_sentinel_max_anchors", 12)]:
+         snippet = item.text.strip().replace("`", "'")
+@@ -489,6 +549,105 @@
+     return base.sanitize_text("\n".join(lines), config)
+ 
+ 
++def normalized_quality_text(text: str) -> str:
++    return re.sub(r"[^a-z0-9_.:=/-]+", " ", text.lower()).strip()
++
++
++def risk_sentinel_terms(sentinel: RiskSentinel) -> tuple[str, ...]:
++    terms = RISK_SENTINEL_FINDING_TERMS.get(sentinel.label, ())
++    if terms:
++        return terms
++    label_terms = tuple(part for part in normalized_quality_text(sentinel.label).split() if len(part) >= 4)
++    return label_terms or (normalized_quality_text(sentinel.label),)
++
++
++def finding_covers_risk_sentinel(finding: dict[str, Any], sentinel: RiskSentinel) -> bool:
++    try:
++        finding_line = int(finding.get("line", 0))
++    except (TypeError, ValueError):
++        return False
++    finding_path = str(finding.get("path", "")).strip()
++    if finding_path != sentinel.path:
++        return False
++    if abs(finding_line - sentinel.line) > RISK_SENTINEL_COVERAGE_LINE_WINDOW:
++        return False
++    finding_text = normalized_quality_text(
++        "\n".join(
++            [
++                str(finding.get("title", "") or ""),
++                str(finding.get("body", "") or ""),
++                str(finding.get("validation", "") or ""),
++            ]
++        )
++    )
++    if not finding_text:
++        return False
++    return any(normalized_quality_text(term) in finding_text for term in risk_sentinel_terms(sentinel))
++
++
++def uncovered_risk_sentinels(
++    findings: list[dict[str, Any]],
++    risk_sentinels: list[RiskSentinel],
++    config: Any,
++    unanchored_findings: list[dict[str, Any]] | None = None,
++) -> list[RiskSentinel]:
++    if not risk_sentinels or not getattr(config, "risk_sentinel_quality_gate", True):
++        return []
++    candidate_findings = [*findings, *(unanchored_findings or [])]
++    return [
++        sentinel
++        for sentinel in risk_sentinels
++        if not any(finding_covers_risk_sentinel(finding, sentinel) for finding in candidate_findings)
++    ]
++
++
++def risk_sentinel_coverage_digest(sentinels: list[RiskSentinel]) -> str:
++    return "; ".join(f"{item.path}:{item.line} {item.label}" for item in sentinels[:8])
++
++
++def primary_validation_command(config: Any) -> str:
++    commands = getattr(config, "validation_commands", [])
++    if isinstance(commands, list) and commands:
++        return str(commands[0])
++    return "Run the relevant dcoir-review selftests and workflow validation."
++
++
++def risk_sentinel_fallback_finding(sentinel: RiskSentinel, config: Any) -> dict[str, Any]:
++    severity = "high" if sentinel.label in RISK_SENTINEL_HIGH_SEVERITY_LABELS else "medium"
++    return {
++        "title": f"Deterministic risk sentinel: {sentinel.label}",
++        "severity": severity,
++        "confidence": 0.99,
++        "path": sentinel.path,
++        "line": sentinel.line,
++        "body": (
++            f"This changed line matched dcoir-review's deterministic `{sentinel.label}` sentinel. "
++            f"{sentinel.detail}. Treat this as actionable unless the code constrains the input and side effect "
++            "before this line; otherwise replace the primitive with a bounded, validated implementation and add "
++            "readback validation for the narrowed behavior."
++        ),
++        "suggested_replacement": "",
++        "validation": primary_validation_command(config),
++    }
++
++
++def add_risk_sentinel_fallback_findings(
++    findings: list[dict[str, Any]],
++    risk_sentinels: list[RiskSentinel],
++    config: Any,
++    unanchored_findings: list[dict[str, Any]] | None = None,
++) -> list[dict[str, Any]]:
++    uncovered = uncovered_risk_sentinels(findings, risk_sentinels, config, unanchored_findings)
++    if not uncovered:
++        return findings
++    remaining = max(0, int(getattr(config, "max_inline_comments", 12)) - len(findings))
++    if remaining <= 0:
++        return findings
++    augmented = [*findings, *(risk_sentinel_fallback_finding(sentinel, config) for sentinel in uncovered[:remaining])]
++    augmented.sort(key=severity_sort_key)
++    return augmented[: int(getattr(config, "max_inline_comments", 12))]
++
++
+ def append_with_budget(prefix: str, suffix: str, max_chars: int) -> str:
+     separator = "\n\n"
+     if len(prefix) + len(separator) + len(suffix) <= max_chars:
+@@ -514,6 +673,7 @@
+ - For Markdown and governed-source findings, anchor the finding to the nearest changed right-side line that introduced or materially preserves the risky wording.
+ - If a small suggestion block is not safe, leave suggested_replacement empty and put exact repair steps in the finding body.
+ - Each finding body must include observed behavior, impact, exact correction guidance, and validation or readback guidance.
++- Do not return informational or advisory findings that say the risk is not realized, the changed code does not introduce the risk, or no input reaches the risky path. Put that in a clean summary instead.
+ """.strip()
+     if risk_sentinels and getattr(config, "risk_sentinel_quality_gate", True):
+         hardening = f"{hardening}\n\n{risk_sentinel_block(risk_sentinels, config)}"
+@@ -695,6 +855,22 @@
+                 "model returned high-confidence structured findings, but none were anchored to changed diff lines: "
+                 f"{raw_findings_digest(result)}"
+             )
++        if (
++            risk_sentinels
++            and line_index is not None
++            and getattr(config, "risk_sentinel_quality_gate", True)
++        ):
++            try:
++                findings, unanchored_findings = split_findings(result, config, line_index)
++            except ReviewQualityError:
++                findings, unanchored_findings = [], []
++            uncovered = uncovered_risk_sentinels(findings, risk_sentinels, config, unanchored_findings)
++            if uncovered:
++                return (
++                    "model returned actionable findings, but they did not cover high-risk changed-line signals: "
++                    f"{risk_sentinel_coverage_digest(uncovered)}"
++                )
++
+     return ""
+ 
+ 
+@@ -719,10 +895,11 @@
+ Review quality retry:
+ The previous response failed review-quality checks: {issue_line}.
+ Re-review the changed diff and return one of two valid outputs:
+-- Actionable findings anchored to changed right-side file/line entries with confidence at or above {config.minimum_confidence:.2f}; or
++- Actionable findings anchored to changed right-side file/line entries with confidence at or above {config.minimum_confidence:.2f}, covering every high-risk anchor by path, nearby line, and risk class; or
+ - An empty findings array with a clean summary that does not imply a remaining issue.
+ Do not place actionable concerns only in the summary. Do not return low-confidence, unanchored, or speculative findings.
+ Do not return informational/advisory findings that explain there is no realized risk; use a clean summary for those.
++Do not satisfy a high-risk anchor with an unrelated finding on another risk class.
+ If a previous finding was real but poorly anchored or below confidence threshold, convert it into a valid finding with exact file, changed line, observed behavior, impact, correction guidance, and validation/readback guidance.
+ 
+ {anchor_block}
+@@ -1088,12 +1265,15 @@
+     config: Any,
+     unanchored_findings: list[dict[str, Any]] | None = None,
+ ) -> None:
+-    if findings or unanchored_findings or not risk_sentinels or not getattr(config, "risk_sentinel_quality_gate", True):
++    if not risk_sentinels or not getattr(config, "risk_sentinel_quality_gate", True):
++        return
++    uncovered = uncovered_risk_sentinels(findings, risk_sentinels, config, unanchored_findings)
++    if not uncovered:
+         return
+     raise ReviewQualityError(
+         "OpenRouter review quality failure: the changed diff contained high-risk changed-line signals, but the model "
+-        "produced no actionable inline findings after quality retry. Signals: "
+-        f"{risk_sentinel_digest(risk_sentinels)}."
++        "did not produce actionable findings covering those signals after quality retry. Uncovered signals: "
++        f"{risk_sentinel_coverage_digest(uncovered)}."
+     )
+ 
+ 
+@@ -1231,6 +1411,7 @@
+         result, model_used, service_tier = openrouter_review_with_quality_retry(prompt, schema, config, reporter, risk_sentinels, line_index)
+         reporter.update("normalize", "mapping model findings to changed diff lines")
+         findings, unanchored_findings = split_findings(result, config, line_index)
++        findings = add_risk_sentinel_fallback_findings(findings, risk_sentinels, config, unanchored_findings)
+         enforce_risk_sentinel_findings(findings, risk_sentinels, config, unanchored_findings)
+ 
+         comments: list[dict[str, Any]] = []
