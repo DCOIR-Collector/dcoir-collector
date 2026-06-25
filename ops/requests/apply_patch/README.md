@@ -10,6 +10,17 @@ ops/requests/apply_patch/<request_id>/change.patch
 `<request_id>` may contain only letters, numbers, dots, underscores, and hyphens.
 The workflow only looks for requests under `ops/requests/apply_patch/<request_id>/`.
 
+This lane is for connector-staged patch requests, not connector-staged full-file
+replacement payloads. To use it through the GitHub connector, create both
+`request.json` and the referenced `.patch` or `.diff` file on the default branch
+under one request directory. A push to the default branch triggers the workflow,
+which validates the request and applies the patch to `target_branch`.
+
+The workflow does not scan arbitrary staging folders, does not ingest replacement
+files, and does not apply multi-file patch sets. Use `chatgpt-apply-in` for
+reviewed full-file ZIP payloads until a separate full-file ops request lane is
+implemented.
+
 ## Implementation Surfaces
 
 The apply-patch lane follows the repo workflow/module/script pattern:

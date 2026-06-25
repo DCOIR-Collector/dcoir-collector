@@ -1,13 +1,13 @@
 {
   "composite_action_count": 18,
   "contract_registry": "project_sources/github_actions/workflow_modularization_contracts.json",
-  "existing_workflow_count_expected": 33,
+  "existing_workflow_count_expected": 29,
   "governing_issue": 194,
-  "local_composite_action_calls": 117,
-  "local_reusable_workflow_calls": 32,
-  "reusable_workflow_count": 31,
+  "local_composite_action_calls": 113,
+  "local_reusable_workflow_calls": 28,
+  "reusable_workflow_count": 27,
   "schema_version": "dcoir_workflow_inventory_v1",
-  "workflow_count": 33,
+  "workflow_count": 29,
   "workflows": [
     {
       "artifacts": [
@@ -463,74 +463,6 @@
     },
     {
       "artifacts": [],
-      "concurrency_declared": false,
-      "contract_family": "ops-guard",
-      "file": ".github/workflows/ops-apply-zip.yml",
-      "migration_status": "active",
-      "operator_purpose": "Minimal scaffold/dry-run placeholder for ops apply-zip request handling.",
-      "permissions": null,
-      "report_family": "central reporter only when applicable",
-      "risk": "medium",
-      "schedules": [],
-      "secret_or_var_count": 0,
-      "trigger_events": [
-        "workflow_dispatch"
-      ],
-      "workflow_name": "60 Ops - Apply ZIP Request Scaffold"
-    },
-    {
-      "artifacts": [],
-      "concurrency_declared": false,
-      "contract_family": "ops-guard",
-      "file": ".github/workflows/ops-dispatch-request.yml",
-      "migration_status": "active",
-      "operator_purpose": "Minimal scaffold/dry-run placeholder for ops dispatch request handling.",
-      "permissions": null,
-      "report_family": "central reporter only when applicable",
-      "risk": "medium",
-      "schedules": [],
-      "secret_or_var_count": 0,
-      "trigger_events": [
-        "workflow_dispatch"
-      ],
-      "workflow_name": "61 Ops - Dispatch Request Scaffold"
-    },
-    {
-      "artifacts": [],
-      "concurrency_declared": false,
-      "contract_family": "ops-guard",
-      "file": ".github/workflows/ops-file-delete.yml",
-      "migration_status": "active",
-      "operator_purpose": "Minimal scaffold/dry-run placeholder for ops file-delete request handling.",
-      "permissions": null,
-      "report_family": "central reporter only when applicable",
-      "risk": "high",
-      "schedules": [],
-      "secret_or_var_count": 0,
-      "trigger_events": [
-        "workflow_dispatch"
-      ],
-      "workflow_name": "62 Ops - File Delete Request Scaffold"
-    },
-    {
-      "artifacts": [],
-      "concurrency_declared": false,
-      "contract_family": "ops-guard",
-      "file": ".github/workflows/ops-restructure-map.yml",
-      "migration_status": "active",
-      "operator_purpose": "Minimal scaffold/dry-run placeholder for ops restructure-map request handling.",
-      "permissions": null,
-      "report_family": "central reporter only when applicable",
-      "risk": "medium",
-      "schedules": [],
-      "secret_or_var_count": 0,
-      "trigger_events": [
-        "workflow_dispatch"
-      ],
-      "workflow_name": "63 Ops - Restructure Map Scaffold"
-    },
-    {
-      "artifacts": [],
       "concurrency_declared": true,
       "contract_family": "wiki-publish",
       "file": ".github/workflows/publish_knowledge_to_wiki.yml",
@@ -662,7 +594,8 @@
       "schedules": [],
       "secret_or_var_count": 0,
       "trigger_events": [
-        "pull_request"
+        "pull_request",
+        "workflow_dispatch"
       ],
       "workflow_name": "20 Validation - Pull Request"
     },

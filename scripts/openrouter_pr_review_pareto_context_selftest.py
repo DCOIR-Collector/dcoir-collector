@@ -1427,4 +1427,52 @@ assert "@codex" not in unsafe_review_body
 assert "@malwaredevil" not in unsafe_review_body
 assert "@<!-- -->codex" in unsafe_review_body
 
+
+off_diff_fallback_result = {
+    "summary": "Review found an off-diff issue.",
+    "findings": [
+        {
+            "path": "unrelated/off_diff.py",
+            "line": 12,
+            "severity": "high",
+            "confidence": 0.99,
+            "title": "Off-diff finding",
+            "body": "This finding is not in a changed file for this PR.",
+        }
+    ],
+}
+try:
+    mod.split_findings_with_review_body_fallback(
+        off_diff_fallback_result,
+        config,
+        {("scripts/openrouter_pr_review_pareto_context.py", 1216): 1},
+    )
+except mod.hardened.ReviewQualityError as exc:
+    assert "not in changed diff" in str(exc)
+else:
+    raise AssertionError("off-diff fallback finding should preserve the review quality failure")
+
+changed_file_unanchored_result = {
+    "summary": "Review found a changed-file issue outside added lines.",
+    "findings": [
+        {
+            "path": "scripts/openrouter_pr_review_pareto_context.py",
+            "line": 1220,
+            "severity": "high",
+            "confidence": 0.99,
+            "title": "Changed-file unanchored finding",
+            "body": "This finding is in a changed file but not on an added line.",
+        }
+    ],
+}
+inline_findings, review_body_findings = mod.split_findings_with_review_body_fallback(
+    changed_file_unanchored_result,
+    config,
+    {("scripts/openrouter_pr_review_pareto_context.py", 1216): 1},
+)
+assert inline_findings == []
+assert len(review_body_findings) == 1
+assert review_body_findings[0]["path"] == "scripts/openrouter_pr_review_pareto_context.py"
+assert "not an added changed line" in review_body_findings[0]["_unanchored_reason"]
+
 print("Pareto context OpenRouter selftest passed")

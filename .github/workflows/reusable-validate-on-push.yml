@@ -42,6 +42,14 @@ jobs:
             throw 'Documentation validator self-tests failed.'
           }
 
+      - name: Run duplicate-function action contract tests
+        shell: pwsh
+        run: |
+          python project_sources/github_actions/tools/test_duplicate_function_action_contract.py
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Duplicate-function action contract tests failed.'
+          }
+
       - name: Validate PowerShell syntax
         uses: ./.github/actions/validate-powershell-syntax
 
@@ -75,9 +83,21 @@ jobs:
 
       - name: Run PSScriptAnalyzer on collector source
         uses: ./.github/actions/run-psscriptanalyzer
+        with:
+          fail-on-error-severity: 'false'
 
       - name: Check for duplicate function definitions
         uses: ./.github/actions/run-duplicate-function-check
+        with:
+          fail-on-duplicates: 'false'
+
+      - name: Validate duplicate-function reports
+        shell: pwsh
+        run: |
+          python project_sources/github_actions/tools/validate_duplicate_function_reports.py
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Duplicate-function report validation failed.'
+          }
 
       - name: Run PowerShell review-assist report
         uses: ./.github/actions/run-powershell-review-assist
@@ -96,6 +116,66 @@ jobs:
             Write-Host 'Review-assist report not found; skipping job summary.'
           }
 
+      - name: Enforce static analysis validation gates
+        if: always()
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $failures = [System.Collections.Generic.List[string]]::new()
+
+          $analyzerPath = 'project_sources/collector/powershell_analyzer_report.json'
+          if (-not (Test-Path -LiteralPath $analyzerPath)) {
+            $failures.Add("PSScriptAnalyzer report missing: $analyzerPath")
+          } else {
+            $analyzer = Get-Content -LiteralPath $analyzerPath -Raw | ConvertFrom-Json
+            if ($analyzer.validation.success -ne $true) {
+              $failures.Add('PSScriptAnalyzer validation did not report success.')
+            }
+            $errorCount = 0
+            if ($null -ne $analyzer.summary.error_count) {
+              $errorCount = [int]$analyzer.summary.error_count
+            }
+            if ($errorCount -gt 0) {
+              $failures.Add("PSScriptAnalyzer reported $errorCount Error-severity finding(s).")
+            }
+          }
+
+          $duplicatePath = 'project_sources/collector/powershell_duplicate_function_report.json'
+          if (-not (Test-Path -LiteralPath $duplicatePath)) {
+            $failures.Add("Duplicate-function report missing: $duplicatePath")
+          } else {
+            $duplicate = Get-Content -LiteralPath $duplicatePath -Raw | ConvertFrom-Json
+            if ($duplicate.validation.success -ne $true) {
+              $failures.Add('Duplicate-function validation did not report success.')
+            }
+            $duplicateCount = 0
+            if ($null -ne $duplicate.summary.duplicate_function_count) {
+              $duplicateCount = [int]$duplicate.summary.duplicate_function_count
+            }
+            $parseFailureCount = 0
+            if ($null -ne $duplicate.summary.parse_failure_count) {
+              $parseFailureCount = [int]$duplicate.summary.parse_failure_count
+            }
+            if ($parseFailureCount -gt 0) {
+              $failures.Add("Duplicate-function report has $parseFailureCount parse failure(s).")
+            }
+            if ($duplicateCount -gt 0) {
+              $failures.Add("Duplicate-function report found $duplicateCount duplicate function name(s).")
+            }
+          }
+
+          if ($failures.Count -gt 0) {
+            Write-Host ''
+            Write-Host 'STATIC ANALYSIS VALIDATION GATE FAILED'
+            Write-Host '======================================'
+            foreach ($failure in $failures) {
+              Write-Host "  - $failure"
+            }
+            throw "Static analysis validation gate failed with $($failures.Count) blocking condition(s)."
+          }
+
+          Write-Host 'PASS: Static analysis validation gates are clear after report generation.'
+
       - name: Upload validation artifacts
         if: always()
         uses: ./.github/actions/upload-chatgpt-artifact
@@ -109,6 +189,8 @@ jobs:
             project_sources/validation/out_preflight_documentation_quality/**
             project_sources/validation/out_validate_on_push_documentation_quality/**
             project_sources/collector/powershell_analyzer_report.json
+            project_sources/collector/powershell_duplicate_function_report.json
+            project_sources/collector/powershell_duplicate_function_report.md
             project_sources/collector/powershell_review_assist_workflow_report.json
             project_sources/collector/powershell_review_assist_workflow_report.md
           if-no-files-found: warn
@@ -129,10 +211,11 @@ jobs:
           - ref: $env:GITHUB_REF
           - event_name: $env:GITHUB_EVENT_NAME
           - primary_artifact: validate-on-push-results
-          - artifact_note: includes Gemini smoke-build output, collector package smoke-build output, validate_DCOIR_Run fixture output, documentation-quality output, PSScriptAnalyzer JSON, PowerShell review-assist JSON/Markdown, and TestResults when produced.
+          - artifact_note: includes Gemini smoke-build output, collector package smoke-build output, validate_DCOIR_Run fixture output, documentation-quality output, PSScriptAnalyzer JSON, duplicate-function JSON/Markdown, PowerShell review-assist JSON/Markdown, and TestResults when produced.
           - job_summary: review-assist report written to GITHUB_STEP_SUMMARY.
-          - duplicate_function_check: blocks merge on any cross-file function name collision in collector source.
-          - psscriptanalyzer_gate: blocks merge on any Error-severity finding; Warnings reported but non-blocking.
+          - duplicate_function_check: emits JSON/Markdown artifacts before the static analysis validation gate blocks merge on any cross-file function name collision in collector source.
+          - psscriptanalyzer_gate: emits JSON before the static analysis validation gate blocks merge on any Error-severity finding; Warnings reported but non-blocking.
+          - static_analysis_gate: runs after static reports are generated so review tooling can consume the evidence artifact even when the gate fails.
 
           The workflow conclusion is the authoritative pass/fail signal for the push validation lane. Use artifact readback for harness, package, documentation, or report-specific claims.
           "@ | Set-Content -Path chatgpt_workflow_report_section/chatgpt_workflow_report_section.md -Encoding utf8
