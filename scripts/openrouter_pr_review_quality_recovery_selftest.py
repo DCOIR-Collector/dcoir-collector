@@ -43,6 +43,24 @@ assert ("docs/review.md", 2) in line_index
 assert ("docs/review.md", 1) not in line_index
 assert ("docs/review.md", 3) not in line_index
 
+optional_only_sentinel = mod.RiskSentinel(
+    path="tools/example.ts",
+    line=7,
+    label="Node.js command execution",
+    detail="child-process execution can turn request-controlled strings into command execution unless command and arguments are bounded",
+    text="exec(request.command)",
+)
+assert not mod.is_required_risk_sentinel(optional_only_sentinel)
+assert (
+    mod.review_quality_retry_reason(
+        {"summary": "No high-confidence findings were found.", "findings": []},
+        config,
+        [optional_only_sentinel],
+        {("tools/example.ts", 7): 1},
+    )
+    == ""
+)
+
 
 def accepted_result(confidence: float = 0.94) -> dict:
     return {
