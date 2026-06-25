@@ -1,0 +1,17 @@
+{
+  "allow_default_branch": true,
+  "allowed_roots": [
+    "scripts"
+  ],
+  "commit_message": "Apply DCOIR review hybrid patch 3",
+  "default_branch_reason": "Operator-approved live DCOIR Review hardening lane for per-file review and fix synthesis testing.",
+  "expected_current_sha256": "e57928933404625b49485ab595d460922d7bc9fcca39efcbaeb1ff93e0e09db3",
+  "expected_new_sha256": "2be80fd8ea9e8e033c8ad5f65acd886a955e67d54c17af9d64615efda85be4d3",
+  "expected_patch_sha256": "4a1fecf4e8b7cd3e76f7a24c47f54975dac0b106646c653a400f36b7707028d8",
+  "mode": "apply",
+  "patch_path": "ops/requests/apply_patch/dcoir-review-hybrid-03-per-file-fix/change.patch",
+  "request_id": "dcoir-review-hybrid-03-per-file-fix",
+  "schema": "dcoir.ops.apply_patch_request.v1",
+  "target_branch": "main",
+  "target_path": "scripts/openrouter_pr_review_pareto_context.py"
+}
