@@ -93,7 +93,7 @@ assert payload["plugins"] == [
         "cost_quality_tradeoff": 2,
     }
 ]
-assert payload["session_id"].startswith("dcoir-openrouter-pr-review:DCOIR-Collector-dcoir-collector:pr-277")
+assert payload["session_id"].startswith("dcoir-review:DCOIR-Collector-dcoir-collector:pr-277")
 assert len(payload["session_id"]) <= 256
 
 with tempfile.NamedTemporaryFile("w", encoding="utf-8", delete=False) as handle:
