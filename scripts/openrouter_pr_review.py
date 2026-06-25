@@ -1472,6 +1472,7 @@ def build_inline_comment(finding: dict[str, Any], model_used: str, config: Confi
     body = sanitize_github_output(str(finding.get("body", "")).strip(), config)
     validation = sanitize_github_output(validation_text_for_finding(finding), config)
     suggestion = sanitize_github_output(str(finding.get("suggested_replacement", "")).rstrip(), config, neutralize_mentions=False)
+    fix_guidance = finding.get("fix_guidance") if isinstance(finding.get("fix_guidance"), dict) else {}
     parts = [f"**{severity}: {title}**", "", body]
     if config.include_confidence:
         parts.extend(["", f"Confidence: `{confidence:.2f}`"])
@@ -1480,6 +1481,20 @@ def build_inline_comment(finding: dict[str, Any], model_used: str, config: Confi
             parts.extend(["", "Suggested fix:", "", "```suggestion", suggestion, "```"])
         else:
             parts.extend(["", "Suggested fix guidance:", "", "```text", suggestion, "```"])
+    if fix_guidance:
+        language = sanitize_github_output(str(fix_guidance.get("language", "text") or "text").strip(), config)
+        parts.extend(["", "Suggested repair:"])
+        for label, key in (("Remove", "remove"), ("Replace", "replace"), ("Add", "add")):
+            value = sanitize_github_output(
+                str(fix_guidance.get(key, "") or "").strip(),
+                config,
+                neutralize_mentions=False,
+            )
+            if value:
+                parts.extend(["", f"{label}:", "", f"```{language}", value, "```"])
+        notes = sanitize_github_output(str(fix_guidance.get("notes", "") or "").strip(), config)
+        if notes:
+            parts.extend(["", notes])
     if validation:
         parts.extend(["", "Validation expected after fix:", "", "```text", validation, "```"])
     parts.extend(["", f"<sub>{REVIEW_DISPLAY_NAME}</sub>"])
