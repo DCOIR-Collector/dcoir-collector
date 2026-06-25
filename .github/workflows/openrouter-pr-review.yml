@@ -135,6 +135,7 @@ jobs:
           python - <<'PY'
           import json
           import os
+          import re
           from pathlib import Path
 
           root = Path("/tmp/review-assist-context")
@@ -146,6 +147,15 @@ jobs:
               for line in changed_file_path.read_text(encoding="utf-8").splitlines()
               if line.strip()
           } if changed_file_path.exists() else set()
+          safe_metadata_re = re.compile(r"^[A-Za-z0-9_.:/@+-]{0,160}$")
+
+          def safe_metadata(name: str) -> str:
+              value = os.getenv(name, "")
+              return value if safe_metadata_re.fullmatch(value) else "invalid-metadata"
+
+          validate_run_id = safe_metadata("RUN_ID")
+          validate_run_conclusion = safe_metadata("RUN_CONCLUSION")
+          pr_head_sha = safe_metadata("PR_HEAD_SHA")
 
           def read_text(rel_path: str | Path) -> str:
               path = root / rel_path
@@ -170,6 +180,10 @@ jobs:
           def cell(value: object) -> str:
               return str(value).replace("|", "\\|").replace("\r", " ").replace("\n", " ").strip()
 
+          def joined_or_none(values: list[str]) -> str:
+              joined = ", ".join(values)
+              return joined if joined else "none"
+
           def is_changed(path: str) -> bool:
               return not changed_files or path in changed_files
 
@@ -177,9 +191,9 @@ jobs:
           sections: list[str] = [
               "# Static Validation Context From validate-on-pr",
               "",
-              f"- validate_on_pr_run_id: `{os.environ.get('RUN_ID', '')}`",
-              f"- validate_on_pr_conclusion: `{os.environ.get('RUN_CONCLUSION', '')}`",
-              f"- pr_head_sha: `{os.environ.get('PR_HEAD_SHA', '')}`",
+              f"- validate_on_pr_run_id: `{validate_run_id}`",
+              f"- validate_on_pr_conclusion: `{validate_run_conclusion}`",
+              f"- pr_head_sha: `{pr_head_sha}`",
               f"- changed_file_count: `{len(changed_files)}`",
               "",
               "This context is generated from validation artifacts for the exact PR head SHA. Prioritize changed-file findings when writing review comments.",
@@ -255,12 +269,14 @@ jobs:
                           f"`{cell(item.get('path', ''))}:{cell(item.get('line', ''))}`"
                           for item in occurrences
                       ]
+                      changed_location_text = joined_or_none(changed_locations)
+                      all_location_text = joined_or_none(all_locations)
                       sections.append(
                           "| "
                           f"`{cell(duplicate.get('function_name', ''))}` | "
                           f"{cell(duplicate.get('occurrence_count', len(occurrences)))} | "
-                          f"{', '.join(changed_locations) or 'none'} | "
-                          f"{', '.join(all_locations)} |"
+                          f"{changed_location_text} | "
+                          f"{all_location_text} |"
                       )
                   if len(changed_duplicates) > 40:
                       sections.append(f"\n...{len(changed_duplicates) - 40} additional changed-file duplicate function finding(s) omitted.")
@@ -299,11 +315,33 @@ jobs:
             exit 0
           fi
 
-          REPORT="project_sources/collector/powershell_review_assist_workflow_report.md"
-          REPORT_PATH="/tmp/review-assist-context/$REPORT"
+          REPORT_PATH="/tmp/review-assist-context/project_sources/collector/powershell_review_assist_workflow_report.md"
           if [ -f "$REPORT_PATH" ]; then
-            echo "Static validation context loaded from validate-on-pr run $RUN_ID ($RUN_CONCLUSION), $( wc -c < "$REPORT_PATH" ) bytes."
-            echo "REVIEW_ASSIST_CONTEXT_PATH=$REPORT_PATH" >> $GITHUB_ENV
+            python - <<'PY'
+            import os
+            import re
+            from pathlib import Path
+
+            report_path = Path("/tmp/review-assist-context/project_sources/collector/powershell_review_assist_workflow_report.md")
+            if not report_path.is_file():
+                raise SystemExit("static validation context file disappeared before env export")
+
+            def safe_value(name: str, pattern: str) -> str:
+                value = os.getenv(name, "")
+                return value if re.fullmatch(pattern, value) else "invalid-metadata"
+
+            run_id = safe_value("RUN_ID", r"[0-9]{1,20}")
+            run_conclusion = safe_value("RUN_CONCLUSION", r"[a-z_]{1,32}")
+            github_env = os.getenv("GITHUB_ENV", "")
+            if not github_env:
+                raise SystemExit("GITHUB_ENV is not set; cannot export review context path")
+            with open(github_env, "a", encoding="utf-8") as env_file:
+                env_file.write(f"REVIEW_ASSIST_CONTEXT_PATH={report_path.as_posix()}\n")
+            print(
+                "Static validation context loaded from validate-on-pr run "
+                f"{run_id} ({run_conclusion}), {report_path.stat().st_size} bytes."
+            )
+            PY
           else
             echo "No static validation context file generated; no context injection."
           fi
