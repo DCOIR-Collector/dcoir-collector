@@ -232,7 +232,8 @@
       "schedules": [],
       "secret_or_var_count": 0,
       "trigger_events": [
-        "pull_request"
+        "pull_request",
+        "workflow_dispatch"
       ],
       "workflow_name": "40 Automation - Dependabot Auto-Merge"
     },
