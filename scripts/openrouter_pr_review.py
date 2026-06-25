@@ -1336,9 +1336,7 @@ def extract_validation_commands(validation: str) -> list[str]:
         candidate = match.group(1).strip()
         if is_validation_command(candidate):
             commands.append(candidate)
-    if commands:
-        return commands
-    return [validation.strip()] if validation.strip() else []
+    return commands
 
 
 def default_validation_commands_for_path(path: str) -> list[str]:
