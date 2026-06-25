@@ -52,7 +52,7 @@ runs:
             throw "$label output path must stay under project_sources/collector/: $pathValue"
           }
           if (-not $normalized.EndsWith($expectedSuffix, [System.StringComparison]::OrdinalIgnoreCase)) {
-            throw "$label output path must end with $expectedSuffix: $pathValue"
+            throw "$label output path must end with ${expectedSuffix}: $pathValue"
           }
           $resolved = [System.IO.Path]::GetFullPath((Join-Path -Path (Get-Location).Path -ChildPath $normalized))
           if (-not $resolved.StartsWith($repoRoot, [System.StringComparison]::OrdinalIgnoreCase)) {
