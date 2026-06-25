@@ -52,7 +52,11 @@ runs:
           if ([string]::IsNullOrWhiteSpace($pathValue)) {
             throw "$label output path is required."
           }
-          $normalized = $pathValue.Replace('\', '/').Trim()
+          $rawNormalized = $pathValue.Replace('\', '/')
+          if ($rawNormalized -match '[\x00-\x1F\x7F]') {
+            throw "$label output path must not contain control characters: $pathValue"
+          }
+          $normalized = $rawNormalized.Trim()
           if ($normalized.StartsWith('/') -or $normalized -match '^[A-Za-z]:') {
             throw "$label output path must be repo-relative: $pathValue"
           }
