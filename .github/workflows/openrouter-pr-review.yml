@@ -108,7 +108,7 @@ jobs:
             VALIDATION_HEAD_SHA="$RUN_HEAD_SHA"
           fi
           if [ "$RUN_EVENT" != "workflow_dispatch" ] || [ "$RUN_HEAD_BRANCH" != "$DEFAULT_BRANCH" ]; then
-            echo "validate-on-pr run $RUN_ID came from event '$RUN_EVENT' on branch '$RUN_HEAD_BRANCH'; skipping static context because only default-branch workflow_dispatch artifacts are trusted review input."
+            printf 'validate-on-pr run %s had event %s on branch %s; skipping static context because only default-branch workflow_dispatch artifacts are trusted review input.\n' "$RUN_ID" "$RUN_EVENT" "$RUN_HEAD_BRANCH"
             exit 0
           fi
           echo "Static validation context trust source: $RUN_EVENT on $RUN_HEAD_BRANCH (head SHA: $VALIDATION_HEAD_SHA)."
