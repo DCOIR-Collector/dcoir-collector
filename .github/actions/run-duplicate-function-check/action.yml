@@ -37,6 +37,17 @@ runs:
           return $fullPath.Replace('\', '/')
         }
 
+        function ConvertTo-MarkdownTableCell([object]$value) {
+          if ($null -eq $value) {
+            return ''
+          }
+          $text = [string]$value
+          $text = $text -replace "`r?`n", ' '
+          $text = $text.Replace('&', '&amp;').Replace('<', '&lt;').Replace('>', '&gt;')
+          $text = $text.Replace('|', '&#124;').Replace('`', '&#96;')
+          return $text
+        }
+
         function Resolve-CollectorReportPath([string]$pathValue, [string]$label, [string]$expectedSuffix) {
           if ([string]::IsNullOrWhiteSpace($pathValue)) {
             throw "$label output path is required."
@@ -207,8 +218,8 @@ runs:
           $markdownLines.Add('| Path | Line | Column | Message |')
           $markdownLines.Add('| --- | ---: | ---: | --- |')
           foreach ($failure in $parseFailures) {
-            $path = ([string]$failure.path).Replace('`', '\`').Replace('|', '\|')
-            $message = ([string]$failure.message).Replace('`', '\`').Replace('|', '\|')
+            $path = ConvertTo-MarkdownTableCell $failure.path
+            $message = ConvertTo-MarkdownTableCell $failure.message
             $markdownLines.Add("| $path | $($failure.line) | $($failure.column) | $message |")
           }
           $markdownLines.Add('')
@@ -218,12 +229,14 @@ runs:
           $markdownLines.Add('## Duplicate Function Definitions')
           $markdownLines.Add('')
           foreach ($entry in $duplicates) {
-            $markdownLines.Add("### ``$($entry.Value[0].name)``")
+            $functionName = ConvertTo-MarkdownTableCell $entry.Value[0].name
+            $markdownLines.Add("### ``$functionName``")
             $markdownLines.Add('')
             $markdownLines.Add('| Path | Line |')
             $markdownLines.Add('| --- | ---: |')
             foreach ($loc in $entry.Value) {
-              $markdownLines.Add("| ``$($loc.path)`` | $($loc.line) |")
+              $locPath = ConvertTo-MarkdownTableCell $loc.path
+              $markdownLines.Add("| ``$locPath`` | $($loc.line) |")
             }
             $markdownLines.Add('')
           }
