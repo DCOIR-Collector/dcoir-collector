@@ -74,6 +74,31 @@ assert not mod.command_matches("/or-reviewer", config.commands)
 assert not mod.command_matches("/dcoir-review-anything", config.commands)
 assert mod.model_stack_label(config) == "openrouter/free"
 
+fallback_fix_comment = mod.build_inline_comment(
+    {
+        "title": "Unsafe file write",
+        "severity": "high",
+        "confidence": 0.92,
+        "path": "collector/run.ps1",
+        "line": 10,
+        "body": "The write path is request controlled.",
+        "suggested_replacement": "",
+        "fix_guidance": {
+            "language": "powershell",
+            "remove": "Set-Content -Path $Request.OutputPath -Value $Data",
+            "replace": "$safePath = Join-Path -Path $AllowedRoot -ChildPath $Request.OutputName",
+            "add": "if (-not $safePath.StartsWith($AllowedRoot)) { throw 'Path escaped allowed root.' }",
+        },
+        "validation": "",
+    },
+    "test-model",
+    config,
+)
+assert "Suggested repair:" in fallback_fix_comment
+assert "Remove:" in fallback_fix_comment
+assert "```powershell" in fallback_fix_comment
+assert "```suggestion" not in fallback_fix_comment
+
 previous_openrouter_key = os.environ.pop("OPENROUTER_API_KEY", None)
 try:
     try:
