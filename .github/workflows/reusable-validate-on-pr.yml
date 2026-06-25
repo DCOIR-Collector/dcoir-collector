@@ -1,6 +1,7 @@
 # DCOIR REUSABLE WORKFLOW CONTRACT
 # Source entry workflow: validate-on-pr.yml
 # Purpose: reusable implementation module for validate-on-pr; entry workflow retains triggers, permissions, concurrency, and operator-visible contract notes.
+# Dispatch posture: workflow_dispatch runs are trusted baseline static-validation context only when the entry workflow runs from the repository default branch.
 name: 99 Module - Validate On Pr
 run-name: Module Validate On Pr | ${{ github.workflow }} | #${{ github.run_number }}
 
@@ -20,7 +21,7 @@ permissions:
 
 jobs:
   validate:
-    if: ${{ github.event.pull_request.draft == false }}
+    if: ${{ inputs.caller_event_name == 'workflow_dispatch' || github.event.pull_request.draft == false }}
     runs-on: windows-latest
     permissions:
       contents: read
