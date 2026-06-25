@@ -18,7 +18,7 @@
 # Runtime dependencies:
 # - Uses Python 3.12 and scripts/openrouter_pr_review_pareto_context.py from the trusted default branch checkout.
 # Expected outputs/readback:
-# - PR review output from scripts/openrouter_pr_review_pareto_context.py, static validation context readback when available, step-summary notices, optional debug progress/status comments, and GitHub Actions run/job readback when the workflow changes.
+# - PR review output from scripts/openrouter_pr_review_pareto_context.py, static validation context readback when available, step-summary notices, optional debug progress/status comments, optional debug prompt/context artifact, and GitHub Actions run/job readback when the workflow changes.
 # Safety notes:
 # - Checkout is pinned to the trusted default branch and persists no credentials.
 # - Keep the manual author/command guard, least needed permissions, and issue_comment boundary intact; do not use pull_request_target.
@@ -445,4 +445,14 @@ jobs:
           GITHUB_EVENT_PATH: ${{ github.event_path }}
           OPENROUTER_REVIEW_CONFIG: .github/openrouter-pr-review-pareto.yml
           REVIEW_ASSIST_CONTEXT_PATH: ${{ env.REVIEW_ASSIST_CONTEXT_PATH }}
+          DCOIR_REVIEW_DEBUG_ARTIFACT_DIR: dcoir-review-debug
         run: python -u scripts/openrouter_pr_review_pareto_context.py
+
+      - name: Upload DCOIR review debug artifact
+        if: always()
+        uses: ./.github/actions/upload-chatgpt-artifact
+        with:
+          name: dcoir-review-debug-${{ github.event.issue.number }}-${{ github.run_id }}
+          path: dcoir-review-debug
+          if-no-files-found: ignore
+          retention-days: '7'
