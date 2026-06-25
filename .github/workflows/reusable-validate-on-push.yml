@@ -91,6 +91,14 @@ jobs:
         with:
           fail-on-duplicates: 'false'
 
+      - name: Validate duplicate-function reports
+        shell: pwsh
+        run: |
+          python project_sources/github_actions/tools/validate_duplicate_function_reports.py
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Duplicate-function report validation failed.'
+          }
+
       - name: Run PowerShell review-assist report
         uses: ./.github/actions/run-powershell-review-assist
 
