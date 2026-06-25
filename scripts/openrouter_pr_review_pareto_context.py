@@ -903,7 +903,7 @@ def detect_risk_sentinels(diff: str, max_anchors: int | None = None) -> list[har
         *detect_python_file_write_path_sentinels(diff),
         *[
             sentinel
-            for sentinel in _original_detect_risk_sentinels(diff, max_anchors)
+            for sentinel in _original_detect_risk_sentinels(diff, None)
             if (sentinel.path, sentinel.line) not in diff_fixture_added_lines
         ],
     ]
@@ -915,9 +915,7 @@ def detect_risk_sentinels(diff: str, max_anchors: int | None = None) -> list[har
             continue
         seen.add(key)
         deduped.append(sentinel)
-    if max_anchors is not None:
-        return deduped[:max_anchors]
-    return deduped
+    return hardened.select_risk_sentinels(deduped, max_anchors)
 
 
 hardened.detect_risk_sentinels = detect_risk_sentinels
