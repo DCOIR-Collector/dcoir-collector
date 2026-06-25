@@ -157,6 +157,9 @@ class DuplicateFunctionActionContractTests(unittest.TestCase):
             "parse_failures    = @($parseFailureRecords)",
             "artifact_contract = [ordered]@{",
             "workflow_behavior = 'caller_uploaded_artifact'",
+            "$markdownLines.Add('- Workflow behavior: `caller_uploaded_artifact`')",
+            "$markdownLines.Add('- JSON: `' + $jsonOutput.RelativePath + '`')",
+            "$markdownLines.Add('- Markdown: `' + $markdownOutput.RelativePath + '`')",
         ]:
             self.assertIn(marker, self.action_text)
 
