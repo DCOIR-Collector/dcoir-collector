@@ -13,19 +13,15 @@ The workflow only looks for requests under `ops/requests/apply_patch/<request_id
 This lane is for connector-staged patch requests, not connector-staged full-file
 replacement payloads. To use it through the GitHub connector, create both
 `request.json` and the referenced `.patch` or `.diff` file on the default branch
-under one request directory. The entry workflow has three paths:
+under one request directory. The entry workflow has two paths:
 
 - a push to `main` touching that request directory, when GitHub emits a usable
-  push event for the writer;
-- a manual `workflow_dispatch` with `request_path` set to the request JSON; or
-- the scheduled fallback scanner, which runs every 5 minutes and processes the
-  oldest unmarked pending request under `ops/requests/apply_patch/<request_id>/`
-  that was staged in the last 48 hours.
+  push event for the writer; or
+- a manual `workflow_dispatch` with `request_path` set to the request JSON.
 
-The scheduled scanner exists because connector-created commits do not reliably
-produce a runnable push-triggered workflow. Connector staging is still supported,
-but the reliable automatic path is now "stage the request on `main`, then let the
-scheduled fallback scan pick it up."
+There is no automatic scheduled scanner. If a connector-created commit does not
+produce a runnable push-triggered workflow, manually dispatch this workflow with
+the exact `request_path`.
 
 The workflow does not scan arbitrary staging folders, does not ingest replacement
 files, and does not apply multi-file patch sets. Use `chatgpt-apply-in` for
@@ -89,11 +85,6 @@ Request files are staging inputs, not durable repo records.
   request files for review.
 - Failed `mode: "apply"` runs leave the request directory in place so the
   operator can inspect and fix the request.
-- Failed scheduled fallback runs also write
-  `ops/requests/apply_patch/<request_id>/.apply-patch-failed.json`. The scanner
-  skips request directories with this marker so one bad request does not retry
-  forever or block newer queued requests. After fixing a request, delete the
-  marker or replace the request directory.
 - Successful `mode: "dry-run"` requests leave the request directory in place
   because no target-branch change was implemented.
 - Report files are uploaded as GitHub Actions artifacts, not committed under the
