@@ -109,6 +109,8 @@ jobs:
             project_sources/validation/out_preflight_documentation_quality/**
             project_sources/validation/out_validate_on_push_documentation_quality/**
             project_sources/collector/powershell_analyzer_report.json
+            project_sources/collector/powershell_duplicate_function_report.json
+            project_sources/collector/powershell_duplicate_function_report.md
             project_sources/collector/powershell_review_assist_workflow_report.json
             project_sources/collector/powershell_review_assist_workflow_report.md
           if-no-files-found: warn
@@ -129,9 +131,9 @@ jobs:
           - ref: $env:GITHUB_REF
           - event_name: $env:GITHUB_EVENT_NAME
           - primary_artifact: validate-on-push-results
-          - artifact_note: includes Gemini smoke-build output, collector package smoke-build output, validate_DCOIR_Run fixture output, documentation-quality output, PSScriptAnalyzer JSON, PowerShell review-assist JSON/Markdown, and TestResults when produced.
+          - artifact_note: includes Gemini smoke-build output, collector package smoke-build output, validate_DCOIR_Run fixture output, documentation-quality output, PSScriptAnalyzer JSON, duplicate-function JSON/Markdown, PowerShell review-assist JSON/Markdown, and TestResults when produced.
           - job_summary: review-assist report written to GITHUB_STEP_SUMMARY.
-          - duplicate_function_check: blocks merge on any cross-file function name collision in collector source.
+          - duplicate_function_check: blocks merge on any cross-file function name collision in collector source and emits JSON/Markdown artifacts before failure.
           - psscriptanalyzer_gate: blocks merge on any Error-severity finding; Warnings reported but non-blocking.
 
           The workflow conclusion is the authoritative pass/fail signal for the push validation lane. Use artifact readback for harness, package, documentation, or report-specific claims.
