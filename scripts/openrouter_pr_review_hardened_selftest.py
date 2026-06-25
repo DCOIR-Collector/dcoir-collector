@@ -414,6 +414,15 @@ assert "GitHub Actions privileged PR context" in diverse_labels
 assert "Kubernetes privileged container setting" in diverse_labels
 assert "Kubernetes host filesystem exposure" in diverse_labels
 assert len({item.path for item in diverse_sentinels}) >= 4
+required_diverse_labels = {item.label for item in mod.required_risk_sentinels(diverse_sentinels)}
+assert "PowerShell process launch" in required_diverse_labels
+assert "PowerShell unsafe archive extraction" in required_diverse_labels
+assert "PowerShell outbound request or download" in required_diverse_labels
+assert "GitHub Actions privileged PR context" in required_diverse_labels
+assert "CI token exfiltration primitive" in required_diverse_labels
+assert "Node.js command execution" not in required_diverse_labels
+assert "TypeScript/JavaScript unsafe path construction" not in required_diverse_labels
+assert "Kubernetes privileged container setting" not in required_diverse_labels
 
 calls: list[str] = []
 original_openrouter_review = mod.openrouter_review
@@ -496,6 +505,15 @@ assert fallback_findings
 assert all(finding["title"].startswith("Deterministic risk sentinel:") for finding in fallback_findings)
 mod.enforce_risk_sentinel_findings(fallback_findings, sentinels, config)
 mod.enforce_risk_sentinel_findings([], [], config)
+optional_only_sentinels = [
+    item
+    for item in diverse_sentinels
+    if item.label in {"Node.js command execution", "TypeScript/JavaScript unsafe path construction", "Kubernetes host filesystem exposure"}
+]
+assert optional_only_sentinels
+assert mod.required_risk_sentinels(optional_only_sentinels) == []
+assert mod.add_risk_sentinel_fallback_findings([], optional_only_sentinels, config) == []
+mod.enforce_risk_sentinel_findings([], optional_only_sentinels, config)
 
 full_budget_config = copy.copy(config)
 full_budget_config.max_inline_comments = 2
