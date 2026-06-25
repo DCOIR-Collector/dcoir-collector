@@ -134,9 +134,9 @@ def validate_markdown_report(text: str, data: dict[str, Any], json_path: Path, m
     require(text.startswith("# PowerShell Duplicate Function Report\n"), "Markdown report heading missing")
     for marker in (
         "## Summary",
-        f"- JSON: ``{json_path.as_posix()}``",
-        f"- Markdown: ``{markdown_path.as_posix()}``",
-        "- Workflow behavior: ``caller_uploaded_artifact``",
+        f"- JSON: `{json_path.as_posix()}`",
+        f"- Markdown: `{markdown_path.as_posix()}`",
+        "- Workflow behavior: `caller_uploaded_artifact`",
         "## Duplicate Function Definitions",
     ):
         require(marker in text, f"Markdown marker missing: {marker}")
@@ -153,7 +153,7 @@ def validate_markdown_report(text: str, data: dict[str, Any], json_path: Path, m
     if summary["duplicate_function_count"]:
         require("| Path | Line |" in text, "Markdown duplicate location table missing")
         for duplicate in data["duplicates"]:
-            require(f"### ``{duplicate['function_name']}``" in text, f"Markdown missing duplicate function {duplicate['function_name']}")
+            require(f"### `{duplicate['function_name']}`" in text, f"Markdown missing duplicate function {duplicate['function_name']}")
     else:
         require("No duplicate function definitions found." in text, "Markdown no-duplicates message missing")
 
@@ -204,9 +204,9 @@ def run_self_test() -> None:
                     "- Unique function names: 2",
                     "- Duplicate function names: 0",
                     "- Parse failures: 0",
-                    "- Workflow behavior: ``caller_uploaded_artifact``",
-                    f"- JSON: ``{DEFAULT_JSON.as_posix()}``",
-                    f"- Markdown: ``{DEFAULT_MARKDOWN.as_posix()}``",
+                    "- Workflow behavior: `caller_uploaded_artifact`",
+                    f"- JSON: `{DEFAULT_JSON.as_posix()}`",
+                    f"- Markdown: `{DEFAULT_MARKDOWN.as_posix()}`",
                     "",
                     "## Duplicate Function Definitions",
                     "",
