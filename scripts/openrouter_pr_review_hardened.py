@@ -103,6 +103,46 @@ RISK_SENTINEL_EXTENSIONS = {
 }
 
 
+NON_ACTIONABLE_FINDING_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
+    (
+        re.compile(r"\b(?:downgrades?|downgraded)\b.{0,120}\binformational\b", re.IGNORECASE | re.DOTALL),
+        "finding downgrades itself to informational",
+    ),
+    (
+        re.compile(r"\binformational\b.{0,120}\b(?:note|signal|finding|only)\b", re.IGNORECASE | re.DOTALL),
+        "finding describes itself as informational",
+    ),
+    (
+        re.compile(
+            r"\b(?:risk|signal|finding)\b.{0,120}\b(?:not realized|is not realized|was not realized)\b",
+            re.IGNORECASE | re.DOTALL,
+        ),
+        "finding says the risk is not realized",
+    ),
+    (
+        re.compile(
+            r"\bdoes not(?: itself)?\s+(?:introduce|create|pose|add)\b.{0,120}"
+            r"\b(?:risk|issue|problem|defect|vulnerability|injection path)\b",
+            re.IGNORECASE | re.DOTALL,
+        ),
+        "finding says the changed code does not introduce the risk",
+    ),
+    (
+        re.compile(r"\bno\b.{0,80}\b(?:input|data|value|text)\b.{0,80}\breaches\b", re.IGNORECASE | re.DOTALL),
+        "finding says no input reaches the risky path",
+    ),
+    (
+        re.compile(r"\bno\b.{0,80}\b(?:execution|injection|exploit|vulnerability)\b.{0,80}\b(?:path|risk)\b", re.IGNORECASE | re.DOTALL),
+        "finding says no execution or injection path exists",
+    ),
+    (
+        re.compile(r"\b(?:out of scope|outside (?:the )?PR scope|no action is required)\b", re.IGNORECASE | re.DOTALL),
+        "finding describes itself as out of scope",
+    ),
+)
+
+
+
 def sanitize_github_output(text: str, config: Any, neutralize_mentions: bool = True) -> str:
     if hasattr(base, "sanitize_github_output"):
         return base.sanitize_github_output(text, config, neutralize_mentions=neutralize_mentions)
@@ -475,6 +515,7 @@ Governed review hardening requirements:
 - For Markdown and governed-source findings, anchor the finding to the nearest changed right-side line that introduced or materially preserves the risky wording.
 - If a small suggestion block is not safe, leave suggested_replacement empty and put exact repair steps in the finding body.
 - Each finding body must include observed behavior, impact, exact correction guidance, and validation or readback guidance.
+- Do not return informational or advisory findings that say the risk is not realized, the changed code does not introduce the risk, or no input reaches the risky path. Put that in a clean summary instead.
 """.strip()
     if risk_sentinels and getattr(config, "risk_sentinel_quality_gate", True):
         hardening = f"{hardening}\n\n{risk_sentinel_block(risk_sentinels, config)}"
@@ -501,9 +542,12 @@ def raw_findings_digest(result: dict[str, Any]) -> str:
         if not isinstance(item, dict):
             details.append("invalid finding shape")
             continue
-        path = str(item.get("path", "<missing-path>") or "<missing-path>").strip()
-        line = str(item.get("line", "<missing-line>") or "<missing-line>").strip()
-        title = str(item.get("title", "untitled") or "untitled").strip()[:80]
+        raw_path = item.get("path")
+        raw_line = item.get("line")
+        raw_title = item.get("title")
+        path = str(raw_path).strip() if raw_path else "<missing-path>"
+        line = str(raw_line).strip() if raw_line else "<missing-line>"
+        title = (str(raw_title).strip() if raw_title else "untitled")[:80]
         try:
             confidence = float(item.get("confidence", 0))
             confidence_text = f"{confidence:.2f}"
@@ -511,6 +555,53 @@ def raw_findings_digest(result: dict[str, Any]) -> str:
             confidence_text = "invalid"
         details.append(f"{path}:{line} confidence {confidence_text} ({title})")
     return "; ".join(details) if details else "no structured findings"
+
+
+def finding_text_for_quality(item: dict[str, Any]) -> str:
+    parts = [
+        str(item.get("title", "") or ""),
+        str(item.get("body", "") or ""),
+        str(item.get("validation", "") or ""),
+    ]
+    return re.sub(r"\s+", " ", "\n".join(parts)).strip()
+
+
+def non_actionable_finding_reason(item: dict[str, Any]) -> str:
+    text = finding_text_for_quality(item)
+    if not text:
+        return ""
+    for pattern, reason in NON_ACTIONABLE_FINDING_PATTERNS:
+        if pattern.search(text):
+            return reason
+    return ""
+
+
+def non_actionable_findings_digest(result: dict[str, Any], config: Any) -> str:
+    raw_findings = result.get("findings", [])
+    if not isinstance(raw_findings, list):
+        return ""
+    details: list[str] = []
+    for item in raw_findings[:6]:
+        if not isinstance(item, dict):
+            continue
+        reason = non_actionable_finding_reason(item)
+        if not reason:
+            continue
+        try:
+            confidence = float(item.get("confidence", 0))
+        except (TypeError, ValueError):
+            confidence = 0.0
+        if confidence < config.minimum_confidence:
+            continue
+        raw_path = item.get("path")
+        raw_line = item.get("line")
+        raw_title = item.get("title")
+        path = str(raw_path).strip() if raw_path else "<missing-path>"
+        line = str(raw_line).strip() if raw_line else "<missing-line>"
+        title = (str(raw_title).strip() if raw_title else "untitled")[:80]
+        details.append(f"{path}:{line} {reason} ({title})")
+    return "; ".join(details)
+
 
 
 def has_minimum_confidence_finding(result: dict[str, Any], config: Any) -> bool:
@@ -528,6 +619,21 @@ def has_minimum_confidence_finding(result: dict[str, Any], config: Any) -> bool:
     return False
 
 
+
+def has_actionable_minimum_confidence_finding(result: dict[str, Any], config: Any) -> bool:
+    raw_findings = result.get("findings", [])
+    if not isinstance(raw_findings, list):
+        return False
+    for item in raw_findings:
+        if not isinstance(item, dict) or non_actionable_finding_reason(item):
+            continue
+        try:
+            if float(item.get("confidence", 0)) >= config.minimum_confidence:
+                return True
+        except (TypeError, ValueError):
+            continue
+    return False
+
 def has_actionable_changed_line_finding(
     result: dict[str, Any],
     config: Any,
@@ -537,7 +643,7 @@ def has_actionable_changed_line_finding(
     if not isinstance(raw_findings, list):
         return False
     for item in raw_findings:
-        if not isinstance(item, dict):
+        if not isinstance(item, dict) or non_actionable_finding_reason(item):
             continue
         try:
             confidence = float(item.get("confidence", 0))
@@ -575,6 +681,12 @@ def review_quality_retry_reason(
 
     raw_findings = result.get("findings", [])
     if raw_findings and getattr(config, "fail_on_unanchored_findings", True):
+        non_actionable_details = non_actionable_findings_digest(result, config)
+        if non_actionable_details and not has_actionable_minimum_confidence_finding(result, config):
+            return (
+                "model returned only self-described non-actionable or informational findings: "
+                f"{non_actionable_details}"
+            )
         if not has_minimum_confidence_finding(result, config):
             return (
                 "model returned structured findings, but none met the configured minimum confidence "
@@ -613,6 +725,7 @@ Re-review the changed diff and return one of two valid outputs:
 - Actionable findings anchored to changed right-side file/line entries with confidence at or above {config.minimum_confidence:.2f}; or
 - An empty findings array with a clean summary that does not imply a remaining issue.
 Do not place actionable concerns only in the summary. Do not return low-confidence, unanchored, or speculative findings.
+Do not return informational/advisory findings that explain there is no realized risk; use a clean summary for those.
 If a previous finding was real but poorly anchored or below confidence threshold, convert it into a valid finding with exact file, changed line, observed behavior, impact, correction guidance, and validation/readback guidance.
 
 {anchor_block}
@@ -889,10 +1002,36 @@ def summary_suggests_problem(summary: str) -> bool:
     return any(clause_suggests_problem(clause.strip()) for clause in clauses if clause.strip())
 
 
+def finding_location_text(path: str, line: int) -> str:
+    path_text = path if path else "<missing-path>"
+    line_text = str(line) if line else "<missing-line>"
+    return f"{path_text}:{line_text}"
+
+
 def normalize_findings(result: dict[str, Any], config: Any, line_index: dict[tuple[str, int], int]) -> list[dict[str, Any]]:
+    findings, _unanchored_findings = split_findings(result, config, line_index)
+    return findings
+
+
+def severity_sort_key(finding: dict[str, Any]) -> tuple[int, float]:
+    severity_order = {"critical": 0, "high": 1, "medium": 2, "low": 3}
+    try:
+        confidence = float(finding.get("confidence", 0))
+    except (TypeError, ValueError):
+        confidence = 0.0
+    return severity_order.get(str(finding.get("severity", "low")).lower(), 9), -confidence
+
+
+def split_findings(
+    result: dict[str, Any],
+    config: Any,
+    line_index: dict[tuple[str, int], int],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     findings: list[dict[str, Any]] = []
+    unanchored_findings: list[dict[str, Any]] = []
     rejected: list[str] = []
     raw_findings = result.get("findings", [])
+    changed_paths = {path for path, _line in line_index}
     for item in raw_findings:
         try:
             confidence = float(item.get("confidence", 0))
@@ -903,18 +1042,31 @@ def normalize_findings(result: dict[str, Any], config: Any, line_index: dict[tup
             continue
         title = str(item.get("title", "untitled")).strip()[:80]
         if confidence < config.minimum_confidence:
-            rejected.append(f"{path or '<missing-path>'}:{line or '<missing-line>'} low confidence {confidence:.2f} ({title})")
+            location_text = finding_location_text(path, line)
+            rejected.append(f"{location_text} low confidence {confidence:.2f} ({title})")
+            continue
+        non_actionable_reason = non_actionable_finding_reason(item)
+        if non_actionable_reason:
+            location_text = finding_location_text(path, line)
+            rejected.append(f"{location_text} non-actionable ({non_actionable_reason}; {title})")
             continue
         if (path, line) not in line_index:
-            rejected.append(f"{path or '<missing-path>'}:{line or '<missing-line>'} not in changed diff ({title})")
+            if path and path in changed_paths:
+                unanchored = dict(item)
+                unanchored["_unanchored_reason"] = f"{path}:{line} is in a changed file but not an added changed line"
+                unanchored_findings.append(unanchored)
+                continue
+            location_text = finding_location_text(path, line)
+            rejected.append(f"{location_text} not in changed diff ({title})")
             continue
         findings.append(item)
 
-    severity_order = {"critical": 0, "high": 1, "medium": 2, "low": 3}
-    findings.sort(key=lambda f: (severity_order.get(str(f.get("severity", "low")), 9), -float(f.get("confidence", 0))))
+    findings.sort(key=severity_sort_key)
     findings = findings[: config.max_inline_comments]
-    if findings:
-        return findings
+    unanchored_findings.sort(key=severity_sort_key)
+    unanchored_findings = unanchored_findings[: config.max_inline_comments]
+    if findings or unanchored_findings:
+        return findings, unanchored_findings
 
     if raw_findings and getattr(config, "fail_on_unanchored_findings", True):
         details = "; ".join(rejected[:6]) if rejected else "no accepted findings"
@@ -930,16 +1082,84 @@ def normalize_findings(result: dict[str, Any], config: Any, line_index: dict[tup
             "array was empty. The review must produce actionable file/line findings or a clean summary."
         )
 
-    return []
+    return [], []
 
 
-def enforce_risk_sentinel_findings(findings: list[dict[str, Any]], risk_sentinels: list[RiskSentinel], config: Any) -> None:
-    if findings or not risk_sentinels or not getattr(config, "risk_sentinel_quality_gate", True):
+def enforce_risk_sentinel_findings(
+    findings: list[dict[str, Any]],
+    risk_sentinels: list[RiskSentinel],
+    config: Any,
+    unanchored_findings: list[dict[str, Any]] | None = None,
+) -> None:
+    if findings or unanchored_findings or not risk_sentinels or not getattr(config, "risk_sentinel_quality_gate", True):
         return
     raise ReviewQualityError(
         "OpenRouter review quality failure: the changed diff contained high-risk changed-line signals, but the model "
         "produced no actionable inline findings after quality retry. Signals: "
         f"{risk_sentinel_digest(risk_sentinels)}."
+    )
+
+
+def format_unanchored_finding(finding: dict[str, Any], model_used: str, config: Any) -> str:
+    title = sanitize_github_output(str(finding.get("title", "Finding")).strip(), config)
+    severity = str(finding.get("severity", "medium")).upper()
+    path = sanitize_github_output(str(finding.get("path", "<missing-path>")).strip(), config)
+    line = sanitize_github_output(str(finding.get("line", "<missing-line>")).strip(), config)
+    body = sanitize_github_output(str(finding.get("body", "")).strip(), config)
+    validation = sanitize_github_output(str(finding.get("validation", "")).strip(), config)
+    reason = sanitize_github_output(str(finding.get("_unanchored_reason", "not anchored to an added changed line")), config)
+    try:
+        confidence = float(finding.get("confidence", 0))
+    except (TypeError, ValueError):
+        confidence = 0.0
+    parts = [
+        f"**{severity}: {title}**",
+        f"- Location: `{path}:{line}`.",
+        f"- Inline anchor: {reason}.",
+        f"- Confidence: `{confidence:.2f}`.",
+    ]
+    if body:
+        parts.extend(["", body])
+    if validation:
+        parts.extend(["", "Validation expected after fix:", "", "```text", validation, "```"])
+    parts.extend(["", f"<sub>Model: `{model_used}`</sub>"])
+    return "\n".join(parts)
+
+
+def build_review_body_with_unanchored(
+    result: dict[str, Any],
+    findings: list[dict[str, Any]],
+    unanchored_findings: list[dict[str, Any]],
+    model_used: str,
+    config: Any,
+) -> str:
+    if not unanchored_findings:
+        return base.build_review_body(result, findings, model_used, config)
+    summary = sanitize_github_output(str(result.get("summary", "OpenRouter review completed.")).strip(), config)
+    inline_plural = "finding" if len(findings) == 1 else "findings"
+    body_plural = "finding" if len(unanchored_findings) == 1 else "findings"
+    formatted_unanchored = "\n\n".join(
+        format_unanchored_finding(finding, model_used, config) for finding in unanchored_findings
+    )
+    result_line = (
+        f"Review posted with `{len(findings)}` inline {inline_plural} and "
+        f"`{len(unanchored_findings)}` unanchored review-body {body_plural}."
+    )
+    return base.github_safe_body(
+        f"""{base.MARKER}
+OpenRouter PR review completed.
+
+{summary}
+
+Result: {result_line}
+
+Unanchored findings:
+
+{formatted_unanchored}
+
+Model: `{model_used}`
+""".strip(),
+        limit=12000,
     )
 
 
@@ -1013,8 +1233,8 @@ def main() -> None:
         line_index = build_added_line_index(diff)
         result, model_used, service_tier = openrouter_review_with_quality_retry(prompt, schema, config, reporter, risk_sentinels, line_index)
         reporter.update("normalize", "mapping model findings to changed diff lines")
-        findings = normalize_findings(result, config, line_index)
-        enforce_risk_sentinel_findings(findings, risk_sentinels, config)
+        findings, unanchored_findings = split_findings(result, config, line_index)
+        enforce_risk_sentinel_findings(findings, risk_sentinels, config, unanchored_findings)
 
         comments: list[dict[str, Any]] = []
         for finding in findings:
@@ -1023,8 +1243,9 @@ def main() -> None:
             comments.append({"path": path, "position": line_index[(path, line)], "body": base.build_inline_comment(finding, model_used, config)})
 
         event = "REQUEST_CHANGES" if comments and config.request_changes_on_findings else "COMMENT"
-        review_body = base.build_review_body(result, findings, model_used, config)
-        reporter.update("github-review", f"posting GitHub review with {len(comments)} inline comments")
+        review_body = build_review_body_with_unanchored(result, findings, unanchored_findings, model_used, config)
+        unanchored_note = f" and {len(unanchored_findings)} unanchored review-body findings" if unanchored_findings else ""
+        reporter.update("github-review", f"posting GitHub review with {len(comments)} inline comments{unanchored_note}")
         gh.create_review(pr_number, review_body, event, comments, str(pr.get("head", {}).get("sha", "")))
         remove_eyes_reaction(gh, trigger_comment_id, reaction_id, reaction_status)
         tier_note = f"; service_tier={service_tier}" if service_tier else ""

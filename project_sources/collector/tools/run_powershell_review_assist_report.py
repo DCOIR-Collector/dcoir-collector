@@ -33,6 +33,7 @@ DEFAULT_ASSEMBLY_PARITY_REPORT = Path("project_sources/collector/powershell_asse
 DEFAULT_GOVERNANCE_REPORT = Path("project_sources/collector/powershell_finding_governance_report.json")
 DEFAULT_ENGINE_BOUNDARY_REPORT = Path("project_sources/collector/powershell_engine_pester_boundary_report.json")
 DEFAULT_ANALYZER_REPORT = Path("project_sources/collector/powershell_analyzer_report.json")
+DEFAULT_FUNCTION_REACHABILITY_REPORT = Path("project_sources/collector/powershell_function_reachability_report.json")
 
 SCHEMA_VERSIONS = {
     "surface_inventory": "dcoir_powershell_surface_inventory_v1",
@@ -43,6 +44,7 @@ SCHEMA_VERSIONS = {
     "governance_report": "dcoir_powershell_finding_governance_report_v1",
     "engine_boundary_report": "dcoir_powershell_engine_pester_boundary_report_v1",
     "analyzer_report": "dcoir_powershell_analyzer_report_v1",
+    "function_reachability_report": "dcoir_powershell_function_reachability_report_v1",
 }
 
 SOURCE_ISSUES = {
@@ -54,6 +56,7 @@ SOURCE_ISSUES = {
     "assembly_parity_report": 265,
     "governance_report": 266,
     "engine_boundary_report": 267,
+    "function_reachability_report": 306,
 }
 
 SOURCE_LABELS = {
@@ -65,6 +68,7 @@ SOURCE_LABELS = {
     "governance_report": "#266 finding governance report",
     "engine_boundary_report": "#267 engine/Pester boundary report",
     "analyzer_report": "#262 optional PowerShell analyzer report",
+    "function_reachability_report": "#306 function reachability report",
 }
 
 REQUIRED_SOURCE_KEYS = (
@@ -75,6 +79,7 @@ REQUIRED_SOURCE_KEYS = (
     "assembly_parity_report",
     "governance_report",
     "engine_boundary_report",
+    "function_reachability_report",
 )
 
 SOURCE_PATH_PREFIXES = (
@@ -98,6 +103,7 @@ NON_CLAIMS = [
     "No live PSScriptAnalyzer evidence is claimed when the #262 analyzer report is absent.",
     "No Windows PowerShell 5.1 runtime validation is claimed by #268.",
     "No #269, #270, PR/workflow readiness, or parent #260 closeability claim is made by #268.",
+    "No function deletion readiness or dead-code removal claim is made by #306 reachability reporting.",
 ]
 
 FUTURE_HANDOFF_CONSUMERS = [
@@ -200,6 +206,14 @@ SOURCE_CONTRACTS = {
         False,
         SCHEMA_VERSIONS["analyzer_report"],
         True,
+    ),
+    "function_reachability_report": SourceContract(
+        "function_reachability_report",
+        DEFAULT_FUNCTION_REACHABILITY_REPORT,
+        True,
+        SCHEMA_VERSIONS["function_reachability_report"],
+        True,
+        ("function_count",),
     ),
 }
 
@@ -735,6 +749,113 @@ def validate_analyzer_report(repo_root: Path, report: dict[str, Any], repo_path:
                 errors.append(str(exc))
 
 
+def validate_function_reachability_report(repo_root: Path, report: dict[str, Any], repo_path: str, errors: list[str]) -> None:
+    summary = require_object(require_field(report, "summary", repo_path, errors), f"{repo_path} summary", errors)
+    analysis_scope = require_object(
+        require_field(report, "analysis_scope", repo_path, errors),
+        f"{repo_path} analysis_scope",
+        errors,
+    )
+    functions = require_list(require_field(report, "functions", repo_path, errors), f"{repo_path} functions", errors)
+    dynamic_sites = require_list(
+        require_field(report, "dynamic_invocation_sites", repo_path, errors),
+        f"{repo_path} dynamic_invocation_sites",
+        errors,
+    )
+    runtime_coverage = require_object(
+        require_field(report, "runtime_lane_coverage", repo_path, errors),
+        f"{repo_path} runtime_lane_coverage",
+        errors,
+    )
+    non_claims = require_list(require_field(report, "non_claims", repo_path, errors), f"{repo_path} non_claims", errors)
+    outputs = require_object(require_field(report, "outputs", repo_path, errors), f"{repo_path} outputs", errors)
+    source_files = require_list(
+        require_field(analysis_scope, "source_files", f"{repo_path} analysis_scope", errors),
+        f"{repo_path} analysis_scope.source_files",
+        errors,
+    )
+    classification_counts = require_object(
+        require_field(summary, "classification_counts", f"{repo_path} summary", errors),
+        f"{repo_path} summary.classification_counts",
+        errors,
+    )
+    allowed_classifications = {
+        "entrypoint",
+        "literal_referenced",
+        "dynamic_invocation_uncertain",
+        "static_unreferenced",
+    }
+    if summary.get("function_count") != len(functions):
+        errors.append(f"{repo_path} summary.function_count must match functions length")
+    if sum(value for value in classification_counts.values() if isinstance(value, int)) != len(functions):
+        errors.append(f"{repo_path} summary.classification_counts must sum to functions length")
+    if summary.get("coverage_state") != "not_collected":
+        errors.append(f"{repo_path} summary.coverage_state must remain not_collected")
+    if runtime_coverage.get("state") != "not_collected":
+        errors.append(f"{repo_path} runtime_lane_coverage.state must remain not_collected")
+    non_claim_text = "\n".join(scalar(item) for item in non_claims)
+    if "safe to delete" not in non_claim_text:
+        errors.append(f"{repo_path} non_claims must explicitly reject function deletion readiness")
+    for field in ("json", "markdown"):
+        output_path = scalar(outputs.get(field)).strip()
+        if output_path:
+            try:
+                repo_path_if_safe(output_path, repo_root, f"{repo_path} outputs.{field}")
+            except ReviewAssistError as exc:
+                errors.append(str(exc))
+    for index, source in enumerate(source_files, start=1):
+        if isinstance(source, dict) and source.get("path"):
+            try:
+                repo_path_if_safe(scalar(source["path"]), repo_root, f"{repo_path} analysis_scope.source_files[{index}].path")
+            except ReviewAssistError as exc:
+                errors.append(str(exc))
+    for index, item in enumerate(functions, start=1):
+        if not isinstance(item, dict):
+            errors.append(f"{repo_path} functions[{index}] must be an object")
+            continue
+        for field in (
+            "name",
+            "classification",
+            "source_path",
+            "line",
+            "static_reference_status",
+            "dynamic_uncertainty_status",
+            "reference_count",
+            "coverage_status",
+            "claim",
+        ):
+            if field not in item:
+                errors.append(f"{repo_path} functions[{index}] missing {field}")
+        classification = scalar(item.get("classification"))
+        if classification not in allowed_classifications:
+            errors.append(f"{repo_path} functions[{index}] unknown classification: {classification}")
+        if item.get("coverage_status") != "not_observed_in_suite":
+            errors.append(f"{repo_path} functions[{index}] coverage_status must remain not_observed_in_suite")
+        if item.get("source_path"):
+            try:
+                repo_path_if_safe(scalar(item["source_path"]), repo_root, f"{repo_path} functions[{index}].source_path")
+            except ReviewAssistError as exc:
+                errors.append(str(exc))
+        references = item.get("references", [])
+        if isinstance(references, list):
+            for reference_index, reference in enumerate(references, start=1):
+                if isinstance(reference, dict) and reference.get("source_path"):
+                    try:
+                        repo_path_if_safe(
+                            scalar(reference["source_path"]),
+                            repo_root,
+                            f"{repo_path} functions[{index}].references[{reference_index}].source_path",
+                        )
+                    except ReviewAssistError as exc:
+                        errors.append(str(exc))
+    for index, site in enumerate(dynamic_sites, start=1):
+        if isinstance(site, dict) and site.get("source_path"):
+            try:
+                repo_path_if_safe(scalar(site["source_path"]), repo_root, f"{repo_path} dynamic_invocation_sites[{index}].source_path")
+            except ReviewAssistError as exc:
+                errors.append(str(exc))
+
+
 def validate_loaded_sources(repo_root: Path, docs: dict[str, dict[str, Any]], source_reports: list[dict[str, Any]], errors: list[str]) -> None:
     repo_paths = {entry["source_key"]: entry["path"] for entry in source_reports}
     validators = {
@@ -746,6 +867,7 @@ def validate_loaded_sources(repo_root: Path, docs: dict[str, dict[str, Any]], so
         "governance_report": validate_governance_report,
         "engine_boundary_report": validate_engine_boundary,
         "analyzer_report": validate_analyzer_report,
+        "function_reachability_report": validate_function_reachability_report,
     }
     for key, validator in validators.items():
         doc = docs.get(key)
@@ -1088,6 +1210,8 @@ def evidence_channels(
     assembly = docs.get("assembly_parity_report", {})
     rule_risk = docs.get("rule_risk_report", {})
     custom = docs.get("custom_report", {})
+    function_reachability = docs.get("function_reachability_report", {})
+    function_summary = function_reachability.get("summary", {}) if isinstance(function_reachability.get("summary"), dict) else {}
     analyzer_entry = source_entries["analyzer_report"]
     analyzer_status = analyzer_entry["validation_status"]
     if not analyzer_entry["present"]:
@@ -1147,6 +1271,17 @@ def evidence_channels(
             "summary": boundary.get("summary", {}),
             "declared_output_artifacts": boundary.get("declared_output_artifacts", []),
             "independent_analyzer_enforcement_proof": boundary.get("independent_analyzer_enforcement_proof", {}),
+        },
+        "function_reachability": {
+            "source_issue": 306,
+            "state": source_entries["function_reachability_report"]["validation_status"],
+            "path": source_entries["function_reachability_report"]["path"],
+            "parser_mode": function_summary.get("parser_mode"),
+            "function_count": function_summary.get("function_count", 0),
+            "classification_counts": function_summary.get("classification_counts", {}),
+            "dynamic_invocation_site_count": function_summary.get("dynamic_invocation_site_count", 0),
+            "coverage_state": function_summary.get("coverage_state"),
+            "claim": "report-only reachability evidence; no function deletion readiness or runtime absence is claimed",
         },
         "pester_boundary": {
             "source_issue": 267,
@@ -1255,6 +1390,21 @@ def render_markdown(report: dict[str, Any]) -> str:
                 "engine_boundary",
                 channels["engine_boundary"]["state"],
                 f"{channels['engine_boundary']['summary'].get('unclaimed_blocking_output_artifact_count', 0)} unclaimed blocking artifacts",
+            ]
+        )
+    )
+    function_counts = channels["function_reachability"].get("classification_counts", {})
+    lines.append(
+        markdown_table_row(
+            [
+                "function_reachability",
+                channels["function_reachability"]["state"],
+                (
+                    f"{channels['function_reachability'].get('function_count', 0)} functions; "
+                    f"{function_counts.get('literal_referenced', 0)} literal referenced; "
+                    f"{function_counts.get('dynamic_invocation_uncertain', 0)} dynamic uncertain; "
+                    f"coverage {channels['function_reachability'].get('coverage_state')}"
+                ),
             ]
         )
     )
@@ -1456,6 +1606,7 @@ def build_report(args: argparse.Namespace) -> tuple[dict[str, Any], list[str], l
         "assembly_parity_report": Path(args.assembly_parity_report),
         "governance_report": Path(args.governance_report),
         "engine_boundary_report": Path(args.engine_boundary_report),
+        "function_reachability_report": Path(args.function_reachability_report),
         "analyzer_report": Path(args.analyzer_report),
     }
     errors.extend(validate_source_path_aliases(repo_root, source_paths))
@@ -1501,7 +1652,7 @@ def build_report(args: argparse.Namespace) -> tuple[dict[str, Any], list[str], l
         "schema_version": SCHEMA_VERSION,
         "issue": ISSUE_NUMBER,
         "parent_issue": PARENT_ISSUE_NUMBER,
-        "depends_on": [261, 263, 264, 265, 266, 267],
+        "depends_on": [261, 263, 264, 265, 266, 267, 306],
         "generated_from": {
             "tool": "project_sources/collector/tools/run_powershell_review_assist_report.py",
             "generated_at_utc": datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
@@ -1619,6 +1770,11 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--assembly-parity-report", default=DEFAULT_ASSEMBLY_PARITY_REPORT.as_posix(), help="#265 assembly parity report JSON")
     parser.add_argument("--governance-report", default=DEFAULT_GOVERNANCE_REPORT.as_posix(), help="#266 finding governance report JSON")
     parser.add_argument("--engine-boundary-report", default=DEFAULT_ENGINE_BOUNDARY_REPORT.as_posix(), help="#267 engine/Pester boundary report JSON")
+    parser.add_argument(
+        "--function-reachability-report",
+        default=DEFAULT_FUNCTION_REACHABILITY_REPORT.as_posix(),
+        help="#306 function reachability report JSON",
+    )
     parser.add_argument("--analyzer-report", default=DEFAULT_ANALYZER_REPORT.as_posix(), help="Optional #262 analyzer report JSON")
     parser.add_argument("--json-output", default=DEFAULT_JSON_OUTPUT.as_posix(), help="Output JSON report path")
     parser.add_argument("--markdown-output", default=DEFAULT_MARKDOWN_OUTPUT.as_posix(), help="Output Markdown report path")

@@ -42,22 +42,122 @@ runs:
           if (-not $normalized.EndsWith($ExpectedSuffix)) {
             throw "${Label} output path must end with ${ExpectedSuffix}: $PathValue"
           }
-          return $normalized
+          $repoPathInfo = Get-Location -PSProvider FileSystem
+          if ($null -eq $repoPathInfo -or [string]::IsNullOrWhiteSpace($repoPathInfo.ProviderPath)) {
+            throw 'Repository root must be a FileSystem provider path.'
+          }
+          $repoRoot = [System.IO.Path]::GetFullPath($repoPathInfo.ProviderPath)
+          $collectorRoot = [System.IO.Path]::GetFullPath((Join-Path $repoRoot 'project_sources/collector'))
+          $candidateFullPath = [System.IO.Path]::GetFullPath((Join-Path $repoRoot $normalized))
+          $separatorChars = [char[]]@([System.IO.Path]::DirectorySeparatorChar, [System.IO.Path]::AltDirectorySeparatorChar)
+          $repoPrefix = $repoRoot.TrimEnd($separatorChars) + [System.IO.Path]::DirectorySeparatorChar
+          $collectorPrefix = $collectorRoot.TrimEnd($separatorChars) + [System.IO.Path]::DirectorySeparatorChar
+          if (-not $candidateFullPath.StartsWith($collectorPrefix, [System.StringComparison]::Ordinal)) {
+            throw "$Label output path must resolve under project_sources/collector: $PathValue"
+          }
+          if (-not $candidateFullPath.StartsWith($repoPrefix, [System.StringComparison]::Ordinal)) {
+            throw "$Label output path must resolve under the repository root: $PathValue"
+          }
+          $resolvedRelative = $candidateFullPath.Substring($repoPrefix.Length).Replace('\', '/')
+          if ($resolvedRelative -match '(^|/)\.\.($|/)') {
+            throw "$Label output path must not contain traversal after resolution: $PathValue"
+          }
+          if ($resolvedRelative -ne $normalized) {
+            Write-Host "$Label output path normalized to resolved repo-relative path: $resolvedRelative"
+          }
+          return $resolvedRelative
         }
 
-        $generatedJson = 'project_sources/collector/powershell_review_assist_report.json'
-        $generatedMarkdown = 'project_sources/collector/powershell_review_assist_report.md'
+        function Assert-ReviewAssistFixedOutputPath {
+          param(
+            [Parameter(Mandatory = $true)][string] $PathValue,
+            [Parameter(Mandatory = $true)][string] $ExpectedPath,
+            [Parameter(Mandatory = $true)][string] $ExpectedSuffix,
+            [Parameter(Mandatory = $true)][string] $Label
+          )
+
+          $resolvedPath = Assert-ReviewAssistOutputPath -PathValue $PathValue -ExpectedSuffix $ExpectedSuffix -Label $Label
+          if ($resolvedPath -ne $ExpectedPath) {
+            throw "$Label output path must be the fixed workflow path ${ExpectedPath}: $PathValue"
+          }
+          return $resolvedPath
+        }
+
+        $functionReachabilityJson = 'project_sources/collector/powershell_function_reachability_report.json'
+        $functionReachabilityMarkdown = 'project_sources/collector/powershell_function_reachability_report.md'
+        $functionGeneratedJson = 'project_sources/collector/powershell_function_reachability_workflow_report.json'
+        $functionGeneratedMarkdown = 'project_sources/collector/powershell_function_reachability_workflow_report.md'
+        $generatedJson = 'project_sources/collector/powershell_review_assist_workflow_source_report.json'
+        $generatedMarkdown = 'project_sources/collector/powershell_review_assist_workflow_source_report.md'
         $reviewAssistJson = Assert-ReviewAssistOutputPath -PathValue $env:REVIEW_ASSIST_JSON_OUTPUT -ExpectedSuffix '.json' -Label 'JSON'
         $reviewAssistMarkdown = Assert-ReviewAssistOutputPath -PathValue $env:REVIEW_ASSIST_MARKDOWN_OUTPUT -ExpectedSuffix '.md' -Label 'Markdown'
+        $functionGeneratedJson = Assert-ReviewAssistFixedOutputPath -PathValue $functionGeneratedJson -ExpectedPath 'project_sources/collector/powershell_function_reachability_workflow_report.json' -ExpectedSuffix '.json' -Label 'Function reachability generated JSON'
+        $functionGeneratedMarkdown = Assert-ReviewAssistFixedOutputPath -PathValue $functionGeneratedMarkdown -ExpectedPath 'project_sources/collector/powershell_function_reachability_workflow_report.md' -ExpectedSuffix '.md' -Label 'Function reachability generated Markdown'
+        $generatedJson = Assert-ReviewAssistFixedOutputPath -PathValue $generatedJson -ExpectedPath 'project_sources/collector/powershell_review_assist_workflow_source_report.json' -ExpectedSuffix '.json' -Label 'Review-assist generated JSON'
+        $generatedMarkdown = Assert-ReviewAssistFixedOutputPath -PathValue $generatedMarkdown -ExpectedPath 'project_sources/collector/powershell_review_assist_workflow_source_report.md' -ExpectedSuffix '.md' -Label 'Review-assist generated Markdown'
         if ($reviewAssistJson -eq $reviewAssistMarkdown) {
           throw 'PowerShell review-assist JSON and Markdown outputs must be different paths.'
         }
+        if ($functionGeneratedJson -eq $functionGeneratedMarkdown) {
+          throw 'PowerShell function reachability generated JSON and Markdown outputs must be different paths.'
+        }
+        if ($generatedJson -eq $generatedMarkdown) {
+          throw 'PowerShell review-assist generated JSON and Markdown outputs must be different paths.'
+        }
+        if (-not (Test-Path -LiteralPath $functionReachabilityJson)) {
+          throw "Committed PowerShell function reachability JSON report is required before regeneration: $functionReachabilityJson"
+        }
+        if (-not (Test-Path -LiteralPath $functionReachabilityMarkdown)) {
+          throw "Committed PowerShell function reachability Markdown report is required before regeneration: $functionReachabilityMarkdown"
+        }
+        Remove-Item -LiteralPath $functionGeneratedJson -Force -ErrorAction SilentlyContinue
+        Remove-Item -LiteralPath $functionGeneratedMarkdown -Force -ErrorAction SilentlyContinue
         Remove-Item -LiteralPath $generatedJson -Force -ErrorAction SilentlyContinue
         Remove-Item -LiteralPath $generatedMarkdown -Force -ErrorAction SilentlyContinue
         Remove-Item -LiteralPath $reviewAssistJson -Force -ErrorAction SilentlyContinue
         Remove-Item -LiteralPath $reviewAssistMarkdown -Force -ErrorAction SilentlyContinue
 
-        python project_sources/collector/tools/run_powershell_review_assist_report.py --repo-root .
+        python project_sources/collector/tools/run_powershell_function_reachability_report.py --repo-root . --no-powershell --json-output $functionGeneratedJson --markdown-output $functionGeneratedMarkdown
+        $functionExitCode = $LASTEXITCODE
+        if (-not (Test-Path -LiteralPath $functionGeneratedJson)) {
+          throw "PowerShell function reachability JSON report was not produced: $functionGeneratedJson"
+        }
+        if (-not (Test-Path -LiteralPath $functionGeneratedMarkdown)) {
+          throw "PowerShell function reachability Markdown report was not produced: $functionGeneratedMarkdown"
+        }
+        if ($functionExitCode -ne 0) {
+          throw "PowerShell function reachability report generation failed with exit code $functionExitCode."
+        }
+        $functionReport = Get-Content -LiteralPath $functionGeneratedJson -Raw | ConvertFrom-Json
+        $functionClassificationCounts = $functionReport.summary.classification_counts | ConvertTo-Json -Compress
+        Write-Host "function-reachability-committed-json: $functionReachabilityJson"
+        Write-Host "function-reachability-committed-markdown: $functionReachabilityMarkdown"
+        Write-Host "function-reachability-generated-json: $functionGeneratedJson"
+        Write-Host "function-reachability-generated-markdown: $functionGeneratedMarkdown"
+        Write-Host "function-reachability-validation-success: $($functionReport.validation.success)"
+        Write-Host "function-reachability-functions: $($functionReport.summary.function_count)"
+        Write-Host "function-reachability-parser-mode: $($functionReport.summary.parser_mode)"
+        Write-Host "function-reachability-classification-counts: $functionClassificationCounts"
+        Write-Host "function-reachability-dynamic-invocation-sites: $($functionReport.summary.dynamic_invocation_site_count)"
+        Write-Host "function-reachability-coverage-state: $($functionReport.summary.coverage_state)"
+        if ($functionReport.validation.success -ne $true) {
+          throw 'PowerShell function reachability report validation did not report success.'
+        }
+        if ($functionReport.summary.parser_mode -ne 'python_lexical_fallback') {
+          throw 'PowerShell function reachability report must use python_lexical_fallback parser mode in the review-assist gate.'
+        }
+        if ($functionReport.summary.coverage_state -ne 'not_collected') {
+          throw 'PowerShell function reachability report must not claim runtime-lane coverage.'
+        }
+        python project_sources/collector/tools/validate_powershell_function_reachability_report.py --generated-json $functionGeneratedJson --committed-json $functionReachabilityJson
+        $functionCompareExitCode = $LASTEXITCODE
+        if ($functionCompareExitCode -ne 0) {
+          throw "PowerShell function reachability committed-report parity check failed with exit code $functionCompareExitCode."
+        }
+        Remove-Item -LiteralPath $functionGeneratedJson -Force -ErrorAction SilentlyContinue
+        Remove-Item -LiteralPath $functionGeneratedMarkdown -Force -ErrorAction SilentlyContinue
+
+        python project_sources/collector/tools/run_powershell_review_assist_report.py --repo-root . --json-output $generatedJson --markdown-output $generatedMarkdown
         $exitCode = $LASTEXITCODE
 
         if (-not (Test-Path -LiteralPath $generatedJson)) {
@@ -118,6 +218,8 @@ runs:
         if ($wrapExitCode -ne 0) {
           throw "PowerShell review-assist workflow metadata wrapping failed with exit code $wrapExitCode."
         }
+        Remove-Item -LiteralPath $generatedJson -Force -ErrorAction SilentlyContinue
+        Remove-Item -LiteralPath $generatedMarkdown -Force -ErrorAction SilentlyContinue
 
         if (-not (Test-Path -LiteralPath $reviewAssistJson)) {
           throw "PowerShell review-assist JSON report was not produced: $reviewAssistJson"
@@ -127,6 +229,8 @@ runs:
         }
 
         $report = Get-Content -LiteralPath $reviewAssistJson -Raw | ConvertFrom-Json
+        Write-Host "review-assist-generated-json: $generatedJson"
+        Write-Host "review-assist-generated-markdown: $generatedMarkdown"
         Write-Host "review-assist-json: $reviewAssistJson"
         Write-Host "review-assist-markdown: $reviewAssistMarkdown"
         Write-Host "review-assist-workflow-behavior: $($report.artifact_contract.workflow_behavior)"

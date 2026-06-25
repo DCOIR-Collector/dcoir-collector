@@ -97,7 +97,8 @@
     264,
     265,
     266,
-    267
+    267,
+    306
   ],
   "evidence_channels": {
     "analyzer": {
@@ -665,6 +666,20 @@
         "suppression_count": 0,
         "unclassified_finding_count": 0
       }
+    },
+    "function_reachability": {
+      "claim": "report-only reachability evidence; no function deletion readiness or runtime absence is claimed",
+      "classification_counts": {
+        "dynamic_invocation_uncertain": 4,
+        "literal_referenced": 155
+      },
+      "coverage_state": "not_collected",
+      "dynamic_invocation_site_count": 1,
+      "function_count": 159,
+      "parser_mode": "python_lexical_fallback",
+      "path": "project_sources/collector/powershell_function_reachability_report.json",
+      "source_issue": 306,
+      "state": "success"
     },
     "pester_boundary": {
       "claim": "Pester may support later runtime or wrapper evidence but is not blocking static-validation evidence in #268.",
@@ -1504,7 +1519,7 @@
     }
   ],
   "generated_from": {
-    "generated_at_utc": "2026-06-17T09:39:28+00:00",
+    "generated_at_utc": "2026-06-24T08:37:03+00:00",
     "schema_contract": "project_sources/collector/powershell_review_assist_report.schema.json",
     "source_reports": [
       "project_sources/collector/powershell_surface_inventory.json",
@@ -1514,6 +1529,7 @@
       "project_sources/collector/powershell_assembly_parity_report.json",
       "project_sources/collector/powershell_finding_governance_report.json",
       "project_sources/collector/powershell_engine_pester_boundary_report.json",
+      "project_sources/collector/powershell_function_reachability_report.json",
       "project_sources/collector/powershell_analyzer_report.json"
     ],
     "tool": "project_sources/collector/tools/run_powershell_review_assist_report.py"
@@ -1536,7 +1552,8 @@
     "No changed-file execution, path-filter behavior, PR-diff coverage, or changed-file gating is claimed by #268.",
     "No live PSScriptAnalyzer evidence is claimed when the #262 analyzer report is absent.",
     "No Windows PowerShell 5.1 runtime validation is claimed by #268.",
-    "No #269, #270, PR/workflow readiness, or parent #260 closeability claim is made by #268."
+    "No #269, #270, PR/workflow readiness, or parent #260 closeability claim is made by #268.",
+    "No function deletion readiness or dead-code removal claim is made by #306 reachability reporting."
   ],
   "parent_issue": 260,
   "schema_version": "dcoir_powershell_review_assist_report_v1",
@@ -1655,6 +1672,21 @@
       ]
     },
     {
+      "absent_reason": null,
+      "errors": [],
+      "expected_schema_version": "dcoir_powershell_function_reachability_report_v1",
+      "finding_count": 159,
+      "label": "#306 function reachability report",
+      "path": "project_sources/collector/powershell_function_reachability_report.json",
+      "present": true,
+      "required": true,
+      "schema_version": "dcoir_powershell_function_reachability_report_v1",
+      "source_issue": 306,
+      "source_key": "function_reachability_report",
+      "validation_status": "success",
+      "warnings": []
+    },
+    {
       "absent_reason": "optional analyzer evidence is absent; #268 does not claim live PSScriptAnalyzer evidence",
       "errors": [],
       "expected_schema_version": "dcoir_powershell_analyzer_report_v1",
@@ -1684,12 +1716,12 @@
       "Warning": 6
     },
     "missing_artifact_count": 1,
-    "non_claim_count": 9,
+    "non_claim_count": 10,
     "normalized_finding_count": 22,
     "optional_source_reports_missing": 1,
-    "required_source_report_count": 7,
-    "required_source_reports_present": 7,
-    "source_report_count": 8,
+    "required_source_report_count": 8,
+    "required_source_reports_present": 8,
+    "source_report_count": 9,
     "unclaimed_artifact_count": 3,
     "validation_success": true
   },
