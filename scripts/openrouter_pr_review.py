@@ -177,7 +177,7 @@ class GitHubClient:
             "Accept": accept,
             "Authorization": f"Bearer {self.token}",
             "X-GitHub-Api-Version": "2022-11-28",
-            "User-Agent": "dcoir-openrouter-pr-review",
+            "User-Agent": "dcoir-review",
         }
         req = urllib.request.Request(url, data=data, method=method, headers=headers)
         try:
@@ -1177,7 +1177,7 @@ def openrouter_request_once(prompt: str, schema: dict[str, Any], config: Config,
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json",
         "HTTP-Referer": "https://github.com/DCOIR-Collector/dcoir-collector",
-        "X-OpenRouter-Title": "DCOIR OpenRouter PR Review",
+        "X-OpenRouter-Title": REVIEW_DISPLAY_NAME,
     }
     req = urllib.request.Request(OPENROUTER_API, data=json.dumps(payload).encode("utf-8"), method="POST", headers=headers)
     with urllib.request.urlopen(req, timeout=180) as response:
@@ -1362,7 +1362,7 @@ def main() -> None:
     apply_debug_flag(config, comment_body, command)
 
     def timeout_handler(_signum: int, _frame: Any) -> None:
-        raise ReviewTimeoutError(f"OpenRouter PR review exceeded script timeout of {config.script_timeout_seconds} seconds")
+        raise ReviewTimeoutError(f"{REVIEW_DISPLAY_NAME} exceeded script timeout of {config.script_timeout_seconds} seconds")
 
     schema = json.loads(read_text("schemas/openrouter-pr-review.schema.json"))
     gh = GitHubClient(token, repo)
