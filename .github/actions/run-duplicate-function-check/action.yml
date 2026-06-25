@@ -211,9 +211,9 @@ runs:
         $markdownLines.Add("- Unique function names: $($functionMap.Count)")
         $markdownLines.Add("- Duplicate function names: $($duplicates.Count)")
         $markdownLines.Add("- Parse failures: $($parseFailures.Count)")
-        $markdownLines.Add("- Workflow behavior: ``caller_uploaded_artifact``")
-        $markdownLines.Add("- JSON: ``$($jsonOutput.RelativePath)``")
-        $markdownLines.Add("- Markdown: ``$($markdownOutput.RelativePath)``")
+        $markdownLines.Add('- Workflow behavior: `caller_uploaded_artifact`')
+        $markdownLines.Add('- JSON: `' + $jsonOutput.RelativePath + '`')
+        $markdownLines.Add('- Markdown: `' + $markdownOutput.RelativePath + '`')
         $markdownLines.Add('')
 
         if ($parseFailures.Count -gt 0) {
