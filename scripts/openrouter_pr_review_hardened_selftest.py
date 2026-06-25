@@ -138,30 +138,28 @@ accepted = mod.normalize_findings(
 )
 assert len(accepted) == 1
 
-try:
-    mod.normalize_findings(
-        {
-            "summary": "The only high-signal finding is a review-gate regression.",
-            "findings": [
-                {
-                    "title": "Review gate bypass",
-                    "severity": "high",
-                    "confidence": 0.95,
-                    "path": "docs/review.md",
-                    "line": 99,
-                    "body": "The changed wording weakens governed review ordering.",
-                    "suggested_replacement": "",
-                    "validation": "Read back issue and PR review gates.",
-                }
-            ],
-        },
-        config,
-        line_index,
-    )
-except mod.ReviewQualityError as exc:
-    assert "none became actionable inline comments" in str(exc)
-else:
-    raise AssertionError("unanchored model finding should fail review quality")
+inline_findings, review_body_findings = mod.split_findings(
+    {
+        "summary": "The only high-signal finding is a review-gate regression.",
+        "findings": [
+            {
+                "title": "Review gate bypass",
+                "severity": "high",
+                "confidence": 0.95,
+                "path": "docs/review.md",
+                "line": 99,
+                "body": "The changed wording weakens governed review ordering.",
+                "suggested_replacement": "",
+                "validation": "Read back issue and PR review gates.",
+            }
+        ],
+    },
+    config,
+    line_index,
+)
+assert inline_findings == []
+assert len(review_body_findings) == 1
+assert "not an added changed line" in review_body_findings[0]["_unanchored_reason"]
 
 
 def assert_clean(summary: str) -> None:
