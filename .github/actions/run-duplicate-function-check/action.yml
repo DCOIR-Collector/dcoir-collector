@@ -207,8 +207,9 @@ runs:
           $markdownLines.Add('| Path | Line | Column | Message |')
           $markdownLines.Add('| --- | ---: | ---: | --- |')
           foreach ($failure in $parseFailures) {
-            $message = ([string]$failure.message).Replace('|', '\|')
-            $markdownLines.Add("| ``$($failure.path)`` | $($failure.line) | $($failure.column) | $message |")
+            $path = ([string]$failure.path).Replace('`', '\`').Replace('|', '\|')
+            $message = ([string]$failure.message).Replace('`', '\`').Replace('|', '\|')
+            $markdownLines.Add("| $path | $($failure.line) | $($failure.column) | $message |")
           }
           $markdownLines.Add('')
         }
