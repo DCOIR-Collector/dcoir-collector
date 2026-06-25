@@ -27,16 +27,21 @@ MARKER = "<!-- dcoir-review -->"
 LEGACY_MARKERS = ("<!-- openrouter-pr-review -->",)
 REVIEW_DISPLAY_NAME = "DCOIR Review"
 PUBLIC_IDENTITY_REPLACEMENTS = (
+    ("OPENROUTER_API_KEY", "REVIEW_PROVIDER_API_KEY"),
+    ("OPENROUTER_REVIEW_CONFIG", "REVIEW_PROVIDER_CONFIG"),
+    ("OPENROUTER_", "REVIEW_PROVIDER_"),
     ("OpenRouter PR Review", REVIEW_DISPLAY_NAME),
     ("OpenRouter PR review", REVIEW_DISPLAY_NAME),
     ("OpenRouter Review", REVIEW_DISPLAY_NAME),
     ("OpenRouter review", REVIEW_DISPLAY_NAME),
     ("OpenRouter", "review provider"),
+    ("openrouter_key", "review_provider_key"),
     ("openrouter-pr-review", "dcoir-review"),
     ("openrouter-review", "dcoir-review"),
     ("openrouter/", "provider/"),
     ("openrouter:", "provider:"),
     ("openrouter-", "provider-"),
+    ("openrouter_", "provider_"),
 )
 REDACTION = "[redacted-secret]"
 GITHUB_MENTION = re.compile(
