@@ -6,6 +6,7 @@ from __future__ import annotations
 import importlib.util
 import json
 import os
+import tempfile
 from dataclasses import replace
 from pathlib import Path
 
@@ -708,6 +709,47 @@ sanitized_progress_identity = mod.sanitize_github_output(
     config,
 )
 assert sanitized_progress_identity == "provider provider-attempt provider-result provider-retry provider/pareto-code"
+with tempfile.TemporaryDirectory() as tmp:
+    previous_debug_artifact_dir = os.environ.get("DCOIR_REVIEW_DEBUG_ARTIFACT_DIR")
+    os.environ["DCOIR_REVIEW_DEBUG_ARTIFACT_DIR"] = tmp
+    try:
+        quiet_path = mod.write_debug_text_artifact(config, "quiet.txt", "quiet output")
+        assert quiet_path is None
+        assert not (Path(tmp) / "quiet.txt").exists()
+
+        debug_path = mod.write_debug_text_artifact(
+            debug_config,
+            "prompts/01-initial-prompt.txt",
+            f"OpenRouter prompt with OPENROUTER_API_KEY={openrouter_key}; ask @codex to inspect",
+        )
+        assert debug_path == (Path(tmp) / "prompts/01-initial-prompt.txt").resolve(strict=False)
+        debug_text = debug_path.read_text(encoding="utf-8")
+        assert "OpenRouter" not in debug_text
+        assert openrouter_key not in debug_text
+        assert "REVIEW_PROVIDER_API_KEY" in debug_text
+        assert "@<!-- -->codex" in debug_text
+
+        json_path = mod.write_debug_json_artifact(
+            debug_config,
+            "metadata/review-context.json",
+            {"provider": "OpenRouter", "secret": openrouter_key, "items": ["openrouter", "@codex"]},
+        )
+        debug_json = json.loads(json_path.read_text(encoding="utf-8"))
+        assert debug_json["provider"] == "review provider"
+        assert debug_json["secret"] == "[redacted-secret]"
+        assert debug_json["items"] == ["provider", "@<!-- -->codex"]
+
+        try:
+            mod.write_debug_text_artifact(debug_config, "../escape.txt", "escape")
+        except ValueError as exc:
+            assert "unsafe debug artifact name" in str(exc)
+        else:
+            raise AssertionError("debug artifact path traversal should be rejected")
+    finally:
+        if previous_debug_artifact_dir is None:
+            os.environ.pop("DCOIR_REVIEW_DEBUG_ARTIFACT_DIR", None)
+        else:
+            os.environ["DCOIR_REVIEW_DEBUG_ARTIFACT_DIR"] = previous_debug_artifact_dir
 
 review_body = mod.build_review_body({"summary": "No findings. Ask @codex and @malwaredevil to review."}, [], "openrouter/free", config)
 assert "💡 DCOIR Review" in review_body
