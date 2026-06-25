@@ -1186,6 +1186,44 @@ def append_context_to_review_body(body: str, review_mode: str, context_summary: 
     return base.github_safe_body(f"{body}\n\n{CONTEXT_REVIEW_MARKER} `{review_mode}`\n\nContext readback: {safe_context_summary}")
 
 
+def split_findings_with_review_body_fallback(
+    result: dict[str, Any],
+    config: Any,
+    line_index: dict[tuple[str, int], int],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    try:
+        return hardened.split_findings(result, config, line_index)
+    except hardened.ReviewQualityError:
+        raw_findings = result.get("findings", [])
+        if not raw_findings or not getattr(config, "fail_on_unanchored_findings", True):
+            raise
+        findings: list[dict[str, Any]] = []
+        unanchored_findings: list[dict[str, Any]] = []
+        for item in raw_findings:
+            try:
+                confidence = float(item.get("confidence", 0))
+                line = int(item.get("line", 0))
+                path = str(item.get("path", "")).strip()
+            except (AttributeError, TypeError, ValueError):
+                continue
+            if confidence < config.minimum_confidence or hardened.non_actionable_finding_reason(item):
+                continue
+            if (path, line) in line_index:
+                findings.append(item)
+                continue
+            unanchored = dict(item)
+            location_text = hardened.finding_location_text(path, line)
+            unanchored["_unanchored_reason"] = f"{location_text} is outside the added changed lines for this PR"
+            unanchored_findings.append(unanchored)
+        findings.sort(key=hardened.severity_sort_key)
+        unanchored_findings.sort(key=hardened.severity_sort_key)
+        findings = findings[: config.max_inline_comments]
+        unanchored_findings = unanchored_findings[: config.max_inline_comments]
+        if findings or unanchored_findings:
+            return findings, unanchored_findings
+        raise
+
+
 
 def review_assist_context_path(raw_path: str) -> Path | None:
     """Return the trusted review-assist context path or reject unexpected paths."""
@@ -1297,8 +1335,8 @@ def main() -> None:
         line_index = hardened.build_added_line_index(diff)
         result, model_used, service_tier = hardened.openrouter_review_with_quality_retry(prompt, schema, config, reporter, risk_sentinels, line_index)
         reporter.update("normalize", "mapping model findings to changed diff lines")
-        findings = hardened.normalize_findings(result, config, line_index)
-        hardened.enforce_risk_sentinel_findings(findings, risk_sentinels, config)
+        findings, unanchored_findings = split_findings_with_review_body_fallback(result, config, line_index)
+        hardened.enforce_risk_sentinel_findings(findings, risk_sentinels, config, unanchored_findings)
 
         comments: list[dict[str, Any]] = []
         for finding in findings:
@@ -1307,8 +1345,14 @@ def main() -> None:
             comments.append({"path": path, "position": line_index[(path, line)], "body": base.build_inline_comment(finding, model_used, config)})
 
         event = "REQUEST_CHANGES" if comments and config.request_changes_on_findings else "COMMENT"
-        review_body = append_context_to_review_body(base.build_review_body(result, findings, model_used, config), review_mode, context_summary, config)
-        reporter.update("github-review", f"posting GitHub review with {len(comments)} inline comments")
+        review_body = append_context_to_review_body(
+            hardened.build_review_body_with_unanchored(result, findings, unanchored_findings, model_used, config),
+            review_mode,
+            context_summary,
+            config,
+        )
+        unanchored_note = f" and {len(unanchored_findings)} unanchored review-body findings" if unanchored_findings else ""
+        reporter.update("github-review", f"posting GitHub review with {len(comments)} inline comments{unanchored_note}")
         gh.create_review(pr_number, review_body, event, comments, str(pr.get("head", {}).get("sha", "")))
         hardened.remove_eyes_reaction(gh, trigger_comment_id, reaction_id, reaction_status)
         tier_note = f"; service_tier={service_tier}" if service_tier else ""
