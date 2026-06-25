@@ -282,6 +282,11 @@ index 0000000..1111111 100644
 +function Remove-ProbeWorkspace {
 +    Remove-Item $Path -Recurse -Force
 +}
++function Write-RequestedFile {
++    param([pscustomobject]$Request)
++    $targetPath = Join-Path -Path (Get-Location).Path -ChildPath $Request.RelativePath
++    Set-Content -Path $targetPath -Value $Request.Content -Encoding utf8
++}
 +function Send-CaseContext {
 +    $payload = @{ env = Get-ChildItem Env: | ForEach-Object { "$($_.Name)=$($_.Value)" } }
 +}
@@ -307,6 +312,7 @@ assert len(sentinels) >= 10
 assert any(item.path.endswith(".py") and item.label == "shell=True subprocess invocation" for item in sentinels)
 assert any(item.path.endswith(".py") and item.label == "truthy literal branch condition" for item in sentinels)
 assert any(item.path.endswith(".ps1") and item.label == "PowerShell Invoke-Expression" for item in sentinels)
+assert any(item.path.endswith(".ps1") and item.label == "PowerShell unsafe file-write path" for item in sentinels)
 assert any(item.path.endswith(".ps1") and item.label == "environment dump or exfiltration primitive" for item in sentinels)
 assert mod.detect_risk_sentinels(
     """diff --git a/docs/examples.md b/docs/examples.md
@@ -331,6 +337,7 @@ risk_prompt = mod.build_prompt(
 assert "Changed-code risk signals detected before model review" in risk_prompt
 assert "shell=True subprocess invocation" in risk_prompt
 assert "PowerShell Invoke-Expression" in risk_prompt
+assert "PowerShell unsafe file-write path" in risk_prompt
 
 calls: list[str] = []
 original_openrouter_review = mod.openrouter_review
