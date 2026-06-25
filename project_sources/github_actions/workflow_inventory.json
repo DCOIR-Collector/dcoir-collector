@@ -437,7 +437,7 @@
       "trigger_events": [
         "issue_comment"
       ],
-      "workflow_name": "OpenRouter PR Review"
+      "workflow_name": "28 Review - OpenRouter PR Review"
     },
     {
       "artifacts": [
