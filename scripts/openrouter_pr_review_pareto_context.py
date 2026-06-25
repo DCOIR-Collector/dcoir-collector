@@ -1289,7 +1289,7 @@ def main() -> None:
         base.apply_debug_flag(config, comment_body, command)
 
     def timeout_handler(_signum: int, _frame: Any) -> None:
-        raise hardened.ReviewTimeoutError(f"OpenRouter PR review exceeded script timeout of {config.script_timeout_seconds} seconds")
+        raise hardened.ReviewTimeoutError(f"{base.REVIEW_DISPLAY_NAME} exceeded script timeout of {config.script_timeout_seconds} seconds")
 
     schema = json.loads(base.read_text("schemas/openrouter-pr-review.schema.json"))
     gh = base.GitHubClient(token, repo)
