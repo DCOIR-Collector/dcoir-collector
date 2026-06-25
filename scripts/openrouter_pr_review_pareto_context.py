@@ -1340,6 +1340,36 @@ def main() -> None:
             reporter.update("risk-sentinel", f"detected {len(risk_sentinels)} high-risk changed-line signals: {hardened.risk_sentinel_digest(risk_sentinels)}")
         reporter.update("prompt", f"building bounded prompt from {len(files)} changed files")
         prompt = build_prompt(pr, files, diff, config, risk_sentinels, deep_context_block, review_mode, context_summary)
+        hardened.write_debug_json_artifact_safely(
+            config,
+            "metadata/review-context.json",
+            {
+                "pr_number": pr_number,
+                "reviewed_head_sha": str(pr.get("head", {}).get("sha", "") or ""),
+                "command": command,
+                "debug": bool(getattr(config, "debug", False)),
+                "review_mode": review_mode,
+                "context_summary": context_summary,
+                "review_assist_context_chars": len(review_assist_ctx),
+                "deep_context_chars": len(deep_context_block),
+                "prompt_chars": len(prompt),
+                "risk_sentinel_count": len(risk_sentinels),
+                "risk_sentinel_digest": hardened.risk_sentinel_digest(risk_sentinels) if risk_sentinels else "",
+                "changed_files": [
+                    {
+                        "filename": str(item.get("filename", "")),
+                        "status": str(item.get("status", "")),
+                        "additions": item.get("additions"),
+                        "deletions": item.get("deletions"),
+                        "changes": item.get("changes"),
+                    }
+                    for item in files
+                ],
+            },
+        )
+        hardened.write_debug_text_artifact_safely(config, "context/deep-context.md", deep_context_block or "(no deep context block)")
+        if review_assist_ctx:
+            hardened.write_debug_text_artifact_safely(config, "context/static-validation-context.md", review_assist_ctx)
         line_index = hardened.build_added_line_index(diff)
         result, model_used, service_tier = hardened.openrouter_review_with_quality_retry(prompt, schema, config, reporter, risk_sentinels, line_index)
         reporter.update("normalize", "mapping model findings to changed diff lines")
