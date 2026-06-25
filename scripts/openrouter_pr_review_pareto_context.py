@@ -959,9 +959,10 @@ def list_pr_reviews(gh: Any, pr_number: int) -> list[dict[str, Any]]:
 
 
 def has_prior_successful_context_review(gh: Any, pr_number: int) -> bool:
+    markers = (base.MARKER, *getattr(base, "LEGACY_MARKERS", ()))
     for review in list_pr_reviews(gh, pr_number):
         body = str(review.get("body", ""))
-        if base.MARKER in body and CONTEXT_REVIEW_MARKER in body:
+        if any(marker in body for marker in markers) and CONTEXT_REVIEW_MARKER in body:
             return True
     return False
 
@@ -1197,6 +1198,7 @@ def split_findings_with_review_body_fallback(
         raw_findings = result.get("findings", [])
         if not raw_findings or not getattr(config, "fail_on_unanchored_findings", True):
             raise
+        changed_paths = {path for path, _line in line_index}
         findings: list[dict[str, Any]] = []
         unanchored_findings: list[dict[str, Any]] = []
         for item in raw_findings:
@@ -1209,6 +1211,8 @@ def split_findings_with_review_body_fallback(
             if not path or line <= 0:
                 continue
             if confidence < config.minimum_confidence or hardened.non_actionable_finding_reason(item):
+                continue
+            if path not in changed_paths:
                 continue
             if (path, line) in line_index:
                 findings.append(item)
@@ -1281,6 +1285,8 @@ def main() -> None:
     if not command:
         print("Comment does not match configured review commands")
         return
+    if hasattr(base, "apply_debug_flag"):
+        base.apply_debug_flag(config, comment_body, command)
 
     def timeout_handler(_signum: int, _frame: Any) -> None:
         raise hardened.ReviewTimeoutError(f"OpenRouter PR review exceeded script timeout of {config.script_timeout_seconds} seconds")
@@ -1348,15 +1354,16 @@ def main() -> None:
             comments.append({"path": path, "position": line_index[(path, line)], "body": base.build_inline_comment(finding, model_used, config)})
 
         event = "REQUEST_CHANGES" if comments and config.request_changes_on_findings else "COMMENT"
+        reviewed_commit = str(pr.get("head", {}).get("sha", "") or "")
         review_body = append_context_to_review_body(
-            hardened.build_review_body_with_unanchored(result, findings, unanchored_findings, model_used, config),
+            hardened.build_review_body_with_unanchored(result, findings, unanchored_findings, model_used, config, reviewed_commit),
             review_mode,
             context_summary,
             config,
         )
         unanchored_note = f" and {len(unanchored_findings)} unanchored review-body findings" if unanchored_findings else ""
         reporter.update("github-review", f"posting GitHub review with {len(comments)} inline comments{unanchored_note}")
-        gh.create_review(pr_number, review_body, event, comments, str(pr.get("head", {}).get("sha", "")))
+        gh.create_review(pr_number, review_body, event, comments, reviewed_commit)
         hardened.remove_eyes_reaction(gh, trigger_comment_id, reaction_id, reaction_status)
         tier_note = f"; service_tier={service_tier}" if service_tier else ""
         reporter.update("reaction", f"eyes add: {reaction_status['added']}; eyes remove: {reaction_status['removed']}")
