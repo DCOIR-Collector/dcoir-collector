@@ -1195,6 +1195,7 @@ def split_findings_with_review_body_fallback(
         return hardened.split_findings(result, config, line_index)
     except hardened.ReviewQualityError:
         raw_findings = result.get("findings", [])
+        changed_paths = {path for path, _line in line_index}
         if not raw_findings or not getattr(config, "fail_on_unanchored_findings", True):
             raise
         findings: list[dict[str, Any]] = []
@@ -1212,6 +1213,8 @@ def split_findings_with_review_body_fallback(
                 continue
             if (path, line) in line_index:
                 findings.append(item)
+                continue
+            if path not in changed_paths:
                 continue
             unanchored = dict(item)
             location_text = hardened.finding_location_text(path, line)
