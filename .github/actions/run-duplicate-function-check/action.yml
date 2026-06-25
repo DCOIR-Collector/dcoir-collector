@@ -208,7 +208,7 @@ runs:
           $markdownLines.Add('| --- | ---: | ---: | --- |')
           foreach ($failure in $parseFailures) {
             $message = ([string]$failure.message).Replace('|', '\|')
-            $markdownLines.Add("| `$($failure.path)` | $($failure.line) | $($failure.column) | $message |")
+            $markdownLines.Add("| ``$($failure.path)`` | $($failure.line) | $($failure.column) | $message |")
           }
           $markdownLines.Add('')
         }
@@ -217,12 +217,12 @@ runs:
           $markdownLines.Add('## Duplicate Function Definitions')
           $markdownLines.Add('')
           foreach ($entry in $duplicates) {
-            $markdownLines.Add("### `$($entry.Value[0].name)`")
+            $markdownLines.Add("### ``$($entry.Value[0].name)``")
             $markdownLines.Add('')
             $markdownLines.Add('| Path | Line |')
             $markdownLines.Add('| --- | ---: |')
             foreach ($loc in $entry.Value) {
-              $markdownLines.Add("| `$($loc.path)` | $($loc.line) |")
+              $markdownLines.Add("| ``$($loc.path)`` | $($loc.line) |")
             }
             $markdownLines.Add('')
           }
