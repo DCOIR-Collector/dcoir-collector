@@ -81,6 +81,15 @@ RISK_SENTINEL_RULES: tuple[tuple[str, str, re.Pattern[str]], ...] = (
         re.compile(r"\bshutil\.rmtree\b|\bRemove-Item\b[^\n]*\s-Recurse\b", re.IGNORECASE),
     ),
     (
+        "PowerShell unsafe file-write path",
+        "PowerShell file writes need root containment when the destination path can be request or operator controlled",
+        re.compile(
+            r"\b(?:Set-Content|Add-Content|Out-File|Export-Clixml|Export-Csv|Copy-Item|Move-Item|New-Item)\b"
+            r"[^\n]*\s-(?:Path|LiteralPath|FilePath|Destination)\s+\$Request\.",
+            re.IGNORECASE,
+        ),
+    ),
+    (
         "environment dump or exfiltration primitive",
         "full environment enumeration can leak CI or collector secrets into reports, logs, or webhooks",
         re.compile(r"\bos\.environ(?:\.items\(\)|\b)|\bGet-ChildItem\s+Env:", re.IGNORECASE),
@@ -138,6 +147,15 @@ RISK_SENTINEL_FINDING_TERMS: dict[str, tuple[str, ...]] = {
         "deletion",
         "path root",
     ),
+    "PowerShell unsafe file-write path": (
+        "powershell",
+        "file write",
+        "set-content",
+        "out-file",
+        "root containment",
+        "request",
+        "path",
+    ),
     "environment dump or exfiltration primitive": (
         "environment",
         "os.environ",
@@ -159,8 +177,21 @@ RISK_SENTINEL_HIGH_SEVERITY_LABELS = {
     "raw SQL/query string interpolation",
     "shell=True subprocess invocation",
     "environment dump or exfiltration primitive",
+    "PowerShell unsafe file-write path",
     "unsafe file-write path construction",
 }
+
+
+POWERSHELL_REQUEST_PATH_ASSIGNMENT = re.compile(
+    r"^\s*\$(?P<name>[A-Za-z_][A-Za-z0-9_]*)\s*=\s*"
+    r"(?P<value>.*(?:\bJoin-Path\b[^\n]*\$Request\.|\$Request\.(?:Path|RelativePath|FilePath|OutputPath|Destination)\b).*)$",
+    re.IGNORECASE,
+)
+POWERSHELL_WRITE_PATH_VARIABLE = re.compile(
+    r"\b(?:Set-Content|Add-Content|Out-File|Export-Clixml|Export-Csv|Copy-Item|Move-Item|New-Item)\b"
+    r"[^\n]*\s-(?:Path|LiteralPath|FilePath|Destination)\s+\$(?P<name>[A-Za-z_][A-Za-z0-9_]*)\b",
+    re.IGNORECASE,
+)
 
 
 NON_ACTIONABLE_FINDING_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
@@ -497,13 +528,22 @@ def detect_risk_sentinels(diff: str, max_anchors: int | None = None) -> list[Ris
     sentinels: list[RiskSentinel] = []
     seen: set[tuple[str, int, str]] = set()
     active_python_subprocess_call: str | None = None
+    current_path = ""
+    powershell_request_path_vars: set[str] = set()
     shell_subprocess_detail = next(
         detail for label, detail, _pattern in RISK_SENTINEL_RULES if label == "shell=True subprocess invocation"
     )
+    powershell_file_write_detail = next(
+        detail for label, detail, _pattern in RISK_SENTINEL_RULES if label == "PowerShell unsafe file-write path"
+    )
     for changed_line in iter_added_diff_lines(diff):
+        if changed_line.path != current_path:
+            current_path = changed_line.path
+            powershell_request_path_vars = set()
         suffix = Path(changed_line.path).suffix.lower()
         if suffix not in RISK_SENTINEL_EXTENSIONS:
             active_python_subprocess_call = None
+            powershell_request_path_vars = set()
             continue
         if is_comment_only_added_line(changed_line.path, changed_line.text):
             continue
@@ -524,6 +564,20 @@ def detect_risk_sentinels(diff: str, max_anchors: int | None = None) -> list[Ris
                 active_python_subprocess_call = None
         else:
             active_python_subprocess_call = None
+
+        if suffix in {".ps1", ".psd1", ".psm1"}:
+            assignment_match = POWERSHELL_REQUEST_PATH_ASSIGNMENT.search(changed_line.text)
+            if assignment_match:
+                powershell_request_path_vars.add(assignment_match.group("name").lower())
+            write_match = POWERSHELL_WRITE_PATH_VARIABLE.search(changed_line.text)
+            if write_match and write_match.group("name").lower() in powershell_request_path_vars:
+                append_risk_sentinel(
+                    sentinels,
+                    seen,
+                    changed_line,
+                    "PowerShell unsafe file-write path",
+                    powershell_file_write_detail,
+                )
 
         for label, detail, pattern in RISK_SENTINEL_RULES:
             if pattern.search(changed_line.text):
@@ -1337,7 +1391,7 @@ def format_unanchored_finding(finding: dict[str, Any], model_used: str, config: 
     path = sanitize_github_output(str(finding.get("path", "<missing-path>")).strip(), config)
     line = sanitize_github_output(str(finding.get("line", "<missing-line>")).strip(), config)
     body = sanitize_github_output(str(finding.get("body", "")).strip(), config)
-    validation = sanitize_github_output(str(finding.get("validation", "")).strip(), config)
+    validation = sanitize_github_output(base.validation_text_for_finding(finding), config)
     reason = sanitize_github_output(str(finding.get("_unanchored_reason", "not anchored to an added changed line")), config)
     try:
         confidence = float(finding.get("confidence", 0))
