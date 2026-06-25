@@ -69,6 +69,71 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Download review-assist context from last validate-on-pr run
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          PR_HEAD_SHA=$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" --jq '.head.sha' 2>/dev/null || echo "")
+          if [ -z "$PR_HEAD_SHA" ]; then
+            echo "Could not determine PR head SHA; skipping review-assist context download."
+            exit 0
+          fi
+          echo "PR head SHA: $PR_HEAD_SHA"
+
+          RUN_ID=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/validate-on-pr.yml/runs?head_sha=$PR_HEAD_SHA&per_page=5" \
+            --jq '[.workflow_runs[] | select(.status == "completed" and .conclusion == "success")] | sort_by(.updated_at) | reverse | .[0].id // empty' 2>/dev/null || echo "")
+          if [ -z "$RUN_ID" ]; then
+            echo "No successful completed validate-on-pr run found for SHA $PR_HEAD_SHA; skipping context download."
+            exit 0
+          fi
+          echo "Found validate-on-pr run: $RUN_ID"
+
+          ARTIFACT_ID=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$RUN_ID/artifacts" \
+            --jq '.artifacts[] | select(.name == "validate-on-pr-results") | .id' 2>/dev/null | head -1 || echo "")
+          if [ -z "$ARTIFACT_ID" ]; then
+            echo "validate-on-pr-results artifact not found in run $RUN_ID; skipping."
+            exit 0
+          fi
+          echo "Downloading artifact $ARTIFACT_ID..."
+
+          mkdir -p /tmp/review-assist-context
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/$ARTIFACT_ID/zip" > /tmp/review-assist-context/artifact.zip 2>/dev/null
+          if [ $? -ne 0 ]; then
+            echo "Artifact download failed; skipping context injection."
+            exit 0
+          fi
+
+          python - <<'PY'
+          from pathlib import Path
+          import zipfile
+
+          archive = Path("/tmp/review-assist-context/artifact.zip")
+          destination = Path("/tmp/review-assist-context").resolve()
+          with zipfile.ZipFile(archive) as zf:
+              for member in zf.infolist():
+                  member_path = Path(member.filename)
+                  if member_path.is_absolute() or ".." in member_path.parts:
+                      raise SystemExit(f"Unsafe artifact member path: {member.filename}")
+                  target = (destination / member_path).resolve()
+                  if target != destination and destination not in target.parents:
+                      raise SystemExit(f"Artifact member escapes destination: {member.filename}")
+              zf.extractall(destination)
+          PY
+          if [ $? -ne 0 ]; then
+            echo "Artifact extraction failed safety checks; skipping context injection."
+            exit 0
+          fi
+          REPORT="project_sources/collector/powershell_review_assist_workflow_report.md"
+          REPORT_PATH="/tmp/review-assist-context/$REPORT"
+          if [ -f "$REPORT_PATH" ]; then
+            echo "Review-assist markdown loaded ($( wc -c < "$REPORT_PATH" ) bytes)."
+            echo "REVIEW_ASSIST_CONTEXT_PATH=$REPORT_PATH" >> $GITHUB_ENV
+          else
+            echo "Review-assist markdown not found in artifact; no context injection."
+          fi
+
       - name: Run OpenRouter PR review
         env:
           PYTHONUNBUFFERED: '1'
@@ -81,4 +146,5 @@ jobs:
           TRIGGER_AUTHOR: ${{ github.event.comment.user.login }}
           GITHUB_EVENT_PATH: ${{ github.event_path }}
           OPENROUTER_REVIEW_CONFIG: .github/openrouter-pr-review-pareto.yml
+          REVIEW_ASSIST_CONTEXT_PATH: ${{ env.REVIEW_ASSIST_CONTEXT_PATH }}
         run: python -u scripts/openrouter_pr_review_pareto_context.py

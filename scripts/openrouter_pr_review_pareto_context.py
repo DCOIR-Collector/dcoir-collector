@@ -23,6 +23,8 @@ CONTEXT_REVIEW_MARKER = "Context mode:"
 DEEP_CONTEXT_MIN_PARTIAL_CHARS = 400
 DEEP_CONTEXT_BUDGET_EXHAUSTED_SUFFIX = "\n~~~\n\n[deep context budget exhausted]"
 DEEP_CONTEXT_PROMPT_TRUNCATED_MARKER = "\n\n[deep context truncated by reviewer]"
+REVIEW_ASSIST_CONTEXT_ROOT = Path("/tmp/review-assist-context")
+REVIEW_ASSIST_CONTEXT_REPORT = Path("project_sources/collector/powershell_review_assist_workflow_report.md")
 
 
 def optional_float(data: dict[str, Any], key: str) -> float | None:
@@ -1184,6 +1186,41 @@ def append_context_to_review_body(body: str, review_mode: str, context_summary: 
     return base.github_safe_body(f"{body}\n\n{CONTEXT_REVIEW_MARKER} `{review_mode}`\n\nContext readback: {safe_context_summary}")
 
 
+
+def review_assist_context_path(raw_path: str) -> Path | None:
+    """Return the trusted review-assist context path or reject unexpected paths."""
+    if not raw_path.strip():
+        return None
+
+    root = REVIEW_ASSIST_CONTEXT_ROOT.resolve(strict=False)
+    expected = (root / REVIEW_ASSIST_CONTEXT_REPORT).resolve(strict=False)
+    candidate = Path(raw_path).resolve(strict=False)
+    if candidate != expected:
+        raise ValueError(f"unexpected review-assist context path: {candidate}")
+    if candidate != root and root not in candidate.parents:
+        raise ValueError(f"review-assist context path escapes trusted extraction root: {candidate}")
+    return candidate
+
+
+def load_review_assist_context(config: Any) -> str:
+    """Read the trusted PSScriptAnalyzer/review-assist markdown context if set."""
+    context_path = os.environ.get("REVIEW_ASSIST_CONTEXT_PATH", "").strip()
+    if not context_path:
+        return ""
+    try:
+        trusted_context_path = review_assist_context_path(context_path)
+        if trusted_context_path is None:
+            return ""
+        content = trusted_context_path.read_text(encoding="utf-8")
+        max_chars = int(getattr(config, "deep_review_max_total_chars", 24000)) // 2
+        if len(content) > max_chars:
+            content = content[:max_chars] + "\n...(review-assist context truncated)"
+        return content.strip()
+    except Exception as exc:
+        print(f"WARN: could not load review-assist context from {context_path}: {exc}", file=sys.stderr, flush=True)
+        return ""
+
+
 def main() -> None:
     repo = base.env_required("GITHUB_REPOSITORY")
     pr_number = int(base.env_required("PR_NUMBER"))
@@ -1245,6 +1282,11 @@ def main() -> None:
             reporter.update("review-mode", f"prior context review readback failed; using first-pass posture: {str(exc)[:240]}")
         review_mode = review_mode_for_command(comment_body, command, config, prior_successful_review)
         deep_context_block, context_summary = build_deep_context_block(gh, pr, files, config, review_mode)
+        review_assist_ctx = load_review_assist_context(config)
+        if review_assist_ctx:
+            ra_header = "PowerShell static analysis context from last validate-on-pr run (PSScriptAnalyzer + review-assist):"
+            deep_context_block = f"{ra_header}\n\n{review_assist_ctx}\n\n---\n\n{deep_context_block}".strip()
+            reporter.update("review-assist-context", f"injected {len(review_assist_ctx)} chars of PSScriptAnalyzer context")
         safe_context_summary = sanitize_context_summary(context_summary, config)
         reporter.update("context", safe_context_summary)
         risk_sentinels = hardened.detect_risk_sentinels(diff, getattr(config, "risk_sentinel_max_anchors", 12))

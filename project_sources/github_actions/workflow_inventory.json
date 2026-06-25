@@ -1,9 +1,9 @@
 {
-  "composite_action_count": 16,
+  "composite_action_count": 18,
   "contract_registry": "project_sources/github_actions/workflow_modularization_contracts.json",
   "existing_workflow_count_expected": 33,
   "governing_issue": 194,
-  "local_composite_action_calls": 113,
+  "local_composite_action_calls": 117,
   "local_reusable_workflow_calls": 32,
   "reusable_workflow_count": 31,
   "schema_version": "dcoir_workflow_inventory_v1",
@@ -429,7 +429,7 @@
         "issues": "write",
         "pull-requests": "write"
       },
-      "report_family": "none declared",
+      "report_family": "standalone workflow report",
       "risk": "high",
       "schedules": [],
       "secret_or_var_count": 1,
