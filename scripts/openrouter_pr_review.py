@@ -12,6 +12,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import shlex
 import signal
 import sys
 import time
@@ -1295,12 +1296,91 @@ def is_safe_suggestion(suggestion: str) -> bool:
     return any(signal_text in text for signal_text in code_signals)
 
 
+VALIDATION_COMMAND_PREFIXES = (
+    "bandit ",
+    "bash ",
+    "git ",
+    "Invoke-ScriptAnalyzer ",
+    "node ",
+    "npm ",
+    "npx ",
+    "pwsh ",
+    "powershell ",
+    "python ",
+    "python3 ",
+    "pytest ",
+    "ruff ",
+    "sh ",
+)
+
+
+def is_validation_command(text: str) -> bool:
+    stripped = text.strip()
+    return any(stripped.startswith(prefix) for prefix in VALIDATION_COMMAND_PREFIXES)
+
+
+def powershell_double_quoted(value: str) -> str:
+    escaped = value.replace("`", "``").replace('"', '`"').replace("$", "`$")
+    return f'"{escaped}"'
+
+
+def extract_validation_commands(validation: str) -> list[str]:
+    commands: list[str] = []
+    for line in validation.splitlines():
+        cleaned = line.strip().strip("-*").strip()
+        if cleaned.startswith("```") or not cleaned:
+            continue
+        if is_validation_command(cleaned):
+            commands.append(cleaned)
+    for match in re.finditer(r"`([^`\n]+)`", validation):
+        candidate = match.group(1).strip()
+        if is_validation_command(candidate):
+            commands.append(candidate)
+    if commands:
+        return commands
+    return [validation.strip()] if validation.strip() else []
+
+
+def default_validation_commands_for_path(path: str) -> list[str]:
+    if not path:
+        return []
+    lower_path = path.lower()
+    quoted = shlex.quote(path)
+    if lower_path.endswith(".py"):
+        return [
+            f"python3 -m py_compile {quoted}",
+            f"bandit -r {quoted}",
+        ]
+    if lower_path.endswith((".ps1", ".psm1", ".psd1")):
+        ps_path = powershell_double_quoted(path)
+        return [
+            f"pwsh -NoProfile -Command '$errors=$null; [System.Management.Automation.PSParser]::Tokenize((Get-Content -Raw -LiteralPath {ps_path}), [ref]$errors) | Out-Null; if ($errors) {{ throw ($errors | Out-String) }}'",
+            f"pwsh -NoProfile -Command 'Invoke-ScriptAnalyzer -Path {ps_path}'",
+        ]
+    if lower_path.endswith(".json"):
+        return [f"python3 -m json.tool {quoted}"]
+    return []
+
+
+def validation_text_for_finding(finding: dict[str, Any]) -> str:
+    path = str(finding.get("path", "")).strip()
+    commands = extract_validation_commands(str(finding.get("validation", "")).strip())
+    defaults = default_validation_commands_for_path(path)
+    combined: list[str] = []
+    seen: set[str] = set()
+    for command in [*commands, *defaults]:
+        if command and command not in seen:
+            combined.append(command)
+            seen.add(command)
+    return "\n".join(combined)
+
+
 def build_inline_comment(finding: dict[str, Any], model_used: str, config: Config) -> str:
     title = sanitize_github_output(str(finding.get("title", "Finding")).strip(), config)
     severity = str(finding.get("severity", "medium")).upper()
     confidence = float(finding.get("confidence", 0))
     body = sanitize_github_output(str(finding.get("body", "")).strip(), config)
-    validation = sanitize_github_output(str(finding.get("validation", "")).strip(), config)
+    validation = sanitize_github_output(validation_text_for_finding(finding), config)
     suggestion = sanitize_github_output(str(finding.get("suggested_replacement", "")).rstrip(), config, neutralize_mentions=False)
     parts = [f"**{severity}: {title}**", "", body]
     if config.include_confidence:
