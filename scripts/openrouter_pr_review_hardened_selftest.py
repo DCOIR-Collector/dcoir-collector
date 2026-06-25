@@ -337,6 +337,9 @@ risk_prompt = mod.build_prompt(
 assert "Changed-code risk signals detected before model review" in risk_prompt
 assert "command/process execution" in risk_prompt
 assert "container/orchestration privilege escalation" in risk_prompt
+assert "Project emphasis" in risk_prompt
+assert "PowerShell collectors" in risk_prompt
+assert "GitHub Actions/YAML" in risk_prompt
 assert "shell=True subprocess invocation" in risk_prompt
 assert "PowerShell Invoke-Expression" in risk_prompt
 assert "PowerShell unsafe file-write path" in risk_prompt
@@ -493,5 +496,47 @@ assert fallback_findings
 assert all(finding["title"].startswith("Deterministic risk sentinel:") for finding in fallback_findings)
 mod.enforce_risk_sentinel_findings(fallback_findings, sentinels, config)
 mod.enforce_risk_sentinel_findings([], [], config)
+
+full_budget_config = copy.copy(config)
+full_budget_config.max_inline_comments = 2
+covered_sentinel, uncovered_sentinel = sentinels[0], sentinels[1]
+full_budget_findings = [
+    {
+        "title": f"Covered deterministic risk: {covered_sentinel.label}",
+        "severity": "critical",
+        "confidence": 0.99,
+        "path": covered_sentinel.path,
+        "line": covered_sentinel.line,
+        "body": f"{covered_sentinel.detail}. {covered_sentinel.label}.",
+        "suggested_replacement": "",
+        "validation": "python3 scripts/openrouter_pr_review_hardened_selftest.py",
+    },
+    {
+        "title": "Lower-priority model finding",
+        "severity": "low",
+        "confidence": 0.70,
+        "path": covered_sentinel.path,
+        "line": covered_sentinel.line,
+        "body": "Useful but lower-priority context that does not cover the uncovered sentinel.",
+        "suggested_replacement": "",
+        "validation": "python3 scripts/openrouter_pr_review_hardened_selftest.py",
+    },
+]
+augmented_full_budget = mod.add_risk_sentinel_fallback_findings(
+    full_budget_findings,
+    [covered_sentinel, uncovered_sentinel],
+    full_budget_config,
+)
+assert len(augmented_full_budget) == 2
+assert any(finding["title"] == f"Covered deterministic risk: {covered_sentinel.label}" for finding in augmented_full_budget)
+assert any(
+    finding["title"] == f"Deterministic risk sentinel: {uncovered_sentinel.label}" for finding in augmented_full_budget
+)
+assert not any(finding["title"] == "Lower-priority model finding" for finding in augmented_full_budget)
+mod.enforce_risk_sentinel_findings(
+    augmented_full_budget,
+    [covered_sentinel, uncovered_sentinel],
+    full_budget_config,
+)
 
 print("hardened DCOIR Review selftest passed")
