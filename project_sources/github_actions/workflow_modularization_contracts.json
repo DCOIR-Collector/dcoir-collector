@@ -1,13 +1,13 @@
 {
-  "composite_action_count": 16,
-  "existing_workflow_count": 33,
+  "composite_action_count": 18,
+  "existing_workflow_count": 29,
   "governing_issue": 194,
   "implementation_phase": "Phase 2+ bundled implementation: entry workflows call reusable workflow modules; reusable modules call local composite actions for shared mechanics.",
   "inventory_outputs": {
     "json": "project_sources/github_actions/workflow_inventory.json",
     "markdown": "project_sources/github_actions/workflow_inventory.md"
   },
-  "primary_workflow_count": 33,
+  "primary_workflow_count": 29,
   "required_contract_families": [
     "static-validation",
     "required-surfaces",
@@ -25,7 +25,6 @@
     "staging-artifact-readback",
     "staging-cleanup",
     "staging-retention-cleanup",
-    "ops-guard",
     "ops-apply-patch",
     "dependency-review",
     "dependabot-auto-merge",
@@ -34,7 +33,7 @@
     "windows-powershell-51",
     "codeql-security"
   ],
-  "reusable_workflow_count": 31,
+  "reusable_workflow_count": 27,
   "schema_version": "dcoir_workflow_modularization_contracts_v1",
   "workflow_contracts": [
     {
@@ -296,46 +295,6 @@
       "risk": "high",
       "rollback": "Disable or remove the ops apply-patch workflow pair and continue using chatgpt-apply-in for full-file payloads until a corrected bounded patch lane is restored.",
       "target_architecture": "Entry workflow plus a family-specific reusable apply-patch workflow and script-backed request, branch, path, hash, patch-shape, workflow-target, artifact, and push validation. The entry workflow owns triggers, permissions, concurrency, and operator-visible contract notes."
-    },
-    {
-      "acceptance_evidence": "Guard behavior and non-production labeling.",
-      "contract_family": "ops-guard",
-      "family": "ops scaffold",
-      "file": ".github/workflows/ops-apply-zip.yml",
-      "migration_status": "active",
-      "risk": "medium",
-      "rollback": "Restore prior placeholder ops workflow body.",
-      "target_architecture": "Ops guard reusable workflow while keeping scaffold/non-production status visible. Implementation update: entry workflow now calls a repo-local reusable workflow module; shared setup, artifact upload, validation, packaging, and report mechanics are routed through local composite actions where applicable."
-    },
-    {
-      "acceptance_evidence": "Guard behavior.",
-      "contract_family": "ops-guard",
-      "family": "ops scaffold",
-      "file": ".github/workflows/ops-dispatch-request.yml",
-      "migration_status": "active",
-      "risk": "medium",
-      "rollback": "Restore prior placeholder ops workflow body.",
-      "target_architecture": "Ops guard reusable workflow while keeping dispatch request boundary visible. Implementation update: entry workflow now calls a repo-local reusable workflow module; shared setup, artifact upload, validation, packaging, and report mechanics are routed through local composite actions where applicable."
-    },
-    {
-      "acceptance_evidence": "Delete approval boundary.",
-      "contract_family": "ops-guard",
-      "family": "ops scaffold",
-      "file": ".github/workflows/ops-file-delete.yml",
-      "migration_status": "active",
-      "risk": "high",
-      "rollback": "Restore prior placeholder ops workflow body.",
-      "target_architecture": "Ops guard reusable workflow with delete-specific approval boundary. Implementation update: entry workflow now calls a repo-local reusable workflow module; shared setup, artifact upload, validation, packaging, and report mechanics are routed through local composite actions where applicable."
-    },
-    {
-      "acceptance_evidence": "Restructure approval boundary.",
-      "contract_family": "ops-guard",
-      "family": "ops scaffold",
-      "file": ".github/workflows/ops-restructure-map.yml",
-      "migration_status": "active",
-      "risk": "medium",
-      "rollback": "Restore prior placeholder ops workflow body.",
-      "target_architecture": "Ops guard reusable workflow with restructure-specific approval boundary. Implementation update: entry workflow now calls a repo-local reusable workflow module; shared setup, artifact upload, validation, packaging, and report mechanics are routed through local composite actions where applicable."
     },
     {
       "acceptance_evidence": "Workflow dispatch and PR/push path-filter readback showing Windows PowerShell 5.1 version, parser validation success, and ChatGPT workflow report section artifact.",
