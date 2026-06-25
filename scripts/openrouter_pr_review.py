@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Summoned OpenRouter PR reviewer for GitHub Actions.
+"""Summoned DCOIR PR reviewer for GitHub Actions.
 
 This script is intentionally dependency-free. It reads a PR diff through the
 GitHub API, asks OpenRouter for structured findings, and posts a GitHub PR
@@ -23,7 +23,21 @@ from typing import Any
 
 GITHUB_API = "https://api.github.com"
 OPENROUTER_API = "https://openrouter.ai/api/v1/chat/completions"
-MARKER = "<!-- openrouter-pr-review -->"
+MARKER = "<!-- dcoir-review -->"
+LEGACY_MARKERS = ("<!-- openrouter-pr-review -->",)
+REVIEW_DISPLAY_NAME = "DCOIR Review"
+PUBLIC_IDENTITY_REPLACEMENTS = (
+    ("OpenRouter PR Review", REVIEW_DISPLAY_NAME),
+    ("OpenRouter PR review", REVIEW_DISPLAY_NAME),
+    ("OpenRouter Review", REVIEW_DISPLAY_NAME),
+    ("OpenRouter review", REVIEW_DISPLAY_NAME),
+    ("OpenRouter", "review provider"),
+    ("openrouter-pr-review", "dcoir-review"),
+    ("openrouter-review", "dcoir-review"),
+    ("openrouter/", "provider/"),
+    ("openrouter:", "provider:"),
+    ("openrouter-", "provider-"),
+)
 REDACTION = "[redacted-secret]"
 GITHUB_MENTION = re.compile(
     r"(?<![A-Za-z0-9_.+-])@(?P<mention>[A-Za-z0-9](?:[A-Za-z0-9-]{0,38}[A-Za-z0-9])?(?:/[A-Za-z0-9](?:[A-Za-z0-9-]{0,38}[A-Za-z0-9])?)?)(?=$|[^A-Za-z0-9_/-])"
@@ -55,6 +69,7 @@ class Config:
     ignored_providers: list[str]
     script_timeout_seconds: int
     post_progress_comment: bool
+    debug: bool
 
 
 def read_text(path: str, default: str = "") -> str:
@@ -128,7 +143,8 @@ def load_yaml_like_config(path: str) -> Config:
         openrouter_retry_max_seconds=int(data.get("openrouter_retry_max_seconds", 45)),
         ignored_providers=list(data.get("ignored_providers", [])),
         script_timeout_seconds=int(data.get("script_timeout_seconds", 1500)),
-        post_progress_comment=bool(data.get("post_progress_comment", True)),
+        post_progress_comment=bool(data.get("post_progress_comment", False)),
+        debug=bool(data.get("debug", False)),
     )
 
 
@@ -161,7 +177,7 @@ class GitHubClient:
             "Accept": accept,
             "Authorization": f"Bearer {self.token}",
             "X-GitHub-Api-Version": "2022-11-28",
-            "User-Agent": "dcoir-openrouter-pr-review",
+            "User-Agent": "dcoir-review",
         }
         req = urllib.request.Request(url, data=data, method=method, headers=headers)
         try:
@@ -217,7 +233,7 @@ class GitHubClient:
 def github_safe_body(text: str, limit: int = 65000) -> str:
     if len(text) <= limit:
         return text
-    return text[: limit - 200] + "\n\n[truncated by OpenRouter PR Review]"
+    return text[: limit - 200] + f"\n\n[truncated by {REVIEW_DISPLAY_NAME}]"
 
 
 def actions_notice_escape(text: str) -> str:
@@ -236,8 +252,8 @@ def append_step_summary(stage: str, message: str) -> None:
 
 
 def emit_status(stage: str, message: str) -> None:
-    print(f"[openrouter-pr-review] {stage}: {message}", flush=True)
-    print(f"::notice title=OpenRouter PR Review::{actions_notice_escape(stage + ': ' + message)}", flush=True)
+    print(f"[dcoir-review] {stage}: {message}", flush=True)
+    print(f"::notice title={REVIEW_DISPLAY_NAME}::{actions_notice_escape(stage + ': ' + message)}", flush=True)
     append_step_summary(stage, message)
 
 
@@ -247,6 +263,34 @@ def matching_command(body: str, commands: list[str]) -> str | None:
         if re.fullmatch(rf"{re.escape(command)}(?:\s+.*)?", first_line):
             return command
     return None
+
+
+def command_arguments(body: str, command: str) -> str:
+    first_line = body.strip().splitlines()[0].strip() if body.strip() else ""
+    match = re.fullmatch(rf"{re.escape(command)}(?:\s+(?P<args>.*))?", first_line)
+    return (match.group("args") or "").strip() if match else ""
+
+
+def command_requests_debug(body: str, command: str) -> bool:
+    args = command_arguments(body, command).lower()
+    if not args:
+        return False
+    if re.search(r"(?:^|[\s,])(?:--)?debug\s*[:=]?\s*(?:false|0|no|off)\b", args):
+        return False
+    if re.search(r"(?:^|[\s,])(?:--)?debug(?:\s*[:=]\s*|\s+)(?:true|1|yes|on)\b", args):
+        return True
+    tokens = re.split(r"[\s,]+", args)
+    truthy = {"debug", "--debug", "debug=true", "debug:true", "debug=1", "debug:1", "verbose", "verbose=true"}
+    falsy = {"debug=false", "debug:false", "debug=0", "debug:0", "nodebug", "no-debug", "--no-debug"}
+    if any(token in falsy for token in tokens):
+        return False
+    return any(token in truthy for token in tokens)
+
+
+def apply_debug_flag(config: Config, body: str, command: str) -> None:
+    if config.debug or command_requests_debug(body, command):
+        config.debug = True
+        config.post_progress_comment = True
 
 
 def command_matches(body: str, commands: list[str]) -> bool:
@@ -267,6 +311,13 @@ def neutralize_github_mentions(text: str) -> str:
 
 def neutralize_codex_trigger_mentions(text: str) -> str:
     return CODEX_TRIGGER_MENTION.sub(lambda match: f"@<!-- -->{match.group('mention')}", text)
+
+
+def sanitize_public_identity(text: str) -> str:
+    cleaned = text
+    for old, new in PUBLIC_IDENTITY_REPLACEMENTS:
+        cleaned = cleaned.replace(old, new)
+    return cleaned
 
 
 class ProgressReporter:
@@ -294,14 +345,13 @@ class ProgressReporter:
 
     def complete(self, model_used: str, findings_count: int, review_event: str) -> None:
         plural = "finding" if findings_count == 1 else "findings"
-        self._record("completed", f"posted GitHub review using {model_used}; {findings_count} inline {plural}; event={review_event}")
+        self._record("completed", f"posted GitHub review; {findings_count} inline {plural}; event={review_event}")
         self._update_comment(
             self._body(
                 "completed",
                 final_lines=[
                     f"- Result: GitHub review posted with `{findings_count}` inline {plural}.",
                     f"- Review event: `{review_event}`.",
-                    f"- Model used: `{model_used}`.",
                 ],
             )
         )
@@ -331,10 +381,10 @@ class ProgressReporter:
     def _body(self, state: str, final_lines: list[str] | None = None) -> str:
         lines = [
             MARKER,
-            f"OpenRouter PR review {state}.",
+            f"{REVIEW_DISPLAY_NAME} {state}.",
             "",
             f"- Command: `{self.command}`.",
-            f"- Model stack: `{model_stack_label(self.config)}`.",
+            f"- Debug progress: `{str(getattr(self.config, 'debug', False)).lower()}`.",
             "- Branch changes: none; this workflow only posts review output.",
             "- Gate role: internal review-assist signal before any separately approved external review request.",
         ]
@@ -342,7 +392,7 @@ class ProgressReporter:
             lines.extend(["", *final_lines])
         lines.extend(["", "Progress:"])
         for stage, message in self.steps[-12:]:
-            lines.append(f"- `{stage}`: {message}")
+            lines.append(f"- `{sanitize_public_identity(stage)}`: {message}")
         return github_safe_body("\n".join(lines), limit=12000)
 
     def _update_comment(self, body: str, create_if_missing: bool = False) -> None:
@@ -1033,7 +1083,7 @@ def sanitize_text(text: str, config: Config) -> str:
 
 
 def sanitize_github_output(text: str, config: Config, neutralize_mentions: bool = True) -> str:
-    cleaned = sanitize_text(text, config)
+    cleaned = sanitize_public_identity(sanitize_text(text, config))
     if neutralize_mentions:
         return neutralize_github_mentions(cleaned)
     return neutralize_codex_trigger_mentions(cleaned)
@@ -1127,7 +1177,7 @@ def openrouter_request_once(prompt: str, schema: dict[str, Any], config: Config,
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json",
         "HTTP-Referer": "https://github.com/DCOIR-Collector/dcoir-collector",
-        "X-OpenRouter-Title": "DCOIR OpenRouter PR Review",
+        "X-OpenRouter-Title": REVIEW_DISPLAY_NAME,
     }
     req = urllib.request.Request(OPENROUTER_API, data=json.dumps(payload).encode("utf-8"), method="POST", headers=headers)
     with urllib.request.urlopen(req, timeout=180) as response:
@@ -1257,25 +1307,35 @@ def build_inline_comment(finding: dict[str, Any], model_used: str, config: Confi
             parts.extend(["", "Suggested fix guidance:", "", "```text", suggestion, "```"])
     if validation:
         parts.extend(["", "Validation expected after fix:", "", "```text", validation, "```"])
-    parts.extend(["", f"<sub>Model: `{model_used}`</sub>"])
+    parts.extend(["", f"<sub>{REVIEW_DISPLAY_NAME}</sub>"])
     return github_safe_body("\n".join(parts), limit=12000)
 
 
-def build_review_body(result: dict[str, Any], findings: list[dict[str, Any]], model_used: str, config: Config) -> str:
-    if findings and not config.post_summary_when_findings:
-        return MARKER
-    summary = sanitize_github_output(str(result.get("summary", "OpenRouter review completed.")).strip(), config)
+def short_commit(commit_sha: str) -> str:
+    return commit_sha[:12] if commit_sha else "unavailable"
+
+
+def build_review_body(
+    result: dict[str, Any],
+    findings: list[dict[str, Any]],
+    model_used: str,
+    config: Config,
+    reviewed_commit: str = "",
+) -> str:
+    summary = sanitize_github_output(str(result.get("summary", f"{REVIEW_DISPLAY_NAME} completed.")).strip(), config)
     event_text = "Review posted with inline findings." if findings else "No high-confidence inline findings were found in the changed diff."
+    lines = [
+        MARKER,
+        f"💡 {REVIEW_DISPLAY_NAME}",
+        "Here are some review suggestions for this pull request." if findings else "No high-confidence inline review suggestions were found for this pull request.",
+        "",
+        f"Reviewed commit: `{short_commit(reviewed_commit)}`",
+    ]
+    if summary and (not findings or config.post_summary_when_findings):
+        lines.extend(["", summary])
+    lines.extend(["", f"Result: {event_text}"])
     return github_safe_body(
-        f"""{MARKER}
-OpenRouter PR review completed.
-
-{summary}
-
-Result: {event_text}
-
-Model: `{model_used}`
-""".strip()
+        "\n".join(lines).strip()
     )
 
 
@@ -1299,9 +1359,10 @@ def main() -> None:
     if not command:
         print("Comment does not match configured review commands")
         return
+    apply_debug_flag(config, comment_body, command)
 
     def timeout_handler(_signum: int, _frame: Any) -> None:
-        raise ReviewTimeoutError(f"OpenRouter PR review exceeded script timeout of {config.script_timeout_seconds} seconds")
+        raise ReviewTimeoutError(f"{REVIEW_DISPLAY_NAME} exceeded script timeout of {config.script_timeout_seconds} seconds")
 
     schema = json.loads(read_text("schemas/openrouter-pr-review.schema.json"))
     gh = GitHubClient(token, repo)
@@ -1340,16 +1401,17 @@ def main() -> None:
             comments.append({"path": path, "position": line_index[(path, line)], "body": build_inline_comment(finding, model_used, config)})
 
         event = "REQUEST_CHANGES" if comments and config.request_changes_on_findings else "COMMENT"
-        review_body = build_review_body(result, findings, model_used, config)
+        reviewed_commit = str(pr.get("head", {}).get("sha", "") or "")
+        review_body = build_review_body(result, findings, model_used, config, reviewed_commit)
         reporter.update("github-review", f"posting GitHub review with {len(comments)} inline comments")
-        gh.create_review(pr_number, review_body, event, comments, str(pr.get("head", {}).get("sha", "")))
+        gh.create_review(pr_number, review_body, event, comments, reviewed_commit)
         reporter.complete(model_used, len(comments), event)
     except Exception as exc:
         safe_error = sanitize_github_output(str(exc), config)
         reporter.fail(safe_error)
         if not config.post_progress_comment:
             error_body = f"""{MARKER}
-OpenRouter PR review failed.
+{REVIEW_DISPLAY_NAME} failed.
 
 ```text
 {safe_error[:4000]}

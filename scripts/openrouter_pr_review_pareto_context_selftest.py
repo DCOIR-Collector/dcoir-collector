@@ -42,6 +42,8 @@ assert "google/gemini-3.1-pro-preview*" in config.auto_allowed_models
 assert "google/gemini-3.1-pro*" not in config.auto_allowed_models
 assert config.first_pass_deep_review is True
 assert config.deep_review_max_files == 8
+assert config.debug is False
+assert config.post_progress_comment is False
 
 try:
     mod.optional_float({"pareto_min_coding_score": "high"}, "pareto_min_coding_score")
@@ -1475,4 +1477,4 @@ assert len(review_body_findings) == 1
 assert review_body_findings[0]["path"] == "scripts/openrouter_pr_review_pareto_context.py"
 assert "not an added changed line" in review_body_findings[0]["_unanchored_reason"]
 
-print("Pareto context OpenRouter selftest passed")
+print("Pareto context DCOIR Review selftest passed")

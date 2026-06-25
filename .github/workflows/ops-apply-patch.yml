@@ -10,9 +10,9 @@
 # - Do not use for unreviewed patches, multi-file changes, binary patches, renames, deletes, broad repo rewrites, or default-branch writes without an explicit allow-default-branch reason.
 # - Do not use as a substitute for chatgpt-apply-in when the full target file can be staged and verified safely.
 # Trigger model:
-# - workflow_dispatch input: request_path; push branches: main paths: ops/requests/apply_patch/*/request.json, ops/requests/apply_patch/*/*.patch, ops/requests/apply_patch/*/*.diff
+# - workflow_dispatch input: request_path; push branches: main paths: ops/requests/apply_patch/*/request.json, ops/requests/apply_patch/*/*.patch, ops/requests/apply_patch/*/*.diff; schedule every 5 minutes as a connector-push fallback scanner.
 # Required inputs:
-# - request_path: Repo-relative path to ops/requests/apply_patch/<request_id>/request.json when manually dispatched.
+# - request_path: Optional repo-relative path to ops/requests/apply_patch/<request_id>/request.json when manually dispatched. Leave blank to scan pending request folders.
 # Required secrets/config:
 # - Uses GITHUB_TOKEN through workflow token only; do not add external secrets or secret values to requests, reports, logs, or artifacts.
 # Runtime dependencies:
@@ -26,6 +26,7 @@
 # Cleanup behavior:
 # - Successful apply requests are housekept automatically after the report artifact is uploaded and the staged request directory fingerprint still matches the triggering input.
 # - Failed apply requests and dry-runs leave request files in place for operator review.
+# - Scheduled fallback failures add `.apply-patch-failed.json` in the request directory so the scanner does not retry the same bad request forever. Delete or replace that marker after fixing the request.
 # - Cleanup-only deletion pushes are treated as no-op cleanup runs if they are ever evaluated by the push trigger.
 # - If a reused request id changes the staged request directory before cleanup, cleanup refuses deletion and leaves the current request files for review.
 # Safety notes:
@@ -41,12 +42,14 @@ name: 64 Ops - Apply Patch Request
 run-name: Apply Patch | ${{ github.event.inputs.request_path || github.event.head_commit.id || 'manual' }} | #${{ github.run_number }}
 
 on:
+  schedule:
+    - cron: "*/5 * * * *"
   workflow_dispatch:
     inputs:
       request_path:
-        description: "Repo-relative request JSON under ops/requests/apply_patch/<request_id>/request.json"
-        required: true
-        default: "ops/requests/apply_patch/request/request.json"
+        description: "Optional repo-relative request JSON under ops/requests/apply_patch/<request_id>/request.json. Leave blank to scan pending folders."
+        required: false
+        default: ""
         type: string
   push:
     branches:
@@ -70,4 +73,4 @@ jobs:
       contents: write
     with:
       caller_event_name: ${{ github.event_name }}
-      request_path: ${{ inputs.request_path || 'ops/requests/apply_patch/request/request.json' }}
+      request_path: ${{ inputs.request_path || '' }}

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Hardened OpenRouter PR reviewer runner.
+"""Hardened DCOIR Review runner.
 
-This wrapper reuses the existing OpenRouter reviewer safety helpers while
+This wrapper reuses the existing reviewer safety helpers while
 owning the governed routing payload and review-quality gates for issue #277.
 """
 
@@ -11,6 +11,7 @@ import copy
 import json
 import os
 import re
+import shlex
 import signal
 import sys
 import time
@@ -287,7 +288,7 @@ def load_hardened_config(path: str) -> Any:
     config.openrouter_route = str(data.get("openrouter_route", "") or "").strip()
     config.openrouter_service_tier = str(data.get("openrouter_service_tier", "") or "").strip()
     config.openrouter_session_id_prefix = str(
-        data.get("openrouter_session_id_prefix", "dcoir-openrouter-pr-review") or ""
+        data.get("openrouter_session_id_prefix", "dcoir-review") or ""
     ).strip()
     config.smoke_test_free_model = bool_value(data, "smoke_test_free_model", False)
     config.fail_on_unanchored_findings = bool_value(data, "fail_on_unanchored_findings", True)
@@ -297,7 +298,8 @@ def load_hardened_config(path: str) -> Any:
     config.risk_sentinel_retry_on_empty = bool_value(data, "risk_sentinel_retry_on_empty", True)
     config.risk_sentinel_max_anchors = int(data.get("risk_sentinel_max_anchors", 12))
     config.script_timeout_seconds = int(data.get("script_timeout_seconds", getattr(config, "script_timeout_seconds", 1500)))
-    config.post_progress_comment = bool_value(data, "post_progress_comment", getattr(config, "post_progress_comment", True))
+    config.debug = bool_value(data, "debug", getattr(config, "debug", False))
+    config.post_progress_comment = bool_value(data, "post_progress_comment", getattr(config, "post_progress_comment", False))
 
     ensure_free_models_are_opt_in(config)
     return config
@@ -322,7 +324,7 @@ class SimpleProgressReporter:
 
     def start(self) -> None:
         self._record("started", "accepted operator review command and initialized progress reporting")
-        if getattr(self.config, "post_progress_comment", True):
+        if getattr(self.config, "post_progress_comment", False):
             comment = self.gh.create_issue_comment(self.issue_number, self._body("running"))
             self.comment_id = int(comment.get("id", 0))
 
@@ -332,14 +334,13 @@ class SimpleProgressReporter:
 
     def complete(self, model_used: str, findings_count: int, review_event: str) -> None:
         plural = "finding" if findings_count == 1 else "findings"
-        self._record("completed", f"posted GitHub review using {model_used}; {findings_count} inline {plural}; event={review_event}")
+        self._record("completed", f"posted GitHub review; {findings_count} inline {plural}; event={review_event}")
         self._update_comment(
             self._body(
                 "completed",
                 final_lines=[
                     f"- Result: GitHub review posted with `{findings_count}` inline {plural}.",
                     f"- Review event: `{review_event}`.",
-                    f"- Model used: `{model_used}`.",
                 ],
             )
         )
@@ -367,15 +368,15 @@ class SimpleProgressReporter:
         if hasattr(base, "emit_status"):
             base.emit_status(stage, safe_message)
         else:
-            print(f"[openrouter-pr-review] {stage}: {safe_message}", flush=True)
+            print(f"[dcoir-review] {stage}: {safe_message}", flush=True)
 
     def _body(self, state: str, final_lines: list[str] | None = None) -> str:
         lines = [
             base.MARKER,
-            f"OpenRouter PR review {state}.",
+            f"{base.REVIEW_DISPLAY_NAME} {state}.",
             "",
             f"- Command: `{self.command}`.",
-            f"- Model stack: `{model_stack_label(self.config)}`.",
+            f"- Debug progress: `{str(getattr(self.config, 'debug', False)).lower()}`.",
             "- Branch changes: none; this workflow only posts review output.",
             "- Gate role: internal review-assist signal before any separately approved external review request.",
         ]
@@ -383,11 +384,12 @@ class SimpleProgressReporter:
             lines.extend(["", *final_lines])
         lines.extend(["", "Progress:"])
         for stage, message in self.steps[-12:]:
-            lines.append(f"- `{stage}`: {message}")
+            public_stage = base.sanitize_public_identity(stage) if hasattr(base, "sanitize_public_identity") else stage
+            lines.append(f"- `{public_stage}`: {message}")
         return base.github_safe_body("\n".join(lines), limit=12000)
 
     def _update_comment(self, body: str, create_if_missing: bool = False) -> None:
-        if not getattr(self.config, "post_progress_comment", True):
+        if not getattr(self.config, "post_progress_comment", False):
             return
         if self.comment_id:
             self.gh.update_issue_comment(self.comment_id, body)
@@ -660,6 +662,54 @@ def append_with_budget(prefix: str, suffix: str, max_chars: int) -> str:
     return f"{prefix[:retained]}{truncation_marker}{separator}{suffix}"
 
 
+def powershell_double_quoted(value: str) -> str:
+    escaped = value.replace("`", "``").replace('"', '`"').replace("$", "`$")
+    return f'"{escaped}"'
+
+
+def validation_hint_for_path(path: str) -> str:
+    quoted = shlex.quote(path)
+    ps_path = powershell_double_quoted(path)
+    lower_path = path.lower()
+    if lower_path.endswith(".py"):
+        return (
+            f"- `{path}`: validate with `python3 -m py_compile {quoted}` plus the nearest Python selftest or unit test "
+            "that imports or exercises the changed function."
+        )
+    if lower_path.endswith(".ps1") or lower_path.endswith(".psm1") or lower_path.endswith(".psd1"):
+        return (
+            f"- `{path}`: validate with `pwsh -NoProfile -Command '$errors=$null; [System.Management.Automation.PSParser]::Tokenize((Get-Content -Raw -LiteralPath {ps_path}), [ref]$errors) | Out-Null; if ($errors) {{ throw ($errors | Out-String) }}'` "
+            "plus the collector PowerShell validation script when collector behavior is touched."
+        )
+    if lower_path.endswith((".yml", ".yaml")):
+        return (
+            f"- `{path}`: validate YAML parsing and the affected workflow check; for GitHub Actions changes include "
+            "`python3 project_sources/github_actions/tools/build_workflow_inventory.py --check` after regenerating inventory if workflow metadata changed."
+        )
+    if lower_path.endswith(".json"):
+        return f"- `{path}`: validate with `python3 -m json.tool {quoted}` plus the nearest schema or report validator."
+    if lower_path.endswith(".md"):
+        return f"- `{path}`: validate the rendered Markdown and read back the exact changed section from the PR diff."
+    return f"- `{path}`: choose a syntax/static check and a focused behavior check for the changed file, not a generic full-run command."
+
+
+def validation_hint_block(files: list[dict[str, Any]], max_files: int = 12) -> str:
+    paths = []
+    seen: set[str] = set()
+    for item in files:
+        path = str(item.get("filename", "")).strip()
+        if not path or path in seen:
+            continue
+        seen.add(path)
+        paths.append(path)
+        if len(paths) >= max_files:
+            break
+    if not paths:
+        return ""
+    hints = "\n".join(validation_hint_for_path(path) for path in paths)
+    return f"Changed-file validation hints:\n{hints}"
+
+
 def build_prompt(
     pr: dict[str, Any],
     files: list[dict[str, Any]],
@@ -673,8 +723,12 @@ Governed review hardening requirements:
 - For Markdown and governed-source findings, anchor the finding to the nearest changed right-side line that introduced or materially preserves the risky wording.
 - If a small suggestion block is not safe, leave suggested_replacement empty and put exact repair steps in the finding body.
 - Each finding body must include observed behavior, impact, exact correction guidance, and validation or readback guidance.
+- Validation guidance must be specific to the changed file and finding. Prefer syntax/static/security checks or focused tests that exercise the affected file or behavior; do not recommend reviewer-runner selftests unless the changed code is the reviewer runner itself.
 - Do not return informational or advisory findings that say the risk is not realized, the changed code does not introduce the risk, or no input reaches the risky path. Put that in a clean summary instead.
 """.strip()
+    validation_hints = validation_hint_block(files)
+    if validation_hints:
+        hardening = f"{hardening}\n\n{validation_hints}"
     if risk_sentinels and getattr(config, "risk_sentinel_quality_gate", True):
         hardening = f"{hardening}\n\n{risk_sentinel_block(risk_sentinels, config)}"
     separator = "\n\n"
@@ -977,7 +1031,7 @@ def openrouter_request_once(
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json",
         "HTTP-Referer": "https://github.com/DCOIR-Collector/dcoir-collector",
-        "X-OpenRouter-Title": "DCOIR OpenRouter PR Review",
+        "X-OpenRouter-Title": base.REVIEW_DISPLAY_NAME,
     }
     sticky_session = session_id(config)
     if sticky_session:
@@ -1245,14 +1299,14 @@ def split_findings(
     if raw_findings and getattr(config, "fail_on_unanchored_findings", True):
         details = "; ".join(rejected[:6]) if rejected else "no accepted findings"
         raise ReviewQualityError(
-            "OpenRouter review quality failure: the model returned findings, but none became actionable inline comments. "
+            f"{base.REVIEW_DISPLAY_NAME} quality failure: the model returned findings, but none became actionable inline comments. "
             f"Rejected findings: {details}."
         )
 
     summary = str(result.get("summary", "")).strip()
     if getattr(config, "fail_on_summary_only_problem", True) and summary_suggests_problem(summary):
         raise ReviewQualityError(
-            "OpenRouter review quality failure: the model summary indicated a possible issue, but the structured findings "
+            f"{base.REVIEW_DISPLAY_NAME} quality failure: the model summary indicated a possible issue, but the structured findings "
             "array was empty. The review must produce actionable file/line findings or a clean summary."
         )
 
@@ -1271,7 +1325,7 @@ def enforce_risk_sentinel_findings(
     if not uncovered:
         return
     raise ReviewQualityError(
-        "OpenRouter review quality failure: the changed diff contained high-risk changed-line signals, but the model "
+        f"{base.REVIEW_DISPLAY_NAME} quality failure: the changed diff contained high-risk changed-line signals, but the model "
         "did not produce actionable findings covering those signals after quality retry. Uncovered signals: "
         f"{risk_sentinel_coverage_digest(uncovered)}."
     )
@@ -1299,7 +1353,7 @@ def format_unanchored_finding(finding: dict[str, Any], model_used: str, config: 
         parts.extend(["", body])
     if validation:
         parts.extend(["", "Validation expected after fix:", "", "```text", validation, "```"])
-    parts.extend(["", f"<sub>Model: `{model_used}`</sub>"])
+    parts.extend(["", f"<sub>{base.REVIEW_DISPLAY_NAME}</sub>"])
     return "\n".join(parts)
 
 
@@ -1309,10 +1363,11 @@ def build_review_body_with_unanchored(
     unanchored_findings: list[dict[str, Any]],
     model_used: str,
     config: Any,
+    reviewed_commit: str = "",
 ) -> str:
     if not unanchored_findings:
-        return base.build_review_body(result, findings, model_used, config)
-    summary = sanitize_github_output(str(result.get("summary", "OpenRouter review completed.")).strip(), config)
+        return base.build_review_body(result, findings, model_used, config, reviewed_commit)
+    summary = sanitize_github_output(str(result.get("summary", f"{base.REVIEW_DISPLAY_NAME} completed.")).strip(), config)
     inline_plural = "finding" if len(findings) == 1 else "findings"
     body_plural = "finding" if len(unanchored_findings) == 1 else "findings"
     formatted_unanchored = "\n\n".join(
@@ -1322,20 +1377,27 @@ def build_review_body_with_unanchored(
         f"Review posted with `{len(findings)}` inline {inline_plural} and "
         f"`{len(unanchored_findings)}` unanchored review-body {body_plural}."
     )
+    lines = [
+        base.MARKER,
+        f"💡 {base.REVIEW_DISPLAY_NAME}",
+        "Here are some review suggestions for this pull request.",
+        "",
+        f"Reviewed commit: `{base.short_commit(reviewed_commit)}`",
+    ]
+    if summary and getattr(config, "post_summary_when_findings", False):
+        lines.extend(["", summary])
+    lines.extend(
+        [
+            "",
+            f"Result: {result_line}",
+            "",
+            "Unanchored findings:",
+            "",
+            formatted_unanchored,
+        ]
+    )
     return base.github_safe_body(
-        f"""{base.MARKER}
-OpenRouter PR review completed.
-
-{summary}
-
-Result: {result_line}
-
-Unanchored findings:
-
-{formatted_unanchored}
-
-Model: `{model_used}`
-""".strip(),
+        "\n".join(lines).strip(),
         limit=12000,
     )
 
@@ -1371,9 +1433,11 @@ def main() -> None:
     if not command:
         print("Comment does not match configured review commands")
         return
+    if hasattr(base, "apply_debug_flag"):
+        base.apply_debug_flag(config, comment_body, command)
 
     def timeout_handler(_signum: int, _frame: Any) -> None:
-        raise ReviewTimeoutError(f"OpenRouter PR review exceeded script timeout of {config.script_timeout_seconds} seconds")
+        raise ReviewTimeoutError(f"{base.REVIEW_DISPLAY_NAME} exceeded script timeout of {config.script_timeout_seconds} seconds")
 
     schema = json.loads(base.read_text("schemas/openrouter-pr-review.schema.json"))
     gh = base.GitHubClient(token, repo)
@@ -1421,10 +1485,11 @@ def main() -> None:
             comments.append({"path": path, "position": line_index[(path, line)], "body": base.build_inline_comment(finding, model_used, config)})
 
         event = "REQUEST_CHANGES" if comments and config.request_changes_on_findings else "COMMENT"
-        review_body = build_review_body_with_unanchored(result, findings, unanchored_findings, model_used, config)
+        reviewed_commit = str(pr.get("head", {}).get("sha", "") or "")
+        review_body = build_review_body_with_unanchored(result, findings, unanchored_findings, model_used, config, reviewed_commit)
         unanchored_note = f" and {len(unanchored_findings)} unanchored review-body findings" if unanchored_findings else ""
         reporter.update("github-review", f"posting GitHub review with {len(comments)} inline comments{unanchored_note}")
-        gh.create_review(pr_number, review_body, event, comments, str(pr.get("head", {}).get("sha", "")))
+        gh.create_review(pr_number, review_body, event, comments, reviewed_commit)
         remove_eyes_reaction(gh, trigger_comment_id, reaction_id, reaction_status)
         tier_note = f"; service_tier={service_tier}" if service_tier else ""
         reporter.update("reaction", f"eyes add: {reaction_status['added']}; eyes remove: {reaction_status['removed']}")

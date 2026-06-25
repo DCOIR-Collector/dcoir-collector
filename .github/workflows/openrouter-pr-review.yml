@@ -2,9 +2,9 @@
 # Workflow key:
 # - workflow-ai_review-openrouter-pr-review-0032
 # Purpose:
-# - Run an operator-triggered OpenRouter-assisted PR review for approved PR comment commands.
+# - Run an operator-triggered DCOIR Review for approved PR comment commands.
 # Use when:
-# - Use on a pull request issue_comment from the repository operator with /or-review, /openrouter-review, or /dcoir-review.
+# - Use on a pull request issue_comment from the repository operator with /dcoir-review or legacy aliases.
 # Do not use when:
 # - Do not use for automatic PR gating, required checks, untrusted authors, or broad workflow mutation.
 # - Do not use in place of governed Prog, Adva, Codi, external Codex, or GitHub Actions review gates.
@@ -18,7 +18,7 @@
 # Runtime dependencies:
 # - Uses Python 3.12 and scripts/openrouter_pr_review_pareto_context.py from the trusted default branch checkout.
 # Expected outputs/readback:
-# - PR conversation progress/status comment, static validation context readback when available, PR review output from scripts/openrouter_pr_review_pareto_context.py, step-summary notices, and GitHub Actions run/job readback when the workflow changes.
+# - PR review output from scripts/openrouter_pr_review_pareto_context.py, static validation context readback when available, step-summary notices, optional debug progress/status comments, and GitHub Actions run/job readback when the workflow changes.
 # Safety notes:
 # - Checkout is pinned to the trusted default branch and persists no credentials.
 # - Keep the manual author/command guard, least needed permissions, and issue_comment boundary intact; do not use pull_request_target.
@@ -29,8 +29,8 @@
 # - GitHub is canonical for workflow/source truth and this header owns workflow-specific execution guidance.
 # - Supabase `ircore` owns operational routing, validation rules, reusable lessons, and active state.
 # - Use legacy Airtable only when a file explicitly requires a migration or historical lookup.
-name: 28 Review - OpenRouter PR Review
-run-name: "28 Review - OpenRouter PR Review | PR #${{ github.event.issue.number }} | ${{ github.event.comment.user.login }}"
+name: 28 Review - DCOIR Review
+run-name: "28 Review - DCOIR Review | PR #${{ github.event.issue.number }} | ${{ github.event.comment.user.login }}"
 
 on:
   issue_comment:
@@ -43,12 +43,12 @@ permissions:
   pull-requests: write
 
 concurrency:
-  group: openrouter-pr-review-${{ github.event.issue.number }}
+  group: dcoir-review-${{ github.event.issue.number }}
   cancel-in-progress: false
 
 jobs:
   review:
-    name: OpenRouter PR review
+    name: DCOIR review
     if: >-
       ${{
         github.event.issue.pull_request &&
@@ -432,7 +432,7 @@ jobs:
             echo "No static validation context file generated; no context injection."
           fi
 
-      - name: Run OpenRouter PR review
+      - name: Run DCOIR review
         env:
           PYTHONUNBUFFERED: '1'
           GITHUB_TOKEN: ${{ github.token }}

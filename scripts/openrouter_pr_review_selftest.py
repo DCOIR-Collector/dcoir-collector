@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Offline smoke checks for the OpenRouter PR review package."""
+"""Offline smoke checks for the DCOIR Review package."""
 
 from __future__ import annotations
 
@@ -46,7 +46,8 @@ assert config.redact_secret_literals is True
 assert config.openrouter_max_attempts == 4
 assert config.openrouter_retry_max_seconds == 45
 assert config.script_timeout_seconds == 1500
-assert config.post_progress_comment is True
+assert config.post_progress_comment is False
+assert config.debug is False
 assert config.ignored_providers == []
 assert mod.provider_slug("Venice") == "venice"
 assert mod.command_matches("/or-review", config.commands)
@@ -55,6 +56,18 @@ assert mod.command_matches("  /or-review security", config.commands)
 assert mod.command_matches("\n/dcoir-review\tplease", config.commands)
 assert mod.command_matches("/dcoir-review", config.commands)
 assert mod.matching_command("/dcoir-review please", config.commands) == "/dcoir-review"
+assert mod.command_requests_debug("/dcoir-review debug", "/dcoir-review")
+assert mod.command_requests_debug("/dcoir-review debug=true", "/dcoir-review")
+assert mod.command_requests_debug("/dcoir-review --debug", "/dcoir-review")
+assert mod.command_requests_debug("/dcoir-review debug: true", "/dcoir-review")
+assert mod.command_requests_debug("/dcoir-review debug yes", "/dcoir-review")
+assert not mod.command_requests_debug("/dcoir-review debug=false", "/dcoir-review")
+assert not mod.command_requests_debug("/dcoir-review --debug=false", "/dcoir-review")
+assert not mod.command_requests_debug("/dcoir-review debug: false", "/dcoir-review")
+debug_config = replace(config)
+mod.apply_debug_flag(debug_config, "/dcoir-review debug", "/dcoir-review")
+assert debug_config.debug is True
+assert debug_config.post_progress_comment is True
 assert not mod.command_matches("looks good", config.commands)
 assert not mod.command_matches("/or-reviewer", config.commands)
 assert not mod.command_matches("/dcoir-review-anything", config.commands)
@@ -659,9 +672,19 @@ assert punctuation_password not in comment
 assert "os.getenv" in comment
 assert "@codex" not in comment
 assert "@<!-- -->codex" in comment
-assert "Model: `openrouter/free`" in comment
+assert "Model:" not in comment
+assert "openrouter/free" not in comment
+assert "<sub>DCOIR Review</sub>" in comment
+sanitized_identity = mod.sanitize_github_output("OpenRouter review quality failure from openrouter/auto", config)
+assert "OpenRouter" not in sanitized_identity
+assert "openrouter/" not in sanitized_identity
+assert "DCOIR Review" in sanitized_identity
 
 review_body = mod.build_review_body({"summary": "No findings. Ask @codex and @malwaredevil to review."}, [], "openrouter/free", config)
+assert "💡 DCOIR Review" in review_body
+assert "Reviewed commit: `unavailable`" in review_body
+assert "Model:" not in review_body
+assert "OpenRouter" not in review_body
 assert "@codex" not in review_body
 assert "@malwaredevil" not in review_body
 assert "@<!-- -->codex" in review_body
@@ -682,38 +705,43 @@ class FakeGitHub:
 
 fake_gh = FakeGitHub()
 failure_reporter = mod.ProgressReporter(fake_gh, 281, "/or-review", config)
-failure_reporter.fail(
-    "\n".join(
-        [
-            f"Authorization: Bearer {bearer_secret}",
-            f'Authorization: Bearer "{bearer_secret}"',
-            f'Authorization: Bearer \\"{bearer_secret}\\"',
-            f"Cookie: {cookie_secret}",
-            f"DATABASE_URL=postgres://dcoir:{url_password}@db.example.test/dcoir",
-            f"curl --user=:{curl_fallback_expression} https://example.test/",
-            f"curl --proxy-user=:{curl_proxy_fallback_expression} https://example.test/",
-            f"curl --user=:{curl_inner_brace_expression} https://example.test/",
-            f"curl --user=:{curl_unclosed_expression} https://example.test/",
-            f"curl --user=:{curl_backtick_expression} https://example.test/",
-            f"curl --user=:{curl_multiline_backtick_expression} https://example.test/",
-            f"curl --user=:{curl_multiline_backtick_tail_expression} https://example.test/",
-            f'curl --user "dcoir:benign\n{curl_multiline_double_quote_password}" https://example.test/',
-            f"curl --proxy-user 'proxy:benign\n{curl_multiline_single_quote_password}' https://example.test/",
-            f"curl --user $'dcoir:benign\n{curl_multiline_ansi_quote_password}' https://example.test/",
-            f'curl --proxy-user $"proxy:benign\n{curl_multiline_locale_quote_password}" https://example.test/',
-            f"curl --user=$':{curl_ansi_password}' https://example.test/",
-            f'curl --user=$":{curl_locale_password}" https://example.test/',
-            f"curl --user=:{curl_escaped_space_password} https://example.test/",
-            f"curl --user=:concat' {curl_concat_password}' https://example.test/",
-            generic_signed_url,
-            private_key_block,
-            "Ask @codex to review this failure.",
-            f'curl --user="dcoir:{curl_unclosed_quoted_password} https://example.test/',
-            f"curl --proxy-user='proxy:{curl_proxy_unclosed_quoted_password} https://example.test/",
-        ]
-    )
+failure_message = "\n".join(
+    [
+        f"Authorization: Bearer {bearer_secret}",
+        f'Authorization: Bearer "{bearer_secret}"',
+        f'Authorization: Bearer \\"{bearer_secret}\\"',
+        f"Cookie: {cookie_secret}",
+        f"DATABASE_URL=postgres://dcoir:{url_password}@db.example.test/dcoir",
+        f"curl --user=:{curl_fallback_expression} https://example.test/",
+        f"curl --proxy-user=:{curl_proxy_fallback_expression} https://example.test/",
+        f"curl --user=:{curl_inner_brace_expression} https://example.test/",
+        f"curl --user=:{curl_unclosed_expression} https://example.test/",
+        f"curl --user=:{curl_backtick_expression} https://example.test/",
+        f"curl --user=:{curl_multiline_backtick_expression} https://example.test/",
+        f"curl --user=:{curl_multiline_backtick_tail_expression} https://example.test/",
+        f'curl --user "dcoir:benign\n{curl_multiline_double_quote_password}" https://example.test/',
+        f"curl --proxy-user 'proxy:benign\n{curl_multiline_single_quote_password}' https://example.test/",
+        f"curl --user $'dcoir:benign\n{curl_multiline_ansi_quote_password}' https://example.test/",
+        f'curl --proxy-user $"proxy:benign\n{curl_multiline_locale_quote_password}" https://example.test/',
+        f"curl --user=$':{curl_ansi_password}' https://example.test/",
+        f'curl --user=$":{curl_locale_password}" https://example.test/',
+        f"curl --user=:{curl_escaped_space_password} https://example.test/",
+        f"curl --user=:concat' {curl_concat_password}' https://example.test/",
+        generic_signed_url,
+        private_key_block,
+        "Ask @codex to review this failure.",
+        f'curl --user="dcoir:{curl_unclosed_quoted_password} https://example.test/',
+        f"curl --proxy-user='proxy:{curl_proxy_unclosed_quoted_password} https://example.test/",
+    ]
 )
-failure_body = fake_gh.comments[-1]
+failure_reporter.fail(failure_message)
+assert fake_gh.comments == []
+
+debug_failure_config = replace(config, debug=True, post_progress_comment=True)
+debug_fake_gh = FakeGitHub()
+debug_failure_reporter = mod.ProgressReporter(debug_fake_gh, 281, "/or-review", debug_failure_config)
+debug_failure_reporter.fail(failure_message)
+failure_body = debug_fake_gh.comments[-1]
 for leaked in [
     bearer_secret,
     "cookie-secret",
