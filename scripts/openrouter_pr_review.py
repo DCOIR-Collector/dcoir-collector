@@ -43,6 +43,7 @@ PUBLIC_IDENTITY_REPLACEMENTS = (
     ("openrouter:", "provider:"),
     ("openrouter-", "provider-"),
     ("openrouter_", "provider_"),
+    ("openrouter", "provider"),
 )
 REDACTION = "[redacted-secret]"
 GITHUB_MENTION = re.compile(
