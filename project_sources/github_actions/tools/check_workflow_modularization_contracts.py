@@ -43,6 +43,9 @@ REQUIRED_HEADER_MARKERS = [
     "# Maintenance notes:",
     "# Authority routing:",
 ]
+WORKFLOW_NAME_PATTERN = re.compile(
+    r"^\d{2} (?:Operator|Validation|Security|Maintenance|Automation|Ops|Reporting|Module|Review) - .+$"
+)
 
 
 def iter_workflow_files() -> list[Path]:
@@ -74,6 +77,26 @@ def ensure_exists(findings: list[str], path: Path) -> bool:
         return True
     findings.append(f"{path}:1: required workflow modularization surface is missing")
     return False
+
+
+def extract_workflow_name(path: Path) -> str | None:
+    for line in path.read_text(encoding="utf-8").splitlines():
+        stripped = line.strip()
+        if stripped.startswith("name:"):
+            return stripped.split(":", 1)[1].strip().strip("'\"")
+    return None
+
+
+def check_workflow_names(findings: list[str], workflow_files: list[Path]) -> None:
+    for path in workflow_files:
+        workflow_name = extract_workflow_name(path)
+        if not workflow_name:
+            findings.append(f"{path}:1: workflow is missing top-level name")
+            continue
+        if not WORKFLOW_NAME_PATTERN.fullmatch(workflow_name):
+            findings.append(
+                f"{path}:1: workflow name must use 'NN Category - Name' format; found {workflow_name!r}"
+            )
 
 
 def check_contract_registry(findings: list[str], contracts: dict[str, Any], workflow_files: list[Path]) -> None:
@@ -248,6 +271,7 @@ def main() -> int:
     check_contract_registry(findings, contracts, workflow_files)
     check_inventory(findings, contracts, workflow_files)
     check_reusable_workflows(findings, all_workflow_files)
+    check_workflow_names(findings, all_workflow_files)
     check_workflow_headers(findings, workflow_files)
     check_reporter_allowlist(findings, contracts)
     check_composite_actions(findings)
