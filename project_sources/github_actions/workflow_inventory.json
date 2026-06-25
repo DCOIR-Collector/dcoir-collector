@@ -425,6 +425,7 @@
       "migration_status": "intentionally-inline",
       "operator_purpose": "Run an operator-triggered OpenRouter-assisted PR review for approved PR comment commands.",
       "permissions": {
+        "actions": "read",
         "contents": "read",
         "issues": "write",
         "pull-requests": "write"
