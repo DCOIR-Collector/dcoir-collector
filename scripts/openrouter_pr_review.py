@@ -458,10 +458,10 @@ SECRET_UNQUOTED_ASSIGNMENT = re.compile(
 )
 SAFE_REFERENCE = re.compile(
     r"""(?ix)^(?:
-    os\.getenv\(\s*[\"'][A-Z_][A-Z0-9_]*[\"']\s*\)
-    | os\.environ(?:\.get\(\s*[\"'][A-Z_][A-Z0-9_]*[\"']\s*\)|\[\s*[\"'][A-Z_][A-Z0-9_]*[\"']\s*\])
-    | env\.get\(\s*[\"'][A-Z_][A-Z0-9_]*[\"']\s*\)
-    | getenv\(\s*[\"'][A-Z_][A-Z0-9_]*[\"']\s*\)
+    os\.getenv\(\s*[\"'][A-Z_][A-Z0-9_]*[\"']\s*(?:,\s*(?:""|''|None)\s*)?\)
+    | os\.environ(?:\.get\(\s*[\"'][A-Z_][A-Z0-9_]*[\"']\s*(?:,\s*(?:""|''|None)\s*)?\)|\[\s*[\"'][A-Z_][A-Z0-9_]*[\"']\s*\])
+    | env\.get\(\s*[\"'][A-Z_][A-Z0-9_]*[\"']\s*(?:,\s*(?:""|''|None)\s*)?\)
+    | getenv\(\s*[\"'][A-Z_][A-Z0-9_]*[\"']\s*(?:,\s*(?:""|''|None)\s*)?\)
     | process\.env(?:\.[A-Z_][A-Z0-9_]*|\[\s*[\"'][A-Z_][A-Z0-9_]*[\"']\s*\])
     | import\.meta\.env(?:\.[A-Z_][A-Z0-9_]*|\[\s*[\"'][A-Z_][A-Z0-9_]*[\"']\s*\])
     | secrets\.get\(\s*[\"'][A-Z_][A-Z0-9_]*[\"']\s*\)
@@ -1003,6 +1003,13 @@ def redact_unquoted_assignment(match: re.Match[str]) -> str:
     value = match.group("value")
     if is_safe_unquoted_reference(value):
         return match.group(0)
+    stripped = value.rstrip()
+    trailing_whitespace = value[len(stripped) :]
+    if stripped.endswith(","):
+        candidate = stripped[:-1].rstrip()
+        candidate_trailing = stripped[len(candidate) :]
+        if is_safe_unquoted_reference(candidate):
+            return f"{match.group('prefix')}{candidate}{candidate_trailing}{trailing_whitespace}"
     return f"{match.group('prefix')}{REDACTION}"
 
 
