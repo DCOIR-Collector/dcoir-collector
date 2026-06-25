@@ -53,9 +53,54 @@ class RiskSentinel:
 
 RISK_SENTINEL_RULES: tuple[tuple[str, str, re.Pattern[str]], ...] = (
     (
+        "unsafe deserialization primitive",
+        "deserialization of operator or request-controlled bytes can execute code or construct unsafe objects",
+        re.compile(r"\b(?:pickle\.loads|pickle\.load|yaml\.load|marshal\.loads|ObjectInputStream|BinaryFormatter)\b", re.IGNORECASE),
+    ),
+    (
         "PowerShell Invoke-Expression",
         "Invoke-Expression executes constructed text as code; verify no operator/comment input reaches it",
         re.compile(r"\bInvoke-Expression\b", re.IGNORECASE),
+    ),
+    (
+        "PowerShell process launch",
+        "Start-Process can execute request-controlled tools or arguments unless command and arguments are allowlisted",
+        re.compile(r"\bStart-Process\b[^\n]*(?:\$Request\.|\$Input|\$args\b)", re.IGNORECASE),
+    ),
+    (
+        "PowerShell unsafe archive extraction",
+        "archive extraction needs destination containment and entry traversal checks before expanding untrusted archives",
+        re.compile(r"\bExpand-Archive\b[^\n]*(?:\$Request\.|\$Input|\$args\b)", re.IGNORECASE),
+    ),
+    (
+        "PowerShell outbound request or download",
+        "web requests and downloads can create SSRF or exfiltration paths when URI, headers, or output path are request controlled",
+        re.compile(r"\b(?:Invoke-WebRequest|Invoke-RestMethod|iwr)\b[^\n]*(?:\$Request\.|\$Input|\$args\b|Authorization|Bearer)", re.IGNORECASE),
+    ),
+    (
+        "PowerShell broad ACL grant",
+        "broad ACL grants such as Everyone FullControl can expose collector evidence or execution surfaces",
+        re.compile(r"\b(?:FileSystemAccessRule|Set-Acl)\b[^\n]*(?:Everyone|FullControl|Allow|\$Request\.)", re.IGNORECASE),
+    ),
+    (
+        "Node.js command execution",
+        "child-process execution can turn request-controlled strings into command execution unless command and arguments are bounded",
+        re.compile(r"\b(?:exec|execSync|spawn|spawnSync|execFile|execFileSync)\s*\([^\n]*(?:request\.|req\.|input|params\.|body\.|\$\{)", re.IGNORECASE),
+    ),
+    (
+        "dynamic code evaluation",
+        "eval-style APIs execute constructed text as code and require complete elimination or strict allowlisting",
+        re.compile(r"\b(?:eval|Function)\s*\([^\n]*(?:request\.|req\.|input|params\.|body\.|\$Request\.|\$\{)", re.IGNORECASE),
+    ),
+    (
+        "TypeScript/JavaScript unsafe path construction",
+        "request-controlled path segments need normalization and root containment before file writes, reads, uploads, or staging",
+        re.compile(r"\b(?:path\.)?(?:join|resolve)\s*\([^\n]*(?:request\.|req\.|input|params\.|body\.)", re.IGNORECASE),
+    ),
+    (
+        "TypeScript/JavaScript unsafe file write",
+        "file writes need root containment when the destination path can be request, operator, or PR controlled",
+        re.compile(r"\b(?:writeFileSync|writeFile|appendFileSync|appendFile|createWriteStream)\s*\([^\n]*(?:request\.|req\.|input|params\.|body\.|destination|target|path)", re.IGNORECASE),
     ),
     (
         "raw SQL/query string interpolation",
@@ -69,6 +114,41 @@ RISK_SENTINEL_RULES: tuple[tuple[str, str, re.Pattern[str]], ...] = (
         "shell=True subprocess invocation",
         "shell execution can turn path or identifier input into command execution and can hide failures when check is false",
         re.compile(r"\bsubprocess\.\w+\([^#\n]*\bshell\s*=\s*True\b"),
+    ),
+    (
+        "Python unsafe archive extraction",
+        "archive extraction needs destination containment and member traversal checks before unpacking untrusted archives",
+        re.compile(r"\b(?:extractall|shutil\.unpack_archive|tarfile\.open|zipfile\.ZipFile|subprocess\.\w+\([^\n]*(?:tar|unzip))\b", re.IGNORECASE),
+    ),
+    (
+        "outbound request or SSRF primitive",
+        "request-controlled URLs can create SSRF or exfiltration paths unless scheme, host, redirect, and destination policy are bounded",
+        re.compile(r"\b(?:fetch|requests\.(?:get|post|put|request)|urllib\.request\.urlopen|httpx\.(?:get|post|request))\s*\([^\n]*(?:request|req|input|params|body|callback|url)", re.IGNORECASE),
+    ),
+    (
+        "CI token exfiltration primitive",
+        "CI or environment secret material appears in a sink that may persist or send secrets outside the trusted workflow boundary",
+        re.compile(r"(?:GITHUB_TOKEN|secrets\.[A-Za-z0-9_]+|process\.env\.[A-Za-z0-9_]*(?:TOKEN|KEY|SECRET)|os\.environ\.get\([^\n]*(?:TOKEN|KEY|SECRET))", re.IGNORECASE),
+    ),
+    (
+        "GitHub Actions privileged PR context",
+        "pull_request_target or privileged checkout patterns can execute untrusted PR content with repository write tokens",
+        re.compile(r"\bpull_request_target\b|github\.event\.pull_request\.head\.(?:ref|sha)", re.IGNORECASE),
+    ),
+    (
+        "GitHub Actions untrusted metadata shell execution",
+        "PR title, body, branch, or other event metadata must not be written into a shell script or executed in a privileged workflow",
+        re.compile(r"github\.event\.pull_request\.(?:title|body|head\.ref|head\.sha)", re.IGNORECASE),
+    ),
+    (
+        "Kubernetes privileged container setting",
+        "privileged, root, host-network, or privilege-escalation settings expand container breakout and node compromise risk",
+        re.compile(r"\b(?:privileged|allowPrivilegeEscalation|hostNetwork)\s*:\s*true\b|\brunAsUser\s*:\s*0\b", re.IGNORECASE),
+    ),
+    (
+        "Kubernetes host filesystem exposure",
+        "hostPath mounts can expose node filesystems and credentials to containers unless narrowly scoped and read-only",
+        re.compile(r"\bhostPath\s*:\s*$|\bmountPath\s*:\s*/host\b", re.IGNORECASE),
     ),
     (
         "truthy literal branch condition",
@@ -121,6 +201,57 @@ RISK_SENTINEL_FINDING_TERMS: dict[str, tuple[str, ...]] = {
         "command injection",
         "code execution",
     ),
+    "PowerShell process launch": (
+        "start-process",
+        "process",
+        "command execution",
+        "allowlist",
+    ),
+    "PowerShell unsafe archive extraction": (
+        "expand-archive",
+        "archive",
+        "extraction",
+        "path traversal",
+        "containment",
+    ),
+    "PowerShell outbound request or download": (
+        "invoke-webrequest",
+        "web request",
+        "ssrf",
+        "exfiltration",
+        "outbound",
+    ),
+    "PowerShell broad ACL grant": (
+        "acl",
+        "set-acl",
+        "everyone",
+        "fullcontrol",
+        "permission",
+    ),
+    "Node.js command execution": (
+        "exec",
+        "spawn",
+        "child process",
+        "command injection",
+    ),
+    "dynamic code evaluation": (
+        "eval",
+        "function",
+        "dynamic code",
+        "code execution",
+    ),
+    "TypeScript/JavaScript unsafe path construction": (
+        "path traversal",
+        "path construction",
+        "root containment",
+        "file write",
+    ),
+    "TypeScript/JavaScript unsafe file write": (
+        "writefile",
+        "file write",
+        "root containment",
+        "path traversal",
+    ),
     "raw SQL/query string interpolation": (
         "sql",
         "query",
@@ -133,6 +264,58 @@ RISK_SENTINEL_FINDING_TERMS: dict[str, tuple[str, ...]] = {
         "shell execution",
         "subprocess",
         "command injection",
+    ),
+    "Python unsafe archive extraction": (
+        "archive",
+        "tar",
+        "unpack",
+        "extract",
+        "path traversal",
+    ),
+    "outbound request or SSRF primitive": (
+        "ssrf",
+        "outbound",
+        "url",
+        "request",
+        "exfiltration",
+    ),
+    "CI token exfiltration primitive": (
+        "token",
+        "secret",
+        "authorization",
+        "exfiltration",
+    ),
+    "GitHub Actions privileged PR context": (
+        "pull_request_target",
+        "privileged",
+        "untrusted",
+        "write token",
+        "checkout",
+    ),
+    "GitHub Actions untrusted metadata shell execution": (
+        "pull request title",
+        "pull request body",
+        "shell",
+        "untrusted metadata",
+    ),
+    "Kubernetes privileged container setting": (
+        "kubernetes",
+        "privileged",
+        "runasuser",
+        "hostnetwork",
+        "allowprivilegeescalation",
+    ),
+    "Kubernetes host filesystem exposure": (
+        "hostpath",
+        "host filesystem",
+        "mount",
+        "node",
+    ),
+    "unsafe deserialization primitive": (
+        "deserialization",
+        "pickle",
+        "yaml.load",
+        "code execution",
     ),
     "truthy literal branch condition": (
         "truthy",
@@ -173,12 +356,60 @@ RISK_SENTINEL_FINDING_TERMS: dict[str, tuple[str, ...]] = {
 }
 
 RISK_SENTINEL_HIGH_SEVERITY_LABELS = {
+    "unsafe deserialization primitive",
     "PowerShell Invoke-Expression",
+    "PowerShell process launch",
+    "PowerShell unsafe archive extraction",
+    "PowerShell outbound request or download",
+    "PowerShell broad ACL grant",
+    "Node.js command execution",
+    "dynamic code evaluation",
+    "TypeScript/JavaScript unsafe path construction",
+    "TypeScript/JavaScript unsafe file write",
     "raw SQL/query string interpolation",
     "shell=True subprocess invocation",
+    "Python unsafe archive extraction",
+    "outbound request or SSRF primitive",
+    "CI token exfiltration primitive",
+    "GitHub Actions privileged PR context",
+    "GitHub Actions untrusted metadata shell execution",
+    "Kubernetes privileged container setting",
+    "Kubernetes host filesystem exposure",
     "environment dump or exfiltration primitive",
     "PowerShell unsafe file-write path",
     "unsafe file-write path construction",
+}
+
+RISK_SENTINEL_LABEL_PRIORITY = {
+    label: index
+    for index, label in enumerate(
+        (
+            "unsafe deserialization primitive",
+            "PowerShell Invoke-Expression",
+            "PowerShell process launch",
+            "PowerShell unsafe archive extraction",
+            "PowerShell outbound request or download",
+            "PowerShell broad ACL grant",
+            "Node.js command execution",
+            "TypeScript/JavaScript unsafe path construction",
+            "TypeScript/JavaScript unsafe file write",
+            "shell=True subprocess invocation",
+            "dynamic code evaluation",
+            "raw SQL/query string interpolation",
+            "GitHub Actions privileged PR context",
+            "CI token exfiltration primitive",
+            "GitHub Actions untrusted metadata shell execution",
+            "unsafe file-write path construction",
+            "PowerShell unsafe file-write path",
+            "Python unsafe archive extraction",
+            "outbound request or SSRF primitive",
+            "Kubernetes privileged container setting",
+            "Kubernetes host filesystem exposure",
+            "environment dump or exfiltration primitive",
+            "recursive delete primitive",
+            "truthy literal branch condition",
+        )
+    )
 }
 
 
@@ -529,6 +760,56 @@ def append_risk_sentinel(
     )
 
 
+def select_risk_sentinels(sentinels: list[RiskSentinel], max_anchors: int | None) -> list[RiskSentinel]:
+    if max_anchors is None or len(sentinels) <= max_anchors:
+        return sentinels
+    if max_anchors <= 0:
+        return []
+
+    indexed = list(enumerate(sentinels))
+    by_path: dict[str, list[tuple[int, RiskSentinel]]] = {}
+    for index, sentinel in indexed:
+        by_path.setdefault(sentinel.path, []).append((index, sentinel))
+
+    def sort_key(item: tuple[int, RiskSentinel]) -> tuple[int, int]:
+        index, sentinel = item
+        return (RISK_SENTINEL_LABEL_PRIORITY.get(sentinel.label, 1000), index)
+
+    for items in by_path.values():
+        items.sort(key=sort_key)
+
+    path_order = sorted(
+        by_path,
+        key=lambda path: (
+            RISK_SENTINEL_LABEL_PRIORITY.get(by_path[path][0][1].label, 1000),
+            by_path[path][0][0],
+        ),
+    )
+    selected: list[RiskSentinel] = []
+    selected_indexes: set[int] = set()
+    selected_labels_by_path: dict[str, set[str]] = {path: set() for path in path_order}
+    while len(selected) < max_anchors:
+        made_progress = False
+        for path in path_order:
+            candidates = [item for item in by_path[path] if item[0] not in selected_indexes]
+            next_item = next(
+                (item for item in candidates if item[1].label not in selected_labels_by_path[path]),
+                candidates[0] if candidates else None,
+            )
+            if next_item is None:
+                continue
+            index, sentinel = next_item
+            selected_indexes.add(index)
+            selected_labels_by_path[path].add(sentinel.label)
+            selected.append(sentinel)
+            made_progress = True
+            if len(selected) >= max_anchors:
+                break
+        if not made_progress:
+            break
+    return selected
+
+
 def detect_risk_sentinels(diff: str, max_anchors: int | None = None) -> list[RiskSentinel]:
     sentinels: list[RiskSentinel] = []
     seen: set[tuple[str, int, str]] = set()
@@ -588,9 +869,7 @@ def detect_risk_sentinels(diff: str, max_anchors: int | None = None) -> list[Ris
             if pattern.search(changed_line.text):
                 append_risk_sentinel(sentinels, seen, changed_line, label, detail)
                 break
-    if max_anchors is not None:
-        return sentinels[:max_anchors]
-    return sentinels
+    return select_risk_sentinels(sentinels, max_anchors)
 
 
 def risk_sentinel_digest(sentinels: list[RiskSentinel]) -> str:
@@ -784,6 +1063,8 @@ Governed review hardening requirements:
 - Each finding body must include observed behavior, impact, exact correction guidance, and validation or readback guidance.
 - Validation guidance must be specific to the changed file and finding. Prefer syntax/static/security checks or focused tests that exercise the affected file or behavior; do not recommend reviewer-runner selftests unless the changed code is the reviewer runner itself.
 - Do not return informational or advisory findings that say the risk is not realized, the changed code does not introduce the risk, or no input reaches the risky path. Put that in a clean summary instead.
+- Treat changed tests, fixtures, validation probes, examples, workflow snippets, infrastructure config, and generated-looking files as review targets when they contain executable behavior, security policy, credential handling, or operator guidance. Do not dismiss a finding merely because the file appears non-production.
+- Review across languages and file types for command/process execution, dynamic code evaluation, request-controlled path reads/writes/extraction, raw query construction, unsafe deserialization, outbound requests or SSRF, token/secret persistence or forwarding, CI/CD privilege boundaries, broad ACL or permission grants, and container/orchestration privilege escalation.
 """.strip()
     validation_hints = validation_hint_block(files)
     if validation_hints:
@@ -1010,6 +1291,7 @@ The previous response failed review-quality checks: {issue_line}.
 Re-review the changed diff and return one of two valid outputs:
 - Actionable findings anchored to changed right-side file/line entries with confidence at or above {config.minimum_confidence:.2f}, covering every high-risk anchor by path, nearby line, and risk class; or
 - An empty findings array with a clean summary that does not imply a remaining issue.
+Return the full corrected finding set. Preserve previous real actionable findings while adding or repairing missing anchor coverage; do not narrow the retry response to only the uncovered anchor.
 Do not place actionable concerns only in the summary. Do not return low-confidence, unanchored, or speculative findings.
 Do not return informational/advisory findings that explain there is no realized risk; use a clean summary for those.
 Do not satisfy a high-risk anchor with an unrelated finding on another risk class.
@@ -1200,6 +1482,99 @@ def write_debug_json_artifact_safely(config: Any, name: str, data: Any) -> None:
         print(f"WARN: unable to write debug JSON artifact {name}: {exc}", file=sys.stderr, flush=True)
 
 
+def finding_merge_bucket(finding: dict[str, Any]) -> str:
+    text = normalized_quality_text(
+        "\n".join(
+            [
+                str(finding.get("title", "") or ""),
+                str(finding.get("body", "") or ""),
+                str(finding.get("validation", "") or ""),
+            ]
+        )
+    )
+    buckets: tuple[tuple[str, tuple[str, ...]], ...] = (
+        ("deserialization", ("pickle", "deserial", "yaml.load", "objectinputstream", "binaryformatter")),
+        ("command-execution", ("command injection", "command execution", "shell", "subprocess", "exec", "spawn", "start-process")),
+        ("dynamic-code", ("eval", "new function", "dynamic code", "invoke-expression")),
+        ("sql", ("sql", "query", "interpolation", "parameter")),
+        ("path-write", ("path traversal", "file write", "writefile", "root containment", "arbitrary overwrite")),
+        ("archive-extract", ("archive", "extract", "tar", "unpack", "zip slip")),
+        ("ssrf-outbound", ("ssrf", "outbound", "callback", "webhook", "urlopen", "invoke-webrequest", "fetch")),
+        ("secret-token", ("secret", "token", "authorization", "credential", "exfil")),
+        ("workflow-privilege", ("pull_request_target", "workflow", "privileged", "untrusted", "github token")),
+        ("acl-permission", ("acl", "permission", "everyone", "fullcontrol")),
+        ("kubernetes-privilege", ("kubernetes", "privileged", "hostpath", "hostnetwork", "runasuser")),
+        ("delete", ("recursive delete", "rmtree", "remove-item", "deletion")),
+        ("logic", ("truthy", "always true", "bypass")),
+    )
+    for bucket, terms in buckets:
+        if any(term in text for term in terms):
+            return bucket
+    title = normalized_quality_text(str(finding.get("title", "") or ""))
+    return title[:80] or "unknown"
+
+
+def finding_merge_key(finding: dict[str, Any]) -> tuple[str, int, str]:
+    path = str(finding.get("path", "") or "").strip()
+    try:
+        line = int(finding.get("line", 0) or 0)
+    except (TypeError, ValueError):
+        line = 0
+    return (path, line, finding_merge_bucket(finding))
+
+
+def severity_rank(severity: Any) -> int:
+    return {
+        "critical": 4,
+        "high": 3,
+        "medium": 2,
+        "low": 1,
+    }.get(str(severity or "").strip().lower(), 0)
+
+
+def finding_quality_score(finding: dict[str, Any]) -> tuple[int, float, int]:
+    try:
+        confidence = float(finding.get("confidence", 0) or 0)
+    except (TypeError, ValueError):
+        confidence = 0.0
+    body_length = len(str(finding.get("body", "") or ""))
+    validation_length = len(str(finding.get("validation", "") or ""))
+    return (severity_rank(finding.get("severity")), confidence, body_length + validation_length)
+
+
+def result_findings(result: dict[str, Any]) -> list[dict[str, Any]]:
+    raw_findings = result.get("findings", []) if isinstance(result, dict) else []
+    if not isinstance(raw_findings, list):
+        return []
+    return [dict(item) for item in raw_findings if isinstance(item, dict)]
+
+
+def merge_review_results(initial_result: dict[str, Any], retry_result: dict[str, Any]) -> dict[str, Any]:
+    merged: list[dict[str, Any]] = []
+    index_by_key: dict[tuple[str, int, str], int] = {}
+    for source_result in (initial_result, retry_result):
+        for finding in result_findings(source_result):
+            key = finding_merge_key(finding)
+            if key in index_by_key:
+                existing_index = index_by_key[key]
+                if finding_quality_score(finding) >= finding_quality_score(merged[existing_index]):
+                    merged[existing_index] = finding
+                continue
+            index_by_key[key] = len(merged)
+            merged.append(finding)
+
+    retry_summary = str(retry_result.get("summary", "") if isinstance(retry_result, dict) else "").strip()
+    initial_summary = str(initial_result.get("summary", "") if isinstance(initial_result, dict) else "").strip()
+    summary = retry_summary or initial_summary
+    if initial_summary and retry_summary and normalized_quality_text(initial_summary) != normalized_quality_text(retry_summary):
+        summary = (
+            f"{retry_summary}\n\n"
+            "The review result also preserves distinct actionable findings returned by the first pass when they "
+            "remain anchored to changed code."
+        )
+    return {"summary": summary, "findings": merged}
+
+
 def openrouter_review_with_quality_retry(
     prompt: str,
     schema: dict[str, Any],
@@ -1225,6 +1600,7 @@ def openrouter_review_with_quality_retry(
         "responses/01-initial-result.json",
         {"model_used": model_used, "service_tier": service_tier, "result": result},
     )
+    initial_result = result
     retry_reason = review_quality_retry_reason(result, config, risk_sentinels, line_index)
     if retry_reason:
         if reporter:
@@ -1248,6 +1624,20 @@ def openrouter_review_with_quality_retry(
             "responses/02-quality-retry-result.json",
             {"model_used": model_used, "service_tier": service_tier, "result": result},
         )
+        merged_result = merge_review_results(initial_result=initial_result, retry_result=result)
+        write_debug_json_artifact_safely(
+            config,
+            "responses/03-quality-retry-merged-result.json",
+            {
+                "model_used": model_used,
+                "service_tier": service_tier,
+                "initial_finding_count": len(result_findings(initial_result)),
+                "retry_finding_count": len(result_findings(result)),
+                "merged_finding_count": len(result_findings(merged_result)),
+                "result": merged_result,
+            },
+        )
+        result = merged_result
     return result, model_used, service_tier
 
 
