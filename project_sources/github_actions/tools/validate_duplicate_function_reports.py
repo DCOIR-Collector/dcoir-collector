@@ -60,6 +60,11 @@ def resolve_report_path(path: Path, expected_suffix: Path, label: str, root: Pat
     return Path(candidate.as_posix())
 
 
+def scoped_report_path(root: Path, path: Path, expected_suffix: Path, label: str) -> Path:
+    relative_path = resolve_report_path(path, expected_suffix, label, root=root)
+    return root / relative_path
+
+
 def load_report(path: Path) -> dict[str, Any]:
     require(path.is_file(), f"JSON report missing: {path}")
     try:
@@ -166,8 +171,8 @@ def validate_reports(json_path: Path, markdown_path: Path) -> None:
 def run_self_test() -> None:
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp)
-        json_path = root / DEFAULT_JSON
-        markdown_path = root / DEFAULT_MARKDOWN
+        json_path = scoped_report_path(root, DEFAULT_JSON, DEFAULT_JSON, "JSON report")
+        markdown_path = scoped_report_path(root, DEFAULT_MARKDOWN, DEFAULT_MARKDOWN, "Markdown report")
         json_path.parent.mkdir(parents=True)
         report = {
             "schema_version": SCHEMA_VERSION,
