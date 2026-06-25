@@ -659,9 +659,10 @@ comment = mod.build_inline_comment(
         "title": "Hardcoded token from @codex",
         "severity": "critical",
         "confidence": 1.0,
+        "path": "collector/token_probe.py",
         "body": f'The changed line assigns token = "{secret_like}", password={punctuation_password}, and Authorization: Bearer "{bearer_secret}" plus Authorization: Bearer \\"{bearer_secret}\\". Ask @codex to review.',
         "suggested_replacement": 'token = os.getenv("OPENROUTER_TOKEN")',
-        "validation": "bash scripts/validate-codex-local.sh # ask @codex nowhere",
+        "validation": "python3 -m py_compile collector/token_probe.py",
     },
     "openrouter/free",
     config,
@@ -675,6 +676,23 @@ assert "@<!-- -->codex" in comment
 assert "Model:" not in comment
 assert "openrouter/free" not in comment
 assert "<sub>DCOIR Review</sub>" in comment
+assert "python3 -m py_compile collector/token_probe.py" in comment
+assert "bandit -r collector/token_probe.py" in comment
+ps_comment = mod.build_inline_comment(
+    {
+        "title": "Unsafe PowerShell path write",
+        "severity": "high",
+        "confidence": 0.95,
+        "path": "tools/probe.ps1",
+        "body": "Set-Content writes to a request-controlled path.",
+        "suggested_replacement": "",
+        "validation": "",
+    },
+    "openrouter/free",
+    config,
+)
+assert 'PSParser]::Tokenize((Get-Content -Raw -LiteralPath "tools/probe.ps1")' in ps_comment
+assert 'Invoke-ScriptAnalyzer -Path "tools/probe.ps1"' in ps_comment
 sanitized_identity = mod.sanitize_github_output(
     "OpenRouter review quality failure from openrouter/auto using OPENROUTER_API_KEY and openrouter_key",
     config,
