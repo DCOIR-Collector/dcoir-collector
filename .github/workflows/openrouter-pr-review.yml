@@ -18,7 +18,7 @@
 # Runtime dependencies:
 # - Uses Python 3.12 and scripts/openrouter_pr_review_pareto_context.py from the trusted default branch checkout.
 # Expected outputs/readback:
-# - PR conversation progress/status comment, PR review output from scripts/openrouter_pr_review_pareto_context.py, step-summary notices, and GitHub Actions run/job readback when the workflow changes.
+# - PR conversation progress/status comment, static validation context readback when available, PR review output from scripts/openrouter_pr_review_pareto_context.py, step-summary notices, and GitHub Actions run/job readback when the workflow changes.
 # Safety notes:
 # - Checkout is pinned to the trusted default branch and persists no credentials.
 # - Keep the manual author/command guard, least needed permissions, and issue_comment boundary intact; do not use pull_request_target.
@@ -69,7 +69,7 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Download review-assist context from last validate-on-pr run
+      - name: Download static validation context from last validate-on-pr run
         continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
@@ -77,21 +77,23 @@ jobs:
         run: |
           PR_HEAD_SHA=$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" --jq '.head.sha' 2>/dev/null || echo "")
           if [ -z "$PR_HEAD_SHA" ]; then
-            echo "Could not determine PR head SHA; skipping review-assist context download."
+            echo "Could not determine PR head SHA; skipping static validation context download."
             exit 0
           fi
           echo "PR head SHA: $PR_HEAD_SHA"
 
-          RUN_ID=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/validate-on-pr.yml/runs?head_sha=$PR_HEAD_SHA&per_page=5" \
-            --jq '[.workflow_runs[] | select(.status == "completed" and .conclusion == "success")] | sort_by(.updated_at) | reverse | .[0].id // empty' 2>/dev/null || echo "")
+          RUN_LINE=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/validate-on-pr.yml/runs?head_sha=$PR_HEAD_SHA&per_page=10" \
+            --jq '([.workflow_runs[] | select(.status == "completed" and (.conclusion == "success" or .conclusion == "failure"))] | sort_by(.updated_at) | reverse | .[0] // empty) | "\(.id)\t\(.conclusion)"' 2>/dev/null || echo "")
+          RUN_ID=$(printf '%s' "$RUN_LINE" | cut -f1)
+          RUN_CONCLUSION=$(printf '%s' "$RUN_LINE" | cut -f2)
           if [ -z "$RUN_ID" ]; then
-            echo "No successful completed validate-on-pr run found for SHA $PR_HEAD_SHA; skipping context download."
+            echo "No completed success/failure validate-on-pr run found for SHA $PR_HEAD_SHA; skipping context download."
             exit 0
           fi
-          echo "Found validate-on-pr run: $RUN_ID"
+          echo "Found validate-on-pr run: $RUN_ID (conclusion: $RUN_CONCLUSION)"
 
           ARTIFACT_ID=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$RUN_ID/artifacts" \
-            --jq '.artifacts[] | select(.name == "validate-on-pr-results") | .id' 2>/dev/null | head -1 || echo "")
+            --jq '.artifacts[] | select(.name == "validate-on-pr-results" and .expired == false) | .id' 2>/dev/null | head -1 || echo "")
           if [ -z "$ARTIFACT_ID" ]; then
             echo "validate-on-pr-results artifact not found in run $RUN_ID; skipping."
             exit 0
@@ -99,6 +101,8 @@ jobs:
           echo "Downloading artifact $ARTIFACT_ID..."
 
           mkdir -p /tmp/review-assist-context
+          gh api --paginate "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER/files?per_page=100" \
+            --jq '.[].filename' > /tmp/review-assist-context/changed_files.txt 2>/dev/null || true
           gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/$ARTIFACT_ID/zip" > /tmp/review-assist-context/artifact.zip 2>/dev/null
           if [ $? -ne 0 ]; then
             echo "Artifact download failed; skipping context injection."
@@ -125,13 +129,182 @@ jobs:
             echo "Artifact extraction failed safety checks; skipping context injection."
             exit 0
           fi
+
+          export RUN_ID RUN_CONCLUSION PR_HEAD_SHA
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          root = Path("/tmp/review-assist-context")
+          report_rel = Path("project_sources/collector/powershell_review_assist_workflow_report.md")
+          report_path = root / report_rel
+          changed_file_path = root / "changed_files.txt"
+          changed_files = {
+              line.strip()
+              for line in changed_file_path.read_text(encoding="utf-8").splitlines()
+              if line.strip()
+          } if changed_file_path.exists() else set()
+
+          def read_text(rel_path: str | Path) -> str:
+              path = root / rel_path
+              if not path.exists():
+                  return ""
+              return path.read_text(encoding="utf-8", errors="replace").strip()
+
+          def load_json(rel_path: str) -> dict:
+              path = root / rel_path
+              if not path.exists():
+                  return {}
+              try:
+                  return json.loads(path.read_text(encoding="utf-8"))
+              except json.JSONDecodeError as exc:
+                  return {"_load_error": str(exc)}
+
+          def trim(text: str, limit: int) -> str:
+              if len(text) <= limit:
+                  return text
+              return text[:limit].rstrip() + "\n...(static validation context truncated)"
+
+          def cell(value: object) -> str:
+              return str(value).replace("|", "\\|").replace("\r", " ").replace("\n", " ").strip()
+
+          def is_changed(path: str) -> bool:
+              return not changed_files or path in changed_files
+
+          reports_loaded: list[str] = []
+          sections: list[str] = [
+              "# Static Validation Context From validate-on-pr",
+              "",
+              f"- validate_on_pr_run_id: `{os.environ.get('RUN_ID', '')}`",
+              f"- validate_on_pr_conclusion: `{os.environ.get('RUN_CONCLUSION', '')}`",
+              f"- pr_head_sha: `{os.environ.get('PR_HEAD_SHA', '')}`",
+              f"- changed_file_count: `{len(changed_files)}`",
+              "",
+              "This context is generated from validation artifacts for the exact PR head SHA. Prioritize changed-file findings when writing review comments.",
+          ]
+
+          review_assist_markdown = read_text(report_rel)
+          if review_assist_markdown:
+              reports_loaded.append("powershell_review_assist_workflow_report.md")
+              sections.extend([
+                  "",
+                  "## PowerShell Review-Assist Markdown",
+                  "",
+                  trim(review_assist_markdown, 12000),
+              ])
+
+          analyzer = load_json("project_sources/collector/powershell_analyzer_report.json")
+          if analyzer:
+              reports_loaded.append("powershell_analyzer_report.json")
+              findings = analyzer.get("findings", []) if isinstance(analyzer, dict) else []
+              changed_findings = [f for f in findings if is_changed(str(f.get("path", "")))]
+              sections.extend([
+                  "",
+                  "## PSScriptAnalyzer Changed-File Findings",
+                  "",
+              ])
+              if analyzer.get("_load_error"):
+                  sections.append(f"PSScriptAnalyzer JSON could not be parsed: `{cell(analyzer['_load_error'])}`")
+              elif changed_findings:
+                  sections.append("| Path | Line | Severity | Rule | Observed Problem | Recommended Fix |")
+                  sections.append("| --- | ---: | --- | --- | --- | --- |")
+                  for finding in changed_findings[:40]:
+                      sections.append(
+                          "| "
+                          f"`{cell(finding.get('path', ''))}` | "
+                          f"{cell(finding.get('line', ''))} | "
+                          f"{cell(finding.get('severity', ''))} | "
+                          f"`{cell(finding.get('rule_name', ''))}` | "
+                          f"{cell(finding.get('observed_problem', ''))} | "
+                          f"{cell(finding.get('recommended_fix', ''))} |"
+                      )
+                  if len(changed_findings) > 40:
+                      sections.append(f"\n...{len(changed_findings) - 40} additional changed-file PSScriptAnalyzer finding(s) omitted.")
+              else:
+                  sections.append("No PSScriptAnalyzer findings were reported for changed files in this artifact.")
+
+          duplicate_report = load_json("project_sources/collector/powershell_duplicate_function_report.json")
+          if duplicate_report:
+              reports_loaded.append("powershell_duplicate_function_report.json")
+              duplicates = duplicate_report.get("duplicates", []) if isinstance(duplicate_report, dict) else []
+              changed_duplicates = []
+              for duplicate in duplicates:
+                  occurrences = duplicate.get("occurrences", []) if isinstance(duplicate, dict) else []
+                  if not changed_files or any(is_changed(str(item.get("path", ""))) for item in occurrences):
+                      changed_duplicates.append(duplicate)
+              sections.extend([
+                  "",
+                  "## Duplicate Function Definitions Touching Changed Files",
+                  "",
+              ])
+              if duplicate_report.get("_load_error"):
+                  sections.append(f"Duplicate-function JSON could not be parsed: `{cell(duplicate_report['_load_error'])}`")
+              elif changed_duplicates:
+                  sections.append("| Function | Occurrence Count | Changed Locations | All Locations |")
+                  sections.append("| --- | ---: | --- | --- |")
+                  for duplicate in changed_duplicates[:40]:
+                      occurrences = duplicate.get("occurrences", []) if isinstance(duplicate, dict) else []
+                      changed_locations = [
+                          f"`{cell(item.get('path', ''))}:{cell(item.get('line', ''))}`"
+                          for item in occurrences
+                          if is_changed(str(item.get("path", "")))
+                      ]
+                      all_locations = [
+                          f"`{cell(item.get('path', ''))}:{cell(item.get('line', ''))}`"
+                          for item in occurrences
+                      ]
+                      sections.append(
+                          "| "
+                          f"`{cell(duplicate.get('function_name', ''))}` | "
+                          f"{cell(duplicate.get('occurrence_count', len(occurrences)))} | "
+                          f"{', '.join(changed_locations) or 'none'} | "
+                          f"{', '.join(all_locations)} |"
+                      )
+                  if len(changed_duplicates) > 40:
+                      sections.append(f"\n...{len(changed_duplicates) - 40} additional changed-file duplicate function finding(s) omitted.")
+              else:
+                  sections.append("No duplicate function definitions touched changed files in this artifact.")
+
+              parse_failures = duplicate_report.get("parse_failures", []) if isinstance(duplicate_report, dict) else []
+              if parse_failures:
+                  sections.extend([
+                      "",
+                      "### Duplicate-Function Parse Failures",
+                      "",
+                      "| Path | Line | Column | Message |",
+                      "| --- | ---: | ---: | --- |",
+                  ])
+                  for failure in parse_failures[:20]:
+                      sections.append(
+                          "| "
+                          f"`{cell(failure.get('path', ''))}` | "
+                          f"{cell(failure.get('line', ''))} | "
+                          f"{cell(failure.get('column', ''))} | "
+                          f"{cell(failure.get('message', ''))} |"
+                      )
+
+          if not reports_loaded:
+              print("No static validation report files found in validate-on-pr artifact.")
+              raise SystemExit(0)
+
+          sections.insert(7, f"- reports_loaded: `{', '.join(reports_loaded)}`")
+          report_path.parent.mkdir(parents=True, exist_ok=True)
+          report_path.write_text(trim("\n".join(sections).strip(), 24000) + "\n", encoding="utf-8")
+          print("static-validation-context-reports: " + ", ".join(reports_loaded))
+          PY
+          if [ $? -ne 0 ]; then
+            echo "Static validation context generation failed; skipping context injection."
+            exit 0
+          fi
+
           REPORT="project_sources/collector/powershell_review_assist_workflow_report.md"
           REPORT_PATH="/tmp/review-assist-context/$REPORT"
           if [ -f "$REPORT_PATH" ]; then
-            echo "Review-assist markdown loaded ($( wc -c < "$REPORT_PATH" ) bytes)."
+            echo "Static validation context loaded from validate-on-pr run $RUN_ID ($RUN_CONCLUSION), $( wc -c < "$REPORT_PATH" ) bytes."
             echo "REVIEW_ASSIST_CONTEXT_PATH=$REPORT_PATH" >> $GITHUB_ENV
           else
-            echo "Review-assist markdown not found in artifact; no context injection."
+            echo "No static validation context file generated; no context injection."
           fi
 
       - name: Run OpenRouter PR review
