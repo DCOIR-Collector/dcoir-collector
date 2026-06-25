@@ -8,7 +8,7 @@ on:
   workflow_call:
     inputs:
       caller_event_name:
-        description: Original caller event name so the reusable body can preserve push/workflow_dispatch/schedule branching.
+        description: Original caller event name so the reusable body can preserve push/workflow_dispatch branching.
         required: false
         type: string
         default: 'workflow_call'
@@ -61,7 +61,7 @@ jobs:
               echo "request_path must match ops/requests/apply_patch/<request_id>/request.json" >&2
               exit 1
             fi
-          elif [[ "$CALLER_EVENT_NAME" == "schedule" || "$CALLER_EVENT_NAME" == "workflow_dispatch" ]]; then
+          elif [[ "$CALLER_EVENT_NAME" == "workflow_dispatch" ]]; then
             mapfile -t pending_records < <(
               python - <<'PY'
           import os
@@ -292,60 +292,6 @@ jobs:
           path: ${{ runner.temp }}/ops-apply-patch/${{ steps.request.outputs.request_id }}/**
           if-no-files-found: warn
           retention-days: 14
-
-      - name: Mark failed scheduled apply-patch request
-        if: failure() && inputs.caller_event_name == 'schedule' && steps.request.outputs.skip != 'true' && steps.request.outputs.request_dir != ''
-        shell: bash
-        env:
-          REQUEST_DIR: ${{ steps.request.outputs.request_dir }}
-          REQUEST_ID: ${{ steps.request.outputs.request_id }}
-          REQUEST_SOURCE_REF: ${{ github.ref_name }}
-          REPORT_DIR: ${{ runner.temp }}/ops-apply-patch/${{ steps.request.outputs.request_id }}
-        run: |
-          set -euo pipefail
-          if [[ -z "$REQUEST_SOURCE_REF" ]]; then
-            echo "Could not determine request source ref for failure marker." >&2
-            exit 1
-          fi
-
-          git fetch --no-tags origin "refs/heads/$REQUEST_SOURCE_REF:refs/remotes/origin/$REQUEST_SOURCE_REF"
-          git checkout -B ops-apply-patch-request-source "origin/$REQUEST_SOURCE_REF"
-          mkdir -p "$REQUEST_DIR"
-          python - "$REPORT_DIR/result.json" "$REQUEST_DIR/.apply-patch-failed.json" <<'PY'
-          import json
-          import os
-          import pathlib
-          import sys
-          import time
-
-          result_path = pathlib.Path(sys.argv[1])
-          marker_path = pathlib.Path(sys.argv[2])
-          try:
-              result = json.loads(result_path.read_text(encoding="utf-8"))
-          except (OSError, json.JSONDecodeError):
-              result = {"result": "failure", "message": "No parseable result.json was written."}
-
-          marker = {
-              "schema": "dcoir.ops.apply_patch_failure_marker.v1",
-              "request_id": os.environ.get("REQUEST_ID", ""),
-              "workflow_run_id": os.environ.get("GITHUB_RUN_ID", ""),
-              "workflow_run_attempt": os.environ.get("GITHUB_RUN_ATTEMPT", ""),
-              "failed_at_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-              "result": result,
-              "operator_note": "Scheduled fallback will skip this request until this marker is deleted or the request directory is replaced.",
-          }
-          marker_path.write_text(json.dumps(marker, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-          PY
-
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -- "$REQUEST_DIR/.apply-patch-failed.json"
-          if git diff --cached --quiet -- "$REQUEST_DIR/.apply-patch-failed.json"; then
-            echo "No failed request marker change needed."
-            exit 0
-          fi
-          git commit -m "Mark failed ops patch request $REQUEST_ID [skip ci]"
-          git push origin "HEAD:refs/heads/$REQUEST_SOURCE_REF"
 
       - name: Cleanup staged apply-patch request
         if: success() && steps.request.outputs.skip != 'true'
