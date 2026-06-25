@@ -980,12 +980,18 @@ def add_risk_sentinel_fallback_findings(
     uncovered = uncovered_risk_sentinels(findings, risk_sentinels, config, unanchored_findings)
     if not uncovered:
         return findings
-    remaining = max(0, int(getattr(config, "max_inline_comments", 12)) - len(findings))
-    if remaining <= 0:
+    inline_limit = int(getattr(config, "max_inline_comments", 12))
+    if inline_limit <= 0:
         return findings
-    augmented = [*findings, *(risk_sentinel_fallback_finding(sentinel, config) for sentinel in uncovered[:remaining])]
+    fallback_findings = [risk_sentinel_fallback_finding(sentinel, config) for sentinel in uncovered[:inline_limit]]
+    if len(findings) + len(fallback_findings) <= inline_limit:
+        augmented = [*findings, *fallback_findings]
+    else:
+        existing_budget = max(0, inline_limit - len(fallback_findings))
+        existing_findings = sorted(findings, key=severity_sort_key)[:existing_budget]
+        augmented = [*existing_findings, *fallback_findings]
     augmented.sort(key=severity_sort_key)
-    return augmented[: int(getattr(config, "max_inline_comments", 12))]
+    return augmented[:inline_limit]
 
 
 def append_with_budget(prefix: str, suffix: str, max_chars: int) -> str:
@@ -1065,6 +1071,7 @@ Governed review hardening requirements:
 - Do not return informational or advisory findings that say the risk is not realized, the changed code does not introduce the risk, or no input reaches the risky path. Put that in a clean summary instead.
 - Treat changed tests, fixtures, validation probes, examples, workflow snippets, infrastructure config, and generated-looking files as review targets when they contain executable behavior, security policy, credential handling, or operator guidance. Do not dismiss a finding merely because the file appears non-production.
 - Review across languages and file types for command/process execution, dynamic code evaluation, request-controlled path reads/writes/extraction, raw query construction, unsafe deserialization, outbound requests or SSRF, token/secret persistence or forwarding, CI/CD privilege boundaries, broad ACL or permission grants, and container/orchestration privilege escalation.
+- Project emphasis: pay extra attention to PowerShell collectors, Python tooling, GitHub Actions/YAML, and Kubernetes-style YAML. For PowerShell inspect Invoke-Expression, Start-Process, Invoke-WebRequest/Invoke-RestMethod, Expand-Archive, Set-Content/Out-File/Copy-Item, Remove-Item, and Set-Acl. For Python inspect subprocess shell usage, unsafe deserialization, archive extraction, request-controlled paths, raw query construction, and secret/env persistence. For YAML inspect privileged PR triggers, checkout of untrusted refs, secret/token forwarding, broad permissions, privileged containers, host networking, hostPath mounts, and missing read-only/rootless constraints.
 """.strip()
     validation_hints = validation_hint_block(files)
     if validation_hints:
