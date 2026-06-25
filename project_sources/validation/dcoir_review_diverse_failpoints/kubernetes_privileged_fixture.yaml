@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: dcoir-debug-shell
+spec:
+  hostNetwork: true
+  containers:
+    - name: debug-shell
+      image: alpine:latest
+      command: ["/bin/sh", "-c", "sleep 3600"]
+      securityContext:
+        privileged: true
+        allowPrivilegeEscalation: true
+        runAsUser: 0
+      env:
+        - name: PROVIDER_TOKEN
+          value: "sk_live_fixture_token_should_not_ship"
+      volumeMounts:
+        - name: host-root
+          mountPath: /host
+  volumes:
+    - name: host-root
+      hostPath:
+        path: /
+        type: Directory
