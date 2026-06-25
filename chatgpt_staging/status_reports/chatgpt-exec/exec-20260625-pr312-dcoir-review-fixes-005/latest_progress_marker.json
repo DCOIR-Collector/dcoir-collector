@@ -1,0 +1,15 @@
+{
+  "artifact_name": "",
+  "exit_code": "",
+  "github_ref": "refs/heads/main",
+  "github_run_attempt": "1",
+  "github_run_id": "28151841652",
+  "github_sha": "3f7301ed693245f63a9d17c5da78bb5dd25f6955",
+  "phase": "request-resolved",
+  "request_id": "exec-20260625-pr312-dcoir-review-fixes-005",
+  "request_path": "chatgpt_staging/exec_requests/exec-20260625-pr312-dcoir-review-fixes-005.json",
+  "result": "running",
+  "schema": "dcoir.chatgpt_staging.latest_progress_marker.v1",
+  "updated_utc": "2026-06-25T06:39:52Z",
+  "workflow": "chatgpt-exec"
+}
