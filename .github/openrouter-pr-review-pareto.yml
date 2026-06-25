@@ -1,4 +1,4 @@
-# Governed OpenRouter PR Review configuration for DCOIR-Collector/dcoir-collector.
+# Governed DCOIR Review configuration for DCOIR-Collector/dcoir-collector.
 # This production config is used by .github/workflows/openrouter-pr-review.yml
 # through scripts/openrouter_pr_review_pareto_context.py.
 
@@ -64,11 +64,12 @@ risk_sentinel_max_anchors: 12
 post_summary_when_findings: false
 include_confidence: false
 redact_secret_literals: true
+debug: false
 
 openrouter_max_attempts: 4
 openrouter_retry_max_seconds: 45
 script_timeout_seconds: 1500
-post_progress_comment: true
+post_progress_comment: false
 
 ignored_providers:
 
