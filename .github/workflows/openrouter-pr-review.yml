@@ -83,9 +83,9 @@ jobs:
           echo "PR head SHA: $PR_HEAD_SHA"
 
           RUN_ID=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/validate-on-pr.yml/runs?head_sha=$PR_HEAD_SHA&per_page=5" \
-            --jq '[.workflow_runs[] | select(.status == "completed")] | sort_by(.updated_at) | reverse | .[0].id // empty' 2>/dev/null || echo "")
+            --jq '[.workflow_runs[] | select(.status == "completed" and .conclusion == "success")] | sort_by(.updated_at) | reverse | .[0].id // empty' 2>/dev/null || echo "")
           if [ -z "$RUN_ID" ]; then
-            echo "No completed validate-on-pr run found for SHA $PR_HEAD_SHA; skipping context download."
+            echo "No successful completed validate-on-pr run found for SHA $PR_HEAD_SHA; skipping context download."
             exit 0
           fi
           echo "Found validate-on-pr run: $RUN_ID"
