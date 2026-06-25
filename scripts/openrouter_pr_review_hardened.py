@@ -1175,6 +1175,26 @@ def openrouter_review(prompt: str, schema: dict[str, Any], config: Any, reporter
     raise RuntimeError(last_error)
 
 
+def write_debug_text_artifact_safely(config: Any, name: str, text: str) -> None:
+    writer = getattr(base, "write_debug_text_artifact", None)
+    if writer is None:
+        return
+    try:
+        writer(config, name, text)
+    except Exception as exc:
+        print(f"WARN: unable to write debug text artifact {name}: {exc}", file=sys.stderr, flush=True)
+
+
+def write_debug_json_artifact_safely(config: Any, name: str, data: Any) -> None:
+    writer = getattr(base, "write_debug_json_artifact", None)
+    if writer is None:
+        return
+    try:
+        writer(config, name, data)
+    except Exception as exc:
+        print(f"WARN: unable to write debug JSON artifact {name}: {exc}", file=sys.stderr, flush=True)
+
+
 def openrouter_review_with_quality_retry(
     prompt: str,
     schema: dict[str, Any],
@@ -1183,14 +1203,46 @@ def openrouter_review_with_quality_retry(
     risk_sentinels: list[RiskSentinel],
     line_index: dict[tuple[str, int], int] | None = None,
 ) -> tuple[dict[str, Any], str, str]:
+    write_debug_text_artifact_safely(config, "prompts/01-initial-prompt.txt", prompt)
+    write_debug_json_artifact_safely(
+        config,
+        "metadata/01-initial-request.json",
+        {
+            "prompt_chars": len(prompt),
+            "risk_sentinel_count": len(risk_sentinels),
+            "risk_sentinel_digest": risk_sentinel_digest(risk_sentinels) if risk_sentinels else "",
+            "line_index_entries": len(line_index or {}),
+        },
+    )
     result, model_used, service_tier = openrouter_review(prompt, schema, config, reporter)
+    write_debug_json_artifact_safely(
+        config,
+        "responses/01-initial-result.json",
+        {"model_used": model_used, "service_tier": service_tier, "result": result},
+    )
     retry_reason = review_quality_retry_reason(result, config, risk_sentinels, line_index)
     if retry_reason:
         if reporter:
             safe_reason = sanitize_github_output(retry_reason, config)
             reporter.update("quality-retry", f"{safe_reason}; retrying with stricter actionable-output guidance")
         retry_prompt = build_quality_retry_prompt(prompt, result, risk_sentinels, config, retry_reason)
+        write_debug_text_artifact_safely(config, "prompts/02-quality-retry-prompt.txt", retry_prompt)
+        write_debug_json_artifact_safely(
+            config,
+            "metadata/02-quality-retry-request.json",
+            {
+                "retry_reason": retry_reason,
+                "prompt_chars": len(retry_prompt),
+                "risk_sentinel_count": len(risk_sentinels),
+                "risk_sentinel_digest": risk_sentinel_digest(risk_sentinels) if risk_sentinels else "",
+            },
+        )
         result, model_used, service_tier = openrouter_review(retry_prompt, schema, config, reporter)
+        write_debug_json_artifact_safely(
+            config,
+            "responses/02-quality-retry-result.json",
+            {"model_used": model_used, "service_tier": service_tier, "result": result},
+        )
     return result, model_used, service_tier
 
 
