@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Offline checks for the hardened OpenRouter PR review runner."""
+"""Offline checks for the hardened DCOIR Review runner."""
 
 from __future__ import annotations
 
@@ -42,6 +42,19 @@ assert config.fail_on_summary_only_problem is True
 assert config.risk_sentinel_quality_gate is True
 assert config.risk_sentinel_retry_on_empty is True
 assert config.risk_sentinel_max_anchors == 12
+assert config.debug is False
+assert config.post_progress_comment is False
+
+validation_hints = mod.validation_hint_block(
+    [
+        {"filename": "collector/example.py"},
+        {"filename": "collector/example.ps1"},
+        {"filename": ".github/workflows/openrouter-pr-review.yml"},
+    ]
+)
+assert "python3 -m py_compile collector/example.py" in validation_hints
+assert "PSParser" in validation_hints
+assert "build_workflow_inventory.py --check" in validation_hints
 
 short_prompt_config = copy.copy(config)
 short_prompt_config.max_prompt_chars = 900
@@ -401,4 +414,4 @@ assert all(finding["title"].startswith("Deterministic risk sentinel:") for findi
 mod.enforce_risk_sentinel_findings(fallback_findings, sentinels, config)
 mod.enforce_risk_sentinel_findings([], [], config)
 
-print("hardened OpenRouter selftest passed")
+print("hardened DCOIR Review selftest passed")
