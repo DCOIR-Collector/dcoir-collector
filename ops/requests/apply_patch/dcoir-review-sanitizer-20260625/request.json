@@ -1,0 +1,17 @@
+{
+  "schema": "dcoir.ops.apply_patch_request.v1",
+  "request_id": "dcoir-review-sanitizer-20260625",
+  "mode": "apply",
+  "target_branch": "main",
+  "target_path": "scripts/openrouter_pr_review.py",
+  "patch_path": "ops/requests/apply_patch/dcoir-review-sanitizer-20260625/openrouter_pr_review_sanitizer.patch",
+  "expected_patch_sha256": "595b060d717b690408d7526ef223905ecb0745fa2ccb5ef885b6fa9ab4e1a961",
+  "allowed_roots": [
+    "scripts"
+  ],
+  "expected_target_blob_sha": "52f807ad6daea3a9d33ab4149a402f6dc7e9fa9a",
+  "commit_message": "Harden dcoir-review sanitizer redaction",
+  "allow_default_branch": true,
+  "default_branch_reason": "Operator explicitly approved direct-main live-test hardening for dcoir-review on 2026-06-25.",
+  "allow_workflow_changes": false
+}
