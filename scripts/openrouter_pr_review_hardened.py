@@ -1391,7 +1391,7 @@ def format_unanchored_finding(finding: dict[str, Any], model_used: str, config: 
     path = sanitize_github_output(str(finding.get("path", "<missing-path>")).strip(), config)
     line = sanitize_github_output(str(finding.get("line", "<missing-line>")).strip(), config)
     body = sanitize_github_output(str(finding.get("body", "")).strip(), config)
-    validation = sanitize_github_output(str(finding.get("validation", "")).strip(), config)
+    validation = sanitize_github_output(base.validation_text_for_finding(finding), config)
     reason = sanitize_github_output(str(finding.get("_unanchored_reason", "not anchored to an added changed line")), config)
     try:
         confidence = float(finding.get("confidence", 0))
