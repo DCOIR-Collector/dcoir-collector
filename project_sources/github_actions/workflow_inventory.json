@@ -425,18 +425,19 @@
       "migration_status": "intentionally-inline",
       "operator_purpose": "Run an operator-triggered OpenRouter-assisted PR review for approved PR comment commands.",
       "permissions": {
+        "actions": "read",
         "contents": "read",
         "issues": "write",
         "pull-requests": "write"
       },
-      "report_family": "none declared",
+      "report_family": "standalone workflow report",
       "risk": "high",
       "schedules": [],
       "secret_or_var_count": 1,
       "trigger_events": [
         "issue_comment"
       ],
-      "workflow_name": "OpenRouter PR Review"
+      "workflow_name": "28 Review - OpenRouter PR Review"
     },
     {
       "artifacts": [
