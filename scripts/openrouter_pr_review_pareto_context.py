@@ -903,7 +903,7 @@ def detect_risk_sentinels(diff: str, max_anchors: int | None = None) -> list[har
         *detect_python_file_write_path_sentinels(diff),
         *[
             sentinel
-            for sentinel in _original_detect_risk_sentinels(diff, max_anchors)
+            for sentinel in _original_detect_risk_sentinels(diff, None)
             if (sentinel.path, sentinel.line) not in diff_fixture_added_lines
         ],
     ]
@@ -915,9 +915,7 @@ def detect_risk_sentinels(diff: str, max_anchors: int | None = None) -> list[har
             continue
         seen.add(key)
         deduped.append(sentinel)
-    if max_anchors is not None:
-        return deduped[:max_anchors]
-    return deduped
+    return hardened.select_risk_sentinels(deduped, max_anchors)
 
 
 hardened.detect_risk_sentinels = detect_risk_sentinels
@@ -1348,6 +1346,8 @@ def main() -> None:
                 "reviewed_head_sha": str(pr.get("head", {}).get("sha", "") or ""),
                 "command": command,
                 "debug": bool(getattr(config, "debug", False)),
+                "workflow_run_id": base.workflow_run_id() if hasattr(base, "workflow_run_id") else os.environ.get("GITHUB_RUN_ID", ""),
+                "workflow_run_url": base.workflow_run_url() if hasattr(base, "workflow_run_url") else "",
                 "review_mode": review_mode,
                 "context_summary": context_summary,
                 "review_assist_context_chars": len(review_assist_ctx),

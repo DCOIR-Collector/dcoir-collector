@@ -90,6 +90,29 @@ def read_text(path: str, default: str = "") -> str:
         return default
 
 
+def workflow_run_id() -> str:
+    return os.environ.get("GITHUB_RUN_ID", "").strip()
+
+
+def workflow_run_url() -> str:
+    run_id = workflow_run_id()
+    repo = os.environ.get("GITHUB_REPOSITORY", "").strip()
+    server = os.environ.get("GITHUB_SERVER_URL", "https://github.com").strip() or "https://github.com"
+    if not run_id or not repo:
+        return ""
+    return f"{server.rstrip('/')}/{repo}/actions/runs/{run_id}"
+
+
+def workflow_run_status_lines(config: Config) -> list[str]:
+    run_id = sanitize_github_output(workflow_run_id(), config)
+    if not run_id:
+        return []
+    url = sanitize_github_output(workflow_run_url(), config)
+    if url:
+        return [f"- Workflow run: [`{run_id}`]({url})."]
+    return [f"- Workflow run id: `{run_id}`."]
+
+
 def parse_scalar(value: str) -> Any:
     value = value.strip()
     if value in {"true", "True"}:
@@ -396,6 +419,7 @@ class ProgressReporter:
             "",
             f"- Command: `{self.command}`.",
             f"- Debug progress: `{str(getattr(self.config, 'debug', False)).lower()}`.",
+            *workflow_run_status_lines(self.config),
             "- Branch changes: none; this workflow only posts review output.",
             "- Gate role: internal review-assist signal before any separately approved external review request.",
         ]

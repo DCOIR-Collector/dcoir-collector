@@ -155,6 +155,89 @@ run_recovery_case(
     "none were anchored to changed diff lines",
 )
 
+merge_diff = """diff --git a/tools/first.py b/tools/first.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/first.py
+@@ -0,0 +1,2 @@
++subprocess.run(request["command"], shell=True)
++print("done")
+diff --git a/tools/second.py b/tools/second.py
+index 0000000..2222222 100644
+--- /dev/null
++++ b/tools/second.py
+@@ -0,0 +1,2 @@
++cursor.execute(f"select * from alerts where {request['filter']}")
++print("done")
+"""
+merge_line_index = mod.build_added_line_index(merge_diff)
+merge_sentinels = [
+    mod.RiskSentinel(
+        path="tools/second.py",
+        line=1,
+        label="raw SQL/query string interpolation",
+        detail="raw variables are interpolated into a query-like string",
+        text='cursor.execute(f"select * from alerts where {request[\'filter\']}")',
+    )
+]
+merge_calls: list[str] = []
+original_openrouter_review = mod.openrouter_review
+
+
+def fake_merge_review(prompt: str, _schema: dict, _config: object, _reporter: object | None = None):
+    merge_calls.append(prompt)
+    if len(merge_calls) == 1:
+        return {
+            "summary": "Found one command execution issue.",
+            "findings": [
+                {
+                    "title": "Shell command execution",
+                    "severity": "critical",
+                    "confidence": 0.98,
+                    "path": "tools/first.py",
+                    "line": 1,
+                    "body": "shell=True executes request-controlled command text.",
+                    "suggested_replacement": "",
+                    "validation": "python3 -m py_compile tools/first.py",
+                }
+            ],
+        }, "first-model", ""
+    return {
+        "summary": "Found one SQL issue.",
+        "findings": [
+            {
+                "title": "SQL interpolation",
+                "severity": "critical",
+                "confidence": 0.98,
+                "path": "tools/second.py",
+                "line": 1,
+                "body": "SQL interpolation accepts request-controlled filter text; use parameters or a bounded query builder.",
+                "suggested_replacement": "",
+                "validation": "python3 -m py_compile tools/second.py",
+            }
+        ],
+    }, "recovery-model", ""
+
+
+mod.openrouter_review = fake_merge_review
+try:
+    merged_result, merged_model, _merged_tier = mod.openrouter_review_with_quality_retry(
+        "initial prompt",
+        schema,
+        config,
+        None,
+        merge_sentinels,
+        merge_line_index,
+    )
+finally:
+    mod.openrouter_review = original_openrouter_review
+
+assert len(merge_calls) == 2
+assert merged_model == "recovery-model"
+merged_findings = mod.normalize_findings(merged_result, config, merge_line_index)
+assert len(merged_findings) == 2
+assert {item["path"] for item in merged_findings} == {"tools/first.py", "tools/second.py"}
+
 debug_artifact_config = copy.copy(config)
 debug_artifact_config.debug = True
 with tempfile.TemporaryDirectory() as tmp:
@@ -186,6 +269,8 @@ with tempfile.TemporaryDirectory() as tmp:
     retry_metadata = json.loads((Path(tmp) / "metadata/02-quality-retry-request.json").read_text(encoding="utf-8"))
     assert "summary indicated a possible issue" in retry_metadata["retry_reason"]
     assert json.loads((Path(tmp) / "responses/02-quality-retry-result.json").read_text(encoding="utf-8"))["model_used"] == "recovery-model"
+    merged_response = json.loads((Path(tmp) / "responses/03-quality-retry-merged-result.json").read_text(encoding="utf-8"))
+    assert merged_response["merged_finding_count"] == 1
 
 retry_disabled = copy.copy(config)
 retry_disabled.review_quality_retry_on_rejected_output = False

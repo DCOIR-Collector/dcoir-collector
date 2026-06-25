@@ -1147,7 +1147,7 @@ index 0000000..1111111 100644
     )
 finally:
     mod._original_detect_risk_sentinels = original_detect_risk_sentinels
-assert captured_max_anchors == [3]
+assert captured_max_anchors == [None]
 assert len(bounded_path_sentinels) == 3
 assert bounded_path_sentinels[0].label == mod.FILE_WRITE_PATH_LABEL
 

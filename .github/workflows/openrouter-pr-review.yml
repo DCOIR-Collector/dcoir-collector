@@ -18,7 +18,7 @@
 # Runtime dependencies:
 # - Uses Python 3.12 and scripts/openrouter_pr_review_pareto_context.py from the trusted default branch checkout.
 # Expected outputs/readback:
-# - PR review output from scripts/openrouter_pr_review_pareto_context.py, static validation context readback when available, step-summary notices, optional debug progress/status comments, optional debug prompt/context artifact, and GitHub Actions run/job readback when the workflow changes.
+# - PR review output from scripts/openrouter_pr_review_pareto_context.py, static validation context readback when available, step-summary notices, optional debug progress/status comments, optional debug prompt/context artifacts, a reporter-readable debug markdown section, and GitHub Actions run/job readback when the workflow changes.
 # Safety notes:
 # - Checkout is pinned to the trusted default branch and persists no credentials.
 # - Keep the manual author/command guard, least needed permissions, and issue_comment boundary intact; do not use pull_request_target.
@@ -447,6 +447,41 @@ jobs:
           REVIEW_ASSIST_CONTEXT_PATH: ${{ env.REVIEW_ASSIST_CONTEXT_PATH }}
           DCOIR_REVIEW_DEBUG_ARTIFACT_DIR: dcoir-review-debug
         run: python -u scripts/openrouter_pr_review_pareto_context.py
+
+      - name: Write DCOIR review debug report section
+        if: always()
+        shell: bash
+        env:
+          DCOIR_REVIEW_DEBUG_ARTIFACT_DIR: dcoir-review-debug
+          DCOIR_REVIEW_REPORT_SECTION_DIR: chatgpt-workflow-report-section
+          SOURCE_WORKFLOW_NAME: ${{ github.workflow }}
+          SOURCE_RUN_ID: ${{ github.run_id }}
+          SOURCE_RUN_ATTEMPT: ${{ github.run_attempt }}
+          PR_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          set -euo pipefail
+          debug_dir="${DCOIR_REVIEW_DEBUG_ARTIFACT_DIR:-dcoir-review-debug}"
+          report_dir="${DCOIR_REVIEW_REPORT_SECTION_DIR:-chatgpt-workflow-report-section}"
+          if [[ ! -d "$debug_dir" ]]; then
+            echo "No DCOIR review debug directory found; skipping markdown report section."
+            exit 0
+          fi
+          mkdir -p "$report_dir"
+          python scripts/write_dcoir_review_debug_report_section.py \
+            --debug-dir "$debug_dir" \
+            --output "$report_dir/chatgpt_workflow_report_section.md"
+          if [[ -n "${GITHUB_STEP_SUMMARY:-}" && -f "$report_dir/chatgpt_workflow_report_section.md" ]]; then
+            cat "$report_dir/chatgpt_workflow_report_section.md" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload DCOIR review workflow report section
+        if: always()
+        uses: ./.github/actions/upload-chatgpt-artifact
+        with:
+          name: chatgpt-workflow-report-section
+          path: chatgpt-workflow-report-section/chatgpt_workflow_report_section.md
+          if-no-files-found: ignore
+          retention-days: '7'
 
       - name: Upload DCOIR review debug artifact
         if: always()

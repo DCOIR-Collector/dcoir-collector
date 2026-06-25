@@ -843,6 +843,32 @@ for leaked in [
 assert "@<!-- -->codex" in failure_body
 assert "[redacted-secret]" in failure_body
 
+previous_run_id = os.environ.get("GITHUB_RUN_ID")
+previous_repo = os.environ.get("GITHUB_REPOSITORY")
+previous_server = os.environ.get("GITHUB_SERVER_URL")
+try:
+    os.environ["GITHUB_RUN_ID"] = "28186071891"
+    os.environ["GITHUB_REPOSITORY"] = "DCOIR-Collector/dcoir-collector"
+    os.environ["GITHUB_SERVER_URL"] = "https://github.com"
+    debug_run_fake_gh = FakeGitHub()
+    debug_run_reporter = mod.ProgressReporter(debug_run_fake_gh, 314, "/dcoir-review", debug_failure_config)
+    debug_run_reporter.start()
+    debug_run_body = debug_run_fake_gh.comments[-1]
+    assert "- Workflow run: [`28186071891`](https://github.com/DCOIR-Collector/dcoir-collector/actions/runs/28186071891)." in debug_run_body
+finally:
+    if previous_run_id is None:
+        os.environ.pop("GITHUB_RUN_ID", None)
+    else:
+        os.environ["GITHUB_RUN_ID"] = previous_run_id
+    if previous_repo is None:
+        os.environ.pop("GITHUB_REPOSITORY", None)
+    else:
+        os.environ["GITHUB_REPOSITORY"] = previous_repo
+    if previous_server is None:
+        os.environ.pop("GITHUB_SERVER_URL", None)
+    else:
+        os.environ["GITHUB_SERVER_URL"] = previous_server
+
 err = mod.parse_openrouter_error('{"error":{"message":"Provider returned error","metadata":{"provider_name":"Venice","retry_after_seconds":21}}}')
 assert err["provider"] == "Venice"
 assert err["retry_after"] == 21
