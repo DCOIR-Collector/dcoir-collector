@@ -41,11 +41,26 @@ jobs:
           set -euo pipefail
           python3 project_sources/github_actions/tools/check_workflow_consistency_drift.py
 
+      - name: Regenerate workflow inventory
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 project_sources/github_actions/tools/build_workflow_inventory.py
+
       - name: Check workflow inventory freshness
         shell: bash
         run: |
           set -euo pipefail
           python3 project_sources/github_actions/tools/build_workflow_inventory.py --check
+          if ! git diff --quiet -- \
+            project_sources/github_actions/workflow_inventory.json \
+            project_sources/github_actions/workflow_inventory.md; then
+            echo 'Generated workflow inventory files changed. Commit the regenerated inventory from build_workflow_inventory.py.'
+            git --no-pager diff -- \
+              project_sources/github_actions/workflow_inventory.json \
+              project_sources/github_actions/workflow_inventory.md
+            exit 1
+          fi
 
       - name: Check workflow modularization contracts
         shell: bash
