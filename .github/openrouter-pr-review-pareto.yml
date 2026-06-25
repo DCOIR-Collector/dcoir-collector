@@ -50,6 +50,13 @@ first_pass_deep_review: true
 deep_review_max_files: 8
 deep_review_max_file_chars: 12000
 deep_review_max_total_chars: 24000
+per_file_first_pass_review: true
+per_file_review_concurrency: 4
+per_file_review_max_files: 8
+per_file_review_max_file_chars: 12000
+fix_synthesis_enabled: true
+fix_synthesis_max_findings: 8
+fix_synthesis_min_confidence: 0.80
 
 request_changes_on_findings: false
 minimum_confidence: 0.70
