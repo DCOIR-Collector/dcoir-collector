@@ -288,9 +288,11 @@ Use `codex-env-check` to verify the Codex environment when environment behavior 
 
 Use `codex-pr-context` at the start of PR fix tasks when PR context, review comments, changed files, or branch detection matter.
 
-Use `codex-review-checks` before finishing PR fix tasks when the changed file types make local checks useful. Treat failures as evidence to triage. Fix or report only failures that are in scope for the requested change and rise to P0/P1 severity.
+Use `codex-review-checks` before finishing PR fix tasks when the changed file types make local checks useful. Treat failures as evidence to triage. Fix or report only failures that are in scope for the requested change and rise to P0/P1 severity. For changed PowerShell files, `codex-review-checks` runs PSScriptAnalyzer and conditionally runs Pester when `*.Tests.ps1` files exist. The preferred repo-local Pester path is `.github/pester`, configurable through `CODEX_PESTER_PATH`.
 
 Use `codex-wait-pr-checks` only when the PR has checks running and the task requires waiting for GitHub Actions readback.
+
+Pester test files may live anywhere in the repository when named `*.Tests.ps1`, but Codex-focused Pester tests should be placed under `.github/pester` unless a closer source-adjacent test location is more appropriate. Pester validation in the Codex Ubuntu environment is PowerShell 7 validation only and does not prove Windows PowerShell 5.1 behavior.
 
 Use `bash scripts/validate-codex-local.sh` for GitHub Desktop or local pre-push review when the Codex cloud helper commands are unavailable; pass explicit file paths for targeted checks, or use no arguments to validate changed files relative to `CODEX_BASE_REF` or `origin/main` plus staged and unstaged local changes. Use `scripts/validate-windows-powershell-51.ps1` for local PowerShell parser checks and rely on `windows-powershell-51.yml` for exact Windows PowerShell 5.1 workflow readback. Use `python3 scripts/validate-codeql-security-workflow.py` after CodeQL workflow changes to check the expected repo-local security workflow shape.
 
