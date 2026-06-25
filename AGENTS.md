@@ -18,8 +18,8 @@ This file is the repository/workspace adapter. It keeps local bootstrapping and 
 
 ## Canonical connector targets
 
-* Default GitHub `repository_full_name`: `DCOIR-Collector/dcoir-collector`
-* Canonical GitHub repo URL: `https://github.com/DCOIR-Collector/dcoir-collector/`
+* Default GitHub `repository_full_name`: `DCOIR-COLLECTOR/dcoir-collector`
+* Canonical GitHub repo URL: `https://github.com/DCOIR-COLLECTOR/dcoir-collector/`
 * Default Supabase `project_id`: `kdhkhyksdzjbajavsoxa`
 * Default Supabase schema: `ircore`
 * Active continuity file: `/workspace/memory/agent-redesign/ACTIVE-CONTINUITY.md`
@@ -33,8 +33,8 @@ For substantive `ircore` work, materialize `/workspace/.ircore-startup-pack.json
 ```json
 {
   "schema_version": "ircore_startup_pack_target_v1",
-  "github_repository_full_name": "DCOIR-Collector/dcoir-collector",
-  "github_repository_url": "https://github.com/DCOIR-Collector/dcoir-collector/",
+  "github_repository_full_name": "DCOIR-COLLECTOR/dcoir-collector",
+  "github_repository_url": "https://github.com/DCOIR-COLLECTOR/dcoir-collector/",
   "supabase_project_id": "kdhkhyksdzjbajavsoxa",
   "supabase_startup_pack_function": "ircore.get_agent_startup_pack",
   "fallback_bootstrap_pointer_file": "/workspace/.ircore-bootstrap.json",
@@ -50,8 +50,8 @@ Materialize `/workspace/.ircore-bootstrap.json` only as the fallback pointer, wi
 ```json
 {
   "schema_version": "ircore_bootstrap_target_v2",
-  "github_repository_full_name": "DCOIR-Collector/dcoir-collector",
-  "github_repository_url": "https://github.com/DCOIR-Collector/dcoir-collector/",
+  "github_repository_full_name": "DCOIR-COLLECTOR/dcoir-collector",
+  "github_repository_url": "https://github.com/DCOIR-COLLECTOR/dcoir-collector/",
   "supabase_project_id": "kdhkhyksdzjbajavsoxa",
   "supabase_bootstrap_function": "ircore.get_agent_bootstrap",
   "active_continuity_file": "/workspace/memory/agent-redesign/ACTIVE-CONTINUITY.md",
@@ -207,6 +207,18 @@ Expected helper commands:
 * `codex-env-check`
 * `codex-push-smoke`
 
+When an operator-approved top-level GitHub PR comment invokes `@codex` for PR review, use Review+Fix mode unless the operator explicitly says review-only.
+
+Review+Fix mode means:
+
+1. Run `codex-pr-context` first to capture PR metadata, changed files, review comments, reviews, patch context, and CI status when available.
+2. Identify only confirmed P0/P1 issues.
+3. Prefer direct branch edits for each confirmed P0/P1 issue when a safe minimal fix is clear.
+4. Run relevant validation after edits.
+5. Push branch edits with `codex-pr-finish`.
+6. Leave review comments only for confirmed P0/P1 issues that cannot be safely fixed in the branch.
+7. Do not report P2/P3 issues, style-only issues, broad refactors, speculative issues, or nice-to-have improvements.
+
 When an operator-approved top-level GitHub PR comment invokes `@codex` and asks for code changes, review-comment fixes, requested changes, patches, or PR updates, complete the requested work and push back to the PR branch using the helper command.
 
 When addressing inline PR review conversations, follow the canonical review conversation resolution rule in this file.
@@ -228,7 +240,7 @@ Use `codex-pr-finish` instead of raw `git push`.
 1. Detect the current branch.
 2. Stage all changes.
 3. Commit changes when needed.
-4. Normalize `origin` to `https://github.com/DCOIR-Collector/dcoir-collector.git`.
+4. Normalize `origin` to `https://github.com/DCOIR-COLLECTOR/dcoir-collector.git`.
 5. Push `HEAD` to the active PR branch.
 
 If the current branch cannot be detected, use the PR branch name from live PR context and run:
@@ -276,7 +288,7 @@ Use `codex-env-check` to verify the Codex environment when environment behavior 
 
 Use `codex-pr-context` at the start of PR fix tasks when PR context, review comments, changed files, or branch detection matter.
 
-Use `codex-review-checks` before finishing PR fix tasks when the changed file types make local checks useful. Treat failures as findings to fix or report as validation gaps.
+Use `codex-review-checks` before finishing PR fix tasks when the changed file types make local checks useful. Treat failures as evidence to triage. Fix or report only failures that are in scope for the requested change and rise to P0/P1 severity.
 
 Use `codex-wait-pr-checks` only when the PR has checks running and the task requires waiting for GitHub Actions readback.
 
@@ -286,18 +298,29 @@ Use `codex-push-smoke` only when the operator explicitly asks to validate push c
 
 ## Review guidelines
 
-When reviewing pull requests, focus on serious, actionable issues.
+When reviewing pull requests, report only confirmed P0/P1 issues. Default to Review+Fix mode unless the operator explicitly says review-only.
 
-Flag P0 or P1 issues for:
+P0/P1 issues include:
 
 - Security vulnerabilities, credential exposure, command injection, path traversal, unsafe deserialization, unsafe subprocess usage, SSRF, or unsafe file handling.
-- GitHub Actions risks, including unsafe use of pull_request_target, untrusted PR input in shell commands, overbroad token permissions, or secret exposure in logs.
-- PowerShell compatibility risks, especially differences between Windows PowerShell 5.1 and PowerShell 7 on Linux.
+- GitHub Actions risks, including unsafe use of `pull_request_target`, untrusted PR input in shell commands, overbroad token permissions, or secret exposure in logs.
+- PowerShell compatibility risks that can break Windows PowerShell 5.1 behavior in Windows-targeted scripts.
 - Broken collector behavior, data loss, incorrect evidence handling, degraded DCOIR output integrity, or unreliable incident-response workflows.
-- Validation gaps where changed behavior lacks a relevant test or the existing tests no longer cover the changed path.
+- Broken validation or CI caused by the PR.
 - Governance violations, including workflow mutation without explicit approval, stale repo authority claims, invented labels, or bypassed readback requirements.
 
-Do not flag purely stylistic issues as review findings unless they create correctness, security, maintainability, or governance risk.
+Do not report:
+
+- Style-only issues.
+- Formatting-only issues unless they break CI.
+- Minor maintainability concerns.
+- Speculative edge cases without a proven P0/P1 failure mode.
+- Missing tests unless the missing test leaves a changed P0/P1 behavior unvalidated.
+- Broad refactors or nice-to-have improvements.
+
+Validation output is evidence, not a review finding. Report validation failures only when they prove a P0/P1 issue introduced or exposed by the PR diff.
+
+For each remaining review finding, include `Suggested Fix` and `Suggested Change`. Use a GitHub `suggestion` block only when the exact replacement applies to the commented PR diff lines. For multi-file fixes, generated files, broader patches, or changes needing validation, edit the branch directly or provide a normal diff-style explanation instead of a `suggestion` block.
 
 For fix requests in PR comments, use the Codex cloud helper commands installed by the environment. Finish changes with:
 
@@ -405,6 +428,9 @@ Push:
 - <commit hash if available>
 - <codex-pr-finish result or exact failure>
 - <workflow URL if available>
+
+Remaining P0/P1 Issues:
+- <remaining confirmed P0/P1 issues that could not be safely fixed, or none>
 
 Resolved review conversations:
 - <review thread ids resolved with follow-up comment, or not applicable>
