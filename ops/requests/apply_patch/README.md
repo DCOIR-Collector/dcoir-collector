@@ -87,6 +87,13 @@ staged through an API or connector, read the staged `.patch` or `.diff` file bac
 from GitHub first and hash that content; local pre-staging hashes can differ when
 Git normalizes line endings.
 
+The patch file must be a valid unified diff. Context lines, including
+blank context lines inside a hunk must still begin with a single space;
+added lines begin with `+` and removed lines begin with `-`. A patch can
+pass checksum validation but still fail `git apply --check` as corrupt
+when a staged hunk contains bare empty lines instead of space-prefixed
+blank context lines.
+
 Use `mode: "dry-run"` to validate and run `git apply --check` without committing.
 
 Default-branch writes are blocked unless the request sets `allow_default_branch: true`

@@ -44,6 +44,11 @@ assert config.first_pass_deep_review is True
 assert config.deep_review_max_files == 8
 assert config.debug is False
 assert config.post_progress_comment is False
+assert config.per_file_first_pass_review is True
+assert config.per_file_review_concurrency == 4
+assert config.fix_synthesis_enabled is True
+assert config.required_finding_reserved_budget == 9
+assert config.required_finding_min_per_family == 2
 
 try:
     mod.optional_float({"pareto_min_coding_score": "high"}, "pareto_min_coding_score")
@@ -1476,5 +1481,86 @@ assert inline_findings == []
 assert len(review_body_findings) == 1
 assert review_body_findings[0]["path"] == "scripts/openrouter_pr_review_pareto_context.py"
 assert "not an added changed line" in review_body_findings[0]["_unanchored_reason"]
+
+
+ranking_budget_config = mod.copy.copy(config)
+ranking_budget_config.max_inline_comments = 5
+ranking_budget_config.required_finding_reserved_budget = 5
+ranking_budget_config.required_finding_min_per_family = 1
+ranking_budget_findings = [
+    {
+        "path": "web/app.ts",
+        "line": 10,
+        "severity": "high",
+        "confidence": 0.99,
+        "title": "Optional TypeScript finding",
+        "body": "Optional TypeScript issue should not crowd out required operational families.",
+    },
+    {
+        "path": "k8s/deployment.yaml",
+        "line": 11,
+        "severity": "high",
+        "confidence": 0.99,
+        "title": "Optional Kubernetes finding",
+        "body": "Optional Kubernetes issue should stay behind required operational families when budget is tight.",
+    },
+    {
+        "path": "scripts/ops.ps1",
+        "line": 12,
+        "severity": "medium",
+        "confidence": 0.96,
+        "title": "PowerShell finding",
+        "body": "PowerShell operational risk must keep a reserved slot.",
+    },
+    {
+        "path": "scripts/check.py",
+        "line": 13,
+        "severity": "medium",
+        "confidence": 0.96,
+        "title": "Python finding",
+        "body": "Python operational risk must keep a reserved slot.",
+    },
+    {
+        "path": ".github/workflows/ci.yml",
+        "line": 14,
+        "severity": "medium",
+        "confidence": 0.96,
+        "title": "GitHub Actions finding",
+        "body": "GitHub Actions workflow risk must keep a reserved slot.",
+    },
+    {
+        "path": "web/extra.ts",
+        "line": 15,
+        "severity": "medium",
+        "confidence": 0.95,
+        "title": "Second TypeScript finding",
+        "body": "Extra optional issue competes only after required families are represented.",
+    },
+]
+ranked_required_budget_findings = mod.rank_findings_for_required_budget(ranking_budget_findings, ranking_budget_config)
+ranked_required_families = [mod.finding_review_family(item) for item in ranked_required_budget_findings]
+assert len(ranked_required_budget_findings) == 5
+assert "powershell" in ranked_required_families
+assert "python" in ranked_required_families
+assert "github-actions-yaml" in ranked_required_families
+assert ranked_required_families.index("powershell") < 5
+assert ranked_required_families.index("python") < 5
+assert ranked_required_families.index("github-actions-yaml") < 5
+
+original_detector_findings = [
+    {
+        "path": "scripts/ops.ps1",
+        "line": 42,
+        "severity": "high",
+        "confidence": 0.79,
+        "title": "Detector-proposed fix",
+        "body": "Detector pass should not be trusted to provide a native GitHub suggestion.",
+        "suggested_replacement": "Write-Output 'fixed'",
+    }
+]
+stripped_detector_findings = mod.strip_detector_suggested_replacements(original_detector_findings)
+assert original_detector_findings[0]["suggested_replacement"] == "Write-Output 'fixed'"
+assert stripped_detector_findings[0]["suggested_replacement"] == ""
+assert stripped_detector_findings[0]["_detector_suggested_replacement"] == "Write-Output 'fixed'"
 
 print("Pareto context DCOIR Review selftest passed")

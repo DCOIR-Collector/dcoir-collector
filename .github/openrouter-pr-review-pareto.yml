@@ -57,6 +57,8 @@ per_file_review_max_file_chars: 12000
 fix_synthesis_enabled: true
 fix_synthesis_max_findings: 8
 fix_synthesis_min_confidence: 0.80
+required_finding_reserved_budget: 9
+required_finding_min_per_family: 2
 
 request_changes_on_findings: false
 minimum_confidence: 0.70
