@@ -1,0 +1,273 @@
+diff --git a/scripts/openrouter_pr_review_pareto_context.py b/scripts/openrouter_pr_review_pareto_context.py
+index 50b37e2..50b37e2 100644
+--- a/scripts/openrouter_pr_review_pareto_context.py
++++ b/scripts/openrouter_pr_review_pareto_context.py
+@@ -24,6 +24,8 @@ DEEP_CONTEXT_PROMPT_TRUNCATED_MARKER = "\n\n[deep context truncated by reviewer]"
+ REVIEW_ASSIST_CONTEXT_ROOT = Path("/tmp/review-assist-context")
+ REVIEW_ASSIST_CONTEXT_REPORT = Path("project_sources/collector/powershell_review_assist_workflow_report.md")
++REQUIRED_FINDING_FAMILIES = ("powershell", "python", "github-actions-yaml")
++OPTIONAL_FINDING_FAMILIES = ("typescript", "kubernetes-yaml")
+ 
+ 
+ def optional_float(data: dict[str, Any], key: str) -> float | None:
+@@ -51,6 +53,10 @@ def load_pareto_context_config(path: str) -> Any:
+     config.fix_synthesis_enabled = hardened.bool_value(data, "fix_synthesis_enabled", True)
+     config.fix_synthesis_max_findings = int(data.get("fix_synthesis_max_findings", 8))
+     config.fix_synthesis_min_confidence = float(data.get("fix_synthesis_min_confidence", 0.80))
++    config.required_finding_reserved_budget = int(
++        data.get("required_finding_reserved_budget", min(getattr(config, "max_inline_comments", 12), 9))
++    )
++    config.required_finding_min_per_family = int(data.get("required_finding_min_per_family", 2))
+     config.deep_review_max_files = int(data.get("deep_review_max_files", min(getattr(config, "max_files", 30), 8)))
+     config.deep_review_max_file_chars = int(data.get("deep_review_max_file_chars", 12000))
+     config.deep_review_max_total_chars = int(data.get("deep_review_max_total_chars", 24000))
+@@ -1082,6 +1088,87 @@ def per_file_priority(item: dict[str, Any], file_text: str) -> tuple[int, int, s
+     return family, -changes, path
+ 
+ 
++def normalized_finding_text(value: Any, max_chars: int = 240) -> str:
++    return re.sub(r"\s+", " ", str(value or "").strip().lower())[:max_chars]
++
++
++def finding_review_family(finding: dict[str, Any]) -> str:
++    path = str(finding.get("path", "") or "").strip()
++    lower_path = path.lower()
++    suffix = Path(lower_path).suffix
++    title = str(finding.get("title", "") or "")
++    body = str(finding.get("body", "") or "")
++    haystack = f"{title}\n{body}".lower()
++    if suffix in {".ps1", ".psm1", ".psd1"}:
++        return "powershell"
++    if suffix == ".py":
++        return "python"
++    if suffix in {".yml", ".yaml"}:
++        if (
++            lower_path.startswith(".github/workflows/")
++            or "github action" in haystack
++            or "workflow" in Path(lower_path).name
++            or "/actions/" in lower_path
++        ):
++            return "github-actions-yaml"
++        if (
++            "kubernetes" in lower_path
++            or lower_path.startswith("k8s/")
++            or "/k8s/" in lower_path
++            or "kubernetes" in haystack
++            or "kubectl" in haystack
++        ):
++            return "kubernetes-yaml"
++        return "yaml"
++    if suffix in {".ts", ".tsx", ".js", ".jsx", ".mjs", ".cjs"}:
++        return "typescript"
++    return "other"
++
++
++def finding_dedupe_key(finding: dict[str, Any]) -> tuple[str, str, str, str]:
++    return (
++        str(finding.get("path", "") or "").strip(),
++        str(finding.get("line", "") or "").strip(),
++        normalized_finding_text(finding.get("title", "")),
++        normalized_finding_text(finding.get("body", "")),
++    )
++
++
++def dedupe_findings_for_ranking(findings: list[dict[str, Any]]) -> list[dict[str, Any]]:
++    deduped: list[dict[str, Any]] = []
++    seen: set[tuple[str, str, str, str]] = set()
++    for finding in findings:
++        key = finding_dedupe_key(finding)
++        if key in seen:
++            continue
++        seen.add(key)
++        deduped.append(finding)
++    return deduped
++
++
++def rank_findings_for_required_budget(findings: list[dict[str, Any]], config: Any) -> list[dict[str, Any]]:
++    max_inline = max(0, int(getattr(config, "max_inline_comments", 12)))
++    if max_inline <= 0:
++        return []
++    ranked = sorted(dedupe_findings_for_ranking(findings), key=hardened.severity_sort_key)
++    if len(ranked) <= max_inline:
++        return ranked
++    reserved_budget = min(
++        max_inline,
++        max(0, int(getattr(config, "required_finding_reserved_budget", min(max_inline, 9)))),
++    )
++    min_per_family = max(0, int(getattr(config, "required_finding_min_per_family", 2)))
++    selected: list[dict[str, Any]] = []
++    selected_keys: set[tuple[str, str, str, str]] = set()
++
++    def maybe_select(finding: dict[str, Any]) -> bool:
++        key = finding_dedupe_key(finding)
++        if key in selected_keys:
++            return False
++        selected.append(finding)
++        selected_keys.add(key)
++        return True
++
++    if min_per_family > 0:
++        for family in REQUIRED_FINDING_FAMILIES:
++            family_count = 0
++            for finding in ranked:
++                if len(selected) >= reserved_budget or family_count >= min_per_family:
++                    break
++                if finding_review_family(finding) == family and maybe_select(finding):
++                    family_count += 1
++    for finding in ranked:
++        if len(selected) >= reserved_budget:
++            break
++        if finding_review_family(finding) in REQUIRED_FINDING_FAMILIES:
++            maybe_select(finding)
++    for finding in ranked:
++        if len(selected) >= max_inline:
++            break
++        maybe_select(finding)
++    return selected
++
++
+ def build_per_file_review_prompt(
+     pr: dict[str, Any],
+     item: dict[str, Any],
+@@ -1528,18 +1615,32 @@ def synthesize_fix_for_finding(
+     return enriched
+ 
+ 
++def strip_detector_suggested_replacements(findings: list[dict[str, Any]]) -> list[dict[str, Any]]:
++    enriched: list[dict[str, Any]] = []
++    for finding in findings:
++        item = dict(finding)
++        detector_suggestion = str(item.get("suggested_replacement", "") or "")
++        if detector_suggestion.strip():
++            item["_detector_suggested_replacement"] = detector_suggestion
++            item["suggested_replacement"] = ""
++        enriched.append(item)
++    return enriched
++
++
+ def synthesize_fixes_for_findings(
+     findings: list[dict[str, Any]],
+     gh: Any,
+@@ -1550,21 +1651,22 @@ def synthesize_fixes_for_findings(
+     config: Any,
+     reporter: Any,
+ ) -> list[dict[str, Any]]:
+-    if not getattr(config, "fix_synthesis_enabled", True) or not findings:
+-        return findings
++    enriched = strip_detector_suggested_replacements(findings)
++    if not getattr(config, "fix_synthesis_enabled", True) or not enriched:
++        return enriched
+     head_sha = str(pr.get("head", {}).get("sha", "") or "")
+     if not head_sha:
+-        return findings
++        return enriched
+     max_findings = max(0, int(getattr(config, "fix_synthesis_max_findings", 8)))
+     min_confidence = float(getattr(config, "fix_synthesis_min_confidence", 0.80))
+     candidates: list[tuple[int, dict[str, Any]]] = []
+-    for index, finding in enumerate(findings):
++    for index, finding in enumerate(enriched):
+         try:
+             confidence = float(finding.get("confidence", 0) or 0)
+         except (TypeError, ValueError):
+             confidence = 0.0
+         if confidence >= min_confidence:
+             candidates.append((index, finding))
+         if len(candidates) >= max_findings:
+             break
+     if not candidates:
+-        return findings
++        return enriched
+ 
+     reporter.update("fix-synthesis", f"building repair guidance for {len(candidates)} finding(s)")
+     file_cache: dict[str, str] = {}
+-    enriched = [dict(finding) for finding in findings]
+     failures: list[str] = []
+     for _index, finding in candidates:
+         path = str(finding.get("path", "") or "").strip()
+@@ -1594,7 +1696,7 @@ def synthesize_fixes_for_findings(
+             try:
+                 enriched[index] = future.result()
+             except Exception as exc:
+-                path = str(findings[index].get("path", "") or "")
++                path = str(enriched[index].get("path", "") or "")
+                 failures.append(f"{path}: {str(exc)[:160]}")
+     if failures:
+         hardened.write_debug_json_artifact_safely(config, "responses/fix-synthesis/failures.json", {"failures": failures})
+@@ -1787,39 +1889,38 @@ def split_findings_with_review_body_fallback(
+     config: Any,
+     line_index: dict[tuple[str, int], int],
+ ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+-    try:
+-        return hardened.split_findings(result, config, line_index)
+-    except hardened.ReviewQualityError:
+-        raw_findings = result.get("findings", [])
+-        if not raw_findings or not getattr(config, "fail_on_unanchored_findings", True):
+-            raise
+-        changed_paths = {path for path, _line in line_index}
+-        findings: list[dict[str, Any]] = []
+-        unanchored_findings: list[dict[str, Any]] = []
+-        for item in raw_findings:
+-            try:
+-                confidence = float(item.get("confidence", 0))
+-                line = int(item.get("line", 0))
+-                path = str(item.get("path", "")).strip()
+-            except (AttributeError, TypeError, ValueError):
+-                continue
+-            if not path or line <= 0:
+-                continue
+-            if confidence < config.minimum_confidence or hardened.non_actionable_finding_reason(item):
+-                continue
+-            if path not in changed_paths:
+-                continue
+-            if (path, line) in line_index:
+-                findings.append(item)
+-                continue
+-            unanchored = dict(item)
+-            location_text = hardened.finding_location_text(path, line)
+-            unanchored["_unanchored_reason"] = f"{location_text} is outside the added changed lines for this PR"
+-            unanchored_findings.append(unanchored)
+-        findings.sort(key=hardened.severity_sort_key)
+-        unanchored_findings.sort(key=hardened.severity_sort_key)
+-        findings = findings[: config.max_inline_comments]
+-        unanchored_findings = unanchored_findings[: config.max_inline_comments]
+-        if findings or unanchored_findings:
+-            return findings, unanchored_findings
+-        raise
++    raw_findings = result.get("findings", [])
++    if not isinstance(raw_findings, list) or not raw_findings:
++        return hardened.split_findings(result, config, line_index)
++    changed_paths = {path for path, _line in line_index}
++    findings: list[dict[str, Any]] = []
++    unanchored_findings: list[dict[str, Any]] = []
++    track_unanchored = bool(getattr(config, "fail_on_unanchored_findings", True))
++    for item in raw_findings:
++        try:
++            confidence = float(item.get("confidence", 0))
++            line = int(item.get("line", 0))
++            path = str(item.get("path", "")).strip()
++        except (AttributeError, TypeError, ValueError):
++            continue
++        if not path or line <= 0:
++            continue
++        if confidence < config.minimum_confidence or hardened.non_actionable_finding_reason(item):
++            continue
++        if path not in changed_paths:
++            continue
++        if (path, line) in line_index:
++            findings.append(dict(item))
++            continue
++        if track_unanchored:
++            unanchored = dict(item)
++            location_text = hardened.finding_location_text(path, line)
++            unanchored["_unanchored_reason"] = f"{location_text} is outside the added changed lines for this PR"
++            unanchored_findings.append(unanchored)
++    findings = rank_findings_for_required_budget(findings, config)
++    unanchored_findings = dedupe_findings_for_ranking(unanchored_findings)
++    unanchored_findings.sort(key=hardened.severity_sort_key)
++    unanchored_findings = unanchored_findings[: config.max_inline_comments]
++    if findings or unanchored_findings:
++        return findings, unanchored_findings
++    return hardened.split_findings(result, config, line_index)
+ 
+ 
+ 
