@@ -2,12 +2,12 @@
 # Workflow key:
 # - workflow-ops-apply-patch-00297
 # Purpose:
-# - Apply one reviewed .patch or .diff request to one tracked file on one specified branch with branch, path, hash, and workflow-change guards.
+# - Apply one reviewed v1 single-file .patch/.diff request or one reviewed v2 text patch-set request to one specified branch with branch, path, hash, and workflow-change guards.
 # Use when:
 # - Use after the GitHub connector or an operator stages a bounded request under ops/requests/apply_patch/<request_id>/request.json plus a same-directory .patch or .diff file.
-# - Use when full-file chatgpt-apply-in replacement is too large or too risky for the connector, and a small diff can safely express the intended change.
+# - Use when full-file chatgpt-apply-in replacement is too large or too risky for the connector, and a reviewed unified diff can safely express the intended change.
 # Do not use when:
-# - Do not use for unreviewed patches, multi-file changes, binary patches, renames, deletes, broad repo rewrites, or default-branch writes without an explicit allow-default-branch reason.
+# - Do not use for unreviewed patches, binary patches, creates, deletes, renames, copies, mode changes, broad repo rewrites, or default-branch writes without an explicit allow-default-branch reason.
 # - Do not use as a substitute for chatgpt-apply-in when the full target file can be staged and verified safely.
 # Trigger model:
 # - workflow_dispatch input: request_path; push branches: main paths under ops/requests/apply_patch/**.
@@ -25,17 +25,18 @@
 # - Entry workflow: .github/workflows/ops-apply-patch.yml.
 # - Reusable workflow: .github/workflows/reusable-ops-apply-patch.yml.
 # - Patch validation/apply script: ops/tools/apply_patch_request.py.
-# - Request JSON schema: dcoir.ops.apply_patch_request.v1 under ops/requests/apply_patch/<request_id>/request.json.
+# - Request JSON schemas: dcoir.ops.apply_patch_request.v1 for single-file patches and dcoir.ops.apply_patch_request.v2 for patch sets under ops/requests/apply_patch/<request_id>/request.json.
 # Expected outputs/readback:
-# - Target branch commit when mode=apply; ops-apply-patch workflow artifact with result.json and workflow_report.md; central repo-workflows completed-run report when reporting workflows are available.
-# - Successful mode=apply runs remove the staged ops/requests/apply_patch/<request_id>/ directory from the request source branch with a [skip ci] cleanup commit after verifying the directory still matches the triggering request fingerprint.
+# - Target branch commit when v1 mode=apply or v2 operation=apply; ops-apply-patch workflow artifact with result.json, apply_plan details, and workflow_report.md; central repo-workflows completed-run report when reporting workflows are available.
+# - Successful apply runs remove the staged ops/requests/apply_patch/<request_id>/ directory from the request source branch with a [skip ci] cleanup commit after verifying the directory still matches the triggering request fingerprint.
 # Cleanup behavior:
 # - Successful apply requests are housekept automatically after the report artifact is uploaded and the staged request directory fingerprint still matches the triggering input.
 # - Failed apply requests and dry-runs leave request files in place for operator review.
 # - Cleanup-only deletion pushes are treated as no-op cleanup runs if they are ever evaluated by the push trigger.
 # - If a reused request id changes the staged request directory before cleanup, cleanup refuses deletion and leaves the current request files for review.
 # Safety notes:
-# - Rejects unsafe request ids, unsafe target paths, missing stale-base hashes, default-branch targets without explicit reason, workflow targets without explicit reason, multi-file patches, binary patches, renames, deletes, mode changes, and unexpected changed paths after apply.
+# - Rejects unsafe request ids, unsafe target paths, missing stale-base hashes, default-branch targets without explicit reason, workflow targets without explicit reason, binary patches, creates, deletes, renames, copies, mode changes, and unexpected changed paths after apply.
+# - v1 remains single-file only; v2 supports multi-file text-only patches for existing tracked files and commits all validated target changes atomically.
 # Maintenance notes:
 # - Keep this header aligned with executable behavior whenever triggers, inputs, scripts, reports, artifacts, permissions, cleanup, or safety checks change.
 # - Keep this header aligned with current repo-root GitHub guidance and the active `ircore` operating model when authority or routing language changes.
