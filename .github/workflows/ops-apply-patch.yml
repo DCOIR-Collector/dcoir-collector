@@ -10,9 +10,15 @@
 # - Do not use for unreviewed patches, multi-file changes, binary patches, renames, deletes, broad repo rewrites, or default-branch writes without an explicit allow-default-branch reason.
 # - Do not use as a substitute for chatgpt-apply-in when the full target file can be staged and verified safely.
 # Trigger model:
-# - workflow_dispatch input: request_path; push branches: main paths: ops/requests/apply_patch/*/request.json, ops/requests/apply_patch/*/*.patch, ops/requests/apply_patch/*/*.diff.
+# - workflow_dispatch input: request_path; push branches: main paths under ops/requests/apply_patch/**.
+# - Push-triggered runs resolve the request from the changed request directory and then the reusable workflow enforces that exactly one request is processed.
+# - If a connector-staged request does not produce an ops-apply-patch run/artifact, there is no background scanner; manually dispatch this workflow with request_path or run ops/tools/apply_patch_request.py through an approved exec lane.
 # Required inputs:
-# - request_path: Optional repo-relative path to ops/requests/apply_patch/<request_id>/request.json when manually dispatched. Leave blank to scan pending request folders.
+# - request_path: Optional repo-relative path to ops/requests/apply_patch/<request_id>/request.json when manually dispatched. Leave blank to scan pending folders.
+# Required staging folder:
+# - request JSON: ops/requests/apply_patch/<request_id>/request.json
+# - patch file: ops/requests/apply_patch/<request_id>/<name>.patch or .diff
+# - This is the ops apply-patch lane, not chatgpt-apply-in and not chatgpt_staging/apply_in payload handling.
 # Required secrets/config:
 # - Uses GITHUB_TOKEN through workflow token only; do not add external secrets or secret values to requests, reports, logs, or artifacts.
 # Runtime dependencies:
@@ -21,7 +27,7 @@
 # - Patch validation/apply script: ops/tools/apply_patch_request.py.
 # - Request JSON schema: dcoir.ops.apply_patch_request.v1 under ops/requests/apply_patch/<request_id>/request.json.
 # Expected outputs/readback:
-# - Target branch commit when mode=apply; ops-apply-patch workflow artifact with result.json and workflow_report.md; central repo-workflows completed-run report.
+# - Target branch commit when mode=apply; ops-apply-patch workflow artifact with result.json and workflow_report.md; central repo-workflows completed-run report when reporting workflows are available.
 # - Successful mode=apply runs remove the staged ops/requests/apply_patch/<request_id>/ directory from the request source branch with a [skip ci] cleanup commit after verifying the directory still matches the triggering request fingerprint.
 # Cleanup behavior:
 # - Successful apply requests are housekept automatically after the report artifact is uploaded and the staged request directory fingerprint still matches the triggering input.
@@ -52,9 +58,7 @@ on:
     branches:
       - main
     paths:
-      - "ops/requests/apply_patch/*/request.json"
-      - "ops/requests/apply_patch/*/*.patch"
-      - "ops/requests/apply_patch/*/*.diff"
+      - "ops/requests/apply_patch/**"
 
 permissions:
   contents: write
