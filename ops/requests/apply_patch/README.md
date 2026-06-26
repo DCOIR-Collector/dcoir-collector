@@ -81,6 +81,12 @@ and modularization contract under the `ops-apply-patch` family.
 }
 ```
 
+Compute `expected_patch_sha256` from the patch file bytes as they exist in the
+Git checkout that will run `ops/tools/apply_patch_request.py`. If the request is
+staged through an API or connector, read the staged `.patch` or `.diff` file back
+from GitHub first and hash that content; local pre-staging hashes can differ when
+Git normalizes line endings.
+
 Use `mode: "dry-run"` to validate and run `git apply --check` without committing.
 
 Default-branch writes are blocked unless the request sets `allow_default_branch: true`
