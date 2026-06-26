@@ -1,0 +1,11 @@
+{
+  "schema": "dcoir.chatgpt_staging.exec_request.v1",
+  "request_id": "exec-20260626-dcoir-review-fix-synthesis-003",
+  "operator_approved": true,
+  "shell": "powershell_5",
+  "timeout_seconds": 1800,
+  "artifact_retention_days": 7,
+  "cleanup_request_after_run": true,
+  "script_path": "chatgpt_staging/exec_scripts/exec-20260626-dcoir-review-fix-synthesis-003.ps1",
+  "approved_command_preview": "Create branch fix/dcoir-review-fix-synthesis-verifier-20260626 from current main, assert the expected live blob SHAs for scripts/openrouter_pr_review_pareto_context.py and scripts/openrouter_pr_review_pareto_context_selftest.py, harden fix-synthesis native suggestion verification to single-line PR-head anchored replacements, add focused selftest coverage for native suggestion and fallback repair formatting, run py_compile plus the Pareto context selftest and git diff --check, commit, and push the branch. Write a request-scoped summary on success or failure. Do not post any external review request and do not modify PR #314."
+}
