@@ -1,0 +1,13 @@
+{
+  "schema": "dcoir.chatgpt_staging.exec_request.v1",
+  "request_id": "exec-20260626-dcoir-review-hybrid-main-002",
+  "operator_approved": true,
+  "approved_at_utc": "2026-06-26T11:14:47Z",
+  "shell": "powershell_5",
+  "timeout_seconds": 1800,
+  "artifact_retention_days": 3,
+  "cleanup_request_after_run": true,
+  "script_path": "chatgpt_staging/exec_scripts/exec-20260626-dcoir-review-hybrid-main-002.ps1",
+  "approved_command_preview": "Run the repo-native ops apply-patch validator/applier against ops/requests/apply_patch/20260626-dcoir-review-script-budget-001/request.json after correcting its staged patch checksum, then add DCOIR Review required finding budget config and selftest coverage, validate py_compile/selftest/diff-check, remove the consumed apply-patch request directory, commit, and push main. This is chatgpt-exec running ops/tools/apply_patch_request.py; it is not chatgpt-apply-in and does not post review comments.",
+  "command": "& 'D:\\a\\dcoir-collector\\dcoir-collector\\chatgpt_staging\\exec_scripts\\exec-20260626-dcoir-review-hybrid-main-002.ps1'"
+}
