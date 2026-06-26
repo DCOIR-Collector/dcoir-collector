@@ -1,0 +1,14 @@
+{
+  "schema": "dcoir.ops.apply_patch_request.v1",
+  "request_id": "20260626-dcoir-review-script-budget-001",
+  "mode": "apply",
+  "target_branch": "main",
+  "target_path": "scripts/openrouter_pr_review_pareto_context.py",
+  "patch_path": "ops/requests/apply_patch/20260626-dcoir-review-script-budget-001/script.patch",
+  "expected_patch_sha256": "b8fd4644e8a8d1afee30c8930c11e0c2a32afb53528d97c32e727417f640b0f3",
+  "expected_target_blob_sha": "50b37e2cac0fea8ba79d187bd9a173496fb922b8",
+  "allowed_roots": ["scripts"],
+  "commit_message": "Add required finding budget guard to DCOIR Review",
+  "allow_default_branch": true,
+  "default_branch_reason": "Operator explicitly requested applying the DCOIR Review hybrid fixes directly to live main. The apply-patch lane is used with the current target blob guard because full-file replacement through the connector is too risky for this script."
+}
