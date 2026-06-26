@@ -9,19 +9,41 @@ ops/requests/apply_patch/<request_id>/change.patch
 
 `<request_id>` may contain only letters, numbers, dots, underscores, and hyphens.
 The workflow only looks for requests under `ops/requests/apply_patch/<request_id>/`.
+This is the **Ops apply-patch** lane. It is not `chatgpt-apply-in`, does not read
+`chatgpt_staging/apply_in` payloads, and does not process full-file replacement
+ZIPs.
 
 This lane is for connector-staged patch requests, not connector-staged full-file
 replacement payloads. To use it through the GitHub connector, create both
 `request.json` and the referenced `.patch` or `.diff` file on the default branch
 under one request directory. The entry workflow has two paths:
 
-- a push to `main` touching that request directory, when GitHub emits a usable
-  push event for the writer; or
+- a push to `main` touching `ops/requests/apply_patch/**`, when GitHub emits a
+  usable push event for the writer; or
 - a manual `workflow_dispatch` with `request_path` set to the request JSON.
 
 There is no automatic scheduled scanner. If a connector-created commit does not
-produce a runnable push-triggered workflow, manually dispatch this workflow with
-the exact `request_path`.
+produce a visible `64 Ops - Apply Patch Request` run, an `ops-apply-patch-*`
+artifact, or a target-branch commit within the normal Actions startup window,
+do not assume the request will be picked up later. Manually dispatch this
+workflow with the exact `request_path`, or use an approved `chatgpt-exec` request
+to run `python ops/tools/apply_patch_request.py apply --repo . --request <path>`.
+That exec fallback still uses the same apply-patch validation script; it is not
+`chatgpt-apply-in`.
+
+When staging through a tool that cannot atomically create both files, prefer one
+of these patterns:
+
+1. Stage the patch and request together by a single git commit from a real
+   checkout, then let the push trigger run.
+2. Stage both files through the connector, then manually dispatch with
+   `request_path` after confirming both files exist on `main`.
+3. Stage both files through the connector, then run the approved exec fallback
+   above if manual dispatch is unavailable.
+
+Avoid relying on a patch-only push as the apply signal. A `.patch`/`.diff` file
+without the same-directory `request.json` is an incomplete request and may fail
+or be skipped depending on how the push event is resolved.
 
 The workflow does not scan arbitrary staging folders, does not ingest replacement
 files, and does not apply multi-file patch sets. Use `chatgpt-apply-in` for
