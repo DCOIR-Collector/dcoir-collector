@@ -10,5 +10,5 @@
   "allowed_roots": ["scripts"],
   "commit_message": "Add required finding budget guard to DCOIR Review",
   "allow_default_branch": true,
-  "default_branch_reason": "Operator explicitly requested applying the DCOIR Review hybrid fixes directly to live main. The apply-patch lane is used with the current target blob guard because full-file replacement through the connector is too risky for this script. Retried after the initial patch-file staging commit intentionally used skip-ci."
+  "default_branch_reason": "Operator explicitly requested applying the DCOIR Review hybrid fixes directly to live main. The apply-patch lane is used with the current target blob guard because full-file replacement through the connector is too risky for this script. Retried after broadening the ops apply-patch workflow trigger and documenting the request staging contract."
 }
