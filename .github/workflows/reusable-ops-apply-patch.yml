@@ -317,7 +317,8 @@ jobs:
               print("false")
               raise SystemExit
 
-          print("true" if result.get("result") == "success" and result.get("mode") == "apply" else "false")
+          operation = result.get("operation") or result.get("mode")
+          print("true" if result.get("result") == "success" and operation == "apply" else "false")
           PY
           )"
           if [[ "$should_cleanup" != "true" ]]; then
