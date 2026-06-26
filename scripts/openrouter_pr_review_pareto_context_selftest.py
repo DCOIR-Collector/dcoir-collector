@@ -50,6 +50,87 @@ assert config.fix_synthesis_enabled is True
 assert config.required_finding_reserved_budget == 9
 assert config.required_finding_min_per_family == 2
 
+
+fix_synthesis_verifier_marker = "single-line-pr-head-anchor"
+fix_file_text = "def restore(raw_state):\n    state = pickle.loads(raw_state)\n    return state\n"
+fix_replacement = "    state = json.loads(raw_state)"
+assert mod.verified_suggested_replacement(
+    {"suggested_replacement": fix_replacement},
+    fix_file_text,
+    2,
+    config,
+) == fix_replacement
+assert mod.verified_suggested_replacement(
+    {"suggested_replacement": "    state = pickle.loads(raw_state)"},
+    fix_file_text,
+    2,
+    config,
+) == ""
+assert mod.verified_suggested_replacement(
+    {"suggested_replacement": "    state = json.loads(raw_state)\n    return state"},
+    fix_file_text,
+    2,
+    config,
+) == ""
+assert mod.verified_suggested_replacement(
+    {"suggested_replacement": "```python\nstate = json.loads(raw_state)\n```"},
+    fix_file_text,
+    2,
+    config,
+) == ""
+assert mod.verified_suggested_replacement(
+    {"suggested_replacement": "Use json.loads instead"},
+    fix_file_text,
+    2,
+    config,
+) == ""
+assert mod.verified_suggested_replacement(
+    {"suggested_replacement": fix_replacement},
+    fix_file_text,
+    99,
+    config,
+) == ""
+
+native_fix_comment = mod.base.build_inline_comment(
+    {
+        "title": "Unsafe deserialization",
+        "severity": "high",
+        "confidence": 0.95,
+        "body": "The changed line deserializes untrusted state.",
+        "validation": "python3 -m py_compile scripts/openrouter_pr_review_pareto_context.py",
+        "suggested_replacement": fix_replacement,
+    },
+    "test-model",
+    config,
+)
+assert "```suggestion\n    state = json.loads(raw_state)\n```" in native_fix_comment
+
+fallback_fix_comment = mod.base.build_inline_comment(
+    {
+        "title": "Unsafe deserialization",
+        "severity": "high",
+        "confidence": 0.95,
+        "body": "The changed line needs a broader repair than one line.",
+        "validation": "python3 -m py_compile scripts/openrouter_pr_review_pareto_context.py",
+        "suggested_replacement": "",
+        "fix_guidance": {
+            "language": "python",
+            "remove": "pickle.loads(raw_state)",
+            "replace": "json.loads(raw_state)",
+            "add": "Add a JSON schema validation test for the accepted state shape.",
+            "notes": "Keep the repair limited to the deserialization path.",
+        },
+    },
+    "test-model",
+    config,
+)
+assert "Suggested repair:" in fallback_fix_comment
+assert "Remove:" in fallback_fix_comment
+assert "Replace:" in fallback_fix_comment
+assert "Add:" in fallback_fix_comment
+assert "Keep the repair limited" in fallback_fix_comment
+assert "```suggestion" not in fallback_fix_comment
+
 try:
     mod.optional_float({"pareto_min_coding_score": "high"}, "pareto_min_coding_score")
 except ValueError as exc:
