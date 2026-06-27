@@ -1,0 +1,15 @@
+{
+  "schema": "dcoir.chatgpt_staging.exec_final_readback_marker.v2",
+  "request_id": "dcoir-review-runtime-format-hook-20260627T133000Z",
+  "result": "success",
+  "exit_code": "0",
+  "artifact_name": "chatgpt-exec-dcoir-review-runtime-format-hook-20260627T133000Z",
+  "artifact_readback_committed": false,
+  "artifact_readback_policy": "not_committed_for_chatgpt_exec; .gitignore intentionally excludes artifact_readback to avoid long-path checkout problems",
+  "tracked_summary_policy": "requests/tools should write concise sanitized summaries beside workflow_report.md when ChatGPT connector-readable results are needed",
+  "github_run_id": "28290643607",
+  "github_run_attempt": "1",
+  "github_sha": "a8deef600b11712b1c2381753b1cdc852042e166",
+  "github_ref": "refs/heads/main",
+  "created_utc": "2026-06-27T13:30:15Z"
+}
