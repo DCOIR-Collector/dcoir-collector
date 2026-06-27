@@ -71,6 +71,14 @@ FILE_WRITE_PATH_DETAIL = (
     "dynamic path segments reached a file write; verify or add segment validation, "
     "normalization, and root containment checks before writing or staging files"
 )
+PYTHON_DYNAMIC_EXEC_LABEL = "Python eval/exec dynamic code execution"
+PYTHON_DYNAMIC_EXEC_DETAIL = (
+    "eval/exec can execute caller-controlled Python expressions; remove dynamic evaluation "
+    "or replace it with ast.literal_eval, a constrained parser, or an explicit allowlist"
+)
+PYTHON_DYNAMIC_EXEC_CALL_NAMES = frozenset(
+    {"eval", "exec", "builtins.eval", "builtins.exec", "__builtins__.eval", "__builtins__.exec"}
+)
 PYTHON_PATH_TARGET_PART = r"[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*"
 PYTHON_PATH_ASSIGNMENT_MAX_CHARS = 10000
 PYTHON_PATH_ASSIGNMENT_RE = re.compile(
@@ -528,6 +536,47 @@ def append_file_write_sentinel(sentinels: list[hardened.RiskSentinel], anchor: P
     )
 
 
+def python_dynamic_exec_call_name(text: str) -> str | None:
+    if "eval" not in text and "exec" not in text:
+        return None
+    try:
+        module = ast.parse(text.lstrip())
+    except SyntaxError:
+        return None
+    for node in ast.walk(module):
+        if not isinstance(node, ast.Call):
+            continue
+        call_name = python_call_name(node.func)
+        if call_name in PYTHON_DYNAMIC_EXEC_CALL_NAMES:
+            return call_name
+    return None
+
+
+def detect_python_dynamic_exec_sentinels(diff: str) -> list[hardened.RiskSentinel]:
+    sentinels: list[hardened.RiskSentinel] = []
+    for diff_line in iter_python_diff_lines_with_context(diff):
+        if not diff_line.is_added or diff_line.inside_multiline_string:
+            continue
+        if hardened.is_comment_only_added_line(diff_line.path, diff_line.text):
+            continue
+        call_name = python_dynamic_exec_call_name(diff_line.text)
+        if not call_name:
+            continue
+        sentinels.append(
+            hardened.RiskSentinel(
+                path=diff_line.path,
+                line=diff_line.line,
+                label=PYTHON_DYNAMIC_EXEC_LABEL,
+                detail=(
+                    f"{call_name} can execute caller-controlled Python code; "
+                    "replace dynamic evaluation with literal parsing, a constrained parser, or an explicit allowlist"
+                ),
+                text=diff_line.text,
+            )
+        )
+    return sentinels
+
+
 def python_is_scope_boundary(text: str) -> bool:
     return bool(PYTHON_SCOPE_BOUNDARY_RE.match(text))
 
@@ -915,6 +964,7 @@ def detect_risk_sentinels(diff: str, max_anchors: int | None = None) -> list[har
     diff_fixture_added_lines = python_diff_fixture_added_line_keys(diff)
     combined = [
         *detect_python_file_write_path_sentinels(diff),
+        *detect_python_dynamic_exec_sentinels(diff),
         *[
             sentinel
             for sentinel in _original_detect_risk_sentinels(diff, None)
@@ -1067,7 +1117,7 @@ def file_specialization(path: str, text: str) -> str:
         )
     if suffix == ".py":
         return (
-            "Python specialization: inspect unsafe deserialization, subprocess/shell execution, tar/zip/archive extraction, "
+            "Python specialization: inspect unsafe deserialization, eval/exec/dynamic code evaluation, subprocess/shell execution, tar/zip/archive extraction, "
             "pathlib/os.path containment, raw SQL/query construction, requests/urllib/httpx outbound requests, secret/env persistence, "
             "temporary files, exception handling, and focused py_compile/Bandit/unit validation."
         )

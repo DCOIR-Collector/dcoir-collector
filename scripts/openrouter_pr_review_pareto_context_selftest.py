@@ -1265,6 +1265,56 @@ assert len(bounded_path_sentinels) == 3
 assert bounded_path_sentinels[0].label == mod.FILE_WRITE_PATH_LABEL
 
 
+
+python_dynamic_exec_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/eval_probe.py b/tools/eval_probe.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/eval_probe.py
+@@ -0,0 +1,5 @@
++import os
++def evaluate_operator_expression(expression):
++    return eval(expression, {"__builtins__": __builtins__}, {"os": os})
++def execute_operator_expression(expression):
++    exec(expression)
+"""
+)
+assert any(
+    item.path == "tools/eval_probe.py"
+    and item.line == 3
+    and item.label == mod.PYTHON_DYNAMIC_EXEC_LABEL
+    for item in python_dynamic_exec_sentinels
+)
+assert any(
+    item.path == "tools/eval_probe.py"
+    and item.line == 5
+    and item.label == mod.PYTHON_DYNAMIC_EXEC_LABEL
+    for item in python_dynamic_exec_sentinels
+)
+literal_eval_sentinels = mod.detect_risk_sentinels(
+    """diff --git a/tools/literal_probe.py b/tools/literal_probe.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/tools/literal_probe.py
+@@ -0,0 +1,4 @@
++import ast
++def parse_literal(expression):
++    return ast.literal_eval(expression)
+"""
+)
+assert not any(item.label == mod.PYTHON_DYNAMIC_EXEC_LABEL for item in literal_eval_sentinels)
+fixture_eval_string_sentinels = mod.detect_risk_sentinels(
+    '''diff --git a/scripts/openrouter_pr_review_pareto_context_selftest.py b/scripts/openrouter_pr_review_pareto_context_selftest.py
+index 0000000..1111111 100644
+--- /dev/null
++++ b/scripts/openrouter_pr_review_pareto_context_selftest.py
+@@ -0,0 +1,3 @@
++# Intentional fixture string; never executed by this selftest.
++fixture = "return eval(expression)"
+'''
+)
+assert not any(item.label == mod.PYTHON_DYNAMIC_EXEC_LABEL for item in fixture_eval_string_sentinels)
+
 class FakeGitHubClient:
     repo = "DCOIR-Collector/dcoir-collector"
 
