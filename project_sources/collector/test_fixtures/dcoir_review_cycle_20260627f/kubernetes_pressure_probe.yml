@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: host-network-probe
+spec:
+  hostNetwork: true
+  containers:
+    - name: worker
+      image: alpine:latest
+      securityContext:
+        allowPrivilegeEscalation: true
