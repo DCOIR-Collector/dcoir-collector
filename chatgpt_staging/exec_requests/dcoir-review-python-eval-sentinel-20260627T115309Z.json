@@ -1,0 +1,9 @@
+{
+  "schema_version": "dcoir.chatgpt_staging.exec_request.v1",
+  "request_id": "dcoir-review-python-eval-sentinel-20260627T115309Z",
+  "operator_approved": true,
+  "script_path": "chatgpt_staging/exec_scripts/dcoir-review-python-eval-sentinel-20260627T115309Z.ps1",
+  "shell": "pwsh",
+  "timeout_seconds": 900,
+  "cleanup_request": true
+}
