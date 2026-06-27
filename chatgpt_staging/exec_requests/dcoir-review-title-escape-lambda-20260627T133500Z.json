@@ -1,0 +1,11 @@
+{
+  "schema": "dcoir.chatgpt_staging.exec_request.v1",
+  "request_id": "dcoir-review-title-escape-lambda-20260627T133500Z",
+  "operator_approved": true,
+  "script_path": "chatgpt_staging/exec_scripts/dcoir-review-title-escape-lambda-20260627T133500Z.ps1",
+  "approved_command_preview": "Run approved repo script chatgpt_staging/exec_scripts/dcoir-review-title-escape-lambda-20260627T133500Z.ps1 to replace the DCOIR Review title Markdown escape regex replacement with a lambda, run py_compile, commit the fix to main, and remove the temporary exec script.",
+  "shell": "powershell_5",
+  "timeout_seconds": 600,
+  "artifact_retention_days": 3,
+  "cleanup_request_after_run": true
+}
