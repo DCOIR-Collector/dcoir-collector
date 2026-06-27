@@ -135,6 +135,8 @@ assert "Replace:" in fallback_fix_comment
 assert "Add:" in fallback_fix_comment
 assert "Keep the repair limited" in fallback_fix_comment
 assert "```suggestion" not in fallback_fix_comment
+assert "Notes:" in fallback_fix_comment
+assert "```text\nKeep the repair limited to the deserialization path.\n```" in fallback_fix_comment
 
 malformed_guidance_comment = mod.base.build_inline_comment(
     {
@@ -157,6 +159,46 @@ assert "```powershell\n```powershell" not in malformed_guidance_comment
 assert "Write-Output \"safe\"" in malformed_guidance_comment
 assert 'python3 -m py_compile project_sources/collector/tools/dcoir_review_intentional_python_probe.py && python3 -c "' not in malformed_guidance_comment
 assert "bandit -r project_sources/collector/tools/dcoir_review_intentional_python_probe.py" in malformed_guidance_comment
+
+heading_notes_comment = mod.base.build_inline_comment(
+    {
+        "title": "Global state write",
+        "severity": "high",
+        "confidence": 0.95,
+        "body": "Fallback notes must not escape into markdown headings.",
+        "validation": "pwsh -NoProfile -Command Invoke-ScriptAnalyzer -Path probe.ps1",
+        "suggested_replacement": "",
+        "fix_guidance": {
+            "language": "powershell",
+            "remove": "Remove the global write.",
+            "notes": "# The function should record state through governed storage, not global scope.",
+        },
+    },
+    "test-model",
+    config,
+)
+assert "Notes:" in heading_notes_comment
+assert "```text\n# The function should record state through governed storage, not global scope.\n```" in heading_notes_comment
+
+eval_hardened_fix = mod.harden_python_dynamic_exec_fix_result(
+    {
+        "suggested_replacement": "return eval(expression, {'__builtins__': {}})",
+        "replace": "Replace with `return eval(expression, {'__builtins__': {}}, {})`.",
+        "notes": "Restricted globals make this safe.",
+    },
+    {
+        "title": "Arbitrary Python code execution via eval on caller-controlled expression",
+        "body": "eval runs caller-controlled Python code.",
+        "validation": "python3 -m py_compile probe.py",
+    },
+    "project_sources/collector/tools/dcoir_review_intentional_python_probe.py",
+    "    return eval(expression, {'__builtins__': __builtins__, 'os': os, 'Path': Path})",
+)
+assert eval_hardened_fix["suggested_replacement"] == ""
+assert "eval(" not in eval_hardened_fix["replace"]
+assert "exec(" not in eval_hardened_fix["replace"]
+assert "ast.literal_eval" in eval_hardened_fix["replace"]
+assert "Restricted globals make this safe" not in eval_hardened_fix["notes"]
 
 try:
     mod.optional_float({"pareto_min_coding_score": "high"}, "pareto_min_coding_score")

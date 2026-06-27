@@ -1370,6 +1370,7 @@ def review_single_file_context(
         },
     )
     result, model_used, service_tier = hardened.openrouter_review(prompt, schema, config, reporter=None)
+    result = harden_python_dynamic_exec_fix_result(result, finding, path, line_text)
     hardened.write_debug_json_artifact_safely(
         config,
         f"responses/per-file/{index:02d}-{artifact_id}.json",
@@ -1600,6 +1601,7 @@ Goal:
 - Use `suggested_replacement` only when the exact replacement for the anchored GitHub review line is safe, syntactically plausible, and does not require modifying other files.
 - If a native GitHub suggestion is not safe, leave `suggested_replacement` empty and fill one or more of `remove`, `replace`, and `add` with concise code-oriented guidance.
 - Do not include Markdown fences in JSON fields.
+- For eval/exec/dynamic code execution findings, do not propose another eval or exec call, even with restricted globals. Prefer removal, ast.literal_eval for literal-only data, a constrained parser/AST allowlist, or an explicit allowlist.
 - Do not repeat secret-like literal values.
 
 File: `{path}`
@@ -1655,6 +1657,61 @@ def verified_suggested_replacement(fix_result: dict[str, Any], file_text: str, l
     if changed_lines != [line_number]:
         return ""
     return suggestion
+
+
+PYTHON_DYNAMIC_EXEC_REPLACEMENT_PATTERN = re.compile(r"\b(?:eval|exec)\s*\(")
+
+
+def is_python_dynamic_exec_fix_scope(finding: dict[str, Any], path: str, line_text: str) -> bool:
+    if Path(path).suffix.lower() != ".py":
+        return False
+    haystack = "\n".join(
+        [
+            str(finding.get("title", "") or ""),
+            str(finding.get("body", "") or ""),
+            str(finding.get("validation", "") or ""),
+            line_text,
+        ]
+    ).lower()
+    if PYTHON_DYNAMIC_EXEC_REPLACEMENT_PATTERN.search(line_text):
+        return True
+    return ("eval" in haystack or "exec" in haystack) and (
+        "dynamic" in haystack or "code execution" in haystack or "arbitrary code" in haystack
+    )
+
+
+def harden_python_dynamic_exec_fix_result(
+    fix_result: dict[str, Any],
+    finding: dict[str, Any],
+    path: str,
+    line_text: str,
+) -> dict[str, Any]:
+    if not isinstance(fix_result, dict) or not is_python_dynamic_exec_fix_scope(finding, path, line_text):
+        return fix_result
+    result = dict(fix_result)
+    result["suggested_replacement"] = ""
+    result["remove"] = str(
+        result.get("remove")
+        or f"Remove the dynamic Python execution call on the anchored line: {line_text.strip()}"
+    ).strip()
+    result["replace"] = (
+        "Replace the dynamic evaluation with a non-executing parser or explicit allowlist. "
+        "Use ast.literal_eval only for literal data; for expression-like input, implement a constrained AST "
+        "or grammar allowlist. Do not use eval or exec, even with restricted globals."
+    )
+    add_text = str(result.get("add", "") or "").strip()
+    if not add_text or PYTHON_DYNAMIC_EXEC_REPLACEMENT_PATTERN.search(add_text):
+        result["add"] = (
+            "Add tests proving os, __import__, open, and filesystem side effects are rejected "
+            "without being executed."
+        )
+    else:
+        result["add"] = add_text
+    result["notes"] = (
+        "Native GitHub suggestion suppressed because the safe repair depends on approved expression semantics; "
+        "do not replace eval or exec with another dynamic execution primitive."
+    )
+    return result
 
 
 def fix_guidance_from_result(fix_result: dict[str, Any], path: str, config: Any) -> dict[str, str]:
