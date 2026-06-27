@@ -1727,6 +1727,9 @@ def summary_suggests_problem(summary: str) -> bool:
     )
     problem_noun_pattern = r"(?:findings?|issues?|problems?|regressions?|risks?|failures?|bypasses?)"
     remaining_problem_noun_pattern = r"(?:issues?|problems?|regressions?|risks?|failures?|bypasses?)"
+    introduced_problem_noun_pattern = (
+        r"(?:findings?|issues?|problems?|defects?|vulnerabilities?|regressions?|risks?|failures?|bypasses?|injection paths?)"
+    )
     modified_problem_noun_pattern = rf"(?:[a-z0-9-]+\s+){{0,4}}{problem_noun_pattern}"
     clean_two_item_problem_noun_pattern = (
         rf"(?!(?:a|an|the|this|that|these|those)\b)"
@@ -1760,8 +1763,13 @@ def summary_suggests_problem(summary: str) -> bool:
         rf",\s*(?:and|or)\s+{modified_problem_noun_pattern}"
         r"(?:\s+(?:were|was|are|is|found|identified|detected|observed|present|remaining|remain))*",
     )
+    negated_introduced_problem_patterns = (
+        rf"\b(?:does not|doesn't)(?: itself)?\s+(?:introduce|create|pose|add)\b"
+        rf"(?:(?:\.\d)|[^.;:!?\n]){{0,220}}\b{introduced_problem_noun_pattern}\b",
+    )
     negated_problem_patterns = (
         *negated_list_patterns,
+        *negated_introduced_problem_patterns,
         r"\bno\b(?:\s+[a-z0-9]+){0,8}\s+(?:findings?|issues?|problems?|regressions?|risks?|failures?|bypasses?)\b"
         r"(?:\s+(?:were|was|are|is|found|identified|detected|observed|present|remaining|remain))*",
         r"\bnot\b(?:\s+[a-z0-9]+){0,5}\s+(?:found|identified|detected|observed)\b",
@@ -1776,7 +1784,7 @@ def summary_suggests_problem(summary: str) -> bool:
         return any(re.search(rf"\b{re.escape(term)}s?\b", stripped) for term in positive_terms)
 
     cleaned_summary = summary.lower()
-    for pattern in negated_list_patterns:
+    for pattern in (*negated_introduced_problem_patterns, *negated_list_patterns):
         cleaned_summary = re.sub(pattern, " ", cleaned_summary)
     clauses = re.split(r"(?:[.;:!?]+|,\s+|\b(?:and|but|however|though|although|yet|except|nevertheless|still)\b)", cleaned_summary)
     return any(clause_suggests_problem(clause.strip()) for clause in clauses if clause.strip())

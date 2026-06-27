@@ -242,6 +242,7 @@ for clean_summary in [
     "No regressions found.",
     "No regressions found and no security risks remain.",
     "No regressions found. No security risks remain.",
+    "No high-confidence actionable findings. The PR hardens native GitHub suggestion verification by anchoring replacements to the actual file text, reducing the maximum length, blocking multi-line and marker-containing suggestions, and rejecting suggestions when the changed-line count is not exactly one. Both the verifier and the selftest new coverage look correct. The changed code does not introduce any correctness, security, governance, Windows PowerShell 5.1 compatibility, or validation-gap risk.",
 ]:
     assert_clean(clean_summary)
 
@@ -257,6 +258,7 @@ for problem_summary in [
     "No findings and the workflow regression remains.",
     "No regressions found. Security risks remain.",
     "No regressions found, security risks remain.",
+    "The changed code does not introduce compatibility problems. Security risks remain.",
     "No issues, regressions, or risks were identified, security risks remain.",
     "No issues, security risks remain.",
     "No issues, regressions, security risks remain.",
