@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: dcoir-debug-probe
+spec:
+  selector:
+    matchLabels:
+      app: dcoir-debug-probe
+  template:
+    metadata:
+      labels:
+        app: dcoir-debug-probe
+    spec:
+      hostPID: true
+      containers:
+        - name: debug
+          image: alpine:latest
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - name: docker-socket
+              mountPath: /var/run/docker.sock
+      volumes:
+        - name: docker-socket
+          hostPath:
+            path: /var/run/docker.sock
