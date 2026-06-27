@@ -5,11 +5,11 @@
   "github_run_attempt": "1",
   "github_run_id": "28289041053",
   "github_sha": "63b63639252dbdf81fbe5882786d0703b7293e4e",
-  "phase": "request-resolved",
+  "phase": "running-harness",
   "request_id": "dcoir-review-fix-guidance-normalization-20260627T122100Z",
   "request_path": "chatgpt_staging/exec_requests/dcoir-review-fix-guidance-normalization-20260627T122100Z.json",
   "result": "running",
   "schema": "dcoir.chatgpt_staging.latest_progress_marker.v1",
-  "updated_utc": "2026-06-27T12:23:58Z",
+  "updated_utc": "2026-06-27T12:24:01Z",
   "workflow": "chatgpt-exec"
 }
