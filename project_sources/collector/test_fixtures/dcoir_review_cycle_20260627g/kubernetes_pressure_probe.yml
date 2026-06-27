@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: privileged-probe
+spec:
+  selector:
+    matchLabels:
+      app: privileged-probe
+  template:
+    metadata:
+      labels:
+        app: privileged-probe
+    spec:
+      volumes:
+        - name: host-root
+          hostPath:
+            path: /
+      containers:
+        - name: worker
+          image: alpine:latest
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - name: host-root
+              mountPath: /host
