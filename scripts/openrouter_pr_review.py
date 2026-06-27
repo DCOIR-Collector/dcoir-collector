@@ -1499,9 +1499,14 @@ def fix_guidance_value_text(value: Any, config: Config, *, neutralize_mentions: 
     )
 
 
+def markdown_emphasis_safe_text(value: str) -> str:
+    text = " ".join(str(value or "").strip().splitlines())
+    return re.sub(r"([*_`])", r"\", text)
+
+
 def build_inline_comment(finding: dict[str, Any], model_used: str, config: Config) -> str:
-    title = sanitize_github_output(str(finding.get("title", "Finding")).strip(), config)
-    severity = str(finding.get("severity", "medium")).upper()
+    title = markdown_emphasis_safe_text(sanitize_github_output(str(finding.get("title", "Finding")).strip(), config))
+    severity = markdown_emphasis_safe_text(str(finding.get("severity", "medium")).upper())
     confidence = float(finding.get("confidence", 0))
     body = sanitize_github_output(str(finding.get("body", "")).strip(), config)
     validation = sanitize_github_output(validation_text_for_finding(finding), config)

@@ -1739,6 +1739,7 @@ def synthesize_fix_for_finding(
     artifact_id = safe_artifact_name(f"{path}-{line}", f"fix-{index:02d}")
     hardened.write_debug_text_artifact_safely(config, f"prompts/fix-synthesis/{index:02d}-{artifact_id}.txt", prompt)
     result, model_used, service_tier = hardened.openrouter_review(prompt, schema, config, reporter=None)
+    result = harden_python_dynamic_exec_fix_result(result, finding, path, line_text)
     hardened.write_debug_json_artifact_safely(
         config,
         f"responses/fix-synthesis/{index:02d}-{artifact_id}.json",
