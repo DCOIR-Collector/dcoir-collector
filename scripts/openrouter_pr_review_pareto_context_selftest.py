@@ -136,6 +136,28 @@ assert "Add:" in fallback_fix_comment
 assert "Keep the repair limited" in fallback_fix_comment
 assert "```suggestion" not in fallback_fix_comment
 
+malformed_guidance_comment = mod.base.build_inline_comment(
+    {
+        "path": "project_sources/collector/tools/dcoir_review_intentional_python_probe.py",
+        "title": "Malformed fix guidance",
+        "severity": "high",
+        "confidence": 0.95,
+        "body": "The repair formatter should not render nested fences or malformed validation commands.",
+        "validation": "python3 -m py_compile project_sources/collector/tools/dcoir_review_intentional_python_probe.py && python3 -c \"\npython3 -m py_compile project_sources/collector/tools/dcoir_review_intentional_python_probe.py\nbandit -r project_sources/collector/tools/dcoir_review_intentional_python_probe.py",
+        "suggested_replacement": "",
+        "fix_guidance": {
+            "language": "powershell",
+            "add": "```powershell\nWrite-Output \"safe\"\n```",
+        },
+    },
+    "test-model",
+    config,
+)
+assert "```powershell\n```powershell" not in malformed_guidance_comment
+assert "Write-Output \"safe\"" in malformed_guidance_comment
+assert 'python3 -m py_compile project_sources/collector/tools/dcoir_review_intentional_python_probe.py && python3 -c "' not in malformed_guidance_comment
+assert "bandit -r project_sources/collector/tools/dcoir_review_intentional_python_probe.py" in malformed_guidance_comment
+
 try:
     mod.optional_float({"pareto_min_coding_score": "high"}, "pareto_min_coding_score")
 except ValueError as exc:

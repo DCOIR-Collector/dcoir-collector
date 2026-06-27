@@ -1406,9 +1406,28 @@ VALIDATION_COMMAND_PREFIXES = (
 )
 
 
+def has_balanced_command_quotes(text: str) -> bool:
+    quote = ""
+    escaped = False
+    for char in text:
+        if escaped:
+            escaped = False
+            continue
+        if char == "\\":
+            escaped = True
+            continue
+        if quote:
+            if char == quote:
+                quote = ""
+            continue
+        if char in {"\"", "'"}:
+            quote = char
+    return not quote
+
+
 def is_validation_command(text: str) -> bool:
     stripped = text.strip()
-    return any(stripped.startswith(prefix) for prefix in VALIDATION_COMMAND_PREFIXES)
+    return has_balanced_command_quotes(stripped) and any(stripped.startswith(prefix) for prefix in VALIDATION_COMMAND_PREFIXES)
 
 
 def powershell_double_quoted(value: str) -> str:
@@ -1465,6 +1484,20 @@ def validation_text_for_finding(finding: dict[str, Any]) -> str:
     return "\n".join(combined)
 
 
+def strip_markdown_fence_lines(text: str) -> str:
+    lines: list[str] = []
+    for line in text.splitlines():
+        if line.strip().startswith(("```", "~~~")):
+            continue
+        lines.append(line)
+    return "\n".join(lines).strip()
+
+
+def fix_guidance_value_text(value: Any, config: Config, *, neutralize_mentions: bool = False) -> str:
+    return strip_markdown_fence_lines(
+        sanitize_github_output(str(value or "").strip(), config, neutralize_mentions=neutralize_mentions)
+    )
+
 def build_inline_comment(finding: dict[str, Any], model_used: str, config: Config) -> str:
     title = sanitize_github_output(str(finding.get("title", "Finding")).strip(), config)
     severity = str(finding.get("severity", "medium")).upper()
@@ -1483,16 +1516,14 @@ def build_inline_comment(finding: dict[str, Any], model_used: str, config: Confi
             parts.extend(["", "Suggested fix guidance:", "", "```text", suggestion, "```"])
     if fix_guidance:
         language = sanitize_github_output(str(fix_guidance.get("language", "text") or "text").strip(), config)
+        if not re.fullmatch(r"[A-Za-z0-9_+.-]{1,32}", language):
+            language = "text"
         parts.extend(["", "Suggested repair:"])
         for label, key in (("Remove", "remove"), ("Replace", "replace"), ("Add", "add")):
-            value = sanitize_github_output(
-                str(fix_guidance.get(key, "") or "").strip(),
-                config,
-                neutralize_mentions=False,
-            )
+            value = fix_guidance_value_text(fix_guidance.get(key, ""), config, neutralize_mentions=False)
             if value:
                 parts.extend(["", f"{label}:", "", f"```{language}", value, "```"])
-        notes = sanitize_github_output(str(fix_guidance.get("notes", "") or "").strip(), config)
+        notes = fix_guidance_value_text(fix_guidance.get("notes", ""), config)
         if notes:
             parts.extend(["", notes])
     if validation:
