@@ -76,6 +76,14 @@ PYTHON_DYNAMIC_EXEC_DETAIL = (
     "eval/exec can execute caller-controlled Python expressions; remove dynamic evaluation "
     "or replace it with ast.literal_eval, a constrained parser, or an explicit allowlist"
 )
+GITHUB_ACTIONS_BROAD_WRITE_PERMISSION_LABEL = "GitHub Actions broad write permission"
+GITHUB_ACTIONS_BROAD_WRITE_PERMISSION_DETAIL = (
+    "workflow permissions grant repository write privileges; narrow permissions to the minimum read/write scopes needed"
+)
+GITHUB_ACTIONS_UNTRUSTED_CHECKOUT_REF_LABEL = "GitHub Actions untrusted checkout ref"
+GITHUB_ACTIONS_UNTRUSTED_CHECKOUT_REF_DETAIL = (
+    "checkout uses untrusted pull request head refs or SHAs; privileged workflows must not execute PR-controlled code with write tokens"
+)
 PYTHON_DYNAMIC_EXEC_CALL_NAMES = frozenset(
     {"eval", "exec", "builtins.eval", "builtins.exec", "__builtins__.eval", "__builtins__.exec"}
 )
@@ -101,6 +109,14 @@ DEFAULT_PYTHON_PATH_CONSTRUCTORS = frozenset({"Path", "pathlib.Path"})
 DEFAULT_PYTHON_OS_MODULES = frozenset({"os"})
 PYTHON_PATH_ALIAS_CONTEXT: dict[str, set[str]] = {}
 PYTHON_OS_ALIAS_CONTEXT: dict[str, set[str]] = {}
+GITHUB_ACTIONS_WRITE_PERMISSION_RE = re.compile(
+    r"^\s*(?:permissions\s*:\s*write-all|(?:actions|checks|contents|deployments|id-token|issues|packages|pull-requests|statuses)\s*:\s*write)\b",
+    re.IGNORECASE,
+)
+GITHUB_ACTIONS_UNTRUSTED_CHECKOUT_REF_RE = re.compile(
+    r"github\.event\.pull_request\.head\.(?:ref|sha)|github\.head_ref",
+    re.IGNORECASE,
+)
 
 
 class PythonDiffLine(NamedTuple):
@@ -960,11 +976,50 @@ def detect_python_file_write_path_sentinels(diff: str) -> list[hardened.RiskSent
     return sentinels
 
 
+def detect_github_actions_yaml_sentinels(diff: str) -> list[hardened.RiskSentinel]:
+    sentinels: list[hardened.RiskSentinel] = []
+    seen: set[tuple[str, int, str]] = set()
+    for changed_line in hardened.iter_added_diff_lines(diff):
+        if Path(changed_line.path).suffix.lower() not in {".yml", ".yaml"}:
+            continue
+        if hardened.is_comment_only_added_line(changed_line.path, changed_line.text):
+            continue
+        line_text = changed_line.text
+        if GITHUB_ACTIONS_WRITE_PERMISSION_RE.search(line_text):
+            key = (changed_line.path, changed_line.line, GITHUB_ACTIONS_BROAD_WRITE_PERMISSION_LABEL)
+            if key not in seen:
+                seen.add(key)
+                sentinels.append(
+                    hardened.RiskSentinel(
+                        path=changed_line.path,
+                        line=changed_line.line,
+                        label=GITHUB_ACTIONS_BROAD_WRITE_PERMISSION_LABEL,
+                        detail=GITHUB_ACTIONS_BROAD_WRITE_PERMISSION_DETAIL,
+                        text=changed_line.text,
+                    )
+                )
+        if GITHUB_ACTIONS_UNTRUSTED_CHECKOUT_REF_RE.search(line_text):
+            key = (changed_line.path, changed_line.line, GITHUB_ACTIONS_UNTRUSTED_CHECKOUT_REF_LABEL)
+            if key not in seen:
+                seen.add(key)
+                sentinels.append(
+                    hardened.RiskSentinel(
+                        path=changed_line.path,
+                        line=changed_line.line,
+                        label=GITHUB_ACTIONS_UNTRUSTED_CHECKOUT_REF_LABEL,
+                        detail=GITHUB_ACTIONS_UNTRUSTED_CHECKOUT_REF_DETAIL,
+                        text=changed_line.text,
+                    )
+                )
+    return sentinels
+
+
 def detect_risk_sentinels(diff: str, max_anchors: int | None = None) -> list[hardened.RiskSentinel]:
     diff_fixture_added_lines = python_diff_fixture_added_line_keys(diff)
     combined = [
         *detect_python_file_write_path_sentinels(diff),
         *detect_python_dynamic_exec_sentinels(diff),
+        *detect_github_actions_yaml_sentinels(diff),
         *[
             sentinel
             for sentinel in _original_detect_risk_sentinels(diff, None)
@@ -1370,7 +1425,6 @@ def review_single_file_context(
         },
     )
     result, model_used, service_tier = hardened.openrouter_review(prompt, schema, config, reporter=None)
-    result = harden_python_dynamic_exec_fix_result(result, finding, path, line_text)
     hardened.write_debug_json_artifact_safely(
         config,
         f"responses/per-file/{index:02d}-{artifact_id}.json",
@@ -2021,15 +2075,161 @@ def append_context_to_review_body(body: str, review_mode: str, context_summary: 
     return base.github_safe_body(f"{body}\n\n{CONTEXT_REVIEW_MARKER} `{review_mode}`\n\nContext readback: {safe_context_summary}")
 
 
+FINDING_ANCHOR_HINTS: tuple[tuple[tuple[str, ...], tuple[str, ...]], ...] = (
+    (("pickle", "deserial"), ("pickle.loads", "pickle.load", "pickle")),
+    (("yaml", "loader", "deserial"), ("yaml.load", "yaml.loader", "loader=yaml.loader")),
+    (("ssrf", "outbound", "request url"), ("requests.get", "requests.post", "requests.request", "httpx.", "url")),
+    (("securestring", "plain text", "plaintext"), ("convertto-securestring", "-asplaintext", "securestring")),
+    (("start-process", "process launch"), ("start-process", "-filepath", "-argumentlist")),
+    (("run key", "persistence", "set-itemproperty"), ("set-itemproperty", "currentversion\\run", "\\run", "run")),
+    (("pull_request_target", "privileged pr"), ("pull_request_target",)),
+    (("broad write", "write permission", "permissions"), ("permissions:", "contents:", "pull-requests:", "write")),
+    (("checkout", "untrusted", "head sha", "head ref"), ("actions/checkout", "github.event.pull_request.head.sha", "github.event.pull_request.head.ref")),
+    (("curl", "pipe", "bash"), ("curl", "bash", "|")),
+    (("eval", "exec", "dynamic code"), ("eval(", "exec(")),
+)
+ANCHOR_TERM_STOP_WORDS = {
+    "actionable",
+    "affected",
+    "anchored",
+    "changed",
+    "command",
+    "confidence",
+    "correction",
+    "expected",
+    "finding",
+    "github",
+    "impact",
+    "line",
+    "review",
+    "risk",
+    "security",
+    "should",
+    "source",
+    "validation",
+}
+
+
+def normalized_anchor_text(text: Any) -> str:
+    return re.sub(r"\s+", " ", str(text or "").lower()).strip()
+
+
+def finding_anchor_terms(finding: dict[str, Any]) -> list[str]:
+    haystack = normalized_anchor_text(
+        "\n".join(
+            [
+                str(finding.get("title", "") or ""),
+                str(finding.get("body", "") or ""),
+                str(finding.get("validation", "") or ""),
+            ]
+        )
+    )
+    terms: set[str] = set()
+    for triggers, anchors in FINDING_ANCHOR_HINTS:
+        if any(trigger in haystack for trigger in triggers):
+            terms.update(anchors)
+    for token in re.findall(r"[a-z_][a-z0-9_.:-]{3,}", haystack):
+        if token not in ANCHOR_TERM_STOP_WORDS and len(token) <= 48:
+            terms.add(token)
+    return sorted(terms, key=lambda term: (-len(term), term))[:24]
+
+
+def finding_text_matches_sentinel(finding: dict[str, Any], sentinel: hardened.RiskSentinel) -> bool:
+    haystack = normalized_anchor_text(
+        "\n".join(
+            [
+                str(finding.get("title", "") or ""),
+                str(finding.get("body", "") or ""),
+                str(finding.get("validation", "") or ""),
+            ]
+        )
+    )
+    return any(normalized_anchor_text(term) in haystack for term in hardened.risk_sentinel_terms(sentinel))
+
+
+def anchor_candidate_score(
+    finding: dict[str, Any],
+    candidate: hardened.ChangedLine,
+    original_line: int,
+    terms: list[str],
+    risk_sentinels: list[hardened.RiskSentinel],
+) -> int:
+    distance = abs(candidate.line - original_line) if original_line > 0 else 1000
+    score = max(0, 24 - distance)
+    line_text = normalized_anchor_text(candidate.text)
+    for term in terms:
+        normalized_term = normalized_anchor_text(term)
+        if normalized_term and normalized_term in line_text:
+            score += 36 if len(normalized_term) >= 8 or any(char in normalized_term for char in ".:-_\\|") else 14
+    if candidate.line == original_line:
+        score += 3
+    for sentinel in risk_sentinels:
+        if sentinel.path == candidate.path and sentinel.line == candidate.line and finding_text_matches_sentinel(finding, sentinel):
+            score += 90
+    return score
+
+
+def reanchor_finding_to_changed_line(
+    finding: dict[str, Any],
+    line_index: dict[tuple[str, int], int],
+    changed_lines_by_path: dict[str, list[hardened.ChangedLine]],
+    risk_sentinels: list[hardened.RiskSentinel],
+) -> dict[str, Any]:
+    path = str(finding.get("path", "") or "").strip()
+    try:
+        original_line = int(finding.get("line", 0) or 0)
+    except (TypeError, ValueError):
+        return finding
+    candidates = changed_lines_by_path.get(path, [])
+    if not path or not candidates:
+        return finding
+    terms = finding_anchor_terms(finding)
+    if not terms and (path, original_line) in line_index:
+        return finding
+    scored = [
+        (
+            anchor_candidate_score(finding, candidate, original_line, terms, risk_sentinels),
+            -abs(candidate.line - original_line) if original_line > 0 else 0,
+            candidate.line,
+            candidate,
+        )
+        for candidate in candidates
+    ]
+    scored.sort(reverse=True)
+    best_score, _best_distance_sort, _best_line_sort, best_candidate = scored[0]
+    exact_candidate = next((candidate for candidate in candidates if candidate.line == original_line), None)
+    exact_score = (
+        anchor_candidate_score(finding, exact_candidate, original_line, terms, risk_sentinels)
+        if exact_candidate is not None
+        else -1
+    )
+    if exact_candidate is not None and best_score < exact_score + 8:
+        return finding
+    if best_score < 24:
+        return finding
+    anchored = dict(finding)
+    anchored["line"] = best_candidate.line
+    if original_line != best_candidate.line:
+        anchored["_reanchored_from_line"] = original_line
+    return anchored
+
+
 def split_findings_with_review_body_fallback(
     result: dict[str, Any],
     config: Any,
     line_index: dict[tuple[str, int], int],
+    diff: str = "",
+    risk_sentinels: list[hardened.RiskSentinel] | None = None,
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     raw_findings = result.get("findings", [])
     if not isinstance(raw_findings, list) or not raw_findings:
         return hardened.split_findings(result, config, line_index)
     changed_paths = {path for path, _line in line_index}
+    changed_lines_by_path: dict[str, list[hardened.ChangedLine]] = {}
+    if diff:
+        for changed_line in hardened.iter_added_diff_lines(diff):
+            changed_lines_by_path.setdefault(changed_line.path, []).append(changed_line)
+    risk_sentinels = risk_sentinels or []
     findings: list[dict[str, Any]] = []
     unanchored_findings: list[dict[str, Any]] = []
     track_unanchored = bool(getattr(config, "fail_on_unanchored_findings", True))
@@ -2046,11 +2246,17 @@ def split_findings_with_review_body_fallback(
             continue
         if path not in changed_paths:
             continue
+        anchored_item = reanchor_finding_to_changed_line(dict(item), line_index, changed_lines_by_path, risk_sentinels)
+        try:
+            line = int(anchored_item.get("line", 0) or 0)
+            path = str(anchored_item.get("path", "")).strip()
+        except (AttributeError, TypeError, ValueError):
+            continue
         if (path, line) in line_index:
-            findings.append(dict(item))
+            findings.append(anchored_item)
             continue
         if track_unanchored:
-            unanchored = dict(item)
+            unanchored = dict(anchored_item)
             location_text = hardened.finding_location_text(path, line)
             unanchored["_unanchored_reason"] = f"{location_text} is not an added changed line for this PR"
             unanchored_findings.append(unanchored)
@@ -2223,7 +2429,7 @@ def main() -> None:
             gh,
         )
         reporter.update("normalize", "mapping model findings to changed diff lines")
-        findings, unanchored_findings = split_findings_with_review_body_fallback(result, config, line_index)
+        findings, unanchored_findings = split_findings_with_review_body_fallback(result, config, line_index, diff, risk_sentinels)
         findings = hardened.add_risk_sentinel_fallback_findings(findings, risk_sentinels, config, unanchored_findings)
         hardened.enforce_risk_sentinel_findings(findings, risk_sentinels, config, unanchored_findings)
         findings = synthesize_fixes_for_findings(findings, gh, pr, FIX_SYNTHESIS_SCHEMA, config, reporter)
@@ -2232,7 +2438,7 @@ def main() -> None:
         for finding in findings:
             path = str(finding["path"])
             line = int(finding["line"])
-            comments.append({"path": path, "position": line_index[(path, line)], "body": base.build_inline_comment(finding, model_used, config)})
+            comments.append({"path": path, "line": line, "side": "RIGHT", "body": base.build_inline_comment(finding, model_used, config)})
 
         event = "REQUEST_CHANGES" if comments and config.request_changes_on_findings else "COMMENT"
         reviewed_commit = str(pr.get("head", {}).get("sha", "") or "")

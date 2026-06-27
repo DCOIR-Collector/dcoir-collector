@@ -1499,38 +1499,185 @@ def fix_guidance_value_text(value: Any, config: Config, *, neutralize_mentions: 
     )
 
 
+def language_hint_for_path(path: str) -> str:
+    suffix = Path(path).suffix.lower()
+    return {
+        ".bash": "bash",
+        ".cjs": "javascript",
+        ".js": "javascript",
+        ".json": "json",
+        ".mjs": "javascript",
+        ".ps1": "powershell",
+        ".psd1": "powershell",
+        ".psm1": "powershell",
+        ".py": "python",
+        ".sh": "bash",
+        ".ts": "typescript",
+        ".yaml": "yaml",
+        ".yml": "yaml",
+    }.get(suffix, "text")
+
+
+def clean_fence_language(language: Any, fallback: str = "text") -> str:
+    text = str(language or "").strip().lower()
+    return text if re.fullmatch(r"[a-z0-9_+.-]{1,32}", text) else fallback
+
+
+def language_for_fix_guidance(fix_guidance: dict[str, Any], finding: dict[str, Any]) -> str:
+    fallback = language_hint_for_path(str(finding.get("path", "") or ""))
+    return clean_fence_language(fix_guidance.get("language", ""), fallback)
+
+
+PROSE_GUIDANCE_PREFIXES = (
+    "add ",
+    "avoid ",
+    "change ",
+    "delete ",
+    "do not ",
+    "ensure ",
+    "keep ",
+    "move ",
+    "native ",
+    "replace ",
+    "remove ",
+    "run ",
+    "store ",
+    "use ",
+    "validate ",
+)
+
+
+def guidance_value_looks_like_code(value: str, language: str) -> bool:
+    stripped = value.strip()
+    if not stripped:
+        return False
+    lowered = stripped.lower()
+    code_signals = (
+        "$",
+        "=",
+        "(",
+        ")",
+        "{",
+        "}",
+        "[",
+        "]",
+        ":",
+        ";",
+        "|",
+        "=>",
+        "&&",
+        "||",
+        "import ",
+        "from ",
+        "def ",
+        "class ",
+        "return ",
+        "raise ",
+        "throw ",
+        "if ",
+        "for ",
+        "while ",
+        "on:",
+        "permissions:",
+        "uses:",
+        "run:",
+        "set-",
+        "invoke-",
+        "start-",
+        "convertto-",
+    )
+    has_code_signal = any(signal_text in lowered for signal_text in code_signals)
+    if lowered.startswith(PROSE_GUIDANCE_PREFIXES) and not has_code_signal:
+        return False
+    if language in {"yaml", "json"} and re.search(r"(?m)^\s*[A-Za-z0-9_.-]+\s*:", stripped):
+        return True
+    return has_code_signal
+
+
+def append_language_fence(parts: list[str], language: str, value: str) -> None:
+    parts.extend(["", f"```{clean_fence_language(language)}", value.rstrip(), "```"])
+
+
+def append_guidance_value(
+    parts: list[str],
+    label: str,
+    key: str,
+    value: str,
+    line: int,
+    language: str,
+) -> None:
+    if key == "remove" and line > 0:
+        heading = f"**On line {line} remove:**"
+    elif key == "remove":
+        heading = "**Remove:**"
+    elif key == "replace":
+        heading = "**Replace with:**"
+    elif key == "add" and line > 0:
+        heading = f"**Add near line {line}:**"
+    else:
+        heading = f"**{label}:**"
+    parts.extend(["", heading])
+    if guidance_value_looks_like_code(value, language):
+        append_language_fence(parts, language, value)
+    else:
+        parts.extend(["", value])
+
+
+VALIDATION_BODY_HEADING_RE = re.compile(
+    r"^\s*(?:#{1,6}\s*)?(?:\*\*)?validation(?: expected after fix)?(?:\*\*)?\s*:?\s*$",
+    re.IGNORECASE,
+)
+
+
+def strip_model_validation_section(text: str) -> str:
+    lines = text.splitlines()
+    for index, line in enumerate(lines):
+        if VALIDATION_BODY_HEADING_RE.match(line):
+            return "\n".join(lines[:index]).rstrip()
+    return text.strip()
+
+
 def markdown_emphasis_safe_text(value: str) -> str:
     text = " ".join(str(value or "").strip().splitlines())
-    return re.sub(r"([*_`])", lambda match: "\\" + match.group(1), text)
+    return text.replace("*", "\\*")
 
 
 def build_inline_comment(finding: dict[str, Any], model_used: str, config: Config) -> str:
     title = markdown_emphasis_safe_text(sanitize_github_output(str(finding.get("title", "Finding")).strip(), config))
     severity = markdown_emphasis_safe_text(str(finding.get("severity", "medium")).upper())
     confidence = float(finding.get("confidence", 0))
-    body = sanitize_github_output(str(finding.get("body", "")).strip(), config)
+    body = strip_model_validation_section(sanitize_github_output(str(finding.get("body", "")).strip(), config))
     validation = sanitize_github_output(validation_text_for_finding(finding), config)
     suggestion = sanitize_github_output(str(finding.get("suggested_replacement", "")).rstrip(), config, neutralize_mentions=False)
     fix_guidance = finding.get("fix_guidance") if isinstance(finding.get("fix_guidance"), dict) else {}
+    path = str(finding.get("path", "") or "")
+    try:
+        line = int(finding.get("line", 0) or 0)
+    except (TypeError, ValueError):
+        line = 0
+    language = language_for_fix_guidance(fix_guidance, finding) if fix_guidance else language_hint_for_path(path)
     parts = [f"**{severity}: {title}**", "", body]
     if config.include_confidence:
         parts.extend(["", f"Confidence: `{confidence:.2f}`"])
     if suggestion:
         if is_safe_suggestion(suggestion):
             parts.extend(["", "Suggested fix:", "", "```suggestion", suggestion, "```"])
+        elif guidance_value_looks_like_code(suggestion, language):
+            parts.extend(["", "**Suggested fix guidance:**"])
+            append_language_fence(parts, language, suggestion)
         else:
-            parts.extend(["", "Suggested fix guidance:", "", "```text", suggestion, "```"])
+            parts.extend(["", "**Suggested fix guidance:**", "", suggestion])
     if fix_guidance:
-        parts.extend(["", "Suggested repair:"])
         for label, key in (("Remove", "remove"), ("Replace", "replace"), ("Add", "add")):
             value = fix_guidance_value_text(fix_guidance.get(key, ""), config, neutralize_mentions=False)
             if value:
-                parts.extend(["", f"{label}:", "", "```text", value, "```"])
+                append_guidance_value(parts, label, key, value, line, language)
         notes = fix_guidance_value_text(fix_guidance.get("notes", ""), config)
         if notes:
-            parts.extend(["", "Notes:", "", "```text", notes, "```"])
+            parts.extend(["", "**Notes:**", "", notes])
     if validation:
-        parts.extend(["", "Validation expected after fix:", "", "```text", validation, "```"])
+        parts.extend(["", "**Validation expected after fix:**"])
+        append_language_fence(parts, "bash", validation)
     parts.extend(["", f"<sub>{REVIEW_DISPLAY_NAME}</sub>"])
     return github_safe_body("\n".join(parts), limit=12000)
 
@@ -1622,7 +1769,7 @@ def main() -> None:
         for finding in findings:
             path = str(finding["path"])
             line = int(finding["line"])
-            comments.append({"path": path, "position": line_index[(path, line)], "body": build_inline_comment(finding, model_used, config)})
+            comments.append({"path": path, "line": line, "side": "RIGHT", "body": build_inline_comment(finding, model_used, config)})
 
         event = "REQUEST_CHANGES" if comments and config.request_changes_on_findings else "COMMENT"
         reviewed_commit = str(pr.get("head", {}).get("sha", "") or "")

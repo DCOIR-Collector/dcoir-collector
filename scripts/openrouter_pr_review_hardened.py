@@ -2096,7 +2096,7 @@ def main() -> None:
         for finding in findings:
             path = str(finding["path"])
             line = int(finding["line"])
-            comments.append({"path": path, "position": line_index[(path, line)], "body": base.build_inline_comment(finding, model_used, config)})
+            comments.append({"path": path, "line": line, "side": "RIGHT", "body": base.build_inline_comment(finding, model_used, config)})
 
         event = "REQUEST_CHANGES" if comments and config.request_changes_on_findings else "COMMENT"
         reviewed_commit = str(pr.get("head", {}).get("sha", "") or "")

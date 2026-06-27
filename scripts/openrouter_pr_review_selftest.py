@@ -94,10 +94,24 @@ fallback_fix_comment = mod.build_inline_comment(
     "test-model",
     config,
 )
-assert "Suggested repair:" in fallback_fix_comment
-assert "Remove:" in fallback_fix_comment
+assert "**On line 10 remove:**" in fallback_fix_comment
+assert "**Replace with:**" in fallback_fix_comment
 assert "```powershell" in fallback_fix_comment
 assert "```suggestion" not in fallback_fix_comment
+assert "```text" not in fallback_fix_comment
+assert "pull\\_request\\_target" not in mod.build_inline_comment(
+    {
+        "title": "Unsafe pull_request_target workflow",
+        "severity": "high",
+        "confidence": 0.95,
+        "path": ".github/workflows/probe.yml",
+        "line": 4,
+        "body": "Uses `pull_request_target` with untrusted code.",
+        "validation": "python3 project_sources/github_actions/tools/build_workflow_inventory.py --check",
+    },
+    "test-model",
+    config,
+)
 
 previous_openrouter_key = os.environ.pop("OPENROUTER_API_KEY", None)
 try:
