@@ -60,8 +60,23 @@ def make_patch(repo: pathlib.Path, new_text: str, patch_path: pathlib.Path) -> N
     write(patch_path, patch)
 
 
+def make_patch_set(repo: pathlib.Path, changes: dict[str, str], patch_path: pathlib.Path) -> None:
+    original: dict[str, str] = {}
+    for rel_path, new_text in changes.items():
+        target = repo / rel_path
+        original[rel_path] = target.read_text(encoding="utf-8")
+        target.write_text(new_text, encoding="utf-8")
+    patch = run(["git", "diff", "--", *sorted(changes)], repo).stdout
+    for rel_path, old_text in original.items():
+        (repo / rel_path).write_text(old_text, encoding="utf-8")
+    write(patch_path, patch)
+
+
+def git_blob(repo: pathlib.Path, rel_path: str) -> str:
+    return run(["git", "ls-files", "-s", "--", rel_path], repo).stdout.split()[1]
+
+
 def request_body(repo: pathlib.Path, request_id: str, patch_rel: str, patch_file: pathlib.Path, *, target_branch: str = "feature/apply-patch-target") -> dict[str, object]:
-    blob = run(["git", "ls-files", "-s", "--", "project_sources/large.txt"], repo).stdout.split()[1]
     return {
         "schema": "dcoir.ops.apply_patch_request.v1",
         "request_id": request_id,
@@ -71,10 +86,39 @@ def request_body(repo: pathlib.Path, request_id: str, patch_rel: str, patch_file
         "allowed_roots": ["project_sources"],
         "patch_path": patch_rel,
         "expected_patch_sha256": sha256(patch_file),
-        "expected_target_blob_sha": blob,
+        "expected_target_blob_sha": git_blob(repo, "project_sources/large.txt"),
         "expected_current_sha256": sha256(repo / "project_sources/large.txt"),
         "expected_new_sha256": hashlib.sha256(b"alpha\nBETA\n").hexdigest(),
         "commit_message": f"Apply selftest patch {request_id}",
+    }
+
+
+def patch_set_request_body(repo: pathlib.Path, request_id: str, patch_rel: str, patch_file: pathlib.Path, *, target_branch: str) -> dict[str, object]:
+    return {
+        "schema": "dcoir.ops.apply_patch_request.v2",
+        "request_id": request_id,
+        "mode": "patch-set",
+        "operation": "apply",
+        "target_branch": target_branch,
+        "patch_path": patch_rel,
+        "expected_patch_sha256": sha256(patch_file),
+        "targets": [
+            {
+                "path": "project_sources/large.txt",
+                "allowed_roots": ["project_sources"],
+                "expected_target_blob_sha": git_blob(repo, "project_sources/large.txt"),
+                "expected_current_sha256": sha256(repo / "project_sources/large.txt"),
+                "expected_new_sha256": hashlib.sha256(b"alpha\nBETA\n").hexdigest(),
+            },
+            {
+                "path": "project_sources/other.txt",
+                "allowed_roots": ["project_sources"],
+                "expected_target_blob_sha": git_blob(repo, "project_sources/other.txt"),
+                "expected_current_sha256": sha256(repo / "project_sources/other.txt"),
+                "expected_new_sha256": hashlib.sha256(b"two\n").hexdigest(),
+            },
+        ],
+        "commit_message": f"Apply selftest patch set {request_id}",
     }
 
 
@@ -110,6 +154,82 @@ def test_happy_path(repo: pathlib.Path) -> None:
     assert json.loads((report_dir / "result.json").read_text(encoding="utf-8"))["result"] == "success"
     assert run(["git", "config", "--local", "--get", "user.name"], repo).stdout.strip() == "github-actions[bot]"
     assert run(["git", "config", "--local", "--get", "user.email"], repo).stdout.strip() == "41898282+github-actions[bot]@users.noreply.github.com"
+
+
+def test_patch_set_happy_path(repo: pathlib.Path) -> None:
+    request_id = "selftest-patch-set"
+    target_branch = "feature/apply-patch-set-target"
+    request_dir = repo / "ops/requests/apply_patch" / request_id
+    patch_rel = f"ops/requests/apply_patch/{request_id}/change.diff"
+    patch_file = repo / patch_rel
+    run(["git", "checkout", "main"], repo)
+    run(["git", "branch", "-f", target_branch, "main"], repo)
+    make_patch_set(
+        repo,
+        {
+            "project_sources/large.txt": "alpha\nBETA\n",
+            "project_sources/other.txt": "two\n",
+        },
+        patch_file,
+    )
+    write(request_dir / "request.json", json.dumps(patch_set_request_body(repo, request_id, patch_rel, patch_file, target_branch=target_branch), indent=2) + "\n")
+
+    validate = run([sys.executable, str(TOOL), "validate", "--repo", str(repo), "--request", str(request_dir / "request.json")], repo)
+    validate_result = json.loads(validate.stdout)
+    assert validate_result["target_path"] is None
+    assert validate_result["target_paths"] == ["project_sources/large.txt", "project_sources/other.txt"]
+    report_dir = repo / "out/patch-set-report"
+    run(
+        [
+            sys.executable,
+            str(TOOL),
+            "apply",
+            "--repo",
+            str(repo),
+            "--request",
+            str(request_dir / "request.json"),
+            "--local-only",
+            "--no-push",
+            "--report-dir",
+            str(report_dir),
+        ],
+        repo,
+    )
+    assert (repo / "project_sources/large.txt").read_text(encoding="utf-8") == "alpha\nBETA\n"
+    assert (repo / "project_sources/other.txt").read_text(encoding="utf-8") == "two\n"
+    result = json.loads((report_dir / "result.json").read_text(encoding="utf-8"))
+    assert result["result"] == "success"
+    assert result["schema"] == "dcoir.ops.apply_patch_request.v2"
+    assert result["mode"] == "patch-set"
+    assert result["operation"] == "apply"
+    assert len(result["apply_plan"]["files"]) == 2
+    assert {item["stale_base_result"] for item in result["apply_plan"]["files"]} == {"pass"}
+
+
+def test_patch_set_rejects_create(repo: pathlib.Path) -> None:
+    request_id = "selftest-patch-set-create"
+    target_branch = "feature/apply-patch-set-create"
+    request_dir = repo / "ops/requests/apply_patch" / request_id
+    patch_rel = f"ops/requests/apply_patch/{request_id}/change.patch"
+    patch_file = repo / patch_rel
+    run(["git", "checkout", "main"], repo)
+    run(["git", "branch", "-f", target_branch, "main"], repo)
+    write(repo / "project_sources/new.txt", "created\n")
+    patch_file.parent.mkdir(parents=True, exist_ok=True)
+    patch_file.write_text(run(["git", "diff", "--no-index", "--", "/dev/null", "project_sources/new.txt"], repo, check=False).stdout, encoding="utf-8")
+    (repo / "project_sources/new.txt").unlink()
+    body = patch_set_request_body(repo, request_id, patch_rel, patch_file, target_branch=target_branch)
+    body["targets"] = [
+        {
+            "path": "project_sources/new.txt",
+            "allowed_roots": ["project_sources"],
+            "expected_current_sha256": hashlib.sha256(b"").hexdigest(),
+        }
+    ]
+    write(request_dir / "request.json", json.dumps(body, indent=2) + "\n")
+    proc = run([sys.executable, str(TOOL), "validate", "--repo", str(repo), "--request", str(request_dir / "request.json")], repo, check=False)
+    assert proc.returncode != 0
+    assert "new file mode" in proc.stderr
 
 
 def test_rejects_default_branch(repo: pathlib.Path) -> None:
@@ -206,6 +326,8 @@ def main() -> int:
         repo = pathlib.Path(tmp)
         init_repo(repo)
         test_happy_path(repo)
+        test_patch_set_happy_path(repo)
+        test_patch_set_rejects_create(repo)
         test_rejects_default_branch(repo)
         test_rejects_multifile_patch(repo)
         test_rejects_plain_delete_patch(repo)

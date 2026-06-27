@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "OpenRouter PR Review Findings",
+  "title": "DCOIR PR Review Detector Findings",
   "type": "object",
   "additionalProperties": false,
   "required": ["summary", "findings"],
@@ -50,11 +50,11 @@
           },
           "body": {
             "type": "string",
-            "description": "Concise explanation of the problem and why it matters."
+            "description": "Concise explanation of the problem, why it matters, and the smallest safe patch direction when a fix is obvious."
           },
           "suggested_replacement": {
             "type": "string",
-            "description": "Exact replacement code for a GitHub suggestion block. Empty string if no safe small replacement is possible."
+            "description": "Detector/review passes must return an empty string. Native GitHub suggestion text is generated only by the separate fix-synthesis schema after deterministic anchoring checks."
           },
           "validation": {
             "type": "string",
