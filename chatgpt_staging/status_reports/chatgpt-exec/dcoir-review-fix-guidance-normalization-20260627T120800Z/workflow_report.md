@@ -9,8 +9,8 @@
 - identifier_type: request_id
 - poll_until_result: success_or_failure
 - do_not_use_repo_workflows_for_live_polling: true
-- result: running
-- phase: running-harness
+- result: success
+- phase: harness-finished
 - request_id: dcoir-review-fix-guidance-normalization-20260627T120800Z
 - request_path: chatgpt_staging/exec_requests/dcoir-review-fix-guidance-normalization-20260627T120800Z.json
 - github_run_id: 28288728816
@@ -18,9 +18,11 @@
 - github_sha: 05916c2d7d88b612b20bd7eae4daf7905791de31
 - github_ref: refs/heads/main
 - workflow_run_url: https://github.com/DCOIR-Collector/dcoir-collector/actions/runs/28288728816
-- report_updated_utc: 2026-06-27T12:08:11Z
+- report_updated_utc: 2026-06-27T12:08:16Z
 - progress_history_path: chatgpt_staging/status_reports/chatgpt-exec/dcoir-review-fix-guidance-normalization-20260627T120800Z/progress_history.jsonl
 - latest_progress_marker_path: chatgpt_staging/status_reports/chatgpt-exec/dcoir-review-fix-guidance-normalization-20260627T120800Z/latest_progress_marker.json
+- artifact_name: chatgpt-exec-dcoir-review-fix-guidance-normalization-20260627T120800Z
+- exit_code: 0
 
 ## Report routing
 
@@ -28,12 +30,13 @@ This is the live heartbeat report for an active ChatGPT-staged job. Poll this ex
 
 ## Current status
 
-Approved command harness is about to run. If this report remains in this phase, inspect the GitHub run URL for harness/runtime progress.
+Approved command harness finished with exit code 0. Final native exec status commit is next.
 
 ## Phase history
 
 - 2026-06-27T12:08:08Z | phase=request-resolved | result=running | Exec request path resolved. The workflow is preparing to run the approved command harness.
 - 2026-06-27T12:08:11Z | phase=running-harness | result=running | Approved command harness is about to run. If this report remains in this phase, inspect the GitHub run URL for harness/runtime progress.
+- 2026-06-27T12:08:16Z | phase=harness-finished | result=success | Approved command harness finished with exit code 0. Final native exec status commit is next.
 
 ## Next ChatGPT action
 
