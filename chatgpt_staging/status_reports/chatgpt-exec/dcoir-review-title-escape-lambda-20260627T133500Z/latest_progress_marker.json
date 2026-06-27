@@ -5,11 +5,11 @@
   "github_run_attempt": "1",
   "github_run_id": "28290688825",
   "github_sha": "603f59cbaa807baa38880138e97438a7cbcb8fed",
-  "phase": "request-resolved",
+  "phase": "running-harness",
   "request_id": "dcoir-review-title-escape-lambda-20260627T133500Z",
   "request_path": "chatgpt_staging/exec_requests/dcoir-review-title-escape-lambda-20260627T133500Z.json",
   "result": "running",
   "schema": "dcoir.chatgpt_staging.latest_progress_marker.v1",
-  "updated_utc": "2026-06-27T13:31:51Z",
+  "updated_utc": "2026-06-27T13:31:54Z",
   "workflow": "chatgpt-exec"
 }
