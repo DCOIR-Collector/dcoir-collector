@@ -16,9 +16,9 @@
 # - Uses the workflow token through github.token, OPENROUTER_API_KEY, and .github/openrouter-pr-review-pareto.yml config.
 # - Use secret/config names only as defined here and in the local config; never place secret values in workflow comments, requests, reports, logs, or bundles.
 # Runtime dependencies:
-# - Uses Python 3.12 and scripts/openrouter_pr_review_pareto_context.py from the trusted default branch checkout.
+# - Uses Python 3.12 and scripts/openrouter_pr_review_entrypoint.py from the trusted default branch checkout; the entrypoint applies connector-safe runtime patches before invoking scripts/openrouter_pr_review_pareto_context.py.
 # Expected outputs/readback:
-# - PR review output from scripts/openrouter_pr_review_pareto_context.py, static validation context readback when available, step-summary notices, optional debug progress/status comments, optional debug prompt/context artifacts, a reporter-readable debug markdown section, and GitHub Actions run/job readback when the workflow changes.
+# - PR review output from scripts/openrouter_pr_review_entrypoint.py, static validation context readback when available, step-summary notices, optional debug progress/status comments, optional debug prompt/context artifacts, a reporter-readable debug markdown section, and GitHub Actions run/job readback when the workflow changes.
 # Safety notes:
 # - Checkout is pinned to the trusted default branch and persists no credentials.
 # - Keep the manual author/command guard, least needed permissions, and issue_comment boundary intact; do not use pull_request_target.
@@ -446,7 +446,7 @@ jobs:
           OPENROUTER_REVIEW_CONFIG: .github/openrouter-pr-review-pareto.yml
           REVIEW_ASSIST_CONTEXT_PATH: ${{ env.REVIEW_ASSIST_CONTEXT_PATH }}
           DCOIR_REVIEW_DEBUG_ARTIFACT_DIR: dcoir-review-debug
-        run: python -u scripts/openrouter_pr_review_pareto_context.py
+        run: python -u scripts/openrouter_pr_review_entrypoint.py
 
       - name: Write DCOIR review debug report section
         if: always()
