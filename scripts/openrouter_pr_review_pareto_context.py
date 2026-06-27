@@ -1576,17 +1576,33 @@ Full head-file context:
     return prompt
 
 
-def verified_suggested_replacement(fix_result: dict[str, Any], line_text: str, config: Any) -> str:
+def verified_suggested_replacement(fix_result: dict[str, Any], file_text: str, line_number: int, config: Any) -> str:
     suggestion = str(fix_result.get("suggested_replacement", "") or "").rstrip()
     if not suggestion:
         return ""
-    if "```" in suggestion:
+    unsafe_suggestion_markers = ("```", "~~~", "\r", "\n")
+    if any(marker in suggestion for marker in unsafe_suggestion_markers):
         return ""
-    if len(suggestion) > 5000 or suggestion.count("\n") > 80:
+    if len(suggestion) > 1000:
         return ""
     if not base.is_safe_suggestion(suggestion):
         return ""
-    if suggestion.strip() == line_text.strip():
+    original_line = file_line_text(file_text, line_number)
+    if not original_line:
+        return ""
+    if suggestion.strip() == original_line.strip():
+        return ""
+    lines = file_text.splitlines()
+    if line_number <= 0 or line_number > len(lines):
+        return ""
+    updated_lines = list(lines)
+    updated_lines[line_number - 1] = suggestion
+    changed_lines = [
+        index
+        for index, (before, after) in enumerate(zip(lines, updated_lines), start=1)
+        if before != after
+    ]
+    if changed_lines != [line_number]:
         return ""
     return suggestion
 
@@ -1622,7 +1638,7 @@ def synthesize_fix_for_finding(
         {"path": path, "line": line, "model_used": model_used, "service_tier": service_tier, "result": result},
     )
     enriched = dict(finding)
-    suggestion = verified_suggested_replacement(result, line_text, config)
+    suggestion = verified_suggested_replacement(result, file_text, line, config)
     if suggestion:
         enriched["suggested_replacement"] = suggestion
     else:
