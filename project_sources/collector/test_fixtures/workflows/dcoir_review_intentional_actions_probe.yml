@@ -1,0 +1,21 @@
+# Intentional /dcoir-review GitHub Actions-style probe. DO NOT MERGE.
+name: DCOIR Review Intentional Actions Probe
+
+on:
+  pull_request_target:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  unsafe-pr-target:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout untrusted pull request head in privileged context
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Execute remote installer without pinning or verification
+        run: curl -fsSL https://example.invalid/install.sh | bash
