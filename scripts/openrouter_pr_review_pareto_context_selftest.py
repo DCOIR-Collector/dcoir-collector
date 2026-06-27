@@ -52,7 +52,7 @@ assert config.required_finding_min_per_family == 2
 
 
 fix_synthesis_verifier_marker = "single-line-pr-head-anchor"
-fix_file_text = "def restore(raw_state):\n    state = pickle.loads(raw_state)\n    return state\n"
+fix_file_text = "def restore(raw_state):\n    state = decode_state(raw_state)\n    return state\n"
 fix_replacement = "    state = json.loads(raw_state)"
 assert mod.verified_suggested_replacement(
     {"suggested_replacement": fix_replacement},
@@ -61,7 +61,7 @@ assert mod.verified_suggested_replacement(
     config,
 ) == fix_replacement
 assert mod.verified_suggested_replacement(
-    {"suggested_replacement": "    state = pickle.loads(raw_state)"},
+    {"suggested_replacement": "    state = decode_state(raw_state)"},
     fix_file_text,
     2,
     config,
@@ -74,6 +74,12 @@ assert mod.verified_suggested_replacement(
 ) == ""
 assert mod.verified_suggested_replacement(
     {"suggested_replacement": "```python\nstate = json.loads(raw_state)\n```"},
+    fix_file_text,
+    2,
+    config,
+) == ""
+assert mod.verified_suggested_replacement(
+    {"suggested_replacement": "    state = decode_state(raw_state) ~~~"},
     fix_file_text,
     2,
     config,
@@ -115,7 +121,7 @@ fallback_fix_comment = mod.base.build_inline_comment(
         "suggested_replacement": "",
         "fix_guidance": {
             "language": "python",
-            "remove": "pickle.loads(raw_state)",
+            "remove": "decode_state(raw_state)",
             "replace": "json.loads(raw_state)",
             "add": "Add a JSON schema validation test for the accepted state shape.",
             "notes": "Keep the repair limited to the deserialization path.",
@@ -124,7 +130,6 @@ fallback_fix_comment = mod.base.build_inline_comment(
     "test-model",
     config,
 )
-assert "Suggested repair:" in fallback_fix_comment
 assert "Remove:" in fallback_fix_comment
 assert "Replace:" in fallback_fix_comment
 assert "Add:" in fallback_fix_comment

@@ -1580,7 +1580,8 @@ def verified_suggested_replacement(fix_result: dict[str, Any], file_text: str, l
     suggestion = str(fix_result.get("suggested_replacement", "") or "").rstrip()
     if not suggestion:
         return ""
-    if "```" in suggestion or "\r" in suggestion or "\n" in suggestion:
+    unsafe_suggestion_markers = ("```", "~~~", "\r", "\n")
+    if any(marker in suggestion for marker in unsafe_suggestion_markers):
         return ""
     if len(suggestion) > 1000:
         return ""
