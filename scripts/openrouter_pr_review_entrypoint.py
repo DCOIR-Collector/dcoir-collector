@@ -13,6 +13,7 @@ import dcoir_review_required_runtime_patch_v4_apply
 import dcoir_review_required_runtime_patch_v5_apply
 import dcoir_review_required_runtime_patch_v6
 import dcoir_review_required_runtime_patch_v7
+import dcoir_review_required_runtime_patch_v8
 import dcoir_review_required_runtime_patches
 import dcoir_review_runtime_patches
 import dcoir_review_strict_runtime_patches
@@ -29,6 +30,7 @@ def main() -> None:
     dcoir_review_required_runtime_patch_v5_apply.apply_pareto_context_module(openrouter_pr_review_pareto_context)
     dcoir_review_required_runtime_patch_v6.apply_pareto_context_module(openrouter_pr_review_pareto_context)
     dcoir_review_required_runtime_patch_v7.apply_pareto_context_module(openrouter_pr_review_pareto_context)
+    dcoir_review_required_runtime_patch_v8.apply_pareto_context_module(openrouter_pr_review_pareto_context)
     openrouter_pr_review_pareto_context.main()
 
 
