@@ -174,7 +174,16 @@ def _semantic_kind(finding: dict[str, Any]) -> str:
     if suffix in {".yml", ".yaml"}:
         if "pull_request_target" in text:
             return "yaml_pull_request_target"
-        if "github.head_ref" in text or "github.event.pull_request.head" in text or "untrusted checkout" in text:
+        if "github.head_ref" in text or "github.event.pull_request.head" in text:
+            return "yaml_untrusted_checkout"
+        if (
+            "untrusted checkout" in text
+            or "checks out untrusted" in text
+            or "checkout uses untrusted" in text
+            or "untrusted pr code" in text
+            or "pull request head ref" in text
+            or "head ref or sha" in text
+        ):
             return "yaml_untrusted_checkout"
         if ("curl" in text or "wget" in text) and ("|" in text or "pipe" in text) and ("bash" in text or " sh" in text):
             return "yaml_shell_pipe"
@@ -474,7 +483,7 @@ def _yaml_required_fallback_body(kind: str, sentinel: Any) -> str:
     if kind == "yaml_broad_write":
         return "This workflow grants broad write permissions. Narrow the token permissions to the minimum scopes needed."
     if kind == "yaml_untrusted_checkout":
-        return "This privileged workflow checks out an untrusted pull request head ref or SHA. Do not combine privileged workflow context with PR-controlled code checkout."
+        return "This privileged workflow checks out untrusted pull request code. Do not combine privileged workflow context with PR-controlled code checkout, branch refs, or head SHAs."
     if kind == "yaml_shell_pipe":
         return f"This workflow pipes network-fetched content into a shell: `{changed}`. Download, verify a pinned checksum or signature, then execute only verified content."
     return "Review this GitHub Actions security boundary before merging."
@@ -556,15 +565,41 @@ def apply_pareto_context_module(module: Any) -> None:
             config: Any,
             unanchored_findings: list[dict[str, Any]] | None = None,
         ) -> list[dict[str, Any]]:
-            uncovered = [
-                sentinel
-                for sentinel in strict_required_risk_sentinels(risk_sentinels)
-                if not any(strict_finding_covers_risk_sentinel(finding, sentinel) for finding in [*findings, *(unanchored_findings or [])])
-            ]
+            uncovered: list[Any] = []
+            for sentinel in strict_required_risk_sentinels(risk_sentinels):
+                sentinel_kind = _sentinel_kind(sentinel)
+                # Required YAML risks need inline coverage; a body-only finding cannot satisfy exact-line review UX.
+                coverage_candidates = findings if sentinel_kind in YAML_REQUIRED_KIND_TITLES else [*findings, *(unanchored_findings or [])]
+                if not any(strict_finding_covers_risk_sentinel(finding, sentinel) for finding in coverage_candidates):
+                    uncovered.append(sentinel)
             inline_limit = int(getattr(config, "max_inline_comments", 12))
             fallback_findings = [strict_risk_sentinel_fallback_finding(sentinel, config) for sentinel in uncovered[:inline_limit]]
+            fallback_findings = [finding for finding in fallback_findings if finding]
             if not fallback_findings:
                 return findings
+            inserted = [
+                {
+                    "path": str(getattr(sentinel, "path", "") or ""),
+                    "line": int(getattr(sentinel, "line", 0) or 0),
+                    "kind": _sentinel_kind(sentinel),
+                }
+                for sentinel in uncovered[: len(fallback_findings)]
+            ]
+            message = "; ".join(f"{item['path']}:{item['line']} {item['kind']}" for item in inserted)
+            try:
+                if base is not None and hasattr(base, "emit_status"):
+                    base.emit_status("required-fallback-inserted", message)
+            except Exception:
+                pass
+            try:
+                if hasattr(hardened, "write_debug_json_artifact_safely"):
+                    hardened.write_debug_json_artifact_safely(
+                        config,
+                        "metadata/strict-required-fallback-inserted.json",
+                        {"inserted": inserted},
+                    )
+            except Exception:
+                pass
             existing_budget = max(0, inline_limit - len(fallback_findings))
             required_existing = [
                 finding
@@ -590,6 +625,31 @@ def apply_pareto_context_module(module: Any) -> None:
             return deduped[:inline_limit]
 
         hardened.add_risk_sentinel_fallback_findings = strict_add_risk_sentinel_fallback_findings
+
+        original_enforce = getattr(hardened, "enforce_risk_sentinel_findings", None)
+        review_quality_error = getattr(hardened, "ReviewQualityError", RuntimeError)
+
+        if callable(original_enforce):
+
+            def strict_enforce_risk_sentinel_findings(
+                findings: list[dict[str, Any]],
+                risk_sentinels: list[Any],
+                config: Any,
+                unanchored_findings: list[dict[str, Any]] | None = None,
+            ) -> None:
+                try:
+                    original_enforce(findings, risk_sentinels, config, unanchored_findings)
+                    return
+                except Exception as exc:
+                    if not isinstance(exc, review_quality_error):
+                        raise
+                    augmented = strict_add_risk_sentinel_fallback_findings(findings, risk_sentinels, config, unanchored_findings)
+                    if augmented == findings:
+                        raise
+                    original_enforce(augmented, risk_sentinels, config, unanchored_findings)
+                    findings[:] = augmented
+
+            hardened.enforce_risk_sentinel_findings = strict_enforce_risk_sentinel_findings
 
     original_score = getattr(module, "anchor_candidate_score", None)
     if callable(original_score):
