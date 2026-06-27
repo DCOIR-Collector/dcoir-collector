@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: dcoir-review-probe
+spec:
+  selector:
+    matchLabels:
+      app: dcoir-review-probe
+  template:
+    metadata:
+      labels:
+        app: dcoir-review-probe
+    spec:
+      hostNetwork: true
+      containers:
+        - name: collector
+          image: example.invalid/dcoir/probe:latest
+          securityContext:
+            runAsUser: 0
+            privileged: true
+          volumeMounts:
+            - name: docker-sock
+              mountPath: /var/run/docker.sock
+      volumes:
+        - name: docker-sock
+          hostPath:
+            path: /var/run/docker.sock
+            type: Socket
