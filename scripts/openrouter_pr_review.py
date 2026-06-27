@@ -1501,7 +1501,7 @@ def fix_guidance_value_text(value: Any, config: Config, *, neutralize_mentions: 
 
 def markdown_emphasis_safe_text(value: str) -> str:
     text = " ".join(str(value or "").strip().splitlines())
-    return re.sub(r"([*_`])", r"\", text)
+    return re.sub(r"([*_`])", lambda match: "\\" + match.group(1), text)
 
 
 def build_inline_comment(finding: dict[str, Any], model_used: str, config: Config) -> str:
