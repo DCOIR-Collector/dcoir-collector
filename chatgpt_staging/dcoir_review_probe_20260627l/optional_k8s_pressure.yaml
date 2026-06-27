@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: dcoir-review-optional-pressure
+spec:
+  containers:
+    - name: collector
+      image: busybox
+      securityContext:
+        privileged: true
