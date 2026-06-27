@@ -7,5 +7,6 @@
   "shell": "pwsh",
   "timeout_seconds": 900,
   "artifact_retention_days": 7,
-  "cleanup_request_after_run": true
+  "cleanup_request_after_run": true,
+  "trigger_nonce": "20260627T1218Z"
 }
