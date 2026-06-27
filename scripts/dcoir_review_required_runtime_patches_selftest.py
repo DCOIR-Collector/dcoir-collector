@@ -63,7 +63,7 @@ assert required_yaml["yaml_broad_write"][1] == 4
 assert required_yaml["yaml_untrusted_checkout"][1] == 11
 assert required_yaml["yaml_shell_pipe"][1] == 13
 
-config = type("Config", (), {"max_inline_comments": 2})()
+config = type("Config", (), {"max_inline_comments": 4})()
 optional = {
     "title": "Optional TypeScript command execution",
     "severity": "critical",
@@ -75,8 +75,13 @@ optional = {
     "validation": "python3 scripts/provider_pr_review_pareto_context_selftest.py",
 }
 augmented = hardened.add_risk_sentinel_fallback_findings([optional], sentinels, config)
-assert len(augmented) == 2
-assert {required._semantic_kind(item) for item in augmented} >= {"yaml_pull_request_target", "yaml_broad_write"}
+assert len(augmented) == 4
+assert {required._semantic_kind(item) for item in augmented} == {
+    "yaml_pull_request_target",
+    "yaml_broad_write",
+    "yaml_untrusted_checkout",
+    "yaml_shell_pipe",
+}
 
 ssrf_a = {
     "title": "CI token exfiltration",
