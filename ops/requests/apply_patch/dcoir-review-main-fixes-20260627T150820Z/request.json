@@ -1,0 +1,54 @@
+{
+  "schema": "dcoir.ops.apply_patch_request.v2",
+  "request_id": "dcoir-review-main-fixes-20260627T150820Z",
+  "mode": "patch-set",
+  "operation": "apply",
+  "target_branch": "main",
+  "patch_path": "ops/requests/apply_patch/dcoir-review-main-fixes-20260627T150820Z/change.diff",
+  "expected_patch_sha256": "4237d897a72974e2c07bba7ca39b5bf7eabc9e7615bea42041958b6243d6ce8a",
+  "allow_default_branch": true,
+  "default_branch_reason": "Operator approved direct main update for dcoir-review test-cycle fixes; request uses strict blob SHA guards and the governed ops apply-patch lane because target scripts are too large for safe direct connector replacement.",
+  "commit_message": "Fix DCOIR review anchoring and markdown formatting",
+  "targets": [
+    {
+      "path": "scripts/openrouter_pr_review.py",
+      "allowed_roots": [
+        "scripts"
+      ],
+      "expected_target_blob_sha": "b15f06d37c01f05fc47895f88f1d4458c5b36fe8",
+      "expected_new_sha256": "3e6893d45e9c96871c3a4696ff6a32c9cffc1123521f50208b4a728f5890fcee"
+    },
+    {
+      "path": "scripts/openrouter_pr_review_hardened.py",
+      "allowed_roots": [
+        "scripts"
+      ],
+      "expected_target_blob_sha": "c1ee6c12e820242ac9422254a55fc90a9e3e1baa",
+      "expected_new_sha256": "fdeaa4cd55065c9e1c133e52928d068871de2f474f5f3d8492092df2fede9c1e"
+    },
+    {
+      "path": "scripts/openrouter_pr_review_pareto_context.py",
+      "allowed_roots": [
+        "scripts"
+      ],
+      "expected_target_blob_sha": "ec86de73e75f507ea3e30f3b42ed09010e55a428",
+      "expected_new_sha256": "dc57bf7a742825f49204fa812eaaab83a18209e2c10b930e3e89e9741dabb831"
+    },
+    {
+      "path": "scripts/openrouter_pr_review_selftest.py",
+      "allowed_roots": [
+        "scripts"
+      ],
+      "expected_target_blob_sha": "de28919c8e3d07cc0fe3d1fc4f68c0168c7fbe5a",
+      "expected_new_sha256": "820847942c0c07b4a894c02ef87da962e5dffb11f3f3754cebb7cfa23280c169"
+    },
+    {
+      "path": "scripts/openrouter_pr_review_pareto_context_selftest.py",
+      "allowed_roots": [
+        "scripts"
+      ],
+      "expected_target_blob_sha": "73cab661e325fc0967068b10e2e41c9cfa7dc8ec",
+      "expected_new_sha256": "884a97058fd9f6231f5a4dd7e0219451417706b0ca3426c6845c041a79d8e989"
+    }
+  ]
+}
