@@ -1,0 +1,13 @@
+{
+  "schema": "dcoir.chatgpt_staging.exec_request.v1",
+  "request_id": "exec-20260627-pr316-dcoir-review-gate-fixes-001",
+  "operator_approved": true,
+  "approved_at_utc": "2026-06-27T10:56:00Z",
+  "shell": "powershell_5",
+  "timeout_seconds": 1800,
+  "artifact_retention_days": 3,
+  "cleanup_request_after_run": true,
+  "script_path": "chatgpt_staging/exec_scripts/exec-20260627-pr316-dcoir-review-gate-fixes-001.ps1",
+  "approved_command_preview": "Patch PR #316 branch fix/dcoir-review-fix-synthesis-verifier-20260626 to address the latest /dcoir-review gate findings: replace the native-suggestion marker guard with a tuple/any guard including tildes, remove pickle.loads fixture strings from the selftest, remove the heading-coupled fallback assertion, run py_compile/selftest/diff-check, commit and push only the PR branch, then restore the workflow workspace to main for normal readback cleanup.",
+  "command": "& 'D:\\a\\dcoir-collector\\dcoir-collector\\chatgpt_staging\\exec_scripts\\exec-20260627-pr316-dcoir-review-gate-fixes-001.ps1'"
+}
