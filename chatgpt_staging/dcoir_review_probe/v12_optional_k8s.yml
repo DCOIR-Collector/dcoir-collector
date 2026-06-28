@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: v12-optional-pressure
+spec:
+  hostNetwork: true
+  containers:
+    - name: collector
+      image: example.invalid/collector:latest
+      securityContext:
+        privileged: true
+        allowPrivilegeEscalation: true
+      volumeMounts:
+        - name: host-root
+          mountPath: /host
+  volumes:
+    - name: host-root
+      hostPath:
+        path: /
