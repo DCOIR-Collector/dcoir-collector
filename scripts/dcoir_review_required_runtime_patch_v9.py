@@ -28,6 +28,7 @@ from dcoir_review_required_runtime_patch_v9_prompting import (
     PROMPT_REVIEW_EVENTS,
     PROMPT_REVIEW_FAILURES,
     _ensure_prompt_review,
+    _normalize_inline_comment,
     _normalize_yaml_identifier,
     _prompt_review_problem,
     _patch_inline_comment,
@@ -42,7 +43,9 @@ from dcoir_review_required_runtime_patch_v9_prompting import (
     _strip_footer,
 )
 from dcoir_review_required_runtime_patch_v9_core import (
+    PS_DYNAMIC_EXEC,
     PYTHON_PICKLE_LOAD,
+    SELECTION_SUMMARY,
     _claim_text,
     _claimed_kinds,
     _confidence,
@@ -86,6 +89,7 @@ def apply_pareto_context_module(module: Any) -> None:
     if hardened is not None and base is not None:
         _patch_target_call_accounting(hardened)
         _patch_prompt_review_readback(hardened, base)
+    _patch_pickle_sentinels(module, hardened)
     if hardened is not None:
         _patch_pickle_sentinels(hardened)
         _patch_required_selection(module, hardened)
