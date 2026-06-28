@@ -172,43 +172,18 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p "$REPORT_DIR"
           NATIVE_REPORT_PATH="$REPORT_DIR/native_apply_in_success_report.md"
-          {
-            echo "# ChatGPT workflow report"
-            echo
-            echo "## Result"
-            echo
-            echo "- workflow: chatgpt-apply-in"
-            echo "- result: success"
-            echo "- phase: bundle-applied-before-commit"
-            echo "- request_id: $REQUEST_ID"
-            echo "- payload_path: $PAYLOAD"
-            echo "- payload_shape: single payload.zip.b64"
-            echo "- github_run_id: $GITHUB_RUN_ID"
-            echo "- github_sha: $GITHUB_SHA"
-            echo "- github_ref: $GITHUB_REF"
-            echo "- report_created_utc: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
-            echo
-            echo "## Applied paths"
-            if [[ -s chatgpt_staging/work/applied_paths.txt ]]; then sed 's/^/- /' chatgpt_staging/work/applied_paths.txt; else echo "- none"; fi
-            echo
-            echo "## Deleted paths"
-            if [[ -s chatgpt_staging/work/deleted_paths.txt ]]; then sed 's/^/- /' chatgpt_staging/work/deleted_paths.txt; else echo "- none"; fi
-            if [[ -f chatgpt_staging/work/hash_warnings.txt ]]; then
-              echo
-              echo "## Warnings"
-              sed 's/^/- /' chatgpt_staging/work/hash_warnings.txt
-            fi
-            echo
-            echo "## Cleanup guidance"
-            echo
-            echo "After ChatGPT verifies the commit/readback and no longer needs this report, create a cleanup marker for request id '$REQUEST_ID' with cleanup_status_reports=true."
-            echo
-            echo "## Next ChatGPT action"
-            echo
-            echo "Verify the committed target changes, hash policy outcome, deletion outcome, and apply report. If readback is good, update Airtable and clean this status report when safe."
-          } > "$NATIVE_REPORT_PATH"
+          python tools/chatgpt_apply_in/write_apply_in_report.py \
+            --github-run-id "$GITHUB_RUN_ID" \
+            --github-ref "$GITHUB_REF" \
+            --github-sha "$GITHUB_SHA" \
+            success \
+            --request-id "$REQUEST_ID" \
+            --payload "$PAYLOAD" \
+            --report-dir "$REPORT_DIR" \
+            --applied-paths chatgpt_staging/work/applied_paths.txt \
+            --deleted-paths chatgpt_staging/work/deleted_paths.txt \
+            --hash-warnings chatgpt_staging/work/hash_warnings.txt
           python .github/scripts/write_chatgpt_progress_report.py \
             --workflow chatgpt-apply-in \
             --request-id "$REQUEST_ID" \
@@ -270,42 +245,17 @@ jobs:
           ART_DIR="$RUNNER_TEMP/chatgpt_apply_in_failure/$REQUEST_ID"
           ARTIFACT_NAME="chatgpt-apply-in-failure-${GITHUB_RUN_ID}"
           rm -rf "$ART_DIR"
-          mkdir -p "$REPORT_DIR" "$ART_DIR"
-
-          {
-            echo "# ChatGPT workflow report"
-            echo
-            echo "## Result"
-            echo
-            echo "- workflow: chatgpt-apply-in"
-            echo "- result: failure"
-            echo "- phase: apply-in"
-            echo "- request_id: $REQUEST_ID"
-            echo "- payload_path: $PAYLOAD"
-            echo "- expected_payload_shape: single chatgpt_staging/in/<request_id>/payload.zip.b64"
-            echo "- github_run_id: $GITHUB_RUN_ID"
-            echo "- github_ref: $GITHUB_REF"
-            echo "- github_sha: $GITHUB_SHA"
-            echo "- artifact_name: $ARTIFACT_NAME"
-            echo "- artifact_retention_days: 7"
-            echo "- report_created_utc: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
-            echo
-            echo "## Troubleshooting context"
-            echo
-            echo "The apply-in workflow failed. This workflow only accepts one payload.zip.b64 file. Parts/chunks, chunk manifests, payload.zip.b64.parts, invalid base64, missing root apply_manifest.json, missing root files/, unsafe paths, stale hashes, create_only violations, delete policy violations, or workflow-change policy violations are hard failures."
-            echo
-            if [[ -f "$WORK_DIR/extract/apply_manifest.json" ]]; then
-              echo "### Manifest excerpt"
-              echo
-              echo '```json'
-              python -c "import pathlib; p=pathlib.Path('$WORK_DIR/extract/apply_manifest.json'); print(p.read_text(encoding='utf-8', errors='replace')[:4000])" || true
-              echo '```'
-            fi
-            echo
-            echo "## Next ChatGPT action"
-            echo
-            echo "Read this report, inspect the artifact or run log if needed, regenerate a single payload.zip.b64 with current hashes, then retry. Do not switch to parts/chunks."
-          } > "$NATIVE_REPORT_PATH"
+          python tools/chatgpt_apply_in/write_apply_in_report.py \
+            --github-run-id "$GITHUB_RUN_ID" \
+            --github-ref "$GITHUB_REF" \
+            --github-sha "$GITHUB_SHA" \
+            failure \
+            --request-id "$REQUEST_ID" \
+            --payload "$PAYLOAD" \
+            --work-dir "$WORK_DIR" \
+            --report-dir "$REPORT_DIR" \
+            --artifact-dir "$ART_DIR" \
+            --artifact-name "$ARTIFACT_NAME"
           python .github/scripts/write_chatgpt_progress_report.py \
             --workflow chatgpt-apply-in \
             --request-id "$REQUEST_ID" \
@@ -322,9 +272,6 @@ jobs:
           } >> "$REPORT_PATH"
 
           cp "$REPORT_PATH" "$ART_DIR/workflow_report.md"
-          if [[ -f "$PAYLOAD" ]]; then sha256sum "$PAYLOAD" > "$ART_DIR/payload_b64.sha256"; fi
-          if [[ -f "$WORK_DIR/payload.zip" ]]; then sha256sum "$WORK_DIR/payload.zip" > "$ART_DIR/payload_zip.sha256"; fi
-          if [[ -f "$WORK_DIR/extract/apply_manifest.json" ]]; then cp "$WORK_DIR/extract/apply_manifest.json" "$ART_DIR/apply_manifest.json"; fi
 
           git restore --staged . || true
           pwsh -NoProfile -File .github/scripts/Invoke-ChatGptReportPush.ps1 \
