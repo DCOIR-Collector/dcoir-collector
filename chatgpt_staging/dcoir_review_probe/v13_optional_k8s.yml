@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: dcoir-v13-optional
+spec:
+  hostPID: true
+  containers:
+    - name: runner
+      image: alpine:3.20
+      securityContext:
+        privileged: true
+        allowPrivilegeEscalation: true
+      volumeMounts:
+        - name: docker
+          mountPath: /var/run/docker.sock
+  volumes:
+    - name: docker
+      hostPath:
+        path: /var/run/docker.sock
