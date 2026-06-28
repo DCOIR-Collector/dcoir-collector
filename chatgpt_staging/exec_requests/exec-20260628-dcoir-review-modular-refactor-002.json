@@ -1,0 +1,13 @@
+{
+  "schema": "dcoir.chatgpt_staging.exec_request.v1",
+  "request_id": "exec-20260628-dcoir-review-modular-refactor-002",
+  "operator_approved": true,
+  "approved_at_utc": "2026-06-28T18:20:00Z",
+  "shell": "powershell_5",
+  "timeout_seconds": 2400,
+  "artifact_retention_days": 3,
+  "cleanup_request_after_run": true,
+  "script_path": "chatgpt_staging/exec_scripts/exec-20260628-dcoir-review-modular-refactor-002.ps1",
+  "approved_command_preview": "Run the approved DCOIR Review connector-safe modular refactor on the live GitHub checkout. The request creates a dedicated refactor branch from the clean pre-staging main base, splits active openrouter_pr_review runtime and large selftest entrypoints into scripts/dcoir_review package modules, splits openrouter-pr-review.yml into a thin caller plus reusable workflow, runs local selftests, pushes the branch, opens a draft PR, writes committed readback, and cleans up transient staging request/script files from main. It does not merge the PR and does not post external Codex comments.",
+  "command": "& 'D:\\a\\dcoir-collector\\dcoir-collector\\chatgpt_staging\\exec_scripts\\exec-20260628-dcoir-review-modular-refactor-002.ps1'"
+}
