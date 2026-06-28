@@ -3,8 +3,8 @@
 v18 is a narrow post-v17 cleanup layer for the #344 grading defects. It does
 not change v16/v17 required coverage selection. It only:
 
-- strips internal fix-synthesis/schema language from posted dynamic-exec
-  guidance while preserving the raw guidance in debug artifacts;
+- strips internal fix-synthesis/schema language from normalized/postable
+  dynamic-exec guidance while preserving the raw guidance in debug artifacts;
 - carries covered-sentinel source text into aggregate comments; and
 - makes aggregate-covered Run-key persistence visible as HKCU/HKLM Run-key
   persistence in human-facing review output.
@@ -164,7 +164,11 @@ def _covered_signal_text(finding: dict[str, Any], key: v16.SentinelKey) -> str:
 
 def _clean_dynamic_exec_guidance(finding: dict[str, Any], line_text: str) -> dict[str, str]:
     guidance = _guidance_with_notes(finding, DYNAMIC_EXEC_NOTES)
-    if line_text and Path(str(finding.get("path", "") or "").lower()).suffix == ".py":
+    if (
+        line_text
+        and Path(str(finding.get("path", "") or "").lower()).suffix == ".py"
+        and not _internal_fix_synthesis_leak(line_text)
+    ):
         guidance["remove"] = line_text
     return guidance
 
