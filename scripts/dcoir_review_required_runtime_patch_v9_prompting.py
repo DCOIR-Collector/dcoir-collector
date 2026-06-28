@@ -15,6 +15,7 @@ from dcoir_review_required_runtime_patch_v9_core import (
     PROMPT_REVIEW_CALLS,
     PROMPT_REVIEW_EVENTS,
     PROMPT_REVIEW_FAILURES,
+    SELECTION_SUMMARY,
     _postable_key,
     _validation_for_key,
     _yaml_load_arg,
@@ -237,13 +238,58 @@ def _patch_progress_comment(base: Any, hardened: Any | None = None) -> None:
                 + (f"; reason=`{base.sanitize_public_identity(reason)}`" if reason else "")
                 + "."
             )
+        omitted = list(SELECTION_SUMMARY.get("omitted_sentinels") or [])
+        if omitted:
+            lines.extend(
+                [
+                    "",
+                    "Selection overflow:",
+                    f"- Omitted high-risk changed-line signals: `{len(omitted)}`.",
+                ]
+            )
+            for item in omitted[:12]:
+                path = base.sanitize_public_identity(str(item.get("path", "") or ""))
+                line = item.get("line", "")
+                kind = base.sanitize_public_identity(str(item.get("kind", "") or ""))
+                reason = base.sanitize_public_identity(str(item.get("reason", "") or ""))
+                label = base.sanitize_public_identity(str(item.get("label", "") or ""))
+                bucket = base.sanitize_public_identity(str(item.get("priority_bucket", "") or ""))
+                lines.append(f"- `{path}:{line}` `{kind}` bucket=`{bucket}` reason=`{reason}` label=`{label}`.")
         return base.github_safe_body(f"{rendered.rstrip()}\n" + "\n".join(lines), limit=20000)
 
     reporter._body = body
 
 
 def _strip_footer(body: str) -> str:
-    return INLINE_MODEL_FOOTER_RE.sub("", str(body or "").rstrip()).rstrip()
+    text = str(body or "").rstrip()
+    patterns = (
+        INLINE_MODEL_FOOTER_RE,
+        re.compile(r"\n{0,2}<sub>\s*DCOIR Review\s*</sub>\s*$", re.I),
+        re.compile(r"\n{0,2}(?:_|\*)?DCOIR Review(?:_|\*)?\s*$", re.I),
+    )
+    while True:
+        previous = text
+        for pattern in patterns:
+            text = pattern.sub("", text.rstrip()).rstrip()
+        if text == previous:
+            return text
+
+
+def _normalize_inline_comment(body: str, finding: dict[str, Any]) -> str:
+    text = _strip_footer(body)
+    text = re.sub(
+        r"^\*\*\s*(?:CRITICAL|HIGH|MEDIUM|LOW)\s*:\s*([^*\n]+?)\s*\*\*",
+        r"**\1**",
+        text,
+        flags=re.I,
+    )
+    text = re.sub(r"^(?:CRITICAL|HIGH|MEDIUM|LOW)\s*:\s*([^\n]+)", r"\1", text, count=1, flags=re.I)
+    text = re.sub(r"\*\*Validation expected after fix:\*\*", "**Validation:**", text, flags=re.I)
+    text = re.sub(r"\*\*Validation after fix:\*\*", "**Validation:**", text, flags=re.I)
+    text = re.sub(r"(?im)^(\s*)Validation expected after fix:\s*$", r"\1**Validation:**", text)
+    text = re.sub(r"(?im)^(\s*)Validation after fix:\s*$", r"\1**Validation:**", text)
+    text = re.sub(r"\n{3,}", "\n\n", text).rstrip()
+    return text
 
 
 def _normalize_yaml_identifier(body: str, finding: dict[str, Any]) -> str:
@@ -264,7 +310,7 @@ def _patch_inline_comment(base: Any) -> None:
 
     def build_inline_comment(finding: dict[str, Any], model_used: str, config: Any) -> str:
         _ensure_prompt_review(config)
-        return _normalize_yaml_identifier(_strip_footer(original(finding, model_used, config)), finding)
+        return _normalize_yaml_identifier(_normalize_inline_comment(original(finding, model_used, config), finding), finding)
 
     base.build_inline_comment = build_inline_comment
 
