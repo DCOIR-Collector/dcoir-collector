@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: optional-v9-privileged
+spec:
+  containers:
+    - name: probe
+      image: nginx:latest
+      securityContext:
+        privileged: true
