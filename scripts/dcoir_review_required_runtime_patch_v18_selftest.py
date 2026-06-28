@@ -172,6 +172,36 @@ def test_internal_fix_synthesis_leak_preserves_raw_artifact() -> None:
     assert artifact["raw_fix_synthesis_preserved"] is True
     assert "finding_id" in artifact["raw_posted_fields"]["suggested_replacement"]
 
+    leaking_line = '    exec("No anchored repair can be synthesized because the finding_id field is missing")'
+    line_marker_hardened = FakeHardened()
+    line_marker_module = SimpleNamespace(
+        base=None,
+        hardened=line_marker_hardened,
+        file_line_text=lambda file_text, line: file_text.splitlines()[line - 1],
+        safe_artifact_name=lambda _path, fallback: fallback,
+        synthesize_fix_for_finding=original_synthesize,
+    )
+    v18.apply_pareto_context_module(line_marker_module)
+    line_marker_result = line_marker_module.synthesize_fix_for_finding(
+        3,
+        {
+            "path": PYTHON,
+            "line": 2,
+            "_anchored_line_text": leaking_line,
+            "_risk_sentinel_key": [PYTHON, 2, v16.PYTHON_DYNAMIC_EXEC],
+        },
+        f"def trigger_v18_raw_preservation():\n{leaking_line}",
+        {},
+        SimpleNamespace(),
+    )
+    assert "finding_id" not in str(line_marker_result["fix_guidance"])
+    assert "no anchored repair" not in str(line_marker_result["fix_guidance"]).lower()
+    assert "remove" not in line_marker_result["fix_guidance"]
+    line_marker_artifact = next(iter(line_marker_hardened.artifacts.values()))
+    assert "finding_id" in str(line_marker_artifact["raw_posted_fields"])
+    assert "finding_id" not in str(line_marker_artifact["normalized_fix_guidance"])
+    assert "no anchored repair" not in str(line_marker_artifact["normalized_fix_guidance"]).lower()
+
     non_dynamic_module = SimpleNamespace(
         base=None,
         hardened=FakeHardened(),
