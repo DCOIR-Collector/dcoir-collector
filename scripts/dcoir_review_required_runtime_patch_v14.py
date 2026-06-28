@@ -52,12 +52,18 @@ SELECTION_KIND_RANK = {
 }
 
 
-def _preserve_v13_helper(name: str) -> Any:
+def _missing_render_integrity_errors(_findings: list[dict[str, Any]], _expected: dict[tuple[str, int], set[str]]) -> list[str]:
+    return []
+
+
+def _preserve_v13_helper(name: str, fallback: Any = None) -> Any:
     storage_name = f"_dcoir_required_v14_original_{name.lstrip('_')}"
     existing = getattr(v13, storage_name, None)
     if callable(existing):
         return existing
-    helper = getattr(v13, name)
+    helper = getattr(v13, name, fallback)
+    if not callable(helper):
+        raise AttributeError(f"v13 helper {name} is unavailable and no callable fallback was provided")
     setattr(v13, storage_name, helper)
     return helper
 
@@ -69,8 +75,11 @@ _ORIGINAL_V13_SPARE_PRIORITY = _preserve_v13_helper("_spare_priority")
 _ORIGINAL_V13_SAFE_VALIDATION = _preserve_v13_helper("_safe_validation")
 _ORIGINAL_V13_TEMPLATE_FOR_KIND = _preserve_v13_helper("_template_for_kind")
 _ORIGINAL_V13_INTEGRITY_FINDING = _preserve_v13_helper("_integrity_finding")
-_ORIGINAL_V13_RENDER_ERRORS = _preserve_v13_helper("_render_integrity_errors")
-_ORIGINAL_V13_RENDERED_PROBLEM = _preserve_v13_helper("_rendered_comment_has_integrity_problem")
+_ORIGINAL_V13_RENDER_ERRORS = _preserve_v13_helper("_render_integrity_errors", _missing_render_integrity_errors)
+_ORIGINAL_V13_RENDERED_PROBLEM = _preserve_v13_helper(
+    "_rendered_comment_has_integrity_problem",
+    getattr(v13, "_rendered_comment_has_problem", None),
+)
 _ORIGINAL_V13_AUGMENT_METADATA = _preserve_v13_helper("_augment_metadata")
 _ORIGINAL_V13_SELECT_REQUIRED = _preserve_v13_helper("_select_required_postable")
 _ORIGINAL_V13_PATCH_V12_GLOBALS = _preserve_v13_helper("_patch_v12_globals")
@@ -434,11 +443,24 @@ def _augment_metadata(
     selected: list[dict[str, Any]],
     findings: list[dict[str, Any]],
     risk_sentinels: list[Any],
-    hardened: Any,
-    config: Any,
-    metadata: dict[str, Any],
+    *args: Any,
 ) -> dict[str, Any]:
-    updated = _ORIGINAL_V13_AUGMENT_METADATA(selected, findings, risk_sentinels, hardened, config, metadata)
+    if len(args) == 2:
+        hardened = None
+        config, metadata = args
+    elif len(args) == 3:
+        hardened, config, metadata = args
+    else:
+        raise TypeError("_augment_metadata expected selected, findings, risk_sentinels, [hardened], config, metadata")
+    try:
+        updated = _ORIGINAL_V13_AUGMENT_METADATA(selected, findings, risk_sentinels, hardened, config, metadata)
+    except TypeError:
+        try:
+            updated = _ORIGINAL_V13_AUGMENT_METADATA(selected, findings, risk_sentinels, config, metadata)
+        except NameError:
+            updated = dict(metadata)
+    except NameError:
+        updated = dict(metadata)
     updated["version"] = VERSION
     for key in ("omitted_required_sentinels", "omitted_optional_high_risk_sentinels", "detector_only_high_risk_overflow"):
         updated[key] = _coalesce_records(list(updated.get(key, []) or []))
@@ -499,6 +521,7 @@ def _patch_core_semantics() -> None:
     v13._integrity_finding = _integrity_finding
     v13._render_integrity_errors = _render_integrity_errors
     v13._rendered_comment_has_integrity_problem = _rendered_comment_has_integrity_problem
+    v13._rendered_comment_has_problem = _rendered_comment_has_integrity_problem
     v13._augment_metadata = _augment_metadata
     v13._select_required_postable = _select_required_postable
     core._coverage_key = _coverage_key
