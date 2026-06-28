@@ -27,7 +27,20 @@ import dcoir_review_required_runtime_patch_v11 as v11
 SentinelKey = tuple[str, int, str]
 
 VERSION = "v12"
-_ORIGINAL_V11_VALIDATION_FOR_KEY = v11._validation_for_key
+
+
+def _preserve_v11_helper(name: str) -> Any:
+    storage_name = f"_dcoir_required_v12_original_{name.lstrip('_')}"
+    existing = getattr(v11, storage_name, None)
+    if callable(existing):
+        return existing
+    helper = getattr(v11, name)
+    setattr(v11, storage_name, helper)
+    return helper
+
+
+_ORIGINAL_V11_POSTABLE_KEY = _preserve_v11_helper("_postable_key")
+_ORIGINAL_V11_VALIDATION_FOR_KEY = _preserve_v11_helper("_validation_for_key")
 REQUIRED_KINDS = {
     v10.YAML_TOKEN_TO_PR_URL,
     v4.YAML_METADATA_SHELL,
@@ -77,7 +90,7 @@ def _sentinel_key(sentinel: Any) -> SentinelKey:
 
 
 def _postable_key(finding: dict[str, Any]) -> SentinelKey:
-    path, line, kind = v11._postable_key(finding)
+    path, line, kind = _ORIGINAL_V11_POSTABLE_KEY(finding)
     text = "\n".join(
         str(finding.get(name, "") or "")
         for name in ("title", "body", "description", "_anchored_line_text")
