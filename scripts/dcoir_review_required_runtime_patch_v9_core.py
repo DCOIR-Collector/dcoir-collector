@@ -27,12 +27,14 @@ PYTHON_PICKLE_DETAIL = (
     "pickle.load/pickle.loads can execute code during deserialization; use a safe serialization "
     "format or a strictly validated, signed, trusted pickle source"
 )
+PS_DYNAMIC_EXEC = "ps_dynamic_exec"
 INLINE_MODEL_FOOTER_RE = re.compile(r"\n{0,2}(?:_|\*)?Reviewed with [^\n]+?\.?(?:_|\*)?\s*$", re.I)
 
 PROMPT_REVIEW_EVENTS: list[dict[str, Any]] = []
 PROMPT_REVIEW_CALLS: list[dict[str, Any]] = []
 PARETO_CALL_EVENTS: list[dict[str, Any]] = []
 PROMPT_REVIEW_FAILURES: list[dict[str, Any]] = []
+SELECTION_SUMMARY: dict[str, Any] = {}
 EVENT_LIMIT = 40
 
 
@@ -51,6 +53,21 @@ def _canonical_kind(kind: str) -> str:
     if kind == getattr(v4, "PS_OUTBOUND_TOKEN", "ps_outbound_token"):
         return v5.PS_ENV_TOKEN
     return kind
+
+
+def _looks_like_python_env_token_callback(value: str) -> bool:
+    text = _normalize(value)
+    has_env = "dcoir_token" in text or "os.environ" in text or "os.getenv" in text
+    has_outbound = (
+        "callback" in text
+        or "authorization" in text
+        or "bearer" in text
+        or "request-controlled" in text
+        or "requests." in text
+        or "urlopen" in text
+        or "urllib.request" in text
+    )
+    return has_env and has_outbound
 
 
 def _key_text(key: SentinelKey) -> str:
@@ -87,6 +104,8 @@ def _line_kind(path: str, text: str) -> str:
         if v4._metadata_shell_line(line):
             return v4.YAML_METADATA_SHELL
     if suffix in {".ps1", ".psm1", ".psd1"}:
+        if re.search(r"\b(?:Invoke-Expression|IEX)\b", line, re.I):
+            return PS_DYNAMIC_EXEC
         if v4.PS_START_PROCESS_RE.search(line):
             return v4.PS_PROCESS_LAUNCH
         if v4.PS_ACL_RE.search(line):
@@ -122,6 +141,8 @@ def _claimed_kinds(finding: dict[str, Any]) -> set[str]:
         ):
             kinds.add(v5.PYTHON_ENV_TOKEN)
     if suffix in {".ps1", ".psm1", ".psd1"}:
+        if "invoke-expression" in text or re.search(r"\biex\b", text, re.I):
+            kinds.add(PS_DYNAMIC_EXEC)
         if "start-process" in text:
             kinds.add(v4.PS_PROCESS_LAUNCH)
         if "set-acl" in text or "filesystemaccessrule" in text or "fullcontrol" in text or "everyone" in text:
@@ -163,6 +184,7 @@ def _semantic_kind(finding: dict[str, Any]) -> str:
         v4.YAML_BROAD_WRITE,
         v4.YAML_PULL_REQUEST_TARGET,
         v4.PS_PROCESS_LAUNCH,
+        PS_DYNAMIC_EXEC,
         v4.PS_ACL,
         v5.PS_ENV_TOKEN,
         PYTHON_PICKLE_LOAD,
@@ -189,7 +211,12 @@ def _sentinel_key(sentinel: Any) -> SentinelKey:
     label = str(getattr(sentinel, "label", "") or "")
     detail = str(getattr(sentinel, "detail", "") or "")
     kind = _canonical_kind(_line_kind(path, text) or v5._sentinel_kind(sentinel))
-    if kind in {"", "unknown"} and ("pickle.loads" in _normalize(f"{text}\n{label}\n{detail}") or "pickle.load(" in _normalize(f"{text}\n{label}\n{detail}")):
+    context = f"{text}\n{label}\n{detail}"
+    if kind == getattr(v4, "PYTHON_SSRF", "python_ssrf") and _looks_like_python_env_token_callback(context):
+        kind = v5.PYTHON_ENV_TOKEN
+    if kind in {"", "unknown"} and _looks_like_python_env_token_callback(context):
+        kind = v5.PYTHON_ENV_TOKEN
+    if kind in {"", "unknown"} and ("pickle.loads" in _normalize(context) or "pickle.load(" in _normalize(context)):
         kind = PYTHON_PICKLE_LOAD
     return path, line, kind
 
