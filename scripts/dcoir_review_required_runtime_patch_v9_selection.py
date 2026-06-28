@@ -10,9 +10,11 @@ import dcoir_review_required_runtime_patch_v4 as v4
 import dcoir_review_required_runtime_patch_v5 as v5
 
 from dcoir_review_required_runtime_patch_v9_core import (
+    PS_DYNAMIC_EXEC,
     PYTHON_PICKLE_LABEL,
     PYTHON_PICKLE_LOAD,
     PYTHON_PICKLE_DETAIL,
+    SELECTION_SUMMARY,
     SentinelKey,
     _dedupe,
     _expected_by_line,
@@ -49,18 +51,18 @@ def _iter_added_diff_lines(diff: str) -> list[tuple[str, int, str]]:
     return result
 
 
-def _patch_pickle_sentinels(hardened: Any) -> None:
-    original = getattr(hardened, "_dcoir_required_v9_original_detect_risk_sentinels", None)
+def _patch_pickle_sentinels(owner: Any, sentinel_owner: Any | None = None) -> None:
+    original = getattr(owner, "_dcoir_required_v9_original_detect_risk_sentinels", None)
     if original is None:
-        original = getattr(hardened, "detect_risk_sentinels", None)
-        hardened._dcoir_required_v9_original_detect_risk_sentinels = original
+        original = getattr(owner, "detect_risk_sentinels", None)
+        owner._dcoir_required_v9_original_detect_risk_sentinels = original
     if not callable(original):
         return
 
     def detect_risk_sentinels(diff: str, *args: Any, **kwargs: Any) -> list[Any]:
         sentinels = list(original(diff, *args, **kwargs))
         existing = {_sentinel_key(item) for item in sentinels}
-        risk_sentinel_type = getattr(hardened, "RiskSentinel", None)
+        risk_sentinel_type = getattr(owner, "RiskSentinel", None) or getattr(sentinel_owner, "RiskSentinel", None)
         if risk_sentinel_type is None:
             return sentinels
         for path, line, text in _iter_added_diff_lines(diff):
@@ -68,7 +70,8 @@ def _patch_pickle_sentinels(hardened: Any) -> None:
                 continue
             if "pickle.loads" not in _normalize(text) and "pickle.load(" not in _normalize(text):
                 continue
-            if callable(getattr(hardened, "is_comment_only_added_line", None)) and hardened.is_comment_only_added_line(path, text):
+            comment_checker = getattr(owner, "is_comment_only_added_line", None) or getattr(sentinel_owner, "is_comment_only_added_line", None)
+            if callable(comment_checker) and comment_checker(path, text):
                 continue
             key = (path, line, PYTHON_PICKLE_LOAD)
             if key in existing:
@@ -77,7 +80,7 @@ def _patch_pickle_sentinels(hardened: Any) -> None:
             existing.add(key)
         return sentinels
 
-    hardened.detect_risk_sentinels = detect_risk_sentinels
+    owner.detect_risk_sentinels = detect_risk_sentinels
 
 
 def _fallback_for_sentinel(hardened: Any, sentinel: Any, config: Any) -> dict[str, Any]:
@@ -101,6 +104,33 @@ def _fallback_for_sentinel(hardened: Any, sentinel: Any, config: Any) -> dict[st
     fallback["_risk_sentinel_kind"] = key[2]
     fallback["_anchored_line_text"] = str(getattr(sentinel, "text", "") or "")
     return fallback
+
+
+def _priority_bucket_for_sentinel(key: SentinelKey, required_keys: set[SentinelKey]) -> str:
+    path, _line, kind = key
+    suffix = Path(path.lower()).suffix
+    if key in required_keys:
+        return "hard-required"
+    if kind in {PYTHON_PICKLE_LOAD, PS_DYNAMIC_EXEC}:
+        return "required-adjacent"
+    if suffix in {".py", ".ps1", ".psm1", ".psd1", ".yml", ".yaml"}:
+        return "high-risk"
+    return "optional"
+
+
+def _sentinel_summary_record(sentinel: Any, required_keys: set[SentinelKey], selected_keys: set[SentinelKey], limit: int) -> dict[str, Any]:
+    key = _sentinel_key(sentinel)
+    reason = "omitted_due_to_inline_budget" if len(selected_keys) >= limit else "not_selected"
+    return {
+        "path": key[0],
+        "line": key[1],
+        "kind": key[2],
+        "priority_bucket": _priority_bucket_for_sentinel(key, required_keys),
+        "reason": reason,
+        "label": str(getattr(sentinel, "label", "") or ""),
+        "detail": str(getattr(sentinel, "detail", "") or "")[:240],
+        "text": str(getattr(sentinel, "text", "") or "")[:240],
+    }
 
 
 def _known_fallback_for_key(key: SentinelKey, line_text: str) -> dict[str, Any]:
@@ -161,7 +191,7 @@ def _select_required_postable(hardened: Any, findings: list[dict[str, Any]], ris
     limit = max(0, int(getattr(config, "max_inline_comments", 12)))
     required = _required_sentinels(hardened, risk_sentinels)
     expected = _expected_by_line(hardened, risk_sentinels)
-    sentinel_lines = {(getattr(item, "path", ""), _line_number(getattr(item, "line", 0))) for item in risk_sentinels}
+    required_key_set = {_sentinel_key(item) for item in required}
     if len(required) > limit:
         metadata = {
             "hard_required_count": len(required),
@@ -169,6 +199,8 @@ def _select_required_postable(hardened: Any, findings: list[dict[str, Any]], ris
             "capacity_failure": True,
             "required_keys": [_key_text(_sentinel_key(item)) for item in required],
         }
+        SELECTION_SUMMARY.clear()
+        SELECTION_SUMMARY.update(metadata)
         hardened.write_debug_json_artifact_safely(config, "metadata/required-v9-final-selection.json", metadata)
         raise getattr(hardened, "ReviewQualityError", RuntimeError)(
             f"DCOIR Review quality failure: required changed-line signals ({len(required)}) exceed inline comment budget ({limit})."
@@ -201,18 +233,29 @@ def _select_required_postable(hardened: Any, findings: list[dict[str, Any]], ris
     _rewrite_validation(selected)
     final_invalid = [_key_text(_postable_key(item)) for item in selected if _semantic_mismatch(item, expected)]
     final_uncovered = [key for key in (_sentinel_key(item) for item in required) if key not in selected_keys]
+    omitted = [
+        _sentinel_summary_record(item, required_key_set, selected_keys, limit)
+        for item in risk_sentinels
+        if _sentinel_key(item) not in selected_keys
+    ]
+    metadata = {
+        "hard_required_count": len(required),
+        "final_postable_count": len(selected),
+        "inline_limit": limit,
+        "selected_keys": [_key_text(_postable_key(item)) for item in selected],
+        "spare_budget_selected": [_key_text(_postable_key(item)) for item in selected if _postable_key(item) not in required_key_set],
+        "dropped_invalid_or_duplicate_candidates": dropped[:80],
+        "final_invalid_selected_keys": final_invalid,
+        "final_uncovered": [_key_text(key) for key in final_uncovered],
+        "omitted_sentinel_count": len(omitted),
+        "omitted_sentinels": omitted[:80],
+    }
+    SELECTION_SUMMARY.clear()
+    SELECTION_SUMMARY.update(metadata)
     hardened.write_debug_json_artifact_safely(
         config,
         "metadata/required-v9-final-selection.json",
-        {
-            "hard_required_count": len(required),
-            "final_postable_count": len(selected),
-            "selected_keys": [_key_text(_postable_key(item)) for item in selected],
-            "spare_budget_selected": [_key_text(_postable_key(item)) for item in selected if _postable_key(item) not in {_sentinel_key(s) for s in required}],
-            "dropped_invalid_or_duplicate_candidates": dropped[:80],
-            "final_invalid_selected_keys": final_invalid,
-            "final_uncovered": [_key_text(key) for key in final_uncovered],
-        },
+        metadata,
     )
     if final_invalid:
         raise getattr(hardened, "ReviewQualityError", RuntimeError)(
