@@ -31,9 +31,10 @@
     "wiki-publish",
     "maintenance-audit",
     "windows-powershell-51",
-    "codeql-security"
+    "codeql-security",
+    "openrouter-pr-review"
   ],
-  "reusable_workflow_count": 27,
+  "reusable_workflow_count": 28,
   "schema_version": "dcoir_workflow_modularization_contracts_v1",
   "workflow_contracts": [
     {
@@ -317,14 +318,14 @@
       "target_architecture": "Entry workflow plus reusable CodeQL security workflow using GitHub CodeQL Action v4 for Python and GitHub Actions workflow surfaces with security-extended and security-and-quality query suites."
     },
     {
-      "acceptance_evidence": "Manual comment-triggered run readback, trusted default-branch checkout behavior, operator command guard, token/config-name-only handling, optional debug progress/status comment evidence, model-stack config readback, and PR conversation output evidence.",
+      "acceptance_evidence": "Manual comment-triggered run readback, reusable workflow invocation, trusted default-branch checkout behavior, operator command guard, token/config-name-only handling, optional debug progress/status comment evidence, model-stack config readback, connector-safe file-size manifest, and PR conversation output evidence.",
       "contract_family": "openrouter-pr-review",
       "family": "AI-assisted PR review",
       "file": ".github/workflows/openrouter-pr-review.yml",
-      "migration_status": "intentionally-inline",
+      "migration_status": "active",
       "risk": "high",
-      "rollback": "Disable or remove the DCOIR Review workflow if the comment-triggered review lane becomes unsafe or noisy; preserve the trusted default-branch checkout and operator command guard if restored.",
-      "target_architecture": "Intentionally inline comment-triggered DCOIR Review workflow. It keeps the trigger, permissions, concurrency, trusted default-branch checkout, command guard, optional debug progress/status comment behavior, model-stack config, and script invocation visible in the entry workflow rather than routing through central reporter or reusable workflow plumbing."
+      "rollback": "Restore the prior inline DCOIR Review workflow body and remove reusable-openrouter-pr-review.yml if the reusable module breaks trusted comment-triggered review behavior.",
+      "target_architecture": "Thin comment-triggered entry workflow plus reusable DCOIR Review module. The entry workflow keeps the issue_comment trigger, concurrency, operator guard, explicit permissions, and explicit secret forwarding visible; reusable-openrouter-pr-review.yml owns the trusted default-branch checkout, static context readback, progress/status comments, model-stack config, debug artifacts, and script invocation."
     }
   ]
 }

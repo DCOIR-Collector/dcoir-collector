@@ -58,6 +58,7 @@ on:
       - 24 Validation - Workflow Reporting
       - 26 Validation - Windows PowerShell 5.1
       - 27 Security - CodeQL
+      - 28 Review - DCOIR Review
     types:
       - completed
   workflow_dispatch:

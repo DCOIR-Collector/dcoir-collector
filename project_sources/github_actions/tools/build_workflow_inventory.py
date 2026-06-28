@@ -342,13 +342,13 @@ def render_markdown(inventory: dict[str, Any]) -> str:
 
 
 def write_outputs(inventory: dict[str, Any], json_output: Path, markdown_output: Path) -> None:
-    json_output.write_text(json.dumps(inventory, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    json_output.write_text(json.dumps(inventory, sort_keys=True, separators=(",", ":")) + "\n", encoding="utf-8")
     markdown_output.write_text(render_markdown(inventory), encoding="utf-8")
 
 
 def check_outputs(inventory: dict[str, Any], json_output: Path, markdown_output: Path) -> list[str]:
     findings: list[str] = []
-    expected_json = json.dumps(inventory, indent=2, sort_keys=True) + "\n"
+    expected_json = json.dumps(inventory, sort_keys=True, separators=(",", ":")) + "\n"
     expected_markdown = render_markdown(inventory)
     if not json_output.exists():
         findings.append(f"{json_output}:1: generated workflow inventory JSON is missing")

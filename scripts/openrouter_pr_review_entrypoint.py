@@ -1,58 +1,16 @@
 #!/usr/bin/env python3
-"""Explicit DCOIR Review entrypoint.
-
-This wrapper applies connector-safe runtime patches before invoking the large
-Pareto reviewer script. The workflow should call this file directly.
-"""
+"""Compatibility wrapper for the connector-safe DCOIR Review entrypoint."""
 
 from __future__ import annotations
 
-import dcoir_review_required_runtime_patch_v2
-import dcoir_review_required_runtime_patch_v3
-import dcoir_review_required_runtime_patch_v4_apply
-import dcoir_review_required_runtime_patch_v5_apply
-import dcoir_review_required_runtime_patch_v6
-import dcoir_review_required_runtime_patch_v7
-import dcoir_review_required_runtime_patch_v8
-import dcoir_review_required_runtime_patch_v9
-import dcoir_review_required_runtime_patch_v10
-import dcoir_review_required_runtime_patch_v11
-import dcoir_review_required_runtime_patch_v12
-import dcoir_review_required_runtime_patch_v13
-import dcoir_review_required_runtime_patch_v14
-import dcoir_review_required_runtime_patch_v15
-import dcoir_review_required_runtime_patch_v16
-import dcoir_review_required_runtime_patch_v17
-import dcoir_review_required_runtime_patch_v18
-import dcoir_review_required_runtime_patches
-import dcoir_review_runtime_patches
-import dcoir_review_strict_runtime_patches
-import openrouter_pr_review_pareto_context
+from pathlib import Path
+import sys
 
+_SCRIPT_DIR = Path(__file__).resolve().parent
+if str(_SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPT_DIR))
 
-def main() -> None:
-    dcoir_review_runtime_patches.apply_pareto_context_module(openrouter_pr_review_pareto_context)
-    dcoir_review_strict_runtime_patches.apply_pareto_context_module(openrouter_pr_review_pareto_context)
-    dcoir_review_required_runtime_patches.apply_pareto_context_module(openrouter_pr_review_pareto_context)
-    dcoir_review_required_runtime_patch_v2.apply_pareto_context_module(openrouter_pr_review_pareto_context)
-    dcoir_review_required_runtime_patch_v3.apply_pareto_context_module(openrouter_pr_review_pareto_context)
-    dcoir_review_required_runtime_patch_v4_apply.apply_pareto_context_module(openrouter_pr_review_pareto_context)
-    dcoir_review_required_runtime_patch_v5_apply.apply_pareto_context_module(openrouter_pr_review_pareto_context)
-    dcoir_review_required_runtime_patch_v6.apply_pareto_context_module(openrouter_pr_review_pareto_context)
-    dcoir_review_required_runtime_patch_v7.apply_pareto_context_module(openrouter_pr_review_pareto_context)
-    dcoir_review_required_runtime_patch_v8.apply_pareto_context_module(openrouter_pr_review_pareto_context)
-    dcoir_review_required_runtime_patch_v9.apply_pareto_context_module(openrouter_pr_review_pareto_context)
-    dcoir_review_required_runtime_patch_v10.apply_pareto_context_module(openrouter_pr_review_pareto_context)
-    dcoir_review_required_runtime_patch_v11.apply_pareto_context_module(openrouter_pr_review_pareto_context)
-    dcoir_review_required_runtime_patch_v12.apply_pareto_context_module(openrouter_pr_review_pareto_context)
-    dcoir_review_required_runtime_patch_v13.apply_pareto_context_module(openrouter_pr_review_pareto_context)
-    dcoir_review_required_runtime_patch_v15.apply_pareto_context_module(openrouter_pr_review_pareto_context)
-    dcoir_review_required_runtime_patch_v14.apply_pareto_context_module(openrouter_pr_review_pareto_context)
-    dcoir_review_required_runtime_patch_v15.apply_pareto_context_module(openrouter_pr_review_pareto_context)
-    dcoir_review_required_runtime_patch_v16.apply_pareto_context_module(openrouter_pr_review_pareto_context)
-    dcoir_review_required_runtime_patch_v17.apply_pareto_context_module(openrouter_pr_review_pareto_context)
-    dcoir_review_required_runtime_patch_v18.apply_pareto_context_module(openrouter_pr_review_pareto_context)
-    openrouter_pr_review_pareto_context.main()
+from dcoir_review.entrypoint import main
 
 
 if __name__ == "__main__":
