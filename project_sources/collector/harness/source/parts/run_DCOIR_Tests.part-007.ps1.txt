@@ -250,7 +250,7 @@ function Test-CoverageArtifactEvidence {
         if ([string]::IsNullOrWhiteSpace($repoRoot)) { return $false }
         $validatorPath = Join-Path $repoRoot 'project_sources/collector/tools/validate_dcoir_collector_runtime_package.py'
         $processPartPath = Join-Path $repoRoot 'project_sources/collector/source/parts/DCOIR_Collector.01D_Process_Event_And_Baseline_Utilities.ps1'
-        $reportsPartPath = Join-Path $repoRoot 'project_sources/collector/source/parts/DCOIR_Collector.02_Baseline_Collection_And_Reports.ps1'
+        $reportsPartPath = Join-Path $repoRoot 'project_sources/collector/source/parts/DCOIR_Collector.02D_Baseline_Collection_And_Reports.ps1'
         if (-not ((Test-Path -LiteralPath $validatorPath) -and (Test-Path -LiteralPath $processPartPath) -and (Test-Path -LiteralPath $reportsPartPath))) { return $false }
         $pythonCommand = Get-Command python -ErrorAction SilentlyContinue
         if ($null -eq $pythonCommand) { $pythonCommand = Get-Command python3 -ErrorAction SilentlyContinue }
