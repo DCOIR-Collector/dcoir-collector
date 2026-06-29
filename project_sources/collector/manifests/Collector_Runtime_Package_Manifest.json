@@ -17,7 +17,9 @@
     "project_sources/collector/source/parts/DCOIR_Collector.03A_Enrich_Session_State.ps1",
     "project_sources/collector/source/parts/DCOIR_Collector.03B_Enrich_Actions_Review.ps1",
     "project_sources/collector/source/parts/DCOIR_Collector.03C_Enrich_Actions_Retrieval.ps1",
-    "project_sources/collector/source/parts/DCOIR_Collector.04_Quick_Interface_And_Output.ps1",
+    "project_sources/collector/source/parts/DCOIR_Collector.04A1_Quick_Interface_And_Output.ps1",
+    "project_sources/collector/source/parts/DCOIR_Collector.04A2_Quick_Interface_And_Output.ps1",
+    "project_sources/collector/source/parts/DCOIR_Collector.04A3_Quick_Interface_And_Output.ps1",
     "project_sources/collector/source/parts/DCOIR_Collector.04B_Feature_Wave_Targeted_Collection.ps1",
     "project_sources/collector/source/parts/DCOIR_Collector.04C_Explicit_Event_Window_Overrides.ps1",
     "project_sources/collector/source/parts/DCOIR_Collector.04D_Bounded_Parallel_Runtime.ps1",
@@ -42,7 +44,9 @@
     "project_sources/collector/source/parts/DCOIR_Collector.03A_Enrich_Session_State.ps1",
     "project_sources/collector/source/parts/DCOIR_Collector.03B_Enrich_Actions_Review.ps1",
     "project_sources/collector/source/parts/DCOIR_Collector.03C_Enrich_Actions_Retrieval.ps1",
-    "project_sources/collector/source/parts/DCOIR_Collector.04_Quick_Interface_And_Output.ps1",
+    "project_sources/collector/source/parts/DCOIR_Collector.04A1_Quick_Interface_And_Output.ps1",
+    "project_sources/collector/source/parts/DCOIR_Collector.04A2_Quick_Interface_And_Output.ps1",
+    "project_sources/collector/source/parts/DCOIR_Collector.04A3_Quick_Interface_And_Output.ps1",
     "project_sources/collector/source/parts/DCOIR_Collector.04B_Feature_Wave_Targeted_Collection.ps1",
     "project_sources/collector/source/parts/DCOIR_Collector.04C_Explicit_Event_Window_Overrides.ps1",
     "project_sources/collector/source/parts/DCOIR_Collector.04D_Bounded_Parallel_Runtime.ps1",
@@ -77,6 +81,7 @@
     "Collector part files must not define the same PowerShell function name more than once across wrapper and part load order; duplicate function definitions are a package-validation failure.",
     "Script entries in this artifact intentionally end in .txt to bypass mail filters.",
     "Do not refresh supporting_assets/DCOIR_Collector.zip directly from this transport-safe artifact without restoring native runtime filenames first.",
-    "Part 02 baseline collection and reporting helpers are split into connector-friendly 02A through 02D functional source parts while preserving the compiled single-runtime collector output."
+    "Part 02 baseline collection and reporting helpers are split into connector-friendly 02A through 02D functional source parts while preserving the compiled single-runtime collector output.",
+    "Part 04 quick-interface, next-step output, and cleanup helpers are split into connector-friendly 04A1 through 04A3 functional source parts before the existing 04B-H feature-wave parts."
   ]
 }
