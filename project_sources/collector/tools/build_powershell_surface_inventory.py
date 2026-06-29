@@ -9,23 +9,67 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import re
 import subprocess
 import sys
-from collections import Counter
 from pathlib import Path
-from typing import Any
+from types import ModuleType
 
 _THIS_DIR = Path(__file__).resolve().parent
 if str(_THIS_DIR) not in sys.path:
     sys.path.insert(0, str(_THIS_DIR))
 
-from powershell_surface_inventory_common import *  # noqa: F401,F403
-from powershell_surface_inventory_yaml import *  # noqa: F401,F403
-from powershell_surface_inventory_workflow_yaml import *  # noqa: F401,F403
-from powershell_surface_inventory_discovery import *  # noqa: F401,F403
-from powershell_surface_inventory_validation import *  # noqa: F401,F403
-from powershell_surface_inventory_outputs import *  # noqa: F401,F403
+import powershell_surface_inventory_common as _common
+import powershell_surface_inventory_discovery as _discovery
+import powershell_surface_inventory_outputs as _outputs
+import powershell_surface_inventory_validation as _validation
+import powershell_surface_inventory_workflow_yaml as _workflow_yaml
+import powershell_surface_inventory_yaml as _yaml
+from powershell_surface_inventory_common import (
+    DEFAULT_JSON_OUTPUT,
+    DEFAULT_MARKDOWN_OUTPUT,
+    load_json_file,
+    repo_relative_cli_path,
+)
+from powershell_surface_inventory_discovery import load_changed_files_from
+from powershell_surface_inventory_outputs import build_inventory, write_outputs
+from powershell_surface_inventory_validation import load_shrink_exceptions
+
+_EXPORT_MODULES: tuple[ModuleType, ...] = (
+    _common,
+    _yaml,
+    _workflow_yaml,
+    _discovery,
+    _validation,
+    _outputs,
+)
+
+__all__ = sorted(
+    {
+        "Path",
+        "hashlib",
+        "json",
+        "main",
+        "parse_args",
+        "subprocess",
+    }
+    | {
+        name
+        for module in _EXPORT_MODULES
+        for name in getattr(module, "__all__", ())
+    }
+)
+
+
+def __getattr__(name: str) -> object:
+    for module in _EXPORT_MODULES:
+        if name in getattr(module, "__all__", ()):
+            return getattr(module, name)
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+
+def __dir__() -> list[str]:
+    return sorted(set(globals()) | set(__all__))
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Build the DCOIR PowerShell surface inventory")
