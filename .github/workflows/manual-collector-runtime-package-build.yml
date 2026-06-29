@@ -16,7 +16,7 @@
 # Runtime dependencies:
 # - Uses project_sources/collector/tools/build_dcoir_collector_runtime_package.py and package validation tooling.
 # - Collector part assembly order is owned by project_sources/collector/manifests/Collector_Runtime_Package_Manifest.json and consumed by the reusable package workflow.
-# - When DCOIR_Collector.* part files are split, renamed, added, or removed, keep the manifest, required-surface profile, and wrapper part list aligned before running this workflow.
+# - When DCOIR_Collector.* part files are split, renamed, added, or removed, keep the manifest and wrapper part list aligned before running this workflow.
 # Expected outputs/readback:
 # - Collector delivery package artifacts, ChatGPT workflow report section artifact, and repo-workflows report.
 # Safety notes:
