@@ -2,6 +2,7 @@
 """Matrix and manifest validation for rule-risk fixture reporting."""
 from __future__ import annotations
 
+import hashlib
 from pathlib import Path
 from typing import Any
 
@@ -14,10 +15,12 @@ from powershell_rule_risk_fixtures_common import (
     require_string,
     require_string_list,
     safe_fixture_path,
-    sha256_file,
     scalar,
     validate_fixture_root,
 )
+
+def fixture_sha256_file(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 def validate_matrix(matrix: dict[str, Any], enforce_minimum_risks: bool) -> tuple[dict[str, dict[str, Any]], list[str], list[str]]:
     errors: list[str] = []
@@ -180,7 +183,7 @@ def validate_manifest(
         if fixture_id and path is not None and usable_path:
             enriched = dict(raw_fixture)
             enriched["path"] = path
-            enriched["sha256"] = sha256_file(absolute) if absolute is not None and absolute.exists() and absolute.is_file() else None
+            enriched["sha256"] = fixture_sha256_file(absolute) if absolute is not None and absolute.exists() and absolute.is_file() else None
             fixture_map[fixture_id] = enriched
 
     if control_count == 0:
