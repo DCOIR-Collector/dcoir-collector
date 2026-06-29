@@ -18,13 +18,24 @@ from validate_dcoir_runtime_common import (
     load_manifest_source_texts,
 )
 
+PART02_SOURCE_PATHS = (
+    'project_sources/collector/source/parts/DCOIR_Collector.02A_Baseline_Collection_And_Reports.ps1',
+    'project_sources/collector/source/parts/DCOIR_Collector.02B_Baseline_Collection_And_Reports.ps1',
+    'project_sources/collector/source/parts/DCOIR_Collector.02C_Baseline_Collection_And_Reports.ps1',
+    'project_sources/collector/source/parts/DCOIR_Collector.02D_Baseline_Collection_And_Reports.ps1',
+)
+
+
+def get_part02_source_text(source_text_by_rel: Dict[str, str]) -> str:
+    return '\n'.join(source_text_by_rel.get(rel, '') for rel in PART02_SOURCE_PATHS)
+
 
 def validate_json_serialization_policy(source_dir: Path, manifest: Dict, checks: Dict[str, object], errors: List[str]) -> None:
     out: Dict[str, object] = {}
     checks['json_serialization_policy'] = out
     texts = load_manifest_source_texts(source_dir, manifest)
     collector = get_combined_source_text(texts)
-    reports = texts.get('project_sources/collector/source/parts/DCOIR_Collector.02_Baseline_Collection_And_Reports.ps1', '')
+    reports = get_part02_source_text(texts)
     parallel_rel = 'project_sources/collector/source/parts/DCOIR_Collector.04D_Bounded_Parallel_Runtime.ps1'
     parallel = texts.get(parallel_rel, '')
     manifest_text = texts.get('project_sources/collector/source/parts/DCOIR_Collector.04G_PR186_External_Review_Fixes.ps1', '')
@@ -121,7 +132,7 @@ def validate_suspicious_process_parent_context_policy(source_dir: Path, manifest
     checks['suspicious_process_parent_context_policy'] = out
     texts = load_manifest_source_texts(source_dir, manifest)
     collector = get_combined_source_text(texts)
-    reports = texts.get('project_sources/collector/source/parts/DCOIR_Collector.02_Baseline_Collection_And_Reports.ps1', '')
+    reports = get_part02_source_text(texts)
     convert = extract_function_body(collector, 'Convert-ProcessObjectToText')
     inventory = extract_function_body(collector, 'Get-ProcessInventory')
     suspicious = extract_function_body(collector, 'Get-SuspiciousProcessFindings')
