@@ -7,12 +7,6 @@ from pathlib import Path
 from typing import Any
 
 from powershell_custom_checks_common import (
-    DEFAULT_CHECKS,
-    DEFAULT_FIXTURE_MANIFEST,
-    DEFAULT_INVENTORY,
-    DEFAULT_JSON_OUTPUT,
-    DEFAULT_MARKDOWN_OUTPUT,
-    DEFAULT_MATRIX,
     ISSUE_NUMBER,
     PARENT_ISSUE_NUMBER,
     SCHEMA_VERSION,
