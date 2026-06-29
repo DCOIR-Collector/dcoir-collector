@@ -11,7 +11,6 @@ from typing import Any
 from powershell_rule_risk_fixtures_powershell import (
     context_has_skip_success_trigger,
     line_has_assignment_value,
-    line_has_executable_exit_zero,
     line_in_result_object,
     line_number_for,
     local_failure_action,
