@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from powershell_analyzer_contract import AnalyzerContractError, repo_relative_input_path, sha256_file
+from powershell_analyzer_contract import AnalyzerContractError, repo_relative_input_path, sha256_file as _sha256_file
 
 SCHEMA_VERSION = "dcoir_powershell_function_reachability_report_v1"
 ISSUE_NUMBER = 306
@@ -67,6 +67,10 @@ class Reference:
     @property
     def key(self) -> str:
         return self.name.casefold()
+
+
+def sha256_file(path: Path) -> str:
+    return _sha256_file(path)
 
 
 def scalar(value: Any) -> str:
