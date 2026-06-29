@@ -8,7 +8,6 @@ from pathlib import Path
 from typing import Any
 
 from powershell_engine_pester_boundary_contract import (
-    DEFAULT_ASSEMBLY_REPORT,
     EngineBoundaryError,
     ISSUE_NUMBER,
     PARENT_ISSUE_NUMBER,
