@@ -245,7 +245,7 @@ def schema_type_matches(value: Any, schema_type: Any) -> bool:
             return True
     return False
 
-def validate_against_schema_contract(value: Any, schema: dict[str, Any], path: str = "$ ") -> list[str]:
+def validate_against_schema_contract(value: Any, schema: dict[str, Any], path: str = "$") -> list[str]:
     errors: list[str] = []
     if path == "$" and isinstance(value, dict):
         summary = value.get("summary")
