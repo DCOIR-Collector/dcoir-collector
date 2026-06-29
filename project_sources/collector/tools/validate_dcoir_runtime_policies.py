@@ -25,9 +25,20 @@ PART02_SOURCE_PATHS = (
     'project_sources/collector/source/parts/DCOIR_Collector.02D_Baseline_Collection_And_Reports.ps1',
 )
 
+MAIN_ENTRY_SOURCE_PATHS = (
+    'project_sources/collector/source/parts/DCOIR_Collector.05A_Main_Entry.ps1',
+    'project_sources/collector/source/parts/DCOIR_Collector.05B_Main_Entry.ps1',
+    'project_sources/collector/source/parts/DCOIR_Collector.05C_Main_Entry.ps1',
+    'project_sources/collector/source/parts/DCOIR_Collector.05_Main_Entry.ps1',
+)
+
 
 def get_part02_source_text(source_text_by_rel: Dict[str, str]) -> str:
     return '\n'.join(source_text_by_rel.get(rel, '') for rel in PART02_SOURCE_PATHS)
+
+
+def get_main_entry_source_text(source_text_by_rel: Dict[str, str]) -> str:
+    return '\n'.join(source_text_by_rel.get(rel, '') for rel in MAIN_ENTRY_SOURCE_PATHS)
 
 
 def validate_json_serialization_policy(source_dir: Path, manifest: Dict, checks: Dict[str, object], errors: List[str]) -> None:
@@ -93,7 +104,7 @@ def validate_state_recursion_policy(source_dir: Path, manifest: Dict, checks: Di
     texts = load_manifest_source_texts(source_dir, manifest)
     collector = get_combined_source_text(texts)
     parallel = texts.get('project_sources/collector/source/parts/DCOIR_Collector.04D_Bounded_Parallel_Runtime.ps1', '')
-    main_entry = texts.get('project_sources/collector/source/parts/DCOIR_Collector.05_Main_Entry.ps1', '')
+    main_entry = get_main_entry_source_text(texts)
     converter = extract_function_body(collector, 'Convert-StateObjectToHashtable')
     sentinel = extract_function_body(parallel, 'Test-WorkerJsonContainsEllipsisSentinel')
     out.update({
