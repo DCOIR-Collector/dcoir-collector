@@ -1,0 +1,6 @@
+{
+  "schema_version": "dcoir_workflow_required_surface_profile_supplements_v1",
+  "supplements": [
+    "project_sources/github_actions/workflow_required_surface_profile_supplements/event_text_query_bound_policy.json"
+  ]
+}
