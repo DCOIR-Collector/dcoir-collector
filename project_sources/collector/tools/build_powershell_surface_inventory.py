@@ -24,15 +24,6 @@ import powershell_surface_inventory_outputs as _outputs
 import powershell_surface_inventory_validation as _validation
 import powershell_surface_inventory_workflow_yaml as _workflow_yaml
 import powershell_surface_inventory_yaml as _yaml
-from powershell_surface_inventory_common import (
-    DEFAULT_JSON_OUTPUT,
-    DEFAULT_MARKDOWN_OUTPUT,
-    load_json_file,
-    repo_relative_cli_path,
-)
-from powershell_surface_inventory_discovery import load_changed_files_from
-from powershell_surface_inventory_outputs import build_inventory, write_outputs
-from powershell_surface_inventory_validation import load_shrink_exceptions
 
 _EXPORT_MODULES: tuple[ModuleType, ...] = (
     _common,
@@ -43,14 +34,31 @@ _EXPORT_MODULES: tuple[ModuleType, ...] = (
     _outputs,
 )
 
+DEFAULT_JSON_OUTPUT = _common.DEFAULT_JSON_OUTPUT
+DEFAULT_MARKDOWN_OUTPUT = _common.DEFAULT_MARKDOWN_OUTPUT
+load_json_file = _common.load_json_file
+repo_relative_cli_path = _common.repo_relative_cli_path
+load_changed_files_from = _discovery.load_changed_files_from
+build_inventory = _outputs.build_inventory
+write_outputs = _outputs.write_outputs
+load_shrink_exceptions = _validation.load_shrink_exceptions
+
 __all__ = sorted(
     {
+        "DEFAULT_JSON_OUTPUT",
+        "DEFAULT_MARKDOWN_OUTPUT",
         "Path",
+        "build_inventory",
         "hashlib",
         "json",
+        "load_changed_files_from",
+        "load_json_file",
+        "load_shrink_exceptions",
         "main",
         "parse_args",
+        "repo_relative_cli_path",
         "subprocess",
+        "write_outputs",
     }
     | {
         name
