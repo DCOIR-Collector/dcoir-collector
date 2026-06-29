@@ -16,7 +16,6 @@ from lib.apply_patch_request_selftest_helpers import (
     patch_set_request_body,
     request_body,
     run,
-    sha256,
     write,
 )
 
