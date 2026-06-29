@@ -14,6 +14,18 @@ from validate_dcoir_runtime_common import (
 )
 
 
+MAIN_ENTRY_PART_RELS = (
+    'project_sources/collector/source/parts/DCOIR_Collector.05A_Main_Entry.ps1',
+    'project_sources/collector/source/parts/DCOIR_Collector.05B_Main_Entry.ps1',
+    'project_sources/collector/source/parts/DCOIR_Collector.05C_Main_Entry.ps1',
+    'project_sources/collector/source/parts/DCOIR_Collector.05_Main_Entry.ps1',
+)
+
+
+def get_main_entry_source_text(source_dir: Path) -> str:
+    return '\n'.join(read_text(source_dir / rel) for rel in MAIN_ENTRY_PART_RELS)
+
+
 def validate_unique_function_definitions(source_dir: Path, manifest: Dict, checks: Dict[str, object], errors: List[str]) -> None:
     definitions = find_function_definitions(source_dir, manifest)
     duplicates = {name: rows for name, rows in definitions.items() if len(rows) > 1}
@@ -30,11 +42,10 @@ def validate_unique_function_definitions(source_dir: Path, manifest: Dict, check
 
 
 def validate_collect_metadata_report_write_ordering(source_dir: Path, checks: Dict[str, object], errors: List[str]) -> None:
-    main_rel = 'project_sources/collector/source/parts/DCOIR_Collector.05_Main_Entry.ps1'
     helper_rel = 'project_sources/collector/source/parts/DCOIR_Collector.04H_PR212_Metadata_Finalization_Fixes.ps1'
-    text = read_text(source_dir / main_rel)
+    text = get_main_entry_source_text(source_dir)
     helper = read_text(source_dir / helper_rel)
-    out: Dict[str, object] = {'path': main_rel, 'helper_path': helper_rel}
+    out: Dict[str, object] = {'paths': list(MAIN_ENTRY_PART_RELS), 'helper_path': helper_rel}
     checks['collect_metadata_report_write_ordering'] = out
     if not text or not helper:
         out['checked'] = False
@@ -115,13 +126,12 @@ def validate_collect_metadata_report_write_ordering(source_dir: Path, checks: Di
 
 
 def validate_collect_manifest_bundle_ordering(source_dir: Path, manifest: Dict, checks: Dict[str, object], errors: List[str]) -> None:
-    rel = 'project_sources/collector/source/parts/DCOIR_Collector.05_Main_Entry.ps1'
-    text = read_text(source_dir / rel)
-    out: Dict[str, object] = {'path': rel}
+    text = get_main_entry_source_text(source_dir)
+    out: Dict[str, object] = {'paths': list(MAIN_ENTRY_PART_RELS)}
     checks['collect_manifest_bundle_ordering'] = out
     if not text:
         out['checked'] = False
-        errors.append('collect manifest ordering source is missing: ' + rel)
+        errors.append('collect manifest ordering source is missing from main entry parts')
         return
     manifest_marker = 'New-Manifest -ManifestPath (Join-Path $state.RunRoot "manifest_collect.json")'
     bundle_name_marker = '$bundleName = ("DCOIR_COLLECT_BUNDLE_{0}_{1}.zip" -f $env:COMPUTERNAME, $RunId)'
