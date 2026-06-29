@@ -142,7 +142,7 @@ def run_json_policy_behavior_tests(source_dir: Path, manifest: Dict) -> Dict[str
     result['available'] = True
     dot_source = build_dot_source_lines_for_functions(source_dir, manifest, ['Add-CollectorError', 'Add-CollectorJsonEllipsisPaths', 'Convert-ToCollectorJsonText'])
     result['dotted_source_line_count'] = len([line for line in dot_source.splitlines() if line.strip()])
-    script = f"""
+    script = rf"""
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version 2
 $Global:CollectorErrors = New-Object System.Collections.ArrayList
@@ -177,7 +177,7 @@ def run_state_recursion_behavior_tests(source_dir: Path, manifest: Dict, worker_
         return result
     dot_source = build_dot_source_lines_for_functions(source_dir, manifest, ['Add-CollectorError', 'Convert-StateObjectToHashtable'])
     result['dotted_source_line_count'] = len([line for line in dot_source.splitlines() if line.strip()])
-    script = f"""
+    script = rf"""
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version 2
 $Global:CollectorErrors = New-Object System.Collections.ArrayList
@@ -221,7 +221,7 @@ def run_suspicious_process_parent_context_behavior_tests(source_dir: Path, manif
     result['available'] = True
     dot_source = build_dot_source_lines_for_functions(source_dir, manifest, ['Convert-ProcessObjectToText', 'Get-SuspiciousProcessFindings'])
     result['dotted_source_line_count'] = len([line for line in dot_source.splitlines() if line.strip()])
-    script = f"""
+    script = rf"""
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version 2
 {dot_source}
