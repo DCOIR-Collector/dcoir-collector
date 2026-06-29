@@ -10,7 +10,6 @@ import urllib.request
 from typing import Any, Dict, List
 
 from lib.gemini_behavioral_replay_schema import EXPECTED_RESPONSE_PACK_SCHEMA_VERSION
-from lib.gemini_behavioral_replay_utils import safe
 
 def live_prompt(fixture: Dict[str, Any], turn: Dict[str, Any]) -> str:
     evidence = fixture.get("available_evidence_by_turn", {}).get(turn.get("turn_id"), [])
