@@ -10,7 +10,6 @@ from typing import Any
 from powershell_function_reachability_contract import (
     CLASSIFICATIONS,
     DEFAULT_JSON_OUTPUT,
-    DEFAULT_MANIFEST,
     DEFAULT_MARKDOWN_OUTPUT,
     ISSUE_NUMBER,
     NON_CLAIMS,
