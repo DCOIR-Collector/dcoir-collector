@@ -14,6 +14,50 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
+__all__ = (
+    "Any",
+    "AssemblyParityError",
+    "COLLECTOR_IMPORT_BLOCK",
+    "DEFAULT_INVENTORY",
+    "DEFAULT_JSON_OUTPUT",
+    "DEFAULT_MANIFEST",
+    "DEFAULT_MARKDOWN_OUTPUT",
+    "HARNESS_GENERATED_OUTPUT",
+    "HARNESS_PARTS_ROOT",
+    "ISSUE_NUMBER",
+    "PARENT_ISSUE_NUMBER",
+    "POWERSHELL_PARSE_SCRIPT",
+    "Path",
+    "SCHEMA_VERSION",
+    "argparse",
+    "file_facts",
+    "hashlib",
+    "is_absolute_repo_input",
+    "json",
+    "normalize_repo_path",
+    "normalize_text",
+    "part_entry",
+    "path_is_dir_inside_repo",
+    "path_is_file_inside_repo",
+    "path_resolves_inside_repo",
+    "re",
+    "read_json",
+    "read_part_text",
+    "relpath",
+    "repo_relative_input_path",
+    "require_non_empty_string",
+    "require_non_empty_string_list",
+    "safe_relpath",
+    "sha256_file",
+    "sha256_text",
+    "shutil",
+    "source_line_count",
+    "subprocess",
+    "sys",
+    "tempfile",
+    "validate_manifest_repo_path",
+)
+
 SCHEMA_VERSION = "dcoir_powershell_assembly_parity_report_v1"
 ISSUE_NUMBER = 265
 PARENT_ISSUE_NUMBER = 260
@@ -90,6 +134,7 @@ def path_is_file_inside_repo(path: Path, repo_root: Path) -> bool:
 def path_is_dir_inside_repo(path: Path, repo_root: Path) -> bool:
     return path_resolves_inside_repo(path, repo_root) and path.is_dir()
 
+
 def safe_relpath(path: Path, repo_root: Path) -> str:
     try:
         return relpath(path, repo_root)
@@ -115,6 +160,7 @@ def file_facts(path: Path, repo_root: Path) -> dict[str, Any]:
         "sha256": hashlib.sha256(data).hexdigest(),
     }
 
+
 def normalize_repo_path(value: str) -> str:
     slash_path = value.replace("\\", "/")
     while slash_path.startswith("./"):
@@ -126,6 +172,7 @@ def is_absolute_repo_input(value: str) -> bool:
     raw = value.strip()
     slash_path = raw.replace("\\", "/")
     return slash_path.startswith("/") or re.match(r"^[A-Za-z]:", slash_path) is not None or Path(raw).is_absolute()
+
 
 def validate_manifest_repo_path(value: str, key: str, label: str, repo_root: Path, errors: list[str]) -> str | None:
     raw = value.strip()
@@ -157,6 +204,7 @@ def require_non_empty_string(mapping: dict[str, Any], key: str, label: str, repo
     rel = validate_manifest_repo_path(value, key, label, repo_root, errors)
     return rel or ""
 
+
 def require_non_empty_string_list(mapping: dict[str, Any], key: str, label: str, repo_root: Path, errors: list[str]) -> list[str]:
     value = mapping.get(key)
     if not isinstance(value, list) or not value:
@@ -173,10 +221,12 @@ def require_non_empty_string_list(mapping: dict[str, Any], key: str, label: str,
             normalized.append(rel)
     return normalized
 
+
 def part_entry(path: Path, repo_root: Path) -> dict[str, Any]:
     facts = file_facts(path, repo_root)
     facts["empty"] = bool(facts["exists"] and facts["size_bytes"] == 0)
     return facts
+
 
 def source_line_count(text: str) -> int:
     normalized = normalize_text(text)
