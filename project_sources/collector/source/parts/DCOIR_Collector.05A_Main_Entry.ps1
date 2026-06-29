@@ -326,7 +326,7 @@ if ($collectPackageSkipped) {
   Write-Output "COLLECT_BUNDLE_STATUS=CREATED"
 }
 if ($collectManifestSkipped) { Write-Output "COLLECT_MANIFEST_STATUS=SKIPPED" }
-elif ($collectManifestFinalizationSkipped) { Write-Output "COLLECT_MANIFEST_STATUS=PARTIAL" }
+elseif ($collectManifestFinalizationSkipped) { Write-Output "COLLECT_MANIFEST_STATUS=PARTIAL" }
 if ($metadataReportSkipped) { Write-Output "METADATA_REPORT_STATUS=SKIPPED" }
 if ($stateSaveSkipped) { Write-Output "STATE_SAVE_STATUS=SKIPPED" }
 if ($uploadSummarySkipped) { Write-Output "UPLOAD_SUMMARY_STATUS=SKIPPED" }
