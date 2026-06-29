@@ -53,6 +53,7 @@ SHARED_CONTRACT_FILES = [
     Path("project_sources/github_actions/workflow_required_surface_profiles.json"),
     Path("project_sources/github_actions/workflow_required_surface_profile_supplements.json"),
     Path("project_sources/github_actions/workflow_required_surface_profile_supplements/event_text_query_bound_policy.json"),
+    Path("project_sources/github_actions/workflow_required_surface_profile_supplements/powershell_surface_inventory.json"),
     Path("project_sources/github_actions/tools/build_workflow_inventory.py"),
     Path("project_sources/github_actions/tools/check_workflow_modularization_contracts.py"),
     Path("project_sources/github_actions/tools/generate_workflow_inventory.py"),
