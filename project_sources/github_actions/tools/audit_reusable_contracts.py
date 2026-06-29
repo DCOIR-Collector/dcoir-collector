@@ -18,7 +18,6 @@ from build_workflow_inventory import (
     iter_workflow_files,
 )
 from lib.audit_reusable_contract_helpers import (
-    ACTION_DIR,
     BARE_INPUT_FORWARD_RE,
     COMPOSITE_USING_RE,
     DOUBLE_QUOTED_EXPRESSION_LITERAL_RE,
