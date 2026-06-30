@@ -20,16 +20,16 @@
   },
   "changed_file_dependency_expansion": null,
   "summary": {
-    "total_surfaces": 231,
+    "total_surfaces": 248,
     "by_category": {
       "archive_temp_vendor_artifact": 0,
       "collector_harness_script": 4,
       "collector_harness_source_part": 15,
-      "collector_runtime_source_part": 36,
+      "collector_runtime_source_part": 38,
       "collector_runtime_wrapper": 1,
       "collector_validation_tooling": 2,
       "fixture_or_example": 23,
-      "generated_or_assembled_output": 0,
+      "generated_or_assembled_output": 15,
       "github_workflow_support_script": 2,
       "invalid_workflow_surface": 0,
       "missing_authoritative_surface": 0,
@@ -42,7 +42,7 @@
       "workflow_embedded_powershell": 28
     },
     "by_source_type": {
-      ".ps1": 169,
+      ".ps1": 186,
       ".ps1.txt": 15,
       ".ps1xml": 0,
       ".psd1": 9,
@@ -51,7 +51,8 @@
     },
     "by_status": {
       "fixture": 23,
-      "source": 41,
+      "generated": 15,
+      "source": 43,
       "source_part": 15,
       "staging": 63,
       "tooling": 61,
@@ -59,8 +60,8 @@
     },
     "by_inclusion_decision": {
       "exclude": 63,
-      "include": 117,
-      "reference": 51
+      "include": 119,
+      "reference": 66
     },
     "embedded_snippet_count": 81
   },
@@ -69,8 +70,8 @@
       "path": "project_sources/collector/manifests/Collector_Runtime_Package_Manifest.json",
       "exists": true,
       "error": null,
-      "expected_path_count": 37,
-      "present_path_count": 37,
+      "expected_path_count": 39,
+      "present_path_count": 39,
       "paths": [
         {
           "path": "project_sources/collector/source/DCOIR_Collector.ps1",
@@ -78,7 +79,7 @@
           "in_inventory": true,
           "category": "collector_runtime_wrapper",
           "expected_category": "collector_runtime_wrapper",
-          "size_bytes": 6956
+          "size_bytes": 7085
         },
         {
           "path": "project_sources/collector/source/parts/DCOIR_Collector.01A1_Core_Logging_And_Process_Capture.ps1",
@@ -321,12 +322,28 @@
           "size_bytes": 17925
         },
         {
-          "path": "project_sources/collector/source/parts/DCOIR_Collector.04H_PR212_Metadata_Finalization_Fixes.ps1",
+          "path": "project_sources/collector/source/parts/DCOIR_Collector.04H1_PR212_Metadata_Finalization_Fixes.ps1",
           "exists": true,
           "in_inventory": true,
           "category": "collector_runtime_source_part",
           "expected_category": "collector_runtime_source_part",
-          "size_bytes": 17962
+          "size_bytes": 4841
+        },
+        {
+          "path": "project_sources/collector/source/parts/DCOIR_Collector.04H2_PR212_Metadata_Finalization_Fixes.ps1",
+          "exists": true,
+          "in_inventory": true,
+          "category": "collector_runtime_source_part",
+          "expected_category": "collector_runtime_source_part",
+          "size_bytes": 9020
+        },
+        {
+          "path": "project_sources/collector/source/parts/DCOIR_Collector.04H3_PR212_Metadata_Finalization_Fixes.ps1",
+          "exists": true,
+          "in_inventory": true,
+          "category": "collector_runtime_source_part",
+          "expected_category": "collector_runtime_source_part",
+          "size_bytes": 4963
         },
         {
           "path": "project_sources/collector/source/parts/DCOIR_Collector.05A1_Main_Entry.ps1",
@@ -3518,6 +3535,146 @@
       "sha256": "eae7769b3915f265affe83bdbe86f9b7e3550471fa3dce7b54a2153071d72e43"
     },
     {
+      "path": "out/checkpoint59-compile-rerun/compiled_runtime/DCOIR_Collector.ps1",
+      "category": "generated_or_assembled_output",
+      "source_type": ".ps1",
+      "status": "generated",
+      "inclusion_decision": "reference",
+      "decision_reason": "Generated or assembled output is covered as parity/reference evidence, not source truth.",
+      "exists": true,
+      "marker_lines": [],
+      "embedded_snippets": [],
+      "size_bytes": 371633,
+      "line_count": 9668,
+      "sha256": "eb7ac894ad31e240532de55e0eccb49d425ece4ee5a0fad2170359c1b5ffa694"
+    },
+    {
+      "path": "out/checkpoint59-compile/compiled_runtime/DCOIR_Collector.ps1",
+      "category": "generated_or_assembled_output",
+      "source_type": ".ps1",
+      "status": "generated",
+      "inclusion_decision": "reference",
+      "decision_reason": "Generated or assembled output is covered as parity/reference evidence, not source truth.",
+      "exists": true,
+      "marker_lines": [],
+      "embedded_snippets": [],
+      "size_bytes": 371633,
+      "line_count": 9668,
+      "sha256": "eb7ac894ad31e240532de55e0eccb49d425ece4ee5a0fad2170359c1b5ffa694"
+    },
+    {
+      "path": "out/checkpoint59-package-rerun/compiled_runtime/DCOIR_Collector.ps1",
+      "category": "generated_or_assembled_output",
+      "source_type": ".ps1",
+      "status": "generated",
+      "inclusion_decision": "reference",
+      "decision_reason": "Generated or assembled output is covered as parity/reference evidence, not source truth.",
+      "exists": true,
+      "marker_lines": [],
+      "embedded_snippets": [],
+      "size_bytes": 371633,
+      "line_count": 9668,
+      "sha256": "eb7ac894ad31e240532de55e0eccb49d425ece4ee5a0fad2170359c1b5ffa694"
+    },
+    {
+      "path": "out/checkpoint59-package/compiled_runtime/DCOIR_Collector.ps1",
+      "category": "generated_or_assembled_output",
+      "source_type": ".ps1",
+      "status": "generated",
+      "inclusion_decision": "reference",
+      "decision_reason": "Generated or assembled output is covered as parity/reference evidence, not source truth.",
+      "exists": true,
+      "marker_lines": [],
+      "embedded_snippets": [],
+      "size_bytes": 371633,
+      "line_count": 9668,
+      "sha256": "eb7ac894ad31e240532de55e0eccb49d425ece4ee5a0fad2170359c1b5ffa694"
+    },
+    {
+      "path": "out/checkpoint70-compile-after-codi/compiled_runtime/DCOIR_Collector.ps1",
+      "category": "generated_or_assembled_output",
+      "source_type": ".ps1",
+      "status": "generated",
+      "inclusion_decision": "reference",
+      "decision_reason": "Generated or assembled output is covered as parity/reference evidence, not source truth.",
+      "exists": true,
+      "marker_lines": [],
+      "embedded_snippets": [],
+      "size_bytes": 377644,
+      "line_count": 9887,
+      "sha256": "777900667497e4ef1220031a932191f468ceb193e48d56f0127906d8a47b4c52"
+    },
+    {
+      "path": "out/checkpoint70-compile-rerun/compiled_runtime/DCOIR_Collector.ps1",
+      "category": "generated_or_assembled_output",
+      "source_type": ".ps1",
+      "status": "generated",
+      "inclusion_decision": "reference",
+      "decision_reason": "Generated or assembled output is covered as parity/reference evidence, not source truth.",
+      "exists": true,
+      "marker_lines": [],
+      "embedded_snippets": [],
+      "size_bytes": 377644,
+      "line_count": 9887,
+      "sha256": "777900667497e4ef1220031a932191f468ceb193e48d56f0127906d8a47b4c52"
+    },
+    {
+      "path": "out/checkpoint70-compile/compiled_runtime/DCOIR_Collector.ps1",
+      "category": "generated_or_assembled_output",
+      "source_type": ".ps1",
+      "status": "generated",
+      "inclusion_decision": "reference",
+      "decision_reason": "Generated or assembled output is covered as parity/reference evidence, not source truth.",
+      "exists": true,
+      "marker_lines": [],
+      "embedded_snippets": [],
+      "size_bytes": 377644,
+      "line_count": 9887,
+      "sha256": "777900667497e4ef1220031a932191f468ceb193e48d56f0127906d8a47b4c52"
+    },
+    {
+      "path": "out/checkpoint70-package-after-codi/compiled_runtime/DCOIR_Collector.ps1",
+      "category": "generated_or_assembled_output",
+      "source_type": ".ps1",
+      "status": "generated",
+      "inclusion_decision": "reference",
+      "decision_reason": "Generated or assembled output is covered as parity/reference evidence, not source truth.",
+      "exists": true,
+      "marker_lines": [],
+      "embedded_snippets": [],
+      "size_bytes": 377644,
+      "line_count": 9887,
+      "sha256": "777900667497e4ef1220031a932191f468ceb193e48d56f0127906d8a47b4c52"
+    },
+    {
+      "path": "out/checkpoint70-package/compiled_runtime/DCOIR_Collector.ps1",
+      "category": "generated_or_assembled_output",
+      "source_type": ".ps1",
+      "status": "generated",
+      "inclusion_decision": "reference",
+      "decision_reason": "Generated or assembled output is covered as parity/reference evidence, not source truth.",
+      "exists": true,
+      "marker_lines": [],
+      "embedded_snippets": [],
+      "size_bytes": 377644,
+      "line_count": 9887,
+      "sha256": "777900667497e4ef1220031a932191f468ceb193e48d56f0127906d8a47b4c52"
+    },
+    {
+      "path": "out/checkpoint72-compile/compiled_runtime/DCOIR_Collector.ps1",
+      "category": "generated_or_assembled_output",
+      "source_type": ".ps1",
+      "status": "generated",
+      "inclusion_decision": "reference",
+      "decision_reason": "Generated or assembled output is covered as parity/reference evidence, not source truth.",
+      "exists": true,
+      "marker_lines": [],
+      "embedded_snippets": [],
+      "size_bytes": 378774,
+      "line_count": 9927,
+      "sha256": "f9ce9bf2691e7e3d053ef309abb375a4cc221eef8adec89111a39673e4a7ba58"
+    },
+    {
       "path": "project_sources/collector/PSScriptAnalyzerSettings.psd1",
       "category": "collector_validation_tooling",
       "source_type": ".psd1",
@@ -4120,6 +4277,76 @@
       "sha256": "6550ab3fb7024e0665bb485de812b0d1b8313666ce0191d3f97451c553758ed6"
     },
     {
+      "path": "project_sources/collector/out/recheck/compiled_runtime/DCOIR_Collector.ps1",
+      "category": "generated_or_assembled_output",
+      "source_type": ".ps1",
+      "status": "generated",
+      "inclusion_decision": "reference",
+      "decision_reason": "Generated or assembled output is covered as parity/reference evidence, not source truth.",
+      "exists": true,
+      "marker_lines": [],
+      "embedded_snippets": [],
+      "size_bytes": 368283,
+      "line_count": 9463,
+      "sha256": "626b4a6e07dad4558faa66f6a56da679f2dca1ccdcd34a1cce8cbf4577b3e533"
+    },
+    {
+      "path": "project_sources/collector/out/recheck05-compile-final/compiled_runtime/DCOIR_Collector.ps1",
+      "category": "generated_or_assembled_output",
+      "source_type": ".ps1",
+      "status": "generated",
+      "inclusion_decision": "reference",
+      "decision_reason": "Generated or assembled output is covered as parity/reference evidence, not source truth.",
+      "exists": true,
+      "marker_lines": [],
+      "embedded_snippets": [],
+      "size_bytes": 369463,
+      "line_count": 9600,
+      "sha256": "d67f7a8cb6826e7d72acbdc43680fcf4f23dbb6ad96130b330cd022a9e4de825"
+    },
+    {
+      "path": "project_sources/collector/out/recheck05-compile/compiled_runtime/DCOIR_Collector.ps1",
+      "category": "generated_or_assembled_output",
+      "source_type": ".ps1",
+      "status": "generated",
+      "inclusion_decision": "reference",
+      "decision_reason": "Generated or assembled output is covered as parity/reference evidence, not source truth.",
+      "exists": true,
+      "marker_lines": [],
+      "embedded_snippets": [],
+      "size_bytes": 369463,
+      "line_count": 9600,
+      "sha256": "d67f7a8cb6826e7d72acbdc43680fcf4f23dbb6ad96130b330cd022a9e4de825"
+    },
+    {
+      "path": "project_sources/collector/out/recheck2/compiled_runtime/DCOIR_Collector.ps1",
+      "category": "generated_or_assembled_output",
+      "source_type": ".ps1",
+      "status": "generated",
+      "inclusion_decision": "reference",
+      "decision_reason": "Generated or assembled output is covered as parity/reference evidence, not source truth.",
+      "exists": true,
+      "marker_lines": [],
+      "embedded_snippets": [],
+      "size_bytes": 368283,
+      "line_count": 9463,
+      "sha256": "626b4a6e07dad4558faa66f6a56da679f2dca1ccdcd34a1cce8cbf4577b3e533"
+    },
+    {
+      "path": "project_sources/collector/out/recheck3/compiled_runtime/DCOIR_Collector.ps1",
+      "category": "generated_or_assembled_output",
+      "source_type": ".ps1",
+      "status": "generated",
+      "inclusion_decision": "reference",
+      "decision_reason": "Generated or assembled output is covered as parity/reference evidence, not source truth.",
+      "exists": true,
+      "marker_lines": [],
+      "embedded_snippets": [],
+      "size_bytes": 368283,
+      "line_count": 9463,
+      "sha256": "626b4a6e07dad4558faa66f6a56da679f2dca1ccdcd34a1cce8cbf4577b3e533"
+    },
+    {
       "path": "project_sources/collector/source/DCOIR_Collector.ps1",
       "category": "collector_runtime_wrapper",
       "source_type": ".ps1",
@@ -4129,9 +4356,9 @@
       "exists": true,
       "marker_lines": [],
       "embedded_snippets": [],
-      "size_bytes": 6956,
-      "line_count": 213,
-      "sha256": "60988aa29a76edda1d3855e7215dd7ac09b82893ef3e1352192f6456c3bf37ea"
+      "size_bytes": 7085,
+      "line_count": 215,
+      "sha256": "dde0112918574d22d928dc47b54d6213f35160ed8fc2b473831f29b310b13c23"
     },
     {
       "path": "project_sources/collector/source/parts/DCOIR_Collector.01A1_Core_Logging_And_Process_Capture.ps1",
@@ -4554,7 +4781,7 @@
       "sha256": "831b6a908796801418bc8417bb6e41d0f96d1b6ff8e7add4ffcd940bd1efd9c5"
     },
     {
-      "path": "project_sources/collector/source/parts/DCOIR_Collector.04H_PR212_Metadata_Finalization_Fixes.ps1",
+      "path": "project_sources/collector/source/parts/DCOIR_Collector.04H1_PR212_Metadata_Finalization_Fixes.ps1",
       "category": "collector_runtime_source_part",
       "source_type": ".ps1",
       "status": "source",
@@ -4563,9 +4790,37 @@
       "exists": true,
       "marker_lines": [],
       "embedded_snippets": [],
-      "size_bytes": 17962,
-      "line_count": 414,
-      "sha256": "ef64a9acad9f126cf9526fec9016b86be61ea2cb51b33851390d326d999fc18e"
+      "size_bytes": 4841,
+      "line_count": 131,
+      "sha256": "60014873136f51c7d77eb378fb2ff8e1e980e183658309924ce2494a56b0199c"
+    },
+    {
+      "path": "project_sources/collector/source/parts/DCOIR_Collector.04H2_PR212_Metadata_Finalization_Fixes.ps1",
+      "category": "collector_runtime_source_part",
+      "source_type": ".ps1",
+      "status": "source",
+      "inclusion_decision": "include",
+      "decision_reason": "Collector runtime source part is primary maintained PowerShell source.",
+      "exists": true,
+      "marker_lines": [],
+      "embedded_snippets": [],
+      "size_bytes": 9020,
+      "line_count": 208,
+      "sha256": "ecf10ab8b88576c1158a5aa96475dd5813f077da3b2cf77213f764fe4e6dfcd2"
+    },
+    {
+      "path": "project_sources/collector/source/parts/DCOIR_Collector.04H3_PR212_Metadata_Finalization_Fixes.ps1",
+      "category": "collector_runtime_source_part",
+      "source_type": ".ps1",
+      "status": "source",
+      "inclusion_decision": "include",
+      "decision_reason": "Collector runtime source part is primary maintained PowerShell source.",
+      "exists": true,
+      "marker_lines": [],
+      "embedded_snippets": [],
+      "size_bytes": 4963,
+      "line_count": 109,
+      "sha256": "cdc7f9848721330655a671f1ae76c5fe2171380d1c044fc3503cf63d1fe82662"
     },
     {
       "path": "project_sources/collector/source/parts/DCOIR_Collector.05A1_Main_Entry.ps1",
