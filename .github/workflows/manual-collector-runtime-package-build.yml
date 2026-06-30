@@ -17,8 +17,10 @@
 # - Uses project_sources/collector/tools/build_dcoir_collector_runtime_package.py and package validation tooling.
 # - Collector part assembly order is owned by project_sources/collector/manifests/Collector_Runtime_Package_Manifest.json and consumed by the reusable package workflow.
 # - When DCOIR_Collector.* part files are split, renamed, added, or removed, keep the manifest, required-surface profile, and wrapper part list aligned before running this workflow.
+# - Current core logging/process-capture source is split into DCOIR_Collector.01A1 and DCOIR_Collector.01A2 before the JSON/state/array utility parts.
 # - Current JSON/state/array utility source is split into DCOIR_Collector.01B1 and DCOIR_Collector.01B2 before DCOIR_Collector.01C.
-# - Current baseline collection/reporting source is split into DCOIR_Collector.02A, DCOIR_Collector.02B, DCOIR_Collector.02C, DCOIR_Collector.02D1, and DCOIR_Collector.02D2 before the enrich-session parts.
+# - Current process/event/baseline utility source is split into DCOIR_Collector.01D1 and DCOIR_Collector.01D2 before DCOIR_Collector.01E.
+# - Current baseline collection/reporting source is split into DCOIR_Collector.02A, DCOIR_Collector.02B, DCOIR_Collector.02C, DCOIR_Collector.02D1A, DCOIR_Collector.02D1B, and DCOIR_Collector.02D2 before the enrich-session parts.
 # - Current quick-interface/output source is split into DCOIR_Collector.04A1, DCOIR_Collector.04A2, and DCOIR_Collector.04A3 before the feature-wave parts.
 # - Current feature-wave targeted collection source is split into DCOIR_Collector.04B1 and DCOIR_Collector.04B2 before DCOIR_Collector.04C.
 # - Current bounded-parallel-runtime source is split into DCOIR_Collector.04D1, DCOIR_Collector.04D2, and DCOIR_Collector.04D3 before the diagnostic-context and review-fix parts.
