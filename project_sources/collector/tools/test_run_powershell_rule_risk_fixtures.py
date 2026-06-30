@@ -13,6 +13,23 @@ __all__ = (
     "PowerShellRuleRiskFixtureReportTests",
 )
 
+_TEST_CASES = (
+    PowerShellRuleRiskFixtureFindingTests,
+    PowerShellRuleRiskFixturePathSafetyTests,
+    PowerShellRuleRiskFixtureReportTests,
+)
+
+
+def load_tests(
+    loader: unittest.TestLoader,
+    tests: unittest.TestSuite,
+    pattern: str | None,
+) -> unittest.TestSuite:
+    suite = unittest.TestSuite()
+    for test_case in _TEST_CASES:
+        suite.addTests(loader.loadTestsFromTestCase(test_case))
+    return suite
+
 
 if __name__ == "__main__":
     raise SystemExit(unittest.main())
