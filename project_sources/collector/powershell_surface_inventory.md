@@ -16,11 +16,11 @@
 | `archive_temp_vendor_artifact` | 0 |
 | `collector_harness_script` | 4 |
 | `collector_harness_source_part` | 15 |
-| `collector_runtime_source_part` | 36 |
+| `collector_runtime_source_part` | 38 |
 | `collector_runtime_wrapper` | 1 |
 | `collector_validation_tooling` | 2 |
 | `fixture_or_example` | 23 |
-| `generated_or_assembled_output` | 0 |
+| `generated_or_assembled_output` | 15 |
 | `github_workflow_support_script` | 2 |
 | `invalid_workflow_surface` | 0 |
 | `missing_authoritative_surface` | 0 |
@@ -36,7 +36,7 @@
 
 | Source Type | Count |
 | --- | ---: |
-| `.ps1` | 169 |
+| `.ps1` | 186 |
 | `.ps1.txt` | 15 |
 | `.ps1xml` | 0 |
 | `.psd1` | 9 |
@@ -48,13 +48,13 @@
 | Decision | Count |
 | --- | ---: |
 | `exclude` | 63 |
-| `include` | 117 |
-| `reference` | 51 |
+| `include` | 119 |
+| `reference` | 66 |
 
 ## Control Totals
 
-- Collector manifest expected paths: `37`
-- Collector manifest present paths: `37`
+- Collector manifest expected paths: `39`
+- Collector manifest present paths: `39`
 - Harness source parts: `15`
 - Profile-required harness source parts: `15`
 - Profile-required harness source parts present: `15`
@@ -155,6 +155,16 @@
 | `chatgpt_staging/exec_scripts/pr281_escaped_quoted_auth_redaction_004.ps1` | `staging_artifact` | `exclude` | ChatGPT staging scripts are historical execution artifacts, not maintained source. |
 | `chatgpt_staging/exec_scripts/pr281_escaped_quoted_auth_redaction_005.ps1` | `staging_artifact` | `exclude` | ChatGPT staging scripts are historical execution artifacts, not maintained source. |
 | `chatgpt_staging/exec_scripts/update_gemini_prime_chunk_checksum_001.ps1` | `staging_artifact` | `exclude` | ChatGPT staging scripts are historical execution artifacts, not maintained source. |
+| `out/checkpoint59-compile-rerun/compiled_runtime/DCOIR_Collector.ps1` | `generated_or_assembled_output` | `reference` | Generated or assembled output is covered as parity/reference evidence, not source truth. |
+| `out/checkpoint59-compile/compiled_runtime/DCOIR_Collector.ps1` | `generated_or_assembled_output` | `reference` | Generated or assembled output is covered as parity/reference evidence, not source truth. |
+| `out/checkpoint59-package-rerun/compiled_runtime/DCOIR_Collector.ps1` | `generated_or_assembled_output` | `reference` | Generated or assembled output is covered as parity/reference evidence, not source truth. |
+| `out/checkpoint59-package/compiled_runtime/DCOIR_Collector.ps1` | `generated_or_assembled_output` | `reference` | Generated or assembled output is covered as parity/reference evidence, not source truth. |
+| `out/checkpoint70-compile-after-codi/compiled_runtime/DCOIR_Collector.ps1` | `generated_or_assembled_output` | `reference` | Generated or assembled output is covered as parity/reference evidence, not source truth. |
+| `out/checkpoint70-compile-rerun/compiled_runtime/DCOIR_Collector.ps1` | `generated_or_assembled_output` | `reference` | Generated or assembled output is covered as parity/reference evidence, not source truth. |
+| `out/checkpoint70-compile/compiled_runtime/DCOIR_Collector.ps1` | `generated_or_assembled_output` | `reference` | Generated or assembled output is covered as parity/reference evidence, not source truth. |
+| `out/checkpoint70-package-after-codi/compiled_runtime/DCOIR_Collector.ps1` | `generated_or_assembled_output` | `reference` | Generated or assembled output is covered as parity/reference evidence, not source truth. |
+| `out/checkpoint70-package/compiled_runtime/DCOIR_Collector.ps1` | `generated_or_assembled_output` | `reference` | Generated or assembled output is covered as parity/reference evidence, not source truth. |
+| `out/checkpoint72-compile/compiled_runtime/DCOIR_Collector.ps1` | `generated_or_assembled_output` | `reference` | Generated or assembled output is covered as parity/reference evidence, not source truth. |
 | `project_sources/collector/fixtures/powershell_analysis/bad/analyzer_skip_success.ps1` | `fixture_or_example` | `reference` | Fixture/example PowerShell is inventoried separately from maintained source targets. |
 | `project_sources/collector/fixtures/powershell_analysis/bad/broad_baseline.ps1` | `fixture_or_example` | `reference` | Fixture/example PowerShell is inventoried separately from maintained source targets. |
 | `project_sources/collector/fixtures/powershell_analysis/bad/fail_row_green_exit.ps1` | `fixture_or_example` | `reference` | Fixture/example PowerShell is inventoried separately from maintained source targets. |
@@ -178,6 +188,11 @@
 | `project_sources/collector/fixtures/powershell_analysis/good/custom_fingerprint_bound_baseline.ps1` | `fixture_or_example` | `reference` | Fixture/example PowerShell is inventoried separately from maintained source targets. |
 | `project_sources/collector/fixtures/powershell_analysis/good/custom_safe_root_delete.ps1` | `fixture_or_example` | `reference` | Fixture/example PowerShell is inventoried separately from maintained source targets. |
 | `project_sources/collector/fixtures/powershell_analysis/good/custom_source_part_current.ps1` | `fixture_or_example` | `reference` | Fixture/example PowerShell is inventoried separately from maintained source targets. |
+| `project_sources/collector/out/recheck/compiled_runtime/DCOIR_Collector.ps1` | `generated_or_assembled_output` | `reference` | Generated or assembled output is covered as parity/reference evidence, not source truth. |
+| `project_sources/collector/out/recheck05-compile-final/compiled_runtime/DCOIR_Collector.ps1` | `generated_or_assembled_output` | `reference` | Generated or assembled output is covered as parity/reference evidence, not source truth. |
+| `project_sources/collector/out/recheck05-compile/compiled_runtime/DCOIR_Collector.ps1` | `generated_or_assembled_output` | `reference` | Generated or assembled output is covered as parity/reference evidence, not source truth. |
+| `project_sources/collector/out/recheck2/compiled_runtime/DCOIR_Collector.ps1` | `generated_or_assembled_output` | `reference` | Generated or assembled output is covered as parity/reference evidence, not source truth. |
+| `project_sources/collector/out/recheck3/compiled_runtime/DCOIR_Collector.ps1` | `generated_or_assembled_output` | `reference` | Generated or assembled output is covered as parity/reference evidence, not source truth. |
 
 ## Validation Findings
 
