@@ -36,6 +36,8 @@ LAYER_SEGMENTS: dict[str, tuple[str, ...]] = {
     'base_selftest': (
         'selftests/base_selftest/part_01.py',
         'selftests/base_selftest/part_02.py',
+        'selftests/base_selftest/part_02a.py',
+        'selftests/base_selftest/part_02b.py',
         'selftests/base_selftest/part_03.py',
     ),
     'hardened_selftest': (
