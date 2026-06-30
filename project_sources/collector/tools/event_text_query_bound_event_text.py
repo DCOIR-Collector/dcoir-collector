@@ -7,24 +7,27 @@ from pathlib import Path
 from typing import Dict, List
 
 from event_text_query_bound_common import (
-    DIAGNOSTIC_CONTEXT_REL,
+    DIAGNOSTIC_CONTEXT_RELS,
     add_missing_errors,
     extract_function_body,
-    read_text,
+    read_combined_text,
 )
 
 
 def validate_event_text_query_bound_policy(source_dir: Path) -> Dict[str, object]:
     errors: List[str] = []
-    source_path = source_dir / DIAGNOSTIC_CONTEXT_REL
-    text = read_text(source_path)
+    source_paths = [(rel, source_dir / rel) for rel in DIAGNOSTIC_CONTEXT_RELS]
+    missing_source_rels = [rel for rel, path in source_paths if not path.exists()]
+    text = read_combined_text(source_dir, DIAGNOSTIC_CONTEXT_RELS)
     checks: Dict[str, object] = {
-        'path': DIAGNOSTIC_CONTEXT_REL,
+        'paths': list(DIAGNOSTIC_CONTEXT_RELS),
         'source_present': bool(text),
+        'all_sources_present': not missing_source_rels,
+        'missing_paths': missing_source_rels,
     }
 
-    if not text:
-        errors.append('event text diagnostic context source is missing: ' + DIAGNOSTIC_CONTEXT_REL)
+    if missing_source_rels or not text:
+        errors.append('event text diagnostic context source is missing: ' + ', '.join(missing_source_rels or list(DIAGNOSTIC_CONTEXT_RELS)))
         return {'success': False, 'checks': checks, 'errors': errors}
 
     helper = extract_function_body(text, 'Invoke-CollectorBoundedWinEventQuery')
@@ -95,5 +98,3 @@ def validate_event_text_query_bound_policy(source_dir: Path) -> Dict[str, object
         'checks': checks,
         'errors': errors,
     }
-
-
