@@ -1,4 +1,4 @@
-<#!
+<#
 .SYNOPSIS
 DCOIR collector bounded parallel worker orchestration helpers.
 
