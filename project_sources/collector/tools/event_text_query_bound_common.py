@@ -3,12 +3,16 @@ from __future__ import annotations
 
 import re
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, Iterable, List
 
 EVENT_TEXT_REVIEW_REL = 'project_sources/collector/source/parts/DCOIR_Collector.03B_Enrich_Actions_Review.ps1'
 RETRIEVAL_ACTIONS_REL = 'project_sources/collector/source/parts/DCOIR_Collector.03C_Enrich_Actions_Retrieval.ps1'
 EVENT_WINDOW_OVERRIDES_REL = 'project_sources/collector/source/parts/DCOIR_Collector.04C_Explicit_Event_Window_Overrides.ps1'
-DIAGNOSTIC_CONTEXT_REL = 'project_sources/collector/source/parts/DCOIR_Collector.04E_Diagnostic_Context_Overrides.ps1'
+DIAGNOSTIC_CONTEXT_RELS = (
+    'project_sources/collector/source/parts/DCOIR_Collector.04E1_Diagnostic_Context_Overrides.ps1',
+    'project_sources/collector/source/parts/DCOIR_Collector.04E2_Diagnostic_Context_Overrides.ps1',
+)
+DIAGNOSTIC_CONTEXT_REL = DIAGNOSTIC_CONTEXT_RELS[0]
 PR186_FIXES_REL = 'project_sources/collector/source/parts/DCOIR_Collector.04F_PR186_Review_Fixes.ps1'
 REPORT_NAME = 'validate_event_text_query_bound_policy_report.json'
 COUNT_CAP_PARAMETER_NAMES = ('Take', 'MaxEvents')
@@ -16,6 +20,10 @@ COUNT_CAP_PARAMETER_NAMES = ('Take', 'MaxEvents')
 
 def read_text(path: Path) -> str:
     return path.read_text(encoding='utf-8', errors='ignore') if path.exists() else ''
+
+
+def read_combined_text(source_dir: Path, relative_paths: Iterable[str]) -> str:
+    return '\n'.join(read_text(source_dir / rel_path) for rel_path in relative_paths)
 
 
 def extract_parenthesized_text(text: str, open_paren_index: int) -> str:
@@ -240,5 +248,3 @@ def add_missing_errors(prefix: str, checks: Dict[str, object], required_keys: Li
     for key in required_keys:
         if not checks.get(key):
             errors.append(prefix + key)
-
-
