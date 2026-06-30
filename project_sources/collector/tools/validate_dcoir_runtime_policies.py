@@ -22,7 +22,8 @@ PART02_SOURCE_PATHS = (
     'project_sources/collector/source/parts/DCOIR_Collector.02A_Baseline_Collection_And_Reports.ps1',
     'project_sources/collector/source/parts/DCOIR_Collector.02B_Baseline_Collection_And_Reports.ps1',
     'project_sources/collector/source/parts/DCOIR_Collector.02C_Baseline_Collection_And_Reports.ps1',
-    'project_sources/collector/source/parts/DCOIR_Collector.02D1_Baseline_Collection_And_Reports.ps1',
+    'project_sources/collector/source/parts/DCOIR_Collector.02D1A_Baseline_Collection_And_Reports.ps1',
+    'project_sources/collector/source/parts/DCOIR_Collector.02D1B_Baseline_Collection_And_Reports.ps1',
     'project_sources/collector/source/parts/DCOIR_Collector.02D2_Baseline_Collection_And_Reports.ps1',
 )
 
