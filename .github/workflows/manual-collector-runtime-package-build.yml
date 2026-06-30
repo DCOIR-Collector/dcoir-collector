@@ -25,6 +25,7 @@
 # - Current feature-wave targeted collection source is split into DCOIR_Collector.04B1 and DCOIR_Collector.04B2 before DCOIR_Collector.04C.
 # - Current bounded-parallel-runtime source is split into DCOIR_Collector.04D1, DCOIR_Collector.04D2, and DCOIR_Collector.04D3 before the diagnostic-context and review-fix parts.
 # - Current diagnostic-context overrides source is split into DCOIR_Collector.04E1 and DCOIR_Collector.04E2 before DCOIR_Collector.04F.
+# - Current metadata-finalization source is split into DCOIR_Collector.04H1, DCOIR_Collector.04H2, and DCOIR_Collector.04H3 before the main-entry parts.
 # - Current main-entry source is split into DCOIR_Collector.05A1, DCOIR_Collector.05A2, DCOIR_Collector.05B, and DCOIR_Collector.05C helpers before the final DCOIR_Collector.05 dispatcher.
 # Expected outputs/readback:
 # - Collector delivery package artifacts, ChatGPT workflow report section artifact, and repo-workflows report.
