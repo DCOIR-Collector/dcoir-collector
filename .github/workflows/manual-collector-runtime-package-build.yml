@@ -18,6 +18,7 @@
 # - Collector part assembly order is owned by project_sources/collector/manifests/Collector_Runtime_Package_Manifest.json and consumed by the reusable package workflow.
 # - When DCOIR_Collector.* part files are split, renamed, added, or removed, keep the manifest, required-surface profile, and wrapper part list aligned before running this workflow.
 # - Current quick-interface/output source is split into DCOIR_Collector.04A1, DCOIR_Collector.04A2, and DCOIR_Collector.04A3 before the existing 04B-H feature-wave parts.
+# - Current bounded-parallel-runtime source is split into DCOIR_Collector.04D1, DCOIR_Collector.04D2, and DCOIR_Collector.04D3 before the existing 04E-H feature-wave parts.
 # - Current main-entry source is split into DCOIR_Collector.05A, DCOIR_Collector.05B, and DCOIR_Collector.05C helpers before the final DCOIR_Collector.05 dispatcher.
 # Expected outputs/readback:
 # - Collector delivery package artifacts, ChatGPT workflow report section artifact, and repo-workflows report.
