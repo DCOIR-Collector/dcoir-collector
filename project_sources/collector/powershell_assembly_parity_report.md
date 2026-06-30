@@ -3,8 +3,8 @@
 - Schema: `dcoir_powershell_assembly_parity_report_v1`
 - Issue: `#265`
 - Success: `True`
-- Source parts: `51`
-- Collector source parts: `36`
+- Source parts: `53`
+- Collector source parts: `38`
 - Harness source parts: `15`
 - Generated outputs mapped: `2`
 - Parse status: `pass`
@@ -14,7 +14,7 @@
 
 | Output | Inputs | Parse | Parity | Line Mapping |
 | --- | ---: | --- | --- | --- |
-| `compiled_runtime/DCOIR_Collector.ps1` | `36` | `pass` | `pass` | `available` |
+| `compiled_runtime/DCOIR_Collector.ps1` | `38` | `pass` | `pass` | `available` |
 | `project_sources/collector/harness/run_DCOIR_Tests.generated.ps1` | `15` | `pass` | `pass` | `available` |
 
 ## Coverage Statement
