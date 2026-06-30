@@ -35,7 +35,9 @@
     "project_sources/collector/source/parts/DCOIR_Collector.04E2_Diagnostic_Context_Overrides.ps1",
     "project_sources/collector/source/parts/DCOIR_Collector.04F_PR186_Review_Fixes.ps1",
     "project_sources/collector/source/parts/DCOIR_Collector.04G_PR186_External_Review_Fixes.ps1",
-    "project_sources/collector/source/parts/DCOIR_Collector.04H_PR212_Metadata_Finalization_Fixes.ps1",
+    "project_sources/collector/source/parts/DCOIR_Collector.04H1_PR212_Metadata_Finalization_Fixes.ps1",
+    "project_sources/collector/source/parts/DCOIR_Collector.04H2_PR212_Metadata_Finalization_Fixes.ps1",
+    "project_sources/collector/source/parts/DCOIR_Collector.04H3_PR212_Metadata_Finalization_Fixes.ps1",
     "project_sources/collector/source/parts/DCOIR_Collector.05A1_Main_Entry.ps1",
     "project_sources/collector/source/parts/DCOIR_Collector.05A2_Main_Entry.ps1",
     "project_sources/collector/source/parts/DCOIR_Collector.05B_Main_Entry.ps1",
@@ -75,7 +77,9 @@
     "project_sources/collector/source/parts/DCOIR_Collector.04E2_Diagnostic_Context_Overrides.ps1",
     "project_sources/collector/source/parts/DCOIR_Collector.04F_PR186_Review_Fixes.ps1",
     "project_sources/collector/source/parts/DCOIR_Collector.04G_PR186_External_Review_Fixes.ps1",
-    "project_sources/collector/source/parts/DCOIR_Collector.04H_PR212_Metadata_Finalization_Fixes.ps1",
+    "project_sources/collector/source/parts/DCOIR_Collector.04H1_PR212_Metadata_Finalization_Fixes.ps1",
+    "project_sources/collector/source/parts/DCOIR_Collector.04H2_PR212_Metadata_Finalization_Fixes.ps1",
+    "project_sources/collector/source/parts/DCOIR_Collector.04H3_PR212_Metadata_Finalization_Fixes.ps1",
     "project_sources/collector/source/parts/DCOIR_Collector.05A1_Main_Entry.ps1",
     "project_sources/collector/source/parts/DCOIR_Collector.05A2_Main_Entry.ps1",
     "project_sources/collector/source/parts/DCOIR_Collector.05B_Main_Entry.ps1",
@@ -102,7 +106,7 @@
     "Diagnostic context and security visibility refinements are now integrated into single maintained function definitions in the compiled runtime output.",
     "PR #186 review fixes are loaded before the main entrypoint so custom RunId discovery, invalid-window fallback, and validation-only padding gates are active in the compiled runtime output.",
     "PR #186 external review fixes are loaded before the main entrypoint so exact custom RunId collect roots are purged before reuse without broadening blank/latest cleanup.",
-    "PR #212 metadata finalization fixes are loaded before the main entrypoint so collect upload guidance can reference the final metadata report path without snapshotting a placeholder file.",
+    "PR #212 metadata finalization fixes are loaded through connector-friendly 04H1, 04H2, and 04H3 parts before the main entrypoint so collect upload guidance can reference the final metadata report path without snapshotting a placeholder file.",
     "Part 01 core utilities are split into connector-friendly 01A1, 01A2, 01B1, 01B2, 01C, 01D1, 01D2, and 01E functional source parts while preserving the compiled single-runtime collector output.",
     "Collector part files must not define the same PowerShell function name more than once across wrapper and part load order; duplicate function definitions are a package-validation failure.",
     "Script entries in this artifact intentionally end in .txt to bypass mail filters.",
@@ -112,6 +116,7 @@
     "Part 04 bounded parallel runtime helpers are split into connector-friendly 04D1 through 04D3 functional source parts while preserving the compiled single-runtime collector output.",
     "Part 05 main entry behavior is split into connector-friendly 05A1 collect helpers, 05A2 collect entry, 05B enrich, and 05C cleanup helpers before the final 05 dispatcher while preserving the compiled single-runtime collector output.",
     "Part 04B feature-wave targeted collection and chunk-validation helpers are split into connector-friendly 04B1 and 04B2 functional source parts while preserving the compiled single-runtime collector output.",
-    "Part 04E diagnostic-context helpers are split into connector-friendly 04E1 and 04E2 functional source parts while preserving the compiled single-runtime collector output."
+    "Part 04E diagnostic-context helpers are split into connector-friendly 04E1 and 04E2 functional source parts while preserving the compiled single-runtime collector output.",
+    "Part 04H metadata finalization helpers are split into connector-friendly 04H1 through 04H3 functional source parts while preserving the compiled single-runtime collector output."
   ]
 }
