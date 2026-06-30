@@ -22,9 +22,19 @@ MAIN_ENTRY_PART_RELS = (
     'project_sources/collector/source/parts/DCOIR_Collector.05_Main_Entry.ps1',
 )
 
+METADATA_FINALIZATION_PART_RELS = (
+    'project_sources/collector/source/parts/DCOIR_Collector.04H1_PR212_Metadata_Finalization_Fixes.ps1',
+    'project_sources/collector/source/parts/DCOIR_Collector.04H2_PR212_Metadata_Finalization_Fixes.ps1',
+    'project_sources/collector/source/parts/DCOIR_Collector.04H3_PR212_Metadata_Finalization_Fixes.ps1',
+)
+
 
 def get_main_entry_source_text(source_dir: Path) -> str:
     return '\n'.join(read_text(source_dir / rel) for rel in MAIN_ENTRY_PART_RELS)
+
+
+def get_metadata_finalization_source_text(source_dir: Path) -> str:
+    return '\n'.join(read_text(source_dir / rel) for rel in METADATA_FINALIZATION_PART_RELS)
 
 
 def validate_unique_function_definitions(source_dir: Path, manifest: Dict, checks: Dict[str, object], errors: List[str]) -> None:
@@ -43,10 +53,12 @@ def validate_unique_function_definitions(source_dir: Path, manifest: Dict, check
 
 
 def validate_collect_metadata_report_write_ordering(source_dir: Path, checks: Dict[str, object], errors: List[str]) -> None:
-    helper_rel = 'project_sources/collector/source/parts/DCOIR_Collector.04H_PR212_Metadata_Finalization_Fixes.ps1'
     text = get_main_entry_source_text(source_dir)
-    helper = read_text(source_dir / helper_rel)
-    out: Dict[str, object] = {'paths': list(MAIN_ENTRY_PART_RELS), 'helper_path': helper_rel}
+    helper = get_metadata_finalization_source_text(source_dir)
+    out: Dict[str, object] = {
+        'paths': list(MAIN_ENTRY_PART_RELS),
+        'helper_paths': list(METADATA_FINALIZATION_PART_RELS),
+    }
     checks['collect_metadata_report_write_ordering'] = out
     if not text or not helper:
         out['checked'] = False
