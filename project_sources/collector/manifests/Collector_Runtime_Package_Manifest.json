@@ -28,7 +28,8 @@
     "project_sources/collector/source/parts/DCOIR_Collector.04D1_Bounded_Parallel_Runtime.ps1",
     "project_sources/collector/source/parts/DCOIR_Collector.04D2_Bounded_Parallel_Runtime.ps1",
     "project_sources/collector/source/parts/DCOIR_Collector.04D3_Bounded_Parallel_Runtime.ps1",
-    "project_sources/collector/source/parts/DCOIR_Collector.04E_Diagnostic_Context_Overrides.ps1",
+    "project_sources/collector/source/parts/DCOIR_Collector.04E1_Diagnostic_Context_Overrides.ps1",
+    "project_sources/collector/source/parts/DCOIR_Collector.04E2_Diagnostic_Context_Overrides.ps1",
     "project_sources/collector/source/parts/DCOIR_Collector.04F_PR186_Review_Fixes.ps1",
     "project_sources/collector/source/parts/DCOIR_Collector.04G_PR186_External_Review_Fixes.ps1",
     "project_sources/collector/source/parts/DCOIR_Collector.04H_PR212_Metadata_Finalization_Fixes.ps1",
@@ -63,7 +64,8 @@
     "project_sources/collector/source/parts/DCOIR_Collector.04D1_Bounded_Parallel_Runtime.ps1",
     "project_sources/collector/source/parts/DCOIR_Collector.04D2_Bounded_Parallel_Runtime.ps1",
     "project_sources/collector/source/parts/DCOIR_Collector.04D3_Bounded_Parallel_Runtime.ps1",
-    "project_sources/collector/source/parts/DCOIR_Collector.04E_Diagnostic_Context_Overrides.ps1",
+    "project_sources/collector/source/parts/DCOIR_Collector.04E1_Diagnostic_Context_Overrides.ps1",
+    "project_sources/collector/source/parts/DCOIR_Collector.04E2_Diagnostic_Context_Overrides.ps1",
     "project_sources/collector/source/parts/DCOIR_Collector.04F_PR186_Review_Fixes.ps1",
     "project_sources/collector/source/parts/DCOIR_Collector.04G_PR186_External_Review_Fixes.ps1",
     "project_sources/collector/source/parts/DCOIR_Collector.04H_PR212_Metadata_Finalization_Fixes.ps1",
@@ -101,6 +103,7 @@
     "Part 04 quick-interface, next-step output, and cleanup helpers are split into connector-friendly 04A1 through 04A3 functional source parts before the existing 04B-H feature-wave parts.",
     "Part 04 bounded parallel runtime helpers are split into connector-friendly 04D1 through 04D3 functional source parts while preserving the compiled single-runtime collector output.",
     "Part 05 main entry behavior is split into connector-friendly 05A collect, 05B enrich, and 05C cleanup helpers before the final 05 dispatcher while preserving the compiled single-runtime collector output.",
-    "Part 04B feature-wave targeted collection and chunk-validation helpers are split into connector-friendly 04B1 and 04B2 functional source parts while preserving the compiled single-runtime collector output."
+    "Part 04B feature-wave targeted collection and chunk-validation helpers are split into connector-friendly 04B1 and 04B2 functional source parts while preserving the compiled single-runtime collector output.",
+    "Part 04E diagnostic-context helpers are split into connector-friendly 04E1 and 04E2 functional source parts while preserving the compiled single-runtime collector output."
   ]
 }
