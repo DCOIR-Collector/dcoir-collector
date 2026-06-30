@@ -13,8 +13,8 @@ class PowerShellAssemblyParityRealRepoTests(PowerShellAssemblyParityTestCase):
 
         self.assertEqual(errors, [])
         self.assertTrue(report["validation"]["success"])
-        self.assertEqual(report["summary"]["collector_source_part_count"], 28)
-        self.assertEqual(report["summary"]["harness_source_part_count"], 12)
+        self.assertEqual(report["summary"]["collector_source_part_count"], 36)
+        self.assertEqual(report["summary"]["harness_source_part_count"], 15)
         self.assertEqual(report["summary"]["generated_output_count"], 2)
         self.assertEqual(report["summary"]["parse_status"], "pass")
         self.assertEqual(report["summary"]["parity_status"], "pass")
