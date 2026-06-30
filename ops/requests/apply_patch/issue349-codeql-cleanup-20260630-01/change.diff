@@ -1,0 +1,221 @@
+diff --git a/tools/chatgpt_apply_in/apply_payload_bundle.py b/tools/chatgpt_apply_in/apply_payload_bundle.py
+--- a/tools/chatgpt_apply_in/apply_payload_bundle.py
++++ b/tools/chatgpt_apply_in/apply_payload_bundle.py
+@@ -12,7 +12,6 @@ import pathlib
+ import re
+ import shutil
+ import subprocess
+-import sys
+ import zipfile
+ from typing import Any
+ 
+diff --git a/project_sources/collector/tools/powershell_surface_inventory_workflow_yaml.py b/project_sources/collector/tools/powershell_surface_inventory_workflow_yaml.py
+--- a/project_sources/collector/tools/powershell_surface_inventory_workflow_yaml.py
++++ b/project_sources/collector/tools/powershell_surface_inventory_workflow_yaml.py
+@@ -9,64 +9,29 @@ from typing import Any
+ from powershell_surface_inventory_common import WORKFLOW_MARKER_RE, read_text
+ from powershell_surface_inventory_yaml import (
+     block_end_line,
+-    block_scalar_has_nonblank_content,
+-    clean_shell_value,
+-    cleaned_workflow_string,
+     collect_run_block,
+     command_text_for_marker_scan,
+-    default_shell_for_steps,
+-    defaults_inline_shell,
+-    defaults_run_mapping_key,
+-    defaults_run_shell_key,
+-    direct_child_key,
+-    direct_defaults_shell,
+-    direct_step_mapping_key,
+     empty_block_scalar_run_key,
+-    empty_workflow_string,
+     executable_steps_key,
+     flow_collection_shape_error,
+     flow_mapping_fragment_error,
+-    flow_mapping_has_direct_key,
+-    flow_mapping_pieces,
+-    has_block_collection_child,
+-    inline_shell_value,
+     is_invalid_block_scalar_like_value,
+     is_powershell_shell,
+     is_yaml_block_scalar_marker,
+-    job_default_shell,
+     line_indent,
+-    line_is_within_step_run_block_scalar,
+     misindented_step_workflow_key,
+-    nested_content_index,
+     nonscalar_workflow_string_value_key,
+-    normalize_block_scalar_command,
+     normalize_workflow_scalar,
+-    parent_block_start,
+-    previous_parent_index,
+-    run_inline_shell,
+-    shell_executable,
+-    shell_line_without_comment,
+     split_flow_mapping,
+     step_blocks,
+-    step_child_ancestor_key,
+-    step_line_has_ancestor_key,
+     strip_yaml_inline_comment,
+-    strip_yaml_inline_comment_with_quote,
+     strip_yaml_node_prefixes,
+-    unquoted_flow_collection_value,
+     unsupported_block_scalar_workflow_string_key,
+     unsupported_flow_step_mapping_key,
+     unsupported_inline_executable_steps_key,
+-    unsupported_workflow_run_value,
+-    unsupported_workflow_shell_value,
+-    workflow_default_shell,
+-    workflow_scalar_is_alias,
+-    yaml_block_scalar_content_indent,
+     yaml_block_scalar_indent_indicator,
+     yaml_item_text,
+     yaml_item_text_without_comment,
+-    yaml_key_name,
+     yaml_mapping_key_indent,
+-    yaml_quote_can_start,
+     yaml_unclosed_quote,
+ )
+diff --git a/project_sources/collector/tools/powershell_surface_inventory_discovery.py b/project_sources/collector/tools/powershell_surface_inventory_discovery.py
+--- a/project_sources/collector/tools/powershell_surface_inventory_discovery.py
++++ b/project_sources/collector/tools/powershell_surface_inventory_discovery.py
+@@ -15,7 +15,6 @@ from powershell_surface_inventory_common import (
+     REQUIRED_SURFACE_PROFILE_SUPPLEMENTS_PATH,
+     REQUIRED_SURFACE_PROFILES_PATH,
+     archive_temp_vendor_like,
+-    file_facts,
+     fixture_like,
+     generated_like,
+     has_prefix,
+@@ -29,6 +28,5 @@ from powershell_surface_inventory_common import (
+     path_is_dir_inside_repo,
+     path_is_file_inside_repo,
+-    path_parts,
+     path_resolves_inside_repo,
+     repo_file_exists,
+     staging_like,
+diff --git a/project_sources/collector/tools/powershell_rule_risk_fixtures_runner.py b/project_sources/collector/tools/powershell_rule_risk_fixtures_runner.py
+--- a/project_sources/collector/tools/powershell_rule_risk_fixtures_runner.py
++++ b/project_sources/collector/tools/powershell_rule_risk_fixtures_runner.py
+@@ -8,17 +8,7 @@ import tempfile
+ from pathlib import Path
+ from typing import Any
+ 
+-from powershell_rule_risk_fixtures_common import (
+-    FACADE_PATH,
+-    ISSUE_NUMBER,
+-    RuleRiskFixtureError,
+-    SCHEMA_VERSION,
+-    analyzer,
+-    read_json,
+-    repo_relative_path_or_error,
+-    safe_relpath,
+-    sha256_file,
+-)
++import powershell_rule_risk_fixtures_common as fixture_common
+ from powershell_rule_risk_fixtures_contract import validate_manifest, validate_matrix
+ 
+ def inventory_surface(repo_root: Path, fixture: dict[str, Any]) -> dict[str, Any]:
+@@ -36,7 +27,7 @@ def inventory_surface(repo_root: Path, fixture: dict[str, Any]) -> dict[str, Any
+         "embedded_snippets": [],
+         "size_bytes": len(absolute.read_bytes()),
+         "line_count": text.count("\n") + (1 if text and not text.endswith("\n") else 0),
+-        "sha256": analyzer.sha256_text(text),
++        "sha256": fixture_common.analyzer.sha256_text(text),
+     }
+ 
+ def write_temp_inventory(repo_root: Path, fixtures: list[dict[str, Any]], temp_root: Path) -> Path:
+@@ -44,6 +35,6 @@ def write_temp_inventory(repo_root: Path, fixtures: list[dict[str, Any]], temp_r
+     inventory = {
+-        "schema_version": analyzer.INVENTORY_SCHEMA_VERSION,
+-        "issue": ISSUE_NUMBER,
++        "schema_version": fixture_common.analyzer.INVENTORY_SCHEMA_VERSION,
++        "issue": fixture_common.ISSUE_NUMBER,
+         "summary": {"total_surfaces": len(fixtures)},
+         "validation": {"success": True, "errors": [], "warnings": []},
+         "surfaces": [inventory_surface(repo_root, fixture) for fixture in fixtures],
+@@ -57,9 +48,9 @@ def wrapper_args(repo_root: Path, inventory_path: Path, fixture_paths: list[str],
+         repo_root=str(repo_root),
+-        inventory=safe_relpath(inventory_path, repo_root),
+-        settings=analyzer.DEFAULT_SETTINGS.as_posix(),
++        inventory=fixture_common.safe_relpath(inventory_path, repo_root),
++        settings=fixture_common.analyzer.DEFAULT_SETTINGS.as_posix(),
+         json_output=(Path("project_sources/collector") / "_fixture_wrapper_report.json").as_posix(),
+         markdown_output=(Path("project_sources/collector") / "_fixture_wrapper_report.md").as_posix(),
+-        analyzer_command=[sys.executable, FACADE_PATH.as_posix(), "--fixture-analyzer"],
++        analyzer_command=[sys.executable, fixture_common.FACADE_PATH.as_posix(), "--fixture-analyzer"],
+         target_path=fixture_paths,
+         baseline_json=None,
+         timeout_seconds=timeout_seconds,
+@@ -158,24 +149,24 @@ def build_fixture_report(args: argparse.Namespace) -> tuple[dict[str, Any], list
+     errors: list[str] = []
+     warnings: list[str] = []
+-    matrix_path = repo_relative_path_or_error(repo_root, args.matrix, "rule-to-risk matrix path", errors)
+-    manifest_path = repo_relative_path_or_error(repo_root, args.manifest, "fixture manifest path", errors)
++    matrix_path = fixture_common.repo_relative_path_or_error(repo_root, args.matrix, "rule-to-risk matrix path", errors)
++    manifest_path = fixture_common.repo_relative_path_or_error(repo_root, args.manifest, "fixture manifest path", errors)
+     matrix: dict[str, Any] = {}
+     manifest: dict[str, Any] = {}
+     fixture_results: list[dict[str, Any]] = []
+     wrapper_report: dict[str, Any] | None = None
+ 
+     if matrix_path is not None:
+         try:
+-            matrix = read_json(matrix_path, "rule-to-risk matrix")
++            matrix = fixture_common.read_json(matrix_path, "rule-to-risk matrix")
+             if not isinstance(matrix, dict):
+-                raise RuleRiskFixtureError("rule-to-risk matrix must be a JSON object")
+-        except RuleRiskFixtureError as exc:
++                raise fixture_common.RuleRiskFixtureError("rule-to-risk matrix must be a JSON object")
++        except fixture_common.RuleRiskFixtureError as exc:
+             errors.append(str(exc))
+     if manifest_path is not None:
+         try:
+-            manifest = read_json(manifest_path, "fixture manifest")
++            manifest = fixture_common.read_json(manifest_path, "fixture manifest")
+             if not isinstance(manifest, dict):
+-                raise RuleRiskFixtureError("fixture manifest must be a JSON object")
+-        except RuleRiskFixtureError as exc:
++                raise fixture_common.RuleRiskFixtureError("fixture manifest must be a JSON object")
++        except fixture_common.RuleRiskFixtureError as exc:
+             errors.append(str(exc))
+ 
+@@ -189,6 +180,6 @@ def build_fixture_report(args: argparse.Namespace) -> tuple[dict[str, Any], list
+                 fixture_paths=[fixture["path"] for fixture in fixtures],
+                 timeout_seconds=args.timeout_seconds,
+             )
+-            wrapper_report, wrapper_errors, wrapper_warnings = analyzer.build_report(args_for_wrapper)
++            wrapper_report, wrapper_errors, wrapper_warnings = fixture_common.analyzer.build_report(args_for_wrapper)
+             warnings.extend(wrapper_warnings)
+             if wrapper_errors:
+@@ -245,16 +236,16 @@ def build_fixture_report(args: argparse.Namespace) -> tuple[dict[str, Any], list
+     report = {
+-        "schema_version": SCHEMA_VERSION,
+-        "issue": ISSUE_NUMBER,
++        "schema_version": fixture_common.SCHEMA_VERSION,
++        "issue": fixture_common.ISSUE_NUMBER,
+         "source_of_truth": "#263 rule-to-risk matrix and fixture manifest",
+         "scope": "Matrix and fixture harness only. No workflow YAML, SARIF, required-check, PR, or external-agent invocation.",
+         "matrix": {
+-            "path": safe_relpath(matrix_path, repo_root) if matrix_path is not None else Path(args.matrix).as_posix(),
++            "path": fixture_common.safe_relpath(matrix_path, repo_root) if matrix_path is not None else Path(args.matrix).as_posix(),
+             "schema_version": matrix.get("schema_version"),
+-            "sha256": sha256_file(matrix_path) if matrix_path is not None and matrix_path.exists() and matrix_path.is_file() else None,
++            "sha256": fixture_common.sha256_file(matrix_path) if matrix_path is not None and matrix_path.exists() and matrix_path.is_file() else None,
+         },
+         "manifest": {
+-            "path": safe_relpath(manifest_path, repo_root) if manifest_path is not None else Path(args.manifest).as_posix(),
++            "path": fixture_common.safe_relpath(manifest_path, repo_root) if manifest_path is not None else Path(args.manifest).as_posix(),
+             "schema_version": manifest.get("schema_version"),
+-            "sha256": sha256_file(manifest_path)
++            "sha256": fixture_common.sha256_file(manifest_path)
+             if manifest_path is not None and manifest_path.exists() and manifest_path.is_file()
+             else None,
+@@ -260,5 +251,5 @@ def build_fixture_report(args: argparse.Namespace) -> tuple[dict[str, Any], list
+         "analyzer_wrapper": {
+             "path": "project_sources/collector/tools/run_powershell_analyzer.py",
+-            "schema_version": analyzer.SCHEMA_VERSION,
++            "schema_version": fixture_common.analyzer.SCHEMA_VERSION,
+             "wrapped_report_schema_version": wrapper_report.get("schema_version") if wrapper_report else None,
+         },
