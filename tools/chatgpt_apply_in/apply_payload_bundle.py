@@ -12,7 +12,6 @@ import pathlib
 import re
 import shutil
 import subprocess
-import sys
 import zipfile
 from typing import Any
 

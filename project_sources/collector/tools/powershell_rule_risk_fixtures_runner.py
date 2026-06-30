@@ -9,17 +9,7 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
-from powershell_rule_risk_fixtures_common import (
-    FACADE_PATH,
-    ISSUE_NUMBER,
-    RuleRiskFixtureError,
-    SCHEMA_VERSION,
-    analyzer,
-    read_json,
-    repo_relative_path_or_error,
-    safe_relpath,
-    sha256_file,
-)
+import powershell_rule_risk_fixtures_common as fixture_common
 from powershell_rule_risk_fixtures_contract import validate_manifest, validate_matrix
 
 def inventory_surface(repo_root: Path, fixture: dict[str, Any]) -> dict[str, Any]:
@@ -38,13 +28,13 @@ def inventory_surface(repo_root: Path, fixture: dict[str, Any]) -> dict[str, Any
         "embedded_snippets": [],
         "size_bytes": len(absolute.read_bytes()),
         "line_count": text.count("\n") + (1 if text and not text.endswith("\n") else 0),
-        "sha256": analyzer.sha256_text(text),
+        "sha256": fixture_common.analyzer.sha256_text(text),
     }
 
 def write_temp_inventory(repo_root: Path, fixtures: list[dict[str, Any]], temp_root: Path) -> Path:
     inventory = {
-        "schema_version": analyzer.INVENTORY_SCHEMA_VERSION,
-        "issue": ISSUE_NUMBER,
+        "schema_version": fixture_common.analyzer.INVENTORY_SCHEMA_VERSION,
+        "issue": fixture_common.ISSUE_NUMBER,
         "summary": {"total_surfaces": len(fixtures)},
         "validation": {"success": True, "errors": [], "warnings": []},
         "surfaces": [inventory_surface(repo_root, fixture) for fixture in fixtures],
@@ -56,11 +46,11 @@ def write_temp_inventory(repo_root: Path, fixtures: list[dict[str, Any]], temp_r
 def wrapper_args(repo_root: Path, inventory_path: Path, fixture_paths: list[str], timeout_seconds: int) -> argparse.Namespace:
     return argparse.Namespace(
         repo_root=str(repo_root),
-        inventory=safe_relpath(inventory_path, repo_root),
-        settings=analyzer.DEFAULT_SETTINGS.as_posix(),
+        inventory=fixture_common.safe_relpath(inventory_path, repo_root),
+        settings=fixture_common.analyzer.DEFAULT_SETTINGS.as_posix(),
         json_output=(Path("project_sources/collector") / "_fixture_wrapper_report.json").as_posix(),
         markdown_output=(Path("project_sources/collector") / "_fixture_wrapper_report.md").as_posix(),
-        analyzer_command=[sys.executable, FACADE_PATH.as_posix(), "--fixture-analyzer"],
+        analyzer_command=[sys.executable, fixture_common.FACADE_PATH.as_posix(), "--fixture-analyzer"],
         target_path=fixture_paths,
         baseline_json=None,
         timeout_seconds=timeout_seconds,
@@ -166,8 +156,8 @@ def build_fixture_report(args: argparse.Namespace) -> tuple[dict[str, Any], list
     repo_root = Path(args.repo_root).resolve()
     errors: list[str] = []
     warnings: list[str] = []
-    matrix_path = repo_relative_path_or_error(repo_root, args.matrix, "rule-to-risk matrix path", errors)
-    manifest_path = repo_relative_path_or_error(repo_root, args.manifest, "fixture manifest path", errors)
+    matrix_path = fixture_common.repo_relative_path_or_error(repo_root, args.matrix, "rule-to-risk matrix path", errors)
+    manifest_path = fixture_common.repo_relative_path_or_error(repo_root, args.manifest, "fixture manifest path", errors)
     matrix: dict[str, Any] = {}
     manifest: dict[str, Any] = {}
     fixture_results: list[dict[str, Any]] = []
@@ -175,17 +165,17 @@ def build_fixture_report(args: argparse.Namespace) -> tuple[dict[str, Any], list
 
     if matrix_path is not None:
         try:
-            matrix = read_json(matrix_path, "rule-to-risk matrix")
+            matrix = fixture_common.read_json(matrix_path, "rule-to-risk matrix")
             if not isinstance(matrix, dict):
-                raise RuleRiskFixtureError("rule-to-risk matrix must be a JSON object")
-        except RuleRiskFixtureError as exc:
+                raise fixture_common.RuleRiskFixtureError("rule-to-risk matrix must be a JSON object")
+        except fixture_common.RuleRiskFixtureError as exc:
             errors.append(str(exc))
     if manifest_path is not None:
         try:
-            manifest = read_json(manifest_path, "fixture manifest")
+            manifest = fixture_common.read_json(manifest_path, "fixture manifest")
             if not isinstance(manifest, dict):
-                raise RuleRiskFixtureError("fixture manifest must be a JSON object")
-        except RuleRiskFixtureError as exc:
+                raise fixture_common.RuleRiskFixtureError("fixture manifest must be a JSON object")
+        except fixture_common.RuleRiskFixtureError as exc:
             errors.append(str(exc))
 
     check_map: dict[str, dict[str, Any]] = {}
@@ -209,7 +199,7 @@ def build_fixture_report(args: argparse.Namespace) -> tuple[dict[str, Any], list
                 fixture_paths=[fixture["path"] for fixture in fixtures],
                 timeout_seconds=args.timeout_seconds,
             )
-            wrapper_report, wrapper_errors, wrapper_warnings = analyzer.build_report(args_for_wrapper)
+            wrapper_report, wrapper_errors, wrapper_warnings = fixture_common.analyzer.build_report(args_for_wrapper)
             warnings.extend(wrapper_warnings)
             if wrapper_errors:
                 errors.extend(f"fixture wrapper: {error}" for error in wrapper_errors)
@@ -243,25 +233,25 @@ def build_fixture_report(args: argparse.Namespace) -> tuple[dict[str, Any], list
     expected_count = sum(len(fixture.get("expected_findings", [])) for fixture in fixture_map.values())
 
     report = {
-        "schema_version": SCHEMA_VERSION,
-        "issue": ISSUE_NUMBER,
+        "schema_version": fixture_common.SCHEMA_VERSION,
+        "issue": fixture_common.ISSUE_NUMBER,
         "source_of_truth": "#263 rule-to-risk matrix and fixture manifest",
         "scope": "Matrix and fixture harness only. No workflow YAML, SARIF, required-check, PR, or external-agent invocation.",
         "matrix": {
-            "path": safe_relpath(matrix_path, repo_root) if matrix_path is not None else Path(args.matrix).as_posix(),
+            "path": fixture_common.safe_relpath(matrix_path, repo_root) if matrix_path is not None else Path(args.matrix).as_posix(),
             "schema_version": matrix.get("schema_version"),
-            "sha256": sha256_file(matrix_path) if matrix_path is not None and matrix_path.exists() and matrix_path.is_file() else None,
+            "sha256": fixture_common.sha256_file(matrix_path) if matrix_path is not None and matrix_path.exists() and matrix_path.is_file() else None,
         },
         "manifest": {
-            "path": safe_relpath(manifest_path, repo_root) if manifest_path is not None else Path(args.manifest).as_posix(),
+            "path": fixture_common.safe_relpath(manifest_path, repo_root) if manifest_path is not None else Path(args.manifest).as_posix(),
             "schema_version": manifest.get("schema_version"),
-            "sha256": sha256_file(manifest_path)
+            "sha256": fixture_common.sha256_file(manifest_path)
             if manifest_path is not None and manifest_path.exists() and manifest_path.is_file()
             else None,
         },
         "analyzer_wrapper": {
             "path": "project_sources/collector/tools/run_powershell_analyzer.py",
-            "schema_version": analyzer.SCHEMA_VERSION,
+            "schema_version": fixture_common.analyzer.SCHEMA_VERSION,
             "wrapped_report_schema_version": wrapper_report.get("schema_version") if wrapper_report else None,
         },
         "fixture_analyzer": {
