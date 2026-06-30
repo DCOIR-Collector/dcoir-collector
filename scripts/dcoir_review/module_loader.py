@@ -105,6 +105,7 @@ LAYER_SEGMENTS: dict[str, tuple[str, ...]] = {
     ),
     'dcoir_review_required_runtime_patch_v13': (
         'patches/dcoir_review_required_runtime_patch_v13/part_01.py',
+        'patches/dcoir_review_required_runtime_patch_v13/part_01a.py',
         'patches/dcoir_review_required_runtime_patch_v13/part_02.py',
     ),
     'dcoir_review_required_runtime_patch_v15': (
