@@ -32,6 +32,18 @@ MAIN_ENTRY_SOURCE_PATHS = (
     'project_sources/collector/source/parts/DCOIR_Collector.05_Main_Entry.ps1',
 )
 
+PARALLEL_RUNTIME_PART_RELS = (
+    'project_sources/collector/source/parts/DCOIR_Collector.04D1_Bounded_Parallel_Runtime.ps1',
+    'project_sources/collector/source/parts/DCOIR_Collector.04D2_Bounded_Parallel_Runtime.ps1',
+    'project_sources/collector/source/parts/DCOIR_Collector.04D3_Bounded_Parallel_Runtime.ps1',
+)
+
+PARALLEL_WORKER_SCRIPT_REL = 'project_sources/collector/source/parts/DCOIR_Collector.04D3_Bounded_Parallel_Runtime.ps1'
+
+
+def get_parallel_runtime_source_text(source_text_by_rel: Dict[str, str]) -> str:
+    return '\n'.join(source_text_by_rel.get(rel, '') for rel in PARALLEL_RUNTIME_PART_RELS)
+
 
 def get_part02_source_text(source_text_by_rel: Dict[str, str]) -> str:
     return '\n'.join(source_text_by_rel.get(rel, '') for rel in PART02_SOURCE_PATHS)
@@ -47,8 +59,7 @@ def validate_json_serialization_policy(source_dir: Path, manifest: Dict, checks:
     texts = load_manifest_source_texts(source_dir, manifest)
     collector = get_combined_source_text(texts)
     reports = get_part02_source_text(texts)
-    parallel_rel = 'project_sources/collector/source/parts/DCOIR_Collector.04D_Bounded_Parallel_Runtime.ps1'
-    parallel = texts.get(parallel_rel, '')
+    parallel = get_parallel_runtime_source_text(texts)
     manifest_text = texts.get('project_sources/collector/source/parts/DCOIR_Collector.04G_PR186_External_Review_Fixes.ps1', '')
     for function_name in ('Add-CollectorJsonEllipsisPaths', 'Get-CollectorJsonEllipsisPathSet', 'Add-CollectorJsonDepthRiskPaths', 'Get-CollectorJsonDepthRiskPathSet', 'Convert-ToCollectorJsonText'):
         out[f'{function_name}_present'] = bool(extract_function_body(collector, function_name))
@@ -81,7 +92,7 @@ def validate_json_serialization_policy(source_dir: Path, manifest: Dict, checks:
         errors.append('collector JSON serialization policy behavior tests failed')
     approved_raw_calls = {
         (json_helper_rel, '$json = $InputObject | ConvertTo-Json @jsonArgs'),
-        (parallel_rel, '$workerJson = $workerResult | ConvertTo-Json -Depth 20 -ErrorAction Stop'),
+        (PARALLEL_WORKER_SCRIPT_REL, '$workerJson = $workerResult | ConvertTo-Json -Depth 20 -ErrorAction Stop'),
     }
     raw_calls: List[Dict[str, object]] = []
     unapproved: List[Dict[str, object]] = []
@@ -103,7 +114,7 @@ def validate_state_recursion_policy(source_dir: Path, manifest: Dict, checks: Di
     checks['state_recursion_policy'] = out
     texts = load_manifest_source_texts(source_dir, manifest)
     collector = get_combined_source_text(texts)
-    parallel = texts.get('project_sources/collector/source/parts/DCOIR_Collector.04D_Bounded_Parallel_Runtime.ps1', '')
+    parallel = get_parallel_runtime_source_text(texts)
     main_entry = get_main_entry_source_text(texts)
     converter = extract_function_body(collector, 'Convert-StateObjectToHashtable')
     sentinel = extract_function_body(parallel, 'Test-WorkerJsonContainsEllipsisSentinel')
