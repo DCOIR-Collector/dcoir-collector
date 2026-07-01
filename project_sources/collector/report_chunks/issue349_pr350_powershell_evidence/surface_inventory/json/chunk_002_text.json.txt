@@ -1,3 +1,10 @@
+          "command_preview": "python project_sources/github_actions/tools/surface_delivery_zip.py `\n  --build-report project_sources/validation/out/build_dcoir_gemini_release_report.json `\n  --output-dir project_sources/validation/delivery_artifact/gemini-bundle `\n  --m"
+        },
+        {
+          "source_file": ".github/workflows/reusable-gemini-bundle-build.yml",
+          "step_or_action": "Set Gemini delivery artifact name",
+          "shell": "pwsh",
+          "line_start": 95,
           "line_end": 103,
           "command_sha256": "cc2f274be2946f28765925a9ce09152f414d2f532daa98d0893966e6ac5730f5",
           "command_preview": "$manifest = Get-Content -Raw -Path project_sources/validation/out/delivery_manifest/delivery_manifest.json | ConvertFrom-Json\n$artifactName = [System.IO.Path]::GetFileNameWithoutExtension([string]$manifest.delivery_zip_name)\nif ([string]::I"
@@ -752,16 +759,3 @@
     },
     {
       "path": "chatgpt_staging/exec_scripts/exec-20260618-pr281-codex-p1-redaction-002.ps1",
-      "category": "staging_artifact",
-      "source_type": ".ps1",
-      "status": "staging",
-      "inclusion_decision": "exclude",
-      "decision_reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
-      "exists": true,
-      "marker_lines": [],
-      "embedded_snippets": [],
-      "size_bytes": 12705,
-      "line_count": 296,
-      "sha256": "a014e05abd93fa9f5431fc07e173ed50266cccef4222ea29c5deda8446ba5406"
-    },
-    {
