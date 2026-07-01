@@ -1,0 +1,37 @@
+{
+  "chunk_kind": "json_value",
+  "data": [
+    {
+      "artifact_status": "external_or_future",
+      "blocking": true,
+      "evidence_claimed_by_boundary": false,
+      "id": "windows-powershell-51-parser-compatibility",
+      "path": "workflow or local Windows PowerShell 5.1 validation report",
+      "reason": "Declared by #267 boundary but not committed, not claimed, external, or future evidence.",
+      "source_issue": 267
+    },
+    {
+      "artifact_status": "not_committed_in_267_boundary",
+      "blocking": true,
+      "evidence_claimed_by_boundary": false,
+      "id": "powershell-7-psscriptanalyzer",
+      "path": "project_sources/collector/powershell_analyzer_report.json",
+      "reason": "Declared by #267 boundary but not committed, not claimed, external, or future evidence.",
+      "source_issue": 267
+    },
+    {
+      "artifact_status": "external_or_future",
+      "blocking": false,
+      "evidence_claimed_by_boundary": false,
+      "id": "pester-supporting-wrapper-fixture-tests",
+      "path": "future Pester test result artifact when a later gate enables it",
+      "reason": "Declared by #267 boundary but not committed, not claimed, external, or future evidence.",
+      "source_issue": 267
+    }
+  ],
+  "json_pointer": "/unclaimed_artifacts",
+  "report_id": "review_assist",
+  "schema_version": "dcoir_report_chunk_v1",
+  "source_report": "project_sources/collector/powershell_review_assist_report.json",
+  "source_sha256": "544d0ee1719804e870fb1216f7e71712d7b52f69d32b04aa13d47303bbe6dac1"
+}

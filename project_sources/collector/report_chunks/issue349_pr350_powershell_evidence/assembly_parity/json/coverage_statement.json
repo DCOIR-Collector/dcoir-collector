@@ -1,0 +1,28 @@
+{
+  "chunk_kind": "json_value",
+  "data": [
+    {
+      "assembly_parity_reporting": "source input map, source hash, generated runtime hash, parse status, and line mapping",
+      "dcoir_custom_checks_reporting": "source-part paths when #264 checks target source-part risk classes",
+      "psscriptanalyzer_wrapper_reporting": "source-part paths when #262 analyzer targets #261 inventory entries",
+      "surface": "collector runtime source parts"
+    },
+    {
+      "assembly_parity_reporting": "generated output hash, parse status, deterministic regeneration status, and source line map",
+      "dcoir_custom_checks_reporting": "not invoked by this #265 runner; parity and parse proof are reported here",
+      "psscriptanalyzer_wrapper_reporting": "not invoked by this #265 runner; future workflow integration can pass generated output explicitly",
+      "surface": "collector compiled runtime generated output"
+    },
+    {
+      "assembly_parity_reporting": "ordered source input map, generated harness hash, optional checked-in comparison, parse status, and line map",
+      "dcoir_custom_checks_reporting": "source-part drift risks through #264 fixtures plus #265 parity proof",
+      "psscriptanalyzer_wrapper_reporting": "source-part paths when #262 analyzer targets .ps1.txt surfaces; generated output when materialized and explicitly targeted",
+      "surface": "harness source parts and generated harness"
+    }
+  ],
+  "json_pointer": "/coverage_statement",
+  "report_id": "assembly_parity",
+  "schema_version": "dcoir_report_chunk_v1",
+  "source_report": "project_sources/collector/powershell_assembly_parity_report.json",
+  "source_sha256": "19949272884d3c597de3ddd7f50bfbf92eebceb70ea37c587f8ecf83f2d6c18d"
+}

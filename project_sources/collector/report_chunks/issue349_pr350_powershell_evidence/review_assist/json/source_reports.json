@@ -1,0 +1,153 @@
+{
+  "chunk_kind": "json_value",
+  "data": [
+    {
+      "absent_reason": null,
+      "errors": [],
+      "expected_schema_version": "dcoir_powershell_surface_inventory_v1",
+      "finding_count": null,
+      "label": "#261 surface inventory",
+      "path": "project_sources/collector/powershell_surface_inventory.json",
+      "present": true,
+      "required": true,
+      "schema_version": "dcoir_powershell_surface_inventory_v1",
+      "source_issue": 261,
+      "source_key": "surface_inventory",
+      "validation_status": "success",
+      "warnings": []
+    },
+    {
+      "absent_reason": null,
+      "errors": [],
+      "expected_schema_version": "dcoir_powershell_rule_risk_fixture_report_v1",
+      "finding_count": 14,
+      "label": "#263 rule-risk fixture report",
+      "path": "project_sources/collector/powershell_rule_risk_fixture_report.json",
+      "present": true,
+      "required": true,
+      "schema_version": "dcoir_powershell_rule_risk_fixture_report_v1",
+      "source_issue": 263,
+      "source_key": "rule_risk_report",
+      "validation_status": "success",
+      "warnings": []
+    },
+    {
+      "absent_reason": null,
+      "errors": [],
+      "expected_schema_version": "dcoir_powershell_rule_risk_matrix_v1",
+      "finding_count": null,
+      "label": "#263 rule-risk matrix companion",
+      "path": "project_sources/collector/powershell_rule_risk_matrix.json",
+      "present": true,
+      "required": true,
+      "schema_version": "dcoir_powershell_rule_risk_matrix_v1",
+      "source_issue": 263,
+      "source_key": "rule_risk_matrix",
+      "validation_status": "schema_only_success",
+      "warnings": []
+    },
+    {
+      "absent_reason": null,
+      "errors": [],
+      "expected_schema_version": "dcoir_powershell_custom_check_report_v1",
+      "finding_count": 8,
+      "label": "#264 DCOIR custom-check report",
+      "path": "project_sources/collector/powershell_custom_check_report.json",
+      "present": true,
+      "required": true,
+      "schema_version": "dcoir_powershell_custom_check_report_v1",
+      "source_issue": 264,
+      "source_key": "custom_report",
+      "validation_status": "success",
+      "warnings": []
+    },
+    {
+      "absent_reason": null,
+      "errors": [],
+      "expected_schema_version": "dcoir_powershell_assembly_parity_report_v1",
+      "finding_count": null,
+      "label": "#265 assembly parity report",
+      "path": "project_sources/collector/powershell_assembly_parity_report.json",
+      "present": true,
+      "required": true,
+      "schema_version": "dcoir_powershell_assembly_parity_report_v1",
+      "source_issue": 265,
+      "source_key": "assembly_parity_report",
+      "validation_status": "success",
+      "warnings": [
+        "no baseline parity report supplied; shrink checks used current inventory controls only"
+      ]
+    },
+    {
+      "absent_reason": null,
+      "errors": [],
+      "expected_schema_version": "dcoir_powershell_finding_governance_report_v1",
+      "finding_count": 22,
+      "label": "#266 finding governance report",
+      "path": "project_sources/collector/powershell_finding_governance_report.json",
+      "present": true,
+      "required": true,
+      "schema_version": "dcoir_powershell_finding_governance_report_v1",
+      "source_issue": 266,
+      "source_key": "governance_report",
+      "validation_status": "success",
+      "warnings": [
+        "optional PowerShell finding report not present: project_sources/collector/powershell_analyzer_report.json"
+      ]
+    },
+    {
+      "absent_reason": null,
+      "errors": [],
+      "expected_schema_version": "dcoir_powershell_engine_pester_boundary_report_v1",
+      "finding_count": null,
+      "label": "#267 engine/Pester boundary report",
+      "path": "project_sources/collector/powershell_engine_pester_boundary_report.json",
+      "present": true,
+      "required": true,
+      "schema_version": "dcoir_powershell_engine_pester_boundary_report_v1",
+      "source_issue": 267,
+      "source_key": "engine_boundary_report",
+      "validation_status": "success",
+      "warnings": [
+        "workflow readiness remains a later explicit gate; #267 only defines evidence ownership",
+        "Windows PowerShell 5.1 runtime evidence remains separate from local static report generation",
+        "engine matrix row powershell-7-psscriptanalyzer artifact is not committed or claimed by this #267 boundary: project_sources/collector/powershell_analyzer_report.json"
+      ]
+    },
+    {
+      "absent_reason": null,
+      "errors": [],
+      "expected_schema_version": "dcoir_powershell_function_reachability_report_v1",
+      "finding_count": 167,
+      "label": "#306 function reachability report",
+      "path": "project_sources/collector/powershell_function_reachability_report.json",
+      "present": true,
+      "required": true,
+      "schema_version": "dcoir_powershell_function_reachability_report_v1",
+      "source_issue": 306,
+      "source_key": "function_reachability_report",
+      "validation_status": "success",
+      "warnings": []
+    },
+    {
+      "absent_reason": "optional analyzer evidence is absent; #268 does not claim live PSScriptAnalyzer evidence",
+      "errors": [],
+      "expected_schema_version": "dcoir_powershell_analyzer_report_v1",
+      "finding_count": 0,
+      "label": "#262 optional PowerShell analyzer report",
+      "path": "project_sources/collector/powershell_analyzer_report.json",
+      "present": false,
+      "required": false,
+      "schema_version": null,
+      "source_issue": 262,
+      "source_key": "analyzer_report",
+      "validation_status": "optional_missing",
+      "warnings": []
+    }
+  ],
+  "json_pointer": "/source_reports",
+  "report_id": "review_assist",
+  "schema_version": "dcoir_report_chunk_v1",
+  "source_report": "project_sources/collector/powershell_review_assist_report.json",
+  "source_sha256": "544d0ee1719804e870fb1216f7e71712d7b52f69d32b04aa13d47303bbe6dac1"
+}

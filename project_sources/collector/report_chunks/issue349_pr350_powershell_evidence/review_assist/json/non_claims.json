@@ -1,0 +1,20 @@
+{
+  "chunk_kind": "json_value",
+  "data": [
+    "No workflow YAML was changed by #268.",
+    "No SARIF file is generated or uploaded by #268.",
+    "No GitHub code-scanning alert or required-check behavior is enabled by #268.",
+    "No workflow artifact retention behavior is configured by #268.",
+    "No Pester result is promoted to blocking static-validation evidence by #268.",
+    "No changed-file execution, path-filter behavior, PR-diff coverage, or changed-file gating is claimed by #268.",
+    "No live PSScriptAnalyzer evidence is claimed when the #262 analyzer report is absent.",
+    "No Windows PowerShell 5.1 runtime validation is claimed by #268.",
+    "No #269, #270, PR/workflow readiness, or parent #260 closeability claim is made by #268.",
+    "No function deletion readiness or dead-code removal claim is made by #306 reachability reporting."
+  ],
+  "json_pointer": "/non_claims",
+  "report_id": "review_assist",
+  "schema_version": "dcoir_report_chunk_v1",
+  "source_report": "project_sources/collector/powershell_review_assist_report.json",
+  "source_sha256": "544d0ee1719804e870fb1216f7e71712d7b52f69d32b04aa13d47303bbe6dac1"
+}

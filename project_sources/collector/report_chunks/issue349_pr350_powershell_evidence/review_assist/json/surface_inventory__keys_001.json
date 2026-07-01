@@ -1,0 +1,421 @@
+{
+  "chunk_index": 1,
+  "chunk_kind": "json_object_members",
+  "data": {
+    "mode": "full",
+    "outputs": {
+      "json": "project_sources/collector/powershell_surface_inventory.json",
+      "markdown": "project_sources/collector/powershell_surface_inventory.md"
+    },
+    "path_decision_counts": {
+      "exclude": 63,
+      "include": 130,
+      "reference": 50,
+      "skip": 0
+    },
+    "reference_paths": [
+      {
+        "category": "workflow_embedded_powershell",
+        "path": ".github/actions/assemble-collector-harness/action.yml",
+        "reason": "Workflow or composite-action YAML embeds PowerShell and needs later snippet-aware handling.",
+        "source_type": "workflow_yaml",
+        "status": "workflow_embedded"
+      },
+      {
+        "category": "workflow_embedded_powershell",
+        "path": ".github/actions/build-collector-runtime-for-harness/action.yml",
+        "reason": "Workflow or composite-action YAML embeds PowerShell and needs later snippet-aware handling.",
+        "source_type": "workflow_yaml",
+        "status": "workflow_embedded"
+      },
+      {
+        "category": "workflow_embedded_powershell",
+        "path": ".github/actions/run-collector-documentation-quality/action.yml",
+        "reason": "Workflow or composite-action YAML embeds PowerShell and needs later snippet-aware handling.",
+        "source_type": "workflow_yaml",
+        "status": "workflow_embedded"
+      },
+      {
+        "category": "workflow_embedded_powershell",
+        "path": ".github/actions/run-collector-runtime-package-validation/action.yml",
+        "reason": "Workflow or composite-action YAML embeds PowerShell and needs later snippet-aware handling.",
+        "source_type": "workflow_yaml",
+        "status": "workflow_embedded"
+      },
+      {
+        "category": "workflow_embedded_powershell",
+        "path": ".github/actions/run-duplicate-function-check/action.yml",
+        "reason": "Workflow or composite-action YAML embeds PowerShell and needs later snippet-aware handling.",
+        "source_type": "workflow_yaml",
+        "status": "workflow_embedded"
+      },
+      {
+        "category": "workflow_embedded_powershell",
+        "path": ".github/actions/run-powershell-review-assist/action.yml",
+        "reason": "Workflow or composite-action YAML embeds PowerShell and needs later snippet-aware handling.",
+        "source_type": "workflow_yaml",
+        "status": "workflow_embedded"
+      },
+      {
+        "category": "workflow_embedded_powershell",
+        "path": ".github/actions/run-psscriptanalyzer/action.yml",
+        "reason": "Workflow or composite-action YAML embeds PowerShell and needs later snippet-aware handling.",
+        "source_type": "workflow_yaml",
+        "status": "workflow_embedded"
+      },
+      {
+        "category": "workflow_embedded_powershell",
+        "path": ".github/actions/run-validate-dcoir-fixtures/action.yml",
+        "reason": "Workflow or composite-action YAML embeds PowerShell and needs later snippet-aware handling.",
+        "source_type": "workflow_yaml",
+        "status": "workflow_embedded"
+      },
+      {
+        "category": "workflow_embedded_powershell",
+        "path": ".github/actions/smoke-build-collector-package/action.yml",
+        "reason": "Workflow or composite-action YAML embeds PowerShell and needs later snippet-aware handling.",
+        "source_type": "workflow_yaml",
+        "status": "workflow_embedded"
+      },
+      {
+        "category": "workflow_embedded_powershell",
+        "path": ".github/actions/smoke-build-gemini-bundle/action.yml",
+        "reason": "Workflow or composite-action YAML embeds PowerShell and needs later snippet-aware handling.",
+        "source_type": "workflow_yaml",
+        "status": "workflow_embedded"
+      },
+      {
+        "category": "workflow_embedded_powershell",
+        "path": ".github/actions/validate-powershell-syntax/action.yml",
+        "reason": "Workflow or composite-action YAML embeds PowerShell and needs later snippet-aware handling.",
+        "source_type": "workflow_yaml",
+        "status": "workflow_embedded"
+      },
+      {
+        "category": "workflow_embedded_powershell",
+        "path": ".github/actions/validate-python-syntax/action.yml",
+        "reason": "Workflow or composite-action YAML embeds PowerShell and needs later snippet-aware handling.",
+        "source_type": "workflow_yaml",
+        "status": "workflow_embedded"
+      },
+      {
+        "category": "workflow_embedded_powershell",
+        "path": ".github/actions/verify-required-surfaces/action.yml",
+        "reason": "Workflow or composite-action YAML embeds PowerShell and needs later snippet-aware handling.",
+        "source_type": "workflow_yaml",
+        "status": "workflow_embedded"
+      },
+      {
+        "category": "workflow_embedded_powershell",
+        "path": ".github/workflows/reusable-chatgpt-apply-in.yml",
+        "reason": "Workflow or composite-action YAML embeds PowerShell and needs later snippet-aware handling.",
+        "source_type": "workflow_yaml",
+        "status": "workflow_embedded"
+      },
+      {
+        "category": "workflow_embedded_powershell",
+        "path": ".github/workflows/reusable-chatgpt-exec.yml",
+        "reason": "Workflow or composite-action YAML embeds PowerShell and needs later snippet-aware handling.",
+        "source_type": "workflow_yaml",
+        "status": "workflow_embedded"
+      },
+      {
+        "category": "workflow_embedded_powershell",
+        "path": ".github/workflows/reusable-chatgpt-stage-out.yml",
+        "reason": "Workflow or composite-action YAML embeds PowerShell and needs later snippet-aware handling.",
+        "source_type": "workflow_yaml",
+        "status": "workflow_embedded"
+      },
+      {
+        "category": "workflow_embedded_powershell",
+        "path": ".github/workflows/reusable-chatgpt-workflow-run-reporter.yml",
+        "reason": "Workflow or composite-action YAML embeds PowerShell and needs later snippet-aware handling.",
+        "source_type": "workflow_yaml",
+        "status": "workflow_embedded"
+      },
+      {
+        "category": "workflow_embedded_powershell",
+        "path": ".github/workflows/reusable-collector-documentation-quality.yml",
+        "reason": "Workflow or composite-action YAML embeds PowerShell and needs later snippet-aware handling.",
+        "source_type": "workflow_yaml",
+        "status": "workflow_embedded"
+      },
+      {
+        "category": "workflow_embedded_powershell",
+        "path": ".github/workflows/reusable-collector-runtime-package-build.yml",
+        "reason": "Workflow or composite-action YAML embeds PowerShell and needs later snippet-aware handling.",
+        "source_type": "workflow_yaml",
+        "status": "workflow_embedded"
+      },
+      {
+        "category": "workflow_embedded_powershell",
+        "path": ".github/workflows/reusable-collector-validation.yml",
+        "reason": "Workflow or composite-action YAML embeds PowerShell and needs later snippet-aware handling.",
+        "source_type": "workflow_yaml",
+        "status": "workflow_embedded"
+      },
+      {
+        "category": "workflow_embedded_powershell",
+        "path": ".github/workflows/reusable-gemini-bundle-build.yml",
+        "reason": "Workflow or composite-action YAML embeds PowerShell and needs later snippet-aware handling.",
+        "source_type": "workflow_yaml",
+        "status": "workflow_embedded"
+      },
+      {
+        "category": "workflow_embedded_powershell",
+        "path": ".github/workflows/reusable-manual-collector-optional-exe-build.yml",
+        "reason": "Workflow or composite-action YAML embeds PowerShell and needs later snippet-aware handling.",
+        "source_type": "workflow_yaml",
+        "status": "workflow_embedded"
+      },
+      {
+        "category": "workflow_embedded_powershell",
+        "path": ".github/workflows/reusable-manual-github-artifact-readback.yml",
+        "reason": "Workflow or composite-action YAML embeds PowerShell and needs later snippet-aware handling.",
+        "source_type": "workflow_yaml",
+        "status": "workflow_embedded"
+      },
+      {
+        "category": "workflow_embedded_powershell",
+        "path": ".github/workflows/reusable-manual-test-framework-validate.yml",
+        "reason": "Workflow or composite-action YAML embeds PowerShell and needs later snippet-aware handling.",
+        "source_type": "workflow_yaml",
+        "status": "workflow_embedded"
+      },
+      {
+        "category": "workflow_embedded_powershell",
+        "path": ".github/workflows/reusable-validate-on-pr.yml",
+        "reason": "Workflow or composite-action YAML embeds PowerShell and needs later snippet-aware handling.",
+        "source_type": "workflow_yaml",
+        "status": "workflow_embedded"
+      },
+      {
+        "category": "workflow_embedded_powershell",
+        "path": ".github/workflows/reusable-validate-on-push.yml",
+        "reason": "Workflow or composite-action YAML embeds PowerShell and needs later snippet-aware handling.",
+        "source_type": "workflow_yaml",
+        "status": "workflow_embedded"
+      },
+      {
+        "category": "workflow_embedded_powershell",
+        "path": ".github/workflows/reusable-windows-powershell-51.yml",
+        "reason": "Workflow or composite-action YAML embeds PowerShell and needs later snippet-aware handling.",
+        "source_type": "workflow_yaml",
+        "status": "workflow_embedded"
+      },
+      {
+        "category": "fixture_or_example",
+        "path": "project_sources/collector/fixtures/powershell_analysis/bad/analyzer_skip_success.ps1",
+        "reason": "Fixture/example PowerShell is inventoried separately from maintained source targets.",
+        "source_type": ".ps1",
+        "status": "fixture"
+      },
+      {
+        "category": "fixture_or_example",
+        "path": "project_sources/collector/fixtures/powershell_analysis/bad/broad_baseline.ps1",
+        "reason": "Fixture/example PowerShell is inventoried separately from maintained source targets.",
+        "source_type": ".ps1",
+        "status": "fixture"
+      },
+      {
+        "category": "fixture_or_example",
+        "path": "project_sources/collector/fixtures/powershell_analysis/bad/fail_row_green_exit.ps1",
+        "reason": "Fixture/example PowerShell is inventoried separately from maintained source targets.",
+        "source_type": ".ps1",
+        "status": "fixture"
+      },
+      {
+        "category": "fixture_or_example",
+        "path": "project_sources/collector/fixtures/powershell_analysis/bad/invoke_expression.ps1",
+        "reason": "Fixture/example PowerShell is inventoried separately from maintained source targets.",
+        "source_type": ".ps1",
+        "status": "fixture"
+      },
+      {
+        "category": "fixture_or_example",
+        "path": "project_sources/collector/fixtures/powershell_analysis/bad/plaintext_password.ps1",
+        "reason": "Fixture/example PowerShell is inventoried separately from maintained source targets.",
+        "source_type": ".ps1",
+        "status": "fixture"
+      },
+      {
+        "category": "fixture_or_example",
+        "path": "project_sources/collector/fixtures/powershell_analysis/bad/plaintext_securestring.ps1",
+        "reason": "Fixture/example PowerShell is inventoried separately from maintained source targets.",
+        "source_type": ".ps1",
+        "status": "fixture"
+      },
+      {
+        "category": "fixture_or_example",
+        "path": "project_sources/collector/fixtures/powershell_analysis/bad/source_part_drift.ps1",
+        "reason": "Fixture/example PowerShell is inventoried separately from maintained source targets.",
+        "source_type": ".ps1",
+        "status": "fixture"
+      },
+      {
+        "category": "fixture_or_example",
+        "path": "project_sources/collector/fixtures/powershell_analysis/bad/state_changing_function.ps1",
+        "reason": "Fixture/example PowerShell is inventoried separately from maintained source targets.",
+        "source_type": ".ps1",
+        "status": "fixture"
+      },
+      {
+        "category": "fixture_or_example",
+        "path": "project_sources/collector/fixtures/powershell_analysis/bad/swallowed_catch.ps1",
+        "reason": "Fixture/example PowerShell is inventoried separately from maintained source targets.",
+        "source_type": ".ps1",
+        "status": "fixture"
+      },
+      {
+        "category": "fixture_or_example",
+        "path": "project_sources/collector/fixtures/powershell_analysis/bad/unbounded_event_query.ps1",
+        "reason": "Fixture/example PowerShell is inventoried separately from maintained source targets.",
+        "source_type": ".ps1",
+        "status": "fixture"
+      },
+      {
+        "category": "fixture_or_example",
+        "path": "project_sources/collector/fixtures/powershell_analysis/bad/unchecked_external_exit.ps1",
+        "reason": "Fixture/example PowerShell is inventoried separately from maintained source targets.",
+        "source_type": ".ps1",
+        "status": "fixture"
+      },
+      {
+        "category": "fixture_or_example",
+        "path": "project_sources/collector/fixtures/powershell_analysis/bad/unsafe_wildcard_delete.ps1",
+        "reason": "Fixture/example PowerShell is inventoried separately from maintained source targets.",
+        "source_type": ".ps1",
+        "status": "fixture"
+      },
+      {
+        "category": "fixture_or_example",
+        "path": "project_sources/collector/fixtures/powershell_analysis/bad/unused_variable.ps1",
+        "reason": "Fixture/example PowerShell is inventoried separately from maintained source targets.",
+        "source_type": ".ps1",
+        "status": "fixture"
+      },
+      {
+        "category": "fixture_or_example",
+        "path": "project_sources/collector/fixtures/powershell_analysis/bad/write_host.ps1",
+        "reason": "Fixture/example PowerShell is inventoried separately from maintained source targets.",
+        "source_type": ".ps1",
+        "status": "fixture"
+      },
+      {
+        "category": "fixture_or_example",
+        "path": "project_sources/collector/fixtures/powershell_analysis/good/clean_control.ps1",
+        "reason": "Fixture/example PowerShell is inventoried separately from maintained source targets.",
+        "source_type": ".ps1",
+        "status": "fixture"
+      },
+      {
+        "category": "fixture_or_example",
+        "path": "project_sources/collector/fixtures/powershell_analysis/good/custom_analyzer_skip_fails_closed.ps1",
+        "reason": "Fixture/example PowerShell is inventoried separately from maintained source targets.",
+        "source_type": ".ps1",
+        "status": "fixture"
+      },
+      {
+        "category": "fixture_or_example",
+        "path": "project_sources/collector/fixtures/powershell_analysis/good/custom_bounded_event_query.ps1",
+        "reason": "Fixture/example PowerShell is inventoried separately from maintained source targets.",
+        "source_type": ".ps1",
+        "status": "fixture"
+      },
+      {
+        "category": "fixture_or_example",
+        "path": "project_sources/collector/fixtures/powershell_analysis/good/custom_catch_rethrows.ps1",
+        "reason": "Fixture/example PowerShell is inventoried separately from maintained source targets.",
+        "source_type": ".ps1",
+        "status": "fixture"
+      },
+      {
+        "category": "fixture_or_example",
+        "path": "project_sources/collector/fixtures/powershell_analysis/good/custom_external_exit_checked.ps1",
+        "reason": "Fixture/example PowerShell is inventoried separately from maintained source targets.",
+        "source_type": ".ps1",
+        "status": "fixture"
+      },
+      {
+        "category": "fixture_or_example",
+        "path": "project_sources/collector/fixtures/powershell_analysis/good/custom_fail_row_fails_command.ps1",
+        "reason": "Fixture/example PowerShell is inventoried separately from maintained source targets.",
+        "source_type": ".ps1",
+        "status": "fixture"
+      },
+      {
+        "category": "fixture_or_example",
+        "path": "project_sources/collector/fixtures/powershell_analysis/good/custom_fingerprint_bound_baseline.ps1",
+        "reason": "Fixture/example PowerShell is inventoried separately from maintained source targets.",
+        "source_type": ".ps1",
+        "status": "fixture"
+      },
+      {
+        "category": "fixture_or_example",
+        "path": "project_sources/collector/fixtures/powershell_analysis/good/custom_safe_root_delete.ps1",
+        "reason": "Fixture/example PowerShell is inventoried separately from maintained source targets.",
+        "source_type": ".ps1",
+        "status": "fixture"
+      },
+      {
+        "category": "fixture_or_example",
+        "path": "project_sources/collector/fixtures/powershell_analysis/good/custom_source_part_current.ps1",
+        "reason": "Fixture/example PowerShell is inventoried separately from maintained source targets.",
+        "source_type": ".ps1",
+        "status": "fixture"
+      }
+    ],
+    "skipped_paths": [],
+    "summary": {
+      "by_category": {
+        "archive_temp_vendor_artifact": 0,
+        "collector_harness_script": 4,
+        "collector_harness_source_part": 17,
+        "collector_runtime_source_part": 38,
+        "collector_runtime_wrapper": 1,
+        "collector_validation_tooling": 2,
+        "fixture_or_example": 23,
+        "generated_or_assembled_output": 0,
+        "github_workflow_support_script": 20,
+        "invalid_workflow_surface": 0,
+        "missing_authoritative_surface": 0,
+        "missing_changed_powershell_surface": 0,
+        "missing_changed_workflow_surface": 0,
+        "operator_tooling": 45,
+        "staging_artifact": 63,
+        "unclassified_powershell_surface": 0,
+        "validation_tooling": 3,
+        "workflow_embedded_powershell": 27
+      },
+      "by_inclusion_decision": {
+        "exclude": 63,
+        "include": 130,
+        "reference": 50
+      },
+      "by_source_type": {
+        ".ps1": 180,
+        ".ps1.txt": 17,
+        ".ps1xml": 0,
+        ".psd1": 9,
+        ".psm1": 10,
+        "workflow_yaml": 27
+      },
+      "by_status": {
+        "fixture": 23,
+        "source": 43,
+        "source_part": 17,
+        "staging": 63,
+        "tooling": 70,
+        "workflow_embedded": 27
+      },
+      "embedded_snippet_count": 80,
+      "total_surfaces": 243
+    }
+  },
+  "json_pointer": "/surface_inventory",
+  "key_count": 6,
+  "report_id": "review_assist",
+  "schema_version": "dcoir_report_chunk_v1",
+  "source_report": "project_sources/collector/powershell_review_assist_report.json",
+  "source_sha256": "544d0ee1719804e870fb1216f7e71712d7b52f69d32b04aa13d47303bbe6dac1"
+}

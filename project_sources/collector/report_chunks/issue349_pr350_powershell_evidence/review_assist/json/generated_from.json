@@ -1,0 +1,24 @@
+{
+  "chunk_kind": "json_value",
+  "data": {
+    "generated_at_utc": "2026-07-01T10:17:50+00:00",
+    "schema_contract": "project_sources/collector/powershell_review_assist_report.schema.json",
+    "source_reports": [
+      "project_sources/collector/powershell_surface_inventory.json",
+      "project_sources/collector/powershell_rule_risk_fixture_report.json",
+      "project_sources/collector/powershell_rule_risk_matrix.json",
+      "project_sources/collector/powershell_custom_check_report.json",
+      "project_sources/collector/powershell_assembly_parity_report.json",
+      "project_sources/collector/powershell_finding_governance_report.json",
+      "project_sources/collector/powershell_engine_pester_boundary_report.json",
+      "project_sources/collector/powershell_function_reachability_report.json",
+      "project_sources/collector/powershell_analyzer_report.json"
+    ],
+    "tool": "project_sources/collector/tools/run_powershell_review_assist_report.py"
+  },
+  "json_pointer": "/generated_from",
+  "report_id": "review_assist",
+  "schema_version": "dcoir_report_chunk_v1",
+  "source_report": "project_sources/collector/powershell_review_assist_report.json",
+  "source_sha256": "544d0ee1719804e870fb1216f7e71712d7b52f69d32b04aa13d47303bbe6dac1"
+}
