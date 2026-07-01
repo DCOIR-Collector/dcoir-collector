@@ -1,3 +1,16 @@
+      "category": "staging_artifact",
+      "source_type": ".ps1",
+      "status": "staging",
+      "inclusion_decision": "exclude",
+      "decision_reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+      "exists": true,
+      "marker_lines": [],
+      "embedded_snippets": [],
+      "size_bytes": 12705,
+      "line_count": 296,
+      "sha256": "a014e05abd93fa9f5431fc07e173ed50266cccef4222ea29c5deda8446ba5406"
+    },
+    {
       "path": "chatgpt_staging/exec_scripts/exec-20260618-pr281-codex-p1-redaction-003.ps1",
       "category": "staging_artifact",
       "source_type": ".ps1",
@@ -947,14 +960,3 @@
       "embedded_snippets": [],
       "size_bytes": 5264,
       "line_count": 129,
-      "sha256": "64f3fa65134e88fac81b1349e7539dd50a3644c6cf6f98963c584ecfdb39775c"
-    },
-    {
-      "path": "operator_tools/github_desktop_lane/scripts/Invoke-DcoirActionsWorkflowOrchestrator.ps1",
-      "category": "operator_tooling",
-      "source_type": ".ps1",
-      "status": "tooling",
-      "inclusion_decision": "include",
-      "decision_reason": "Operator tooling PowerShell is maintained repo tooling.",
-      "exists": true,
-      "marker_lines": [],
