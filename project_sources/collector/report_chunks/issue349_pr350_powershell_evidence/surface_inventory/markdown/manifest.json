@@ -1,1 +1,76 @@
-{"chunk_count":7,"chunks":[{"bytes":601,"chunk_kind":"markdown_section","format":"markdown","heading":"front_matter","path":"project_sources/collector/report_chunks/issue349_pr350_powershell_evidence/surface_inventory/markdown/chunk_000_front_matter.md","section_index":0,"sha256":"3ed0a5f9a427c26aed3e74bc8c1362c5633fa56038ce181f3ec7e793c67990ca"},{"bytes":733,"chunk_kind":"markdown_section","format":"markdown","heading":"Counts By Category","path":"project_sources/collector/report_chunks/issue349_pr350_powershell_evidence/surface_inventory/markdown/chunk_001_Counts_By_Category.md","section_index":1,"sha256":"61e4a9e2908e44dd48d45c66de6b98024ecd0243eec077a206fd99f333bf12ff"},{"bytes":179,"chunk_kind":"markdown_section","format":"markdown","heading":"Counts By Source Type","path":"project_sources/collector/report_chunks/issue349_pr350_powershell_evidence/surface_inventory/markdown/chunk_002_Counts_By_Source_Type.md","section_index":2,"sha256":"1c32fabeb8c45e2c3c4cb0e6705e54cd9c8230293edcf6218f225aa6dd17092c"},{"bytes":130,"chunk_kind":"markdown_section","format":"markdown","heading":"Counts By Inclusion Decision","path":"project_sources/collector/report_chunks/issue349_pr350_powershell_evidence/surface_inventory/markdown/chunk_003_Counts_By_Inclusion_Decision.md","section_index":3,"sha256":"4669fc760d136a0fbcecae628f1324c071856f2f3585d46942689d4dd25ae148"},{"bytes":274,"chunk_kind":"markdown_section","format":"markdown","heading":"Control Totals","path":"project_sources/collector/report_chunks/issue349_pr350_powershell_evidence/surface_inventory/markdown/chunk_004_Control_Totals.md","section_index":4,"sha256":"83fd9eb48e677db8fc3217b66f0fbc2f2030df8656524a259b783346ec1b5ae0"},{"bytes":23316,"chunk_kind":"markdown_section","format":"markdown","heading":"Reference And Excluded Surfaces","path":"project_sources/collector/report_chunks/issue349_pr350_powershell_evidence/surface_inventory/markdown/chunk_005_Reference_And_Excluded_Surfaces.md","section_index":5,"sha256":"a123cb0f777111fc19d49664e01fee1b7bb49476f211d2f23b2e8d691801c3f4"},{"bytes":48,"chunk_kind":"markdown_section","format":"markdown","heading":"Validation Findings","path":"project_sources/collector/report_chunks/issue349_pr350_powershell_evidence/surface_inventory/markdown/chunk_006_Validation_Findings.md","section_index":6,"sha256":"be3e8fd50199ba15aac98f33517c6d3faff4233644a643b2f080f168402e3668"}],"max_chunk_bytes_target":40000,"reassembly_note":"Concatenate Markdown chunks in manifest order to reconstruct the source Markdown report.","report_id":"surface_inventory","schema_version":"dcoir_report_chunk_manifest_v1","source_bytes":25281,"source_format":"markdown","source_report":"project_sources/collector/powershell_surface_inventory.md","source_sha256":"643e4f21cba75f0b38e690ecf0a53535d1436f6e4a6830810daada263804e7b1"}
+{
+  "chunk_count": 7,
+  "chunks": [
+    {
+      "bytes": 571,
+      "chunk_index": 0,
+      "chunk_kind": "markdown_section",
+      "format": "markdown",
+      "path": "project_sources/collector/report_chunks/issue349_pr350_powershell_evidence/surface_inventory/markdown/chunk_000_front_matter.md",
+      "section": "front_matter",
+      "sha256": "a9d8c64be932e6efe3772ae86179eaef6d1547f0a7cab4b2b4310808d3d1b8e5"
+    },
+    {
+      "bytes": 733,
+      "chunk_index": 1,
+      "chunk_kind": "markdown_section",
+      "format": "markdown",
+      "path": "project_sources/collector/report_chunks/issue349_pr350_powershell_evidence/surface_inventory/markdown/chunk_001_Counts_By_Category.md",
+      "section": "Counts_By_Category",
+      "sha256": "4e876752e2107c1c0dcb7641ab2cf329a1d2c282aeeeba914e8c96e26b4f0fd3"
+    },
+    {
+      "bytes": 179,
+      "chunk_index": 2,
+      "chunk_kind": "markdown_section",
+      "format": "markdown",
+      "path": "project_sources/collector/report_chunks/issue349_pr350_powershell_evidence/surface_inventory/markdown/chunk_002_Counts_By_Source_Type.md",
+      "section": "Counts_By_Source_Type",
+      "sha256": "9d1c4358fa36bd15228dea3816a0359420dc238776b3f56885cba95893cf4aad"
+    },
+    {
+      "bytes": 130,
+      "chunk_index": 3,
+      "chunk_kind": "markdown_section",
+      "format": "markdown",
+      "path": "project_sources/collector/report_chunks/issue349_pr350_powershell_evidence/surface_inventory/markdown/chunk_003_Counts_By_Inclusion_Decision.md",
+      "section": "Counts_By_Inclusion_Decision",
+      "sha256": "a13a17429c12a7a4010d5e453a93535e2c942947de8f583801c94b0e88dcd8d8"
+    },
+    {
+      "bytes": 274,
+      "chunk_index": 4,
+      "chunk_kind": "markdown_section",
+      "format": "markdown",
+      "path": "project_sources/collector/report_chunks/issue349_pr350_powershell_evidence/surface_inventory/markdown/chunk_004_Control_Totals.md",
+      "section": "Control_Totals",
+      "sha256": "bea46af2fde0d00d5a653d7d2ec81869a3e370c3880647248769b262c2a685f3"
+    },
+    {
+      "bytes": 23316,
+      "chunk_index": 5,
+      "chunk_kind": "markdown_section",
+      "format": "markdown",
+      "path": "project_sources/collector/report_chunks/issue349_pr350_powershell_evidence/surface_inventory/markdown/chunk_005_Reference_And_Excluded_Surfaces.md",
+      "section": "Reference_And_Excluded_Surfaces",
+      "sha256": "a123cb0f777111fc19d49664e01fee1b7bb49476f211d2f23b2e8d691801c3f4"
+    },
+    {
+      "bytes": 48,
+      "chunk_index": 6,
+      "chunk_kind": "markdown_section",
+      "format": "markdown",
+      "path": "project_sources/collector/report_chunks/issue349_pr350_powershell_evidence/surface_inventory/markdown/chunk_006_Validation_Findings.md",
+      "section": "Validation_Findings",
+      "sha256": "be3e8fd50199ba15aac98f33517c6d3faff4233644a643b2f080f168402e3668"
+    }
+  ],
+  "max_chunk_bytes_target": 40000,
+  "reassembly_note": "Concatenate Markdown chunks in manifest order.",
+  "report_id": "surface_inventory",
+  "schema_version": "dcoir_report_chunk_manifest_v1",
+  "source_bytes": 25251,
+  "source_format": "markdown",
+  "source_report": "project_sources/collector/powershell_surface_inventory.md",
+  "source_sha256": "0a1d0aa2159d61083b5647719a2a4da1b929bd1795a067409402335ffa2d74a2"
+}
