@@ -28,6 +28,11 @@ METADATA_FINALIZATION_PART_RELS = (
     'project_sources/collector/source/parts/DCOIR_Collector.04H3_PR212_Metadata_Finalization_Fixes.ps1',
 )
 
+BUNDLE_METADATA_SYNC_PART_RELS = (
+    'project_sources/collector/source/parts/DCOIR_Collector.04G1_PR186_External_Review_Fixes.ps1',
+    'project_sources/collector/source/parts/DCOIR_Collector.04G2_PR186_External_Review_Fixes.ps1',
+)
+
 
 def get_main_entry_source_text(source_dir: Path) -> str:
     return '\n'.join(read_text(source_dir / rel) for rel in MAIN_ENTRY_PART_RELS)
@@ -35,6 +40,10 @@ def get_main_entry_source_text(source_dir: Path) -> str:
 
 def get_metadata_finalization_source_text(source_dir: Path) -> str:
     return '\n'.join(read_text(source_dir / rel) for rel in METADATA_FINALIZATION_PART_RELS)
+
+
+def get_bundle_metadata_sync_source_text(source_dir: Path) -> str:
+    return '\n'.join(read_text(source_dir / rel) for rel in BUNDLE_METADATA_SYNC_PART_RELS)
 
 
 def validate_unique_function_definitions(source_dir: Path, manifest: Dict, checks: Dict[str, object], errors: List[str]) -> None:
@@ -175,13 +184,12 @@ def validate_collect_manifest_bundle_ordering(source_dir: Path, manifest: Dict, 
 
 
 def validate_bundle_metadata_sync_terminates(source_dir: Path, checks: Dict[str, object], errors: List[str]) -> None:
-    rel = 'project_sources/collector/source/parts/DCOIR_Collector.04G_PR186_External_Review_Fixes.ps1'
-    text = read_text(source_dir / rel)
-    out: Dict[str, object] = {'path': rel}
+    text = get_bundle_metadata_sync_source_text(source_dir)
+    out: Dict[str, object] = {'paths': list(BUNDLE_METADATA_SYNC_PART_RELS)}
     checks['bundle_metadata_sync_error_handling'] = out
     if not text:
         out['checked'] = False
-        errors.append('bundle metadata sync helper source is missing: ' + rel)
+        errors.append('bundle metadata sync helper source is missing')
         return
     sync_body = extract_function_body(text, 'Sync-CollectionMetadataCompanionArtifact')
     bundle_body = extract_function_body(text, 'New-BundleZip')
