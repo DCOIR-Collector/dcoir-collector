@@ -1,9 +1,0 @@
-{
-  "chunk_kind": "json_value",
-  "data": 268,
-  "json_pointer": "/issue",
-  "report_id": "review_assist",
-  "schema_version": "dcoir_report_chunk_v1",
-  "source_report": "project_sources/collector/powershell_review_assist_report.json",
-  "source_sha256": "544d0ee1719804e870fb1216f7e71712d7b52f69d32b04aa13d47303bbe6dac1"
-}
