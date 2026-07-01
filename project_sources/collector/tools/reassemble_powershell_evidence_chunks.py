@@ -130,6 +130,21 @@ def require_list(value: Any, *, label: str) -> list[Any]:
     return value
 
 
+def require_int_field(
+    value: dict[str, Any],
+    key: str,
+    *,
+    label: str,
+    minimum: int | None = None,
+) -> int:
+    field_value = value.get(key)
+    if not isinstance(field_value, int):
+        raise ChunkValidationError(f"{label}: {key} must be an integer")
+    if minimum is not None and field_value < minimum:
+        raise ChunkValidationError(f"{label}: {key} must be at least {minimum}")
+    return field_value
+
+
 def ensure_object_parent(document: dict[str, Any], pointer: str, *, label: str) -> tuple[dict[str, Any], str] | None:
     parts = pointer_parts(pointer, label=label)
     if not parts:
@@ -320,19 +335,110 @@ def reassemble_markdown(
     return bytes(output), chunk_results
 
 
+def reassemble_json_text_slices(
+    report_manifest: dict[str, Any],
+    *,
+    repo_root: Path,
+    chunk_root: Path,
+) -> tuple[bytes, Any, list[dict[str, Any]]]:
+    if report_manifest.get("reassembly_mode") != "byte_exact_text_slices":
+        raise ChunkValidationError(
+            f"{report_manifest['source_report']}: json_text_slice reports require "
+            "reassembly_mode 'byte_exact_text_slices'"
+        )
+    output = bytearray()
+    chunk_results: list[dict[str, Any]] = []
+    seen_paths: set[str] = set()
+    expected_offset = 0
+    for index, chunk_info in enumerate(report_manifest["chunks"]):
+        chunk_label = f"{report_manifest['source_report']} chunk {index}"
+        chunk_info = require_mapping(chunk_info, label=chunk_label)
+        if chunk_info.get("chunk_kind") != "json_text_slice":
+            raise ChunkValidationError(
+                f"{chunk_label}: json_text_slice reports cannot mix chunk kind {chunk_info.get('chunk_kind')!r}"
+            )
+        if chunk_info.get("format") != report_manifest.get("source_format"):
+            raise ChunkValidationError(f"{chunk_label}: chunk format does not match report format")
+        chunk_index = require_int_field(chunk_info, "chunk_index", label=chunk_label, minimum=0)
+        if chunk_index != index:
+            raise ChunkValidationError(f"{chunk_label}: chunk_index must match manifest order")
+        byte_start = require_int_field(chunk_info, "byte_start", label=chunk_label, minimum=0)
+        byte_end = require_int_field(chunk_info, "byte_end", label=chunk_label, minimum=0)
+        if byte_start != expected_offset:
+            raise ChunkValidationError(
+                f"{chunk_label}: byte range has a gap or overlap; expected start {expected_offset}, got {byte_start}"
+            )
+        if byte_end <= byte_start:
+            raise ChunkValidationError(f"{chunk_label}: byte_end must be greater than byte_start")
+        chunk_path = safe_sidecar_path(
+            chunk_info.get("path"),
+            repo_root=repo_root,
+            chunk_root=chunk_root,
+            label=chunk_label,
+        )
+        chunk_rel = relpath(chunk_path, repo_root)
+        if chunk_rel in seen_paths:
+            raise ChunkValidationError(f"{chunk_label}: duplicate chunk path {chunk_rel}")
+        seen_paths.add(chunk_rel)
+        raw = read_chunk_bytes(chunk_path, label=chunk_label)
+        if chunk_info.get("bytes") != len(raw):
+            raise ChunkValidationError(f"{chunk_label}: byte count mismatch")
+        if byte_end - byte_start != len(raw):
+            raise ChunkValidationError(f"{chunk_label}: byte range length does not match chunk bytes")
+        digest = sha256_bytes(raw)
+        if chunk_info.get("sha256") != digest:
+            raise ChunkValidationError(f"{chunk_label}: sha256 mismatch")
+        output.extend(raw)
+        expected_offset = byte_end
+        chunk_results.append(
+            {
+                "path": chunk_rel,
+                "sha256": digest,
+                "bytes": len(raw),
+                "byte_start": byte_start,
+                "byte_end": byte_end,
+                "status": "pass",
+            }
+        )
+
+    if expected_offset != report_manifest.get("source_bytes"):
+        raise ChunkValidationError(
+            f"{report_manifest['source_report']}: text-slice bytes do not cover source_bytes"
+        )
+    reconstructed_bytes = bytes(output)
+    try:
+        document = json.loads(reconstructed_bytes.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ChunkValidationError(f"{report_manifest['source_report']}: reassembled JSON is invalid: {exc}") from exc
+    return reconstructed_bytes, document, chunk_results
+
+
 def reassemble_json(
     report_manifest: dict[str, Any],
     *,
     repo_root: Path,
     chunk_root: Path,
 ) -> tuple[bytes, Any, list[dict[str, Any]]]:
+    chunk_infos = [
+        require_mapping(chunk_info, label=f"{report_manifest['source_report']} chunk {index}")
+        for index, chunk_info in enumerate(report_manifest["chunks"])
+    ]
+    text_slice_count = sum(1 for chunk_info in chunk_infos if chunk_info.get("chunk_kind") == "json_text_slice")
+    if text_slice_count:
+        if text_slice_count != len(chunk_infos):
+            raise ChunkValidationError(
+                f"{report_manifest['source_report']}: json_text_slice chunks cannot be mixed with semantic JSON chunks"
+            )
+        report_manifest = dict(report_manifest)
+        report_manifest["chunks"] = chunk_infos
+        return reassemble_json_text_slices(report_manifest, repo_root=repo_root, chunk_root=chunk_root)
+
     document: Any = {}
     assigned_values: set[str] = set()
     chunk_results: list[dict[str, Any]] = []
     seen_paths: set[str] = set()
-    for index, chunk_info in enumerate(report_manifest["chunks"]):
+    for index, chunk_info in enumerate(chunk_infos):
         chunk_label = f"{report_manifest['source_report']} chunk {index}"
-        chunk_info = require_mapping(chunk_info, label=chunk_label)
         chunk_path = safe_sidecar_path(
             chunk_info.get("path"),
             repo_root=repo_root,
@@ -604,6 +710,11 @@ def validate_chunk_set(args: argparse.Namespace) -> tuple[dict[str, Any], dict[s
     if compare_canonical_reports and not canonical_parity_success:
         readiness_gaps.append(
             "canonical reports do not match the reassembled chunk sidecar; "
+            "sidecar validation is not canonical replacement"
+        )
+    if not compare_canonical_reports:
+        readiness_gaps.append(
+            "canonical reports were not compared; "
             "sidecar validation is not canonical replacement"
         )
 
