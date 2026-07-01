@@ -300,6 +300,101 @@ class ReassemblePowerShellEvidenceChunksTests(unittest.TestCase):
         self.assertFalse(report["canonical_parity_success"])
         self.assertTrue(report["readiness_gaps"])
 
+    def test_skipped_canonical_compare_keeps_readiness_gap_visible(self) -> None:
+        with self.make_repo() as temp:
+            report, _outputs = chunks.validate_chunk_set(self.args(Path(temp), compare_canonical=False))
+
+        self.assertTrue(report["validation"]["success"], report["validation"])
+        self.assertIsNone(report["canonical_parity_success"])
+        self.assertIn("canonical reports were not compared", " ".join(report["readiness_gaps"]))
+
+    def replace_json_chunks_with_text_slices(self, root: Path, *, slice_size: int = 64) -> None:
+        root_manifest_path = root / chunks.DEFAULT_CHUNK_ROOT / "manifest.json"
+        root_manifest = json.loads(root_manifest_path.read_text(encoding="utf-8"))
+        json_report = root_manifest["reports"][0]
+        report_manifest_path = root / json_report["manifest_path"]
+        report_manifest = json.loads(report_manifest_path.read_text(encoding="utf-8"))
+        for chunk_info in report_manifest["chunks"]:
+            (root / chunk_info["path"]).unlink()
+
+        source_bytes = (root / json_report["source_report"]).read_bytes()
+        new_chunks = []
+        for index, byte_start in enumerate(range(0, len(source_bytes), slice_size)):
+            raw = source_bytes[byte_start : byte_start + slice_size]
+            byte_end = byte_start + len(raw)
+            rel = chunks.DEFAULT_CHUNK_ROOT / "fixture/json" / f"chunk_{index:03d}_text.json.txt"
+            write(root / rel, raw)
+            new_chunks.append(
+                {
+                    "byte_end": byte_end,
+                    "byte_start": byte_start,
+                    "bytes": len(raw),
+                    "chunk_index": index,
+                    "chunk_kind": "json_text_slice",
+                    "format": "json",
+                    "path": rel.as_posix(),
+                    "sha256": sha256(raw),
+                }
+            )
+
+        report_manifest["chunk_count"] = len(new_chunks)
+        report_manifest["chunks"] = new_chunks
+        report_manifest["reassembly_mode"] = "byte_exact_text_slices"
+        json_report["chunk_count"] = len(new_chunks)
+        root_manifest["file_count"] = sum(1 for path in (root / chunks.DEFAULT_CHUNK_ROOT).rglob("*") if path.is_file())
+        write(report_manifest_path, json.dumps(report_manifest, indent=2) + "\n")
+        write(root_manifest_path, json.dumps(root_manifest, indent=2) + "\n")
+
+    def test_json_text_slices_are_byte_exact(self) -> None:
+        with self.make_repo() as temp:
+            root = Path(temp)
+            self.replace_json_chunks_with_text_slices(root, slice_size=40)
+            source_path = "project_sources/collector/fixture_report.json"
+            source_bytes = (root / source_path).read_bytes()
+            report, outputs = chunks.validate_chunk_set(self.args(root))
+
+        self.assertTrue(report["validation"]["success"], report["validation"])
+        self.assertTrue(report["reconstruction_exact_success"])
+        self.assertEqual(outputs[source_path], source_bytes)
+        json_report = next(item for item in report["reports"] if item["source_format"] == "json")
+        self.assertTrue(json_report["source_sha256_match"])
+
+    def test_json_text_slice_tamper_fails_sha_check(self) -> None:
+        with self.make_repo() as temp:
+            root = Path(temp)
+            self.replace_json_chunks_with_text_slices(root, slice_size=40)
+            chunk_path = root / chunks.DEFAULT_CHUNK_ROOT / "fixture/json/chunk_000_text.json.txt"
+            tampered = bytearray(chunk_path.read_bytes())
+            tampered[0] = ord(" ")
+            write(chunk_path, bytes(tampered))
+
+            with self.assertRaisesRegex(chunks.ChunkValidationError, "sha256 mismatch"):
+                chunks.validate_chunk_set(self.args(root))
+
+    def test_json_text_slice_gap_fails_closed(self) -> None:
+        with self.make_repo() as temp:
+            root = Path(temp)
+            self.replace_json_chunks_with_text_slices(root, slice_size=40)
+            manifest_path = root / chunks.DEFAULT_CHUNK_ROOT / "fixture/json/manifest.json"
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            manifest["chunks"][1]["byte_start"] += 1
+            write(manifest_path, json.dumps(manifest, indent=2) + "\n")
+
+            with self.assertRaisesRegex(chunks.ChunkValidationError, "gap or overlap"):
+                chunks.validate_chunk_set(self.args(root))
+
+    def test_json_text_slice_manifest_requires_reassembly_mode(self) -> None:
+        with self.make_repo() as temp:
+            root = Path(temp)
+            self.replace_json_chunks_with_text_slices(root, slice_size=40)
+            manifest_path = root / chunks.DEFAULT_CHUNK_ROOT / "fixture/json/manifest.json"
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            manifest.pop("reassembly_mode")
+            write(manifest_path, json.dumps(manifest, indent=2) + "\n")
+
+            with self.assertRaisesRegex(chunks.ChunkValidationError, "reassembly_mode"):
+                chunks.validate_chunk_set(self.args(root))
+
     def set_json_source_sha(self, root: Path, replacement_sha: str) -> None:
         root_manifest_path = root / chunks.DEFAULT_CHUNK_ROOT / "manifest.json"
         root_manifest = json.loads(root_manifest_path.read_text(encoding="utf-8"))
