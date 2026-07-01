@@ -1,0 +1,943 @@
+{
+  "schema_version": "dcoir_powershell_assembly_parity_report_v1",
+  "issue": 265,
+  "parent_issue": 260,
+  "depends_on": [
+    261,
+    262,
+    263,
+    264
+  ],
+  "source_of_truth": "#265 assembly-aware validation for PowerShell source parts and generated outputs",
+  "manifest": {
+    "path": "project_sources/collector/manifests/Collector_Runtime_Package_Manifest.json",
+    "accepted": true,
+    "exists": true,
+    "sha256": "51b7d9d0d62fda730a7a06ebc9d2754104089a2ef9cb13d9618b5acf919d667b",
+    "source_strategy": "compile_single_runtime_then_package"
+  },
+  "inventory": {
+    "path": "project_sources/collector/powershell_surface_inventory.json",
+    "accepted": true,
+    "exists": true,
+    "sha256": "1724d50b2bb1fcd6254a43f3cc6c0de7f0c42e15d508b0e94510ebe2dece5aba",
+    "schema_version": "dcoir_powershell_surface_inventory_v1",
+    "control_counts": {
+      "collector_manifest_path_count": 39,
+      "collector_source_part_count": 38,
+      "harness_source_part_count": 17,
+      "generated_output_mapping_count": 1
+    }
+  },
+  "summary": {
+    "collector_source_part_count": 38,
+    "harness_source_part_count": 17,
+    "source_part_count": 55,
+    "source_input_count": 56,
+    "generated_output_count": 2,
+    "parse_success_count": 2,
+    "parity_success_count": 2,
+    "parse_status": "pass",
+    "parity_status": "pass"
+  },
+  "source_maps": {
+    "collector_runtime": [
+      {
+        "path": "project_sources/collector/source/DCOIR_Collector.ps1",
+        "exists": true,
+        "size_bytes": 7085,
+        "line_count": 215,
+        "sha256": "dde0112918574d22d928dc47b54d6213f35160ed8fc2b473831f29b310b13c23",
+        "empty": false,
+        "role": "collector_runtime_wrapper"
+      },
+      {
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.01A1_Core_Logging_And_Process_Capture.ps1",
+        "exists": true,
+        "size_bytes": 9308,
+        "line_count": 338,
+        "sha256": "9ef11d78d634f78e9777c03a9bedbe588bf90bc95f5d59b00a5d3152bcc0403e",
+        "empty": false,
+        "role": "collector_runtime_source_part"
+      },
+      {
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.01A2_Core_Logging_And_Process_Capture.ps1",
+        "exists": true,
+        "size_bytes": 10401,
+        "line_count": 329,
+        "sha256": "8cda4c28ef93a3938ccba2ccd0a64dd60fac4a67c2d215944c5b1220f9f105ae",
+        "empty": false,
+        "role": "collector_runtime_source_part"
+      },
+      {
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.01B1_Json_State_And_Array_Utilities.ps1",
+        "exists": true,
+        "size_bytes": 9718,
+        "line_count": 293,
+        "sha256": "70391b9eea6212493c55b8577d2a14b0f27ff44b4ba90df929b8032bdb163b93",
+        "empty": false,
+        "role": "collector_runtime_source_part"
+      },
+      {
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.01B2_Json_State_And_Array_Utilities.ps1",
+        "exists": true,
+        "size_bytes": 12312,
+        "line_count": 428,
+        "sha256": "89a518e11f13cce256bb054b6a34cfcbbcccc3d8faefc32e56f967da96e892fe",
+        "empty": false,
+        "role": "collector_runtime_source_part"
+      },
+      {
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.01C_Runtime_Paths_Artifacts_And_Reports.ps1",
+        "exists": true,
+        "size_bytes": 10772,
+        "line_count": 413,
+        "sha256": "d0f13dd615354ed5ed692fa4c7378105c9379a8d8f12cfc199380bfce2e89c9b",
+        "empty": false,
+        "role": "collector_runtime_source_part"
+      },
+      {
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.01D1_Process_Event_And_Baseline_Utilities.ps1",
+        "exists": true,
+        "size_bytes": 12391,
+        "line_count": 425,
+        "sha256": "fed2c504c997b0d6d2916a651ff94b0d8f2685da336925937cca421ccab108c8",
+        "empty": false,
+        "role": "collector_runtime_source_part"
+      },
+      {
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.01D2_Process_Event_And_Baseline_Utilities.ps1",
+        "exists": true,
+        "size_bytes": 6594,
+        "line_count": 192,
+        "sha256": "78eba86bc05df1c2f696bcd4743f87c8466b4a4e690464c96a820cf21d22048c",
+        "empty": false,
+        "role": "collector_runtime_source_part"
+      },
+      {
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.01E_Tool_Staging_And_Availability.ps1",
+        "exists": true,
+        "size_bytes": 6102,
+        "line_count": 228,
+        "sha256": "9733acf4e2dad986f7db5310a7742e1aa354cba641951cccce47c45f9b4a8363",
+        "empty": false,
+        "role": "collector_runtime_source_part"
+      },
+      {
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.02A_Baseline_Collection_And_Reports.ps1",
+        "exists": true,
+        "size_bytes": 9037,
+        "line_count": 267,
+        "sha256": "8025fc22966ccd66d788aafb0269dd21426214944037117a93fa1aad51a0e6b3",
+        "empty": false,
+        "role": "collector_runtime_source_part"
+      },
+      {
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.02B_Baseline_Collection_And_Reports.ps1",
+        "exists": true,
+        "size_bytes": 12657,
+        "line_count": 322,
+        "sha256": "d95b360be7e560c1978f128d6de780f2019ab3849bd0536302a86d89d205ac0e",
+        "empty": false,
+        "role": "collector_runtime_source_part"
+      },
+      {
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.02C_Baseline_Collection_And_Reports.ps1",
+        "exists": true,
+        "size_bytes": 6120,
+        "line_count": 153,
+        "sha256": "278070cc16fd7139dd8880b107820ec568d9ed072baecc0d0c40ff66749b981d",
+        "empty": false,
+        "role": "collector_runtime_source_part"
+      },
+      {
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.02D1A_Baseline_Collection_And_Reports.ps1",
+        "exists": true,
+        "size_bytes": 3193,
+        "line_count": 67,
+        "sha256": "5510e08507e0d4e3470438fd741caf6fe46fe48f460a7234fddcea3fe48b0495",
+        "empty": false,
+        "role": "collector_runtime_source_part"
+      },
+      {
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.02D1B_Baseline_Collection_And_Reports.ps1",
+        "exists": true,
+        "size_bytes": 16440,
+        "line_count": 251,
+        "sha256": "ed8be9840617697261d7a4a37d118530f188cb9b7e85caf005a67a91a25ff4d2",
+        "empty": false,
+        "role": "collector_runtime_source_part"
+      },
+      {
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.02D2_Baseline_Collection_And_Reports.ps1",
+        "exists": true,
+        "size_bytes": 4541,
+        "line_count": 125,
+        "sha256": "f1b18cbed52e3f4ee6904eedd67edf7c36a51e211e5822828707ca3b8426b114",
+        "empty": false,
+        "role": "collector_runtime_source_part"
+      },
+      {
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.03A_Enrich_Session_State.ps1",
+        "exists": true,
+        "size_bytes": 8359,
+        "line_count": 229,
+        "sha256": "30185541536862b6e7e690f5b0a21ae165f544a7138fa646d7e03a01a51b3753",
+        "empty": false,
+        "role": "collector_runtime_source_part"
+      },
+      {
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.03B_Enrich_Actions_Review.ps1",
+        "exists": true,
+        "size_bytes": 12770,
+        "line_count": 268,
+        "sha256": "58d11780867f29645653db796e183ea85cd51667e3c45df0a9a213da38838d98",
+        "empty": false,
+        "role": "collector_runtime_source_part"
+      },
+      {
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.03C_Enrich_Actions_Retrieval.ps1",
+        "exists": true,
+        "size_bytes": 11500,
+        "line_count": 241,
+        "sha256": "1288a2a188975b62bb9a359a54796128c4da2da39c6d71b7289b09eaf4c547e8",
+        "empty": false,
+        "role": "collector_runtime_source_part"
+      },
+      {
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.04A1_Quick_Interface_And_Output.ps1",
+        "exists": true,
+        "size_bytes": 13236,
+        "line_count": 317,
+        "sha256": "19626962ddee340988c6967db39db32e04c3d840ed6513d20819e7c0b1df7db5",
+        "empty": false,
+        "role": "collector_runtime_source_part"
+      },
+      {
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.04A2_Quick_Interface_And_Output.ps1",
+        "exists": true,
+        "size_bytes": 11837,
+        "line_count": 216,
+        "sha256": "22c3fc6a288b53c67d86f3bfdeaa0e88ed7cf3c7dcc7763cd792a5acf9dfc2ea",
+        "empty": false,
+        "role": "collector_runtime_source_part"
+      },
+      {
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.04A3_Quick_Interface_And_Output.ps1",
+        "exists": true,
+        "size_bytes": 12489,
+        "line_count": 329,
+        "sha256": "55ed8cc2b42dc221a66d0d1371fa6b77ea34cb7d7e5ab162ff0194caf2309d5a",
+        "empty": false,
+        "role": "collector_runtime_source_part"
+      },
+      {
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.04B1_Feature_Wave_Targeted_Collection.ps1",
+        "exists": true,
+        "size_bytes": 13028,
+        "line_count": 281,
+        "sha256": "df15d9c0ea822d4920063340908b60aad70872e7a2ef6a5fb8aae76d1876a558",
+        "empty": false,
+        "role": "collector_runtime_source_part"
+      },
+      {
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.04B2_Feature_Wave_Targeted_Collection.ps1",
+        "exists": true,
+        "size_bytes": 10889,
+        "line_count": 287,
+        "sha256": "105ea0683f5ed524e7a7af0dad0556fb143c478e6aa20bcc1a4b53cb11db657b",
+        "empty": false,
+        "role": "collector_runtime_source_part"
+      },
+      {
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.04C_Explicit_Event_Window_Overrides.ps1",
+        "exists": true,
+        "size_bytes": 4836,
+        "line_count": 168,
+        "sha256": "180952e9238611a688945445e5ab6c7a7659a5a7bea4af1d53ada7c90ace5917",
+        "empty": false,
+        "role": "collector_runtime_source_part"
+      },
+      {
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.04D1_Bounded_Parallel_Runtime.ps1",
+        "exists": true,
+        "size_bytes": 5752,
+        "line_count": 179,
+        "sha256": "ac999fffe7d1488311a96e414ec0ab32fe8afb2796a16917d1ac6e98355f9e24",
+        "empty": false,
+        "role": "collector_runtime_source_part"
+      },
+      {
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.04D2_Bounded_Parallel_Runtime.ps1",
+        "exists": true,
+        "size_bytes": 12594,
+        "line_count": 352,
+        "sha256": "dbb7aee3d9f1409f0a36e9e4d8dc7d8c68d57a1d42bbd830aa563205458f7db7",
+        "empty": false,
+        "role": "collector_runtime_source_part"
+      },
+      {
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.04D3_Bounded_Parallel_Runtime.ps1",
+        "exists": true,
+        "size_bytes": 12033,
+        "line_count": 277,
+        "sha256": "502d94c31c62c85203ede2e95e68101891d8e86ca54fd991842fe4f93a517352",
+        "empty": false,
+        "role": "collector_runtime_source_part"
+      },
+      {
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.04E1_Diagnostic_Context_Overrides.ps1",
+        "exists": true,
+        "size_bytes": 5278,
+        "line_count": 148,
+        "sha256": "a7ed6180754e5b667eba4af6bb3eea7aa273e91b09672aeec7adfa54a75ba5a1",
+        "empty": false,
+        "role": "collector_runtime_source_part"
+      },
+      {
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.04E2_Diagnostic_Context_Overrides.ps1",
+        "exists": true,
+        "size_bytes": 16246,
+        "line_count": 356,
+        "sha256": "32a1ad64dd98a80c4d9a7763783c380c122f46ef3659fbc04300e1eace51c6bd",
+        "empty": false,
+        "role": "collector_runtime_source_part"
+      },
+      {
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.04F_PR186_Review_Fixes.ps1",
+        "exists": true,
+        "size_bytes": 17049,
+        "line_count": 491,
+        "sha256": "be8a099cc9f3b97cb12dd797610142dde6d5127c76e1b4a7d80c2e46544d6406",
+        "empty": false,
+        "role": "collector_runtime_source_part"
+      },
+      {
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.04G_PR186_External_Review_Fixes.ps1",
+        "exists": true,
+        "size_bytes": 17925,
+        "line_count": 504,
+        "sha256": "831b6a908796801418bc8417bb6e41d0f96d1b6ff8e7add4ffcd940bd1efd9c5",
+        "empty": false,
+        "role": "collector_runtime_source_part"
+      },
+      {
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.04H1_PR212_Metadata_Finalization_Fixes.ps1",
+        "exists": true,
+        "size_bytes": 4841,
+        "line_count": 131,
+        "sha256": "60014873136f51c7d77eb378fb2ff8e1e980e183658309924ce2494a56b0199c",
+        "empty": false,
+        "role": "collector_runtime_source_part"
+      },
+      {
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.04H2_PR212_Metadata_Finalization_Fixes.ps1",
+        "exists": true,
+        "size_bytes": 9020,
+        "line_count": 208,
+        "sha256": "ecf10ab8b88576c1158a5aa96475dd5813f077da3b2cf77213f764fe4e6dfcd2",
+        "empty": false,
+        "role": "collector_runtime_source_part"
+      },
+      {
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.04H3_PR212_Metadata_Finalization_Fixes.ps1",
+        "exists": true,
+        "size_bytes": 4963,
+        "line_count": 109,
+        "sha256": "cdc7f9848721330655a671f1ae76c5fe2171380d1c044fc3503cf63d1fe82662",
+        "empty": false,
+        "role": "collector_runtime_source_part"
+      },
+      {
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.05A1_Main_Entry.ps1",
+        "exists": true,
+        "size_bytes": 4192,
+        "line_count": 134,
+        "sha256": "036d7f6187890273a6030da2a6d0483e30a045f9dfbc52e551f03a33639b0df0",
+        "empty": false,
+        "role": "collector_runtime_source_part"
+      },
+      {
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.05A2_Main_Entry.ps1",
+        "exists": true,
+        "size_bytes": 17048,
+        "line_count": 290,
+        "sha256": "d33e304ea84fec19be0dab4eae44712ff3b6f5141a068b902f6e77bfc594f8a9",
+        "empty": false,
+        "role": "collector_runtime_source_part"
+      },
+      {
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.05B_Main_Entry.ps1",
+        "exists": true,
+        "size_bytes": 7767,
+        "line_count": 151,
+        "sha256": "00d16ef84cb9ae4e6ca5d096233a55cfc6f52506f2467604648b0f01b7421e30",
+        "empty": false,
+        "role": "collector_runtime_source_part"
+      },
+      {
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.05C_Main_Entry.ps1",
+        "exists": true,
+        "size_bytes": 4894,
+        "line_count": 88,
+        "sha256": "ab186272c8964cd0a85d314c7e2ab54f2e7d342a74bdc78bda6951498d8d5e96",
+        "empty": false,
+        "role": "collector_runtime_source_part"
+      },
+      {
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.05_Main_Entry.ps1",
+        "exists": true,
+        "size_bytes": 1464,
+        "line_count": 60,
+        "sha256": "02a38cb0936b87c6304d97937074e0ef79b540ab14ee1d9adc68d3db4a9278ca",
+        "empty": false,
+        "role": "collector_runtime_source_part"
+      }
+    ],
+    "harness": [
+      {
+        "path": "project_sources/collector/harness/source/parts/run_DCOIR_Tests.part-000.ps1.txt",
+        "exists": true,
+        "size_bytes": 8346,
+        "line_count": 276,
+        "sha256": "1cd80d04942d68a25881f63bf1315183c9888eef776cf028ccd3faa290c102c8",
+        "empty": false,
+        "role": "collector_harness_source_part"
+      },
+      {
+        "path": "project_sources/collector/harness/source/parts/run_DCOIR_Tests.part-001.ps1.txt",
+        "exists": true,
+        "size_bytes": 8476,
+        "line_count": 246,
+        "sha256": "7d59e9f9198281251cbe88eeeae72d9f7ef430ee7f5c9f0066d00aa18b5bf005",
+        "empty": false,
+        "role": "collector_harness_source_part"
+      },
+      {
+        "path": "project_sources/collector/harness/source/parts/run_DCOIR_Tests.part-002.ps1.txt",
+        "exists": true,
+        "size_bytes": 8411,
+        "line_count": 156,
+        "sha256": "febc37b9bb02366d77e872ee0ded0fe78e14f97423573af94952b3819676a1cf",
+        "empty": false,
+        "role": "collector_harness_source_part"
+      },
+      {
+        "path": "project_sources/collector/harness/source/parts/run_DCOIR_Tests.part-003.ps1.txt",
+        "exists": true,
+        "size_bytes": 8411,
+        "line_count": 234,
+        "sha256": "c1f5cbd01696032bd15cb2cd8de34bfdca4ae6336e17571625f27c690c988f5a",
+        "empty": false,
+        "role": "collector_harness_source_part"
+      },
+      {
+        "path": "project_sources/collector/harness/source/parts/run_DCOIR_Tests.part-004.ps1.txt",
+        "exists": true,
+        "size_bytes": 7589,
+        "line_count": 181,
+        "sha256": "035aa2089a21cea1877b4f914c169ebc47253474981804b397fc15ccde7d7e71",
+        "empty": false,
+        "role": "collector_harness_source_part"
+      },
+      {
+        "path": "project_sources/collector/harness/source/parts/run_DCOIR_Tests.part-005.ps1.txt",
+        "exists": true,
+        "size_bytes": 4200,
+        "line_count": 97,
+        "sha256": "2ee5631aec5d21230e2ee7ff933918b4e3ba6992a2532e64b890bc07448c8791",
+        "empty": false,
+        "role": "collector_harness_source_part"
+      },
+      {
+        "path": "project_sources/collector/harness/source/parts/run_DCOIR_Tests.part-006.ps1.txt",
+        "exists": true,
+        "size_bytes": 6161,
+        "line_count": 160,
+        "sha256": "8e30273b62b0a01b4fa50159c7eccb3581e96d969a749eb0f3c9c95f5aa365cc",
+        "empty": false,
+        "role": "collector_harness_source_part"
+      },
+      {
+        "path": "project_sources/collector/harness/source/parts/run_DCOIR_Tests.part-007.ps1.txt",
+        "exists": true,
+        "size_bytes": 12011,
+        "line_count": 271,
+        "sha256": "76a43e56d9625f5e5c1a4d97eb80c5d57f0eea22ab8271e0faa6b1c023148186",
+        "empty": false,
+        "role": "collector_harness_source_part"
+      },
+      {
+        "path": "project_sources/collector/harness/source/parts/run_DCOIR_Tests.part-008.ps1.txt",
+        "exists": true,
+        "size_bytes": 8335,
+        "line_count": 157,
+        "sha256": "d112bb6282a049d5c045757663ba1a66d4c0db24bf7473a7466056cbff4be71c",
+        "empty": false,
+        "role": "collector_harness_source_part"
+      },
+      {
+        "path": "project_sources/collector/harness/source/parts/run_DCOIR_Tests.part-009.ps1.txt",
+        "exists": true,
+        "size_bytes": 15243,
+        "line_count": 330,
+        "sha256": "4ddeb1be952c50cafa159a63a31d63036e9039a943a51d78b1070ca04096e583",
+        "empty": false,
+        "role": "collector_harness_source_part"
+      },
+      {
+        "path": "project_sources/collector/harness/source/parts/run_DCOIR_Tests.part-010.ps1.txt",
+        "exists": true,
+        "size_bytes": 15183,
+        "line_count": 25,
+        "sha256": "7e72ca15fed17734415c72bc09786afe8025f9d149e322d2f9f60ccf4cb73d45",
+        "empty": false,
+        "role": "collector_harness_source_part"
+      },
+      {
+        "path": "project_sources/collector/harness/source/parts/run_DCOIR_Tests.part-011.ps1.txt",
+        "exists": true,
+        "size_bytes": 9256,
+        "line_count": 224,
+        "sha256": "c7bc5432f648ce94af48bee661f7998d751f23dfc56c4026de7623b67445bff8",
+        "empty": false,
+        "role": "collector_harness_source_part"
+      },
+      {
+        "path": "project_sources/collector/harness/source/parts/run_DCOIR_Tests.part-012.ps1.txt",
+        "exists": true,
+        "size_bytes": 11687,
+        "line_count": 147,
+        "sha256": "5a117de941f2f39072081deba7ccd43a93914db04d00e7484dad38aff2e6ca9f",
+        "empty": false,
+        "role": "collector_harness_source_part"
+      },
+      {
+        "path": "project_sources/collector/harness/source/parts/run_DCOIR_Tests.part-013.ps1.txt",
+        "exists": true,
+        "size_bytes": 3217,
+        "line_count": 59,
+        "sha256": "4b8bd368c8638e66b82177628f6f6aa9a737ae6e07e30c793cc78eb27c524dc0",
+        "empty": false,
+        "role": "collector_harness_source_part"
+      },
+      {
+        "path": "project_sources/collector/harness/source/parts/run_DCOIR_Tests.part-014.ps1.txt",
+        "exists": true,
+        "size_bytes": 11129,
+        "line_count": 129,
+        "sha256": "e40c133ed86a5becf4837635a87e053e4df64cf6ce20b54b07b4067c77b20b0e",
+        "empty": false,
+        "role": "collector_harness_source_part"
+      },
+      {
+        "path": "project_sources/collector/harness/source/parts/run_DCOIR_Tests.part-015.ps1.txt",
+        "exists": true,
+        "size_bytes": 12538,
+        "line_count": 183,
+        "sha256": "7489ae8ae0771592748cd9cd8c2476ae9731533315b1abafe25db93c407255bb",
+        "empty": false,
+        "role": "collector_harness_source_part"
+      },
+      {
+        "path": "project_sources/collector/harness/source/parts/run_DCOIR_Tests.part-016.ps1.txt",
+        "exists": true,
+        "size_bytes": 1858,
+        "line_count": 68,
+        "sha256": "c15f5a4565d2f119bcc1e956f10394cfa59c252e7db024dc3137cf9d59489531",
+        "empty": false,
+        "role": "collector_harness_source_part"
+      }
+    ]
+  },
+  "generated_outputs": [
+    {
+      "id": "collector_compiled_runtime",
+      "path": "compiled_runtime/DCOIR_Collector.ps1",
+      "repo_committed_path": null,
+      "assembly_model": "compile_single_runtime_then_package",
+      "source_input_count": 38,
+      "line_mapping_status": "available",
+      "line_mapping": [
+        {
+          "source_path": "project_sources/collector/source/parts/DCOIR_Collector.01A1_Core_Logging_And_Process_Capture.ps1",
+          "source_line_start": 1,
+          "source_line_end": 338,
+          "generated_line_start": 3,
+          "generated_line_end": 340,
+          "mapping_basis": "compiler_begin_end_markers"
+        },
+        {
+          "source_path": "project_sources/collector/source/parts/DCOIR_Collector.01A2_Core_Logging_And_Process_Capture.ps1",
+          "source_line_start": 1,
+          "source_line_end": 329,
+          "generated_line_start": 344,
+          "generated_line_end": 672,
+          "mapping_basis": "compiler_begin_end_markers"
+        },
+        {
+          "source_path": "project_sources/collector/source/parts/DCOIR_Collector.01B1_Json_State_And_Array_Utilities.ps1",
+          "source_line_start": 1,
+          "source_line_end": 293,
+          "generated_line_start": 676,
+          "generated_line_end": 968,
+          "mapping_basis": "compiler_begin_end_markers"
+        },
+        {
+          "source_path": "project_sources/collector/source/parts/DCOIR_Collector.01B2_Json_State_And_Array_Utilities.ps1",
+          "source_line_start": 1,
+          "source_line_end": 428,
+          "generated_line_start": 972,
+          "generated_line_end": 1399,
+          "mapping_basis": "compiler_begin_end_markers"
+        },
+        {
+          "source_path": "project_sources/collector/source/parts/DCOIR_Collector.01C_Runtime_Paths_Artifacts_And_Reports.ps1",
+          "source_line_start": 1,
+          "source_line_end": 413,
+          "generated_line_start": 1403,
+          "generated_line_end": 1815,
+          "mapping_basis": "compiler_begin_end_markers"
+        },
+        {
+          "source_path": "project_sources/collector/source/parts/DCOIR_Collector.01D1_Process_Event_And_Baseline_Utilities.ps1",
+          "source_line_start": 1,
+          "source_line_end": 425,
+          "generated_line_start": 1819,
+          "generated_line_end": 2243,
+          "mapping_basis": "compiler_begin_end_markers"
+        },
+        {
+          "source_path": "project_sources/collector/source/parts/DCOIR_Collector.01D2_Process_Event_And_Baseline_Utilities.ps1",
+          "source_line_start": 1,
+          "source_line_end": 192,
+          "generated_line_start": 2247,
+          "generated_line_end": 2438,
+          "mapping_basis": "compiler_begin_end_markers"
+        },
+        {
+          "source_path": "project_sources/collector/source/parts/DCOIR_Collector.01E_Tool_Staging_And_Availability.ps1",
+          "source_line_start": 1,
+          "source_line_end": 228,
+          "generated_line_start": 2442,
+          "generated_line_end": 2669,
+          "mapping_basis": "compiler_begin_end_markers"
+        },
+        {
+          "source_path": "project_sources/collector/source/parts/DCOIR_Collector.02A_Baseline_Collection_And_Reports.ps1",
+          "source_line_start": 1,
+          "source_line_end": 267,
+          "generated_line_start": 2673,
+          "generated_line_end": 2939,
+          "mapping_basis": "compiler_begin_end_markers"
+        },
+        {
+          "source_path": "project_sources/collector/source/parts/DCOIR_Collector.02B_Baseline_Collection_And_Reports.ps1",
+          "source_line_start": 1,
+          "source_line_end": 322,
+          "generated_line_start": 2943,
+          "generated_line_end": 3264,
+          "mapping_basis": "compiler_begin_end_markers"
+        },
+        {
+          "source_path": "project_sources/collector/source/parts/DCOIR_Collector.02C_Baseline_Collection_And_Reports.ps1",
+          "source_line_start": 1,
+          "source_line_end": 153,
+          "generated_line_start": 3268,
+          "generated_line_end": 3420,
+          "mapping_basis": "compiler_begin_end_markers"
+        },
+        {
+          "source_path": "project_sources/collector/source/parts/DCOIR_Collector.02D1A_Baseline_Collection_And_Reports.ps1",
+          "source_line_start": 1,
+          "source_line_end": 67,
+          "generated_line_start": 3424,
+          "generated_line_end": 3490,
+          "mapping_basis": "compiler_begin_end_markers"
+        },
+        {
+          "source_path": "project_sources/collector/source/parts/DCOIR_Collector.02D1B_Baseline_Collection_And_Reports.ps1",
+          "source_line_start": 1,
+          "source_line_end": 251,
+          "generated_line_start": 3494,
+          "generated_line_end": 3744,
+          "mapping_basis": "compiler_begin_end_markers"
+        },
+        {
+          "source_path": "project_sources/collector/source/parts/DCOIR_Collector.02D2_Baseline_Collection_And_Reports.ps1",
+          "source_line_start": 1,
+          "source_line_end": 125,
+          "generated_line_start": 3748,
+          "generated_line_end": 3872,
+          "mapping_basis": "compiler_begin_end_markers"
+        },
+        {
+          "source_path": "project_sources/collector/source/parts/DCOIR_Collector.03A_Enrich_Session_State.ps1",
+          "source_line_start": 1,
+          "source_line_end": 229,
+          "generated_line_start": 3876,
+          "generated_line_end": 4104,
+          "mapping_basis": "compiler_begin_end_markers"
+        },
+        {
+          "source_path": "project_sources/collector/source/parts/DCOIR_Collector.03B_Enrich_Actions_Review.ps1",
+          "source_line_start": 1,
+          "source_line_end": 268,
+          "generated_line_start": 4108,
+          "generated_line_end": 4375,
+          "mapping_basis": "compiler_begin_end_markers"
+        },
+        {
+          "source_path": "project_sources/collector/source/parts/DCOIR_Collector.03C_Enrich_Actions_Retrieval.ps1",
+          "source_line_start": 1,
+          "source_line_end": 241,
+          "generated_line_start": 4379,
+          "generated_line_end": 4619,
+          "mapping_basis": "compiler_begin_end_markers"
+        },
+        {
+          "source_path": "project_sources/collector/source/parts/DCOIR_Collector.04A1_Quick_Interface_And_Output.ps1",
+          "source_line_start": 1,
+          "source_line_end": 317,
+          "generated_line_start": 4623,
+          "generated_line_end": 4939,
+          "mapping_basis": "compiler_begin_end_markers"
+        },
+        {
+          "source_path": "project_sources/collector/source/parts/DCOIR_Collector.04A2_Quick_Interface_And_Output.ps1",
+          "source_line_start": 1,
+          "source_line_end": 216,
+          "generated_line_start": 4943,
+          "generated_line_end": 5158,
+          "mapping_basis": "compiler_begin_end_markers"
+        },
+        {
+          "source_path": "project_sources/collector/source/parts/DCOIR_Collector.04A3_Quick_Interface_And_Output.ps1",
+          "source_line_start": 1,
+          "source_line_end": 329,
+          "generated_line_start": 5162,
+          "generated_line_end": 5490,
+          "mapping_basis": "compiler_begin_end_markers"
+        },
+        {
+          "source_path": "project_sources/collector/source/parts/DCOIR_Collector.04B1_Feature_Wave_Targeted_Collection.ps1",
+          "source_line_start": 1,
+          "source_line_end": 281,
+          "generated_line_start": 5494,
+          "generated_line_end": 5774,
+          "mapping_basis": "compiler_begin_end_markers"
+        },
+        {
+          "source_path": "project_sources/collector/source/parts/DCOIR_Collector.04B2_Feature_Wave_Targeted_Collection.ps1",
+          "source_line_start": 1,
+          "source_line_end": 287,
+          "generated_line_start": 5778,
+          "generated_line_end": 6064,
+          "mapping_basis": "compiler_begin_end_markers"
+        },
+        {
+          "source_path": "project_sources/collector/source/parts/DCOIR_Collector.04C_Explicit_Event_Window_Overrides.ps1",
+          "source_line_start": 1,
+          "source_line_end": 168,
+          "generated_line_start": 6068,
+          "generated_line_end": 6235,
+          "mapping_basis": "compiler_begin_end_markers"
+        },
+        {
+          "source_path": "project_sources/collector/source/parts/DCOIR_Collector.04D1_Bounded_Parallel_Runtime.ps1",
+          "source_line_start": 1,
+          "source_line_end": 179,
+          "generated_line_start": 6239,
+          "generated_line_end": 6417,
+          "mapping_basis": "compiler_begin_end_markers"
+        },
+        {
+          "source_path": "project_sources/collector/source/parts/DCOIR_Collector.04D2_Bounded_Parallel_Runtime.ps1",
+          "source_line_start": 1,
+          "source_line_end": 352,
+          "generated_line_start": 6421,
+          "generated_line_end": 6772,
+          "mapping_basis": "compiler_begin_end_markers"
+        },
+        {
+          "source_path": "project_sources/collector/source/parts/DCOIR_Collector.04D3_Bounded_Parallel_Runtime.ps1",
+          "source_line_start": 1,
+          "source_line_end": 277,
+          "generated_line_start": 6776,
+          "generated_line_end": 7052,
+          "mapping_basis": "compiler_begin_end_markers"
+        },
+        {
+          "source_path": "project_sources/collector/source/parts/DCOIR_Collector.04E1_Diagnostic_Context_Overrides.ps1",
+          "source_line_start": 1,
+          "source_line_end": 148,
+          "generated_line_start": 7056,
+          "generated_line_end": 7203,
+          "mapping_basis": "compiler_begin_end_markers"
+        },
+        {
+          "source_path": "project_sources/collector/source/parts/DCOIR_Collector.04E2_Diagnostic_Context_Overrides.ps1",
+          "source_line_start": 1,
+          "source_line_end": 356,
+          "generated_line_start": 7207,
+          "generated_line_end": 7562,
+          "mapping_basis": "compiler_begin_end_markers"
+        },
+        {
+          "source_path": "project_sources/collector/source/parts/DCOIR_Collector.04F_PR186_Review_Fixes.ps1",
+          "source_line_start": 1,
+          "source_line_end": 491,
+          "generated_line_start": 7566,
+          "generated_line_end": 8056,
+          "mapping_basis": "compiler_begin_end_markers"
+        },
+        {
+          "source_path": "project_sources/collector/source/parts/DCOIR_Collector.04G_PR186_External_Review_Fixes.ps1",
+          "source_line_start": 1,
+          "source_line_end": 504,
+          "generated_line_start": 8060,
+          "generated_line_end": 8563,
+          "mapping_basis": "compiler_begin_end_markers"
+        },
+        {
+          "source_path": "project_sources/collector/source/parts/DCOIR_Collector.04H1_PR212_Metadata_Finalization_Fixes.ps1",
+          "source_line_start": 1,
+          "source_line_end": 131,
+          "generated_line_start": 8567,
+          "generated_line_end": 8697,
+          "mapping_basis": "compiler_begin_end_markers"
+        },
+        {
+          "source_path": "project_sources/collector/source/parts/DCOIR_Collector.04H2_PR212_Metadata_Finalization_Fixes.ps1",
+          "source_line_start": 1,
+          "source_line_end": 208,
+          "generated_line_start": 8701,
+          "generated_line_end": 8908,
+          "mapping_basis": "compiler_begin_end_markers"
+        },
+        {
+          "source_path": "project_sources/collector/source/parts/DCOIR_Collector.04H3_PR212_Metadata_Finalization_Fixes.ps1",
+          "source_line_start": 1,
+          "source_line_end": 109,
+          "generated_line_start": 8912,
+          "generated_line_end": 9020,
+          "mapping_basis": "compiler_begin_end_markers"
+        },
+        {
+          "source_path": "project_sources/collector/source/parts/DCOIR_Collector.05A1_Main_Entry.ps1",
+          "source_line_start": 1,
+          "source_line_end": 134,
+          "generated_line_start": 9024,
+          "generated_line_end": 9157,
+          "mapping_basis": "compiler_begin_end_markers"
+        },
+        {
+          "source_path": "project_sources/collector/source/parts/DCOIR_Collector.05A2_Main_Entry.ps1",
+          "source_line_start": 1,
+          "source_line_end": 290,
+          "generated_line_start": 9161,
+          "generated_line_end": 9450,
+          "mapping_basis": "compiler_begin_end_markers"
+        },
+        {
+          "source_path": "project_sources/collector/source/parts/DCOIR_Collector.05B_Main_Entry.ps1",
+          "source_line_start": 1,
+          "source_line_end": 151,
+          "generated_line_start": 9454,
+          "generated_line_end": 9604,
+          "mapping_basis": "compiler_begin_end_markers"
+        },
+        {
+          "source_path": "project_sources/collector/source/parts/DCOIR_Collector.05C_Main_Entry.ps1",
+          "source_line_start": 1,
+          "source_line_end": 88,
+          "generated_line_start": 9608,
+          "generated_line_end": 9695,
+          "mapping_basis": "compiler_begin_end_markers"
+        },
+        {
+          "source_path": "project_sources/collector/source/parts/DCOIR_Collector.05_Main_Entry.ps1",
+          "source_line_start": 1,
+          "source_line_end": 60,
+          "generated_line_start": 9699,
+          "generated_line_end": 9758,
+          "mapping_basis": "compiler_begin_end_markers"
+        }
+      ],
+      "sha256": "f9ce9bf2691e7e3d053ef309abb375a4cc221eef8adec89111a39673e4a7ba58",
+      "line_count": 9927,
+      "parse": {
+        "method": "static_balance_check",
+        "native_parser_available": false,
+        "success": true,
+        "errors": [],
+        "line_count": 9927
+      },
+      "parity": {
+        "status": "pass",
+        "comparison": "deterministic_in_memory_regeneration",
+        "checked_in_output_compared": false
+      }
+    },
+    {
+      "id": "harness_generated_tests",
+      "path": "project_sources/collector/harness/run_DCOIR_Tests.generated.ps1",
+      "repo_committed_path": null,
+      "assembly_model": "sorted_harness_source_part_concatenation",
+      "source_input_count": 17,
+      "line_mapping_status": "available",
+      "line_mapping": [
+        {
+          "source_path": "project_sources/collector/harness/source/parts/run_DCOIR_Tests.part-000.ps1.txt",
+          "source_line_start": 1,
+          "source_line_end": 276,
+          "generated_line_start": 1,
+          "generated_line_end": 276,
+          "mapping_basis": "deterministic_sorted_concatenation"
+        },
+        {
+          "source_path": "project_sources/collector/harness/source/parts/run_DCOIR_Tests.part-001.ps1.txt",
+          "source_line_start": 1,
+          "source_line_end": 246,
+          "generated_line_start": 277,
+          "generated_line_end": 522,
+          "mapping_basis": "deterministic_sorted_concatenation"
+        },
+        {
+          "source_path": "project_sources/collector/harness/source/parts/run_DCOIR_Tests.part-002.ps1.txt",
+          "source_line_start": 1,
+          "source_line_end": 156,
+          "generated_line_start": 523,
+          "generated_line_end": 678,
+          "mapping_basis": "deterministic_sorted_concatenation"
+        },
+        {
+          "source_path": "project_sources/collector/harness/source/parts/run_DCOIR_Tests.part-003.ps1.txt",
+          "source_line_start": 1,
+          "source_line_end": 234,
+          "generated_line_start": 679,
+          "generated_line_end": 912,
+          "mapping_basis": "deterministic_sorted_concatenation"
+        },
+        {
+          "source_path": "project_sources/collector/harness/source/parts/run_DCOIR_Tests.part-004.ps1.txt",
+          "source_line_start": 1,
+          "source_line_end": 181,
+          "generated_line_start": 913,
+          "generated_line_end": 1093,
+          "mapping_basis": "deterministic_sorted_concatenation"
+        },
+        {
+          "source_path": "project_sources/collector/harness/source/parts/run_DCOIR_Tests.part-005.ps1.txt",
+          "source_line_start": 1,
+          "source_line_end": 97,
+          "generated_line_start": 1094,
+          "generated_line_end": 1190,
+          "mapping_basis": "deterministic_sorted_concatenation"
+        },
+        {
+          "source_path": "project_sources/collector/harness/source/parts/run_DCOIR_Tests.part-006.ps1.txt",
+          "source_line_start": 1,
+          "source_line_end": 160,
+          "generated_line_start": 1191,
+          "generated_line_end": 1350,
