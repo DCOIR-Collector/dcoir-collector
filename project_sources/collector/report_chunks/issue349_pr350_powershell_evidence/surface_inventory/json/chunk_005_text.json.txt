@@ -1,3 +1,14 @@
+      "path": "project_sources/collector/source/parts/DCOIR_Collector.01C_Runtime_Paths_Artifacts_And_Reports.ps1",
+      "category": "collector_runtime_source_part",
+      "source_type": ".ps1",
+      "status": "source",
+      "inclusion_decision": "include",
+      "decision_reason": "Collector runtime source part is primary maintained PowerShell source.",
+      "exists": true,
+      "marker_lines": [],
+      "embedded_snippets": [],
+      "size_bytes": 10772,
+      "line_count": 413,
       "sha256": "d0f13dd615354ed5ed692fa4c7378105c9379a8d8f12cfc199380bfce2e89c9b"
     },
     {
@@ -337,7 +348,7 @@
       "sha256": "be8a099cc9f3b97cb12dd797610142dde6d5127c76e1b4a7d80c2e46544d6406"
     },
     {
-      "path": "project_sources/collector/source/parts/DCOIR_Collector.04G_PR186_External_Review_Fixes.ps1",
+      "path": "project_sources/collector/source/parts/DCOIR_Collector.04G1_PR186_External_Review_Fixes.ps1",
       "category": "collector_runtime_source_part",
       "source_type": ".ps1",
       "status": "source",
@@ -346,9 +357,23 @@
       "exists": true,
       "marker_lines": [],
       "embedded_snippets": [],
-      "size_bytes": 17925,
-      "line_count": 504,
-      "sha256": "831b6a908796801418bc8417bb6e41d0f96d1b6ff8e7add4ffcd940bd1efd9c5"
+      "size_bytes": 10507,
+      "line_count": 293,
+      "sha256": "0a8ab23259057dcc5f266a074964080e485ad0056ea0cb17e6e4918f1df5b029"
+    },
+    {
+      "path": "project_sources/collector/source/parts/DCOIR_Collector.04G2_PR186_External_Review_Fixes.ps1",
+      "category": "collector_runtime_source_part",
+      "source_type": ".ps1",
+      "status": "source",
+      "inclusion_decision": "include",
+      "decision_reason": "Collector runtime source part is primary maintained PowerShell source.",
+      "exists": true,
+      "marker_lines": [],
+      "embedded_snippets": [],
+      "size_bytes": 7939,
+      "line_count": 228,
+      "sha256": "41000cb57a970c79163d9cca7bd2153fb452933bca425a93471ca1f08ac6529e"
     },
     {
       "path": "project_sources/collector/source/parts/DCOIR_Collector.04H1_PR212_Metadata_Finalization_Fixes.ps1",
