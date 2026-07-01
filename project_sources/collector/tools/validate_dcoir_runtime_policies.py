@@ -43,6 +43,11 @@ PARALLEL_RUNTIME_PART_RELS = (
 
 PARALLEL_WORKER_SCRIPT_REL = 'project_sources/collector/source/parts/DCOIR_Collector.04D3_Bounded_Parallel_Runtime.ps1'
 
+MANIFEST_HELPER_PART_RELS = (
+    'project_sources/collector/source/parts/DCOIR_Collector.04G1_PR186_External_Review_Fixes.ps1',
+    'project_sources/collector/source/parts/DCOIR_Collector.04G2_PR186_External_Review_Fixes.ps1',
+)
+
 
 def get_parallel_runtime_source_text(source_text_by_rel: Dict[str, str]) -> str:
     return '\n'.join(source_text_by_rel.get(rel, '') for rel in PARALLEL_RUNTIME_PART_RELS)
@@ -56,6 +61,10 @@ def get_main_entry_source_text(source_text_by_rel: Dict[str, str]) -> str:
     return '\n'.join(source_text_by_rel.get(rel, '') for rel in MAIN_ENTRY_SOURCE_PATHS)
 
 
+def get_manifest_helper_source_text(source_text_by_rel: Dict[str, str]) -> str:
+    return '\n'.join(source_text_by_rel.get(rel, '') for rel in MANIFEST_HELPER_PART_RELS)
+
+
 def validate_json_serialization_policy(source_dir: Path, manifest: Dict, checks: Dict[str, object], errors: List[str]) -> None:
     out: Dict[str, object] = {}
     checks['json_serialization_policy'] = out
@@ -63,7 +72,7 @@ def validate_json_serialization_policy(source_dir: Path, manifest: Dict, checks:
     collector = get_combined_source_text(texts)
     reports = get_part02_source_text(texts)
     parallel = get_parallel_runtime_source_text(texts)
-    manifest_text = texts.get('project_sources/collector/source/parts/DCOIR_Collector.04G_PR186_External_Review_Fixes.ps1', '')
+    manifest_text = get_manifest_helper_source_text(texts)
     for function_name in ('Add-CollectorJsonEllipsisPaths', 'Get-CollectorJsonEllipsisPathSet', 'Add-CollectorJsonDepthRiskPaths', 'Get-CollectorJsonDepthRiskPathSet', 'Convert-ToCollectorJsonText'):
         out[f'{function_name}_present'] = bool(extract_function_body(collector, function_name))
         if not out[f'{function_name}_present']:
