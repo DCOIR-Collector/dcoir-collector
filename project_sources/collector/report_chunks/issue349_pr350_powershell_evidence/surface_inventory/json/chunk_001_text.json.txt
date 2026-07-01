@@ -1,3 +1,9 @@
+        {
+          "source_file": ".github/actions/run-validate-dcoir-fixtures/action.yml",
+          "step_or_action": "Run validate_DCOIR_Run fixture tests",
+          "shell": "pwsh",
+          "line_start": 11,
+          "line_end": 17,
           "command_sha256": "a81205da5f2e7e1d68a042a92b2c63b1e3697a0efdd8984da1df87b38432f350",
           "command_preview": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\\collector\\tools\\run_validate_dcoir_run_fixture_tests.ps1 -ValidatorPath .\\collector\\harness\\validate_DCOIR_Run.ps1 -OutputRoot $env:FIXTURE_OUTPUT_ROOT"
         }
@@ -769,10 +775,3 @@
           "line_start": 81,
           "line_end": 93,
           "command_sha256": "5c864fd1583d4c2b7cf68f77fd43fce3061b7aace1b4a8b217388eff97a19f34",
-          "command_preview": "python project_sources/github_actions/tools/surface_delivery_zip.py `\n  --build-report project_sources/validation/out/build_dcoir_gemini_release_report.json `\n  --output-dir project_sources/validation/delivery_artifact/gemini-bundle `\n  --m"
-        },
-        {
-          "source_file": ".github/workflows/reusable-gemini-bundle-build.yml",
-          "step_or_action": "Set Gemini delivery artifact name",
-          "shell": "pwsh",
-          "line_start": 95,
