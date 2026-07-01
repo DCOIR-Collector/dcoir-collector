@@ -1,0 +1,767 @@
+          "line_end": 103,
+          "command_sha256": "cc2f274be2946f28765925a9ce09152f414d2f532daa98d0893966e6ac5730f5",
+          "command_preview": "$manifest = Get-Content -Raw -Path project_sources/validation/out/delivery_manifest/delivery_manifest.json | ConvertFrom-Json\n$artifactName = [System.IO.Path]::GetFileNameWithoutExtension([string]$manifest.delivery_zip_name)\nif ([string]::I"
+        },
+        {
+          "source_file": ".github/workflows/reusable-gemini-bundle-build.yml",
+          "step_or_action": "Write ChatGPT workflow report section",
+          "shell": "pwsh",
+          "line_start": 126,
+          "line_end": 148,
+          "command_sha256": "3123fb64bab92c100ce349c5488e2a9716e2b525a2231864af92df6103cecef8",
+          "command_preview": "New-Item -ItemType Directory -Force -Path chatgpt_workflow_report_section | Out-Null\n@\"\n## Gemini bundle build summary\n\n- workflow: manual-gemini-bundle-build\n- workflow_run_id: $env:GITHUB_RUN_ID\n- workflow_run_attempt: $env:GITHUB_RUN_ATT"
+        }
+      ],
+      "size_bytes": 6348,
+      "line_count": 156,
+      "sha256": "df9a1d0a118a41d5a9cf55ed31053cce5dae01d5f8634fc6cf0debe2744c3728"
+    },
+    {
+      "path": ".github/workflows/reusable-manual-collector-optional-exe-build.yml",
+      "category": "workflow_embedded_powershell",
+      "source_type": "workflow_yaml",
+      "status": "workflow_embedded",
+      "inclusion_decision": "reference",
+      "decision_reason": "Workflow or composite-action YAML embeds PowerShell and needs later snippet-aware handling.",
+      "exists": true,
+      "marker_lines": [
+        57,
+        78,
+        99,
+        116,
+        139,
+        183,
+        208
+      ],
+      "embedded_snippets": [
+        {
+          "source_file": ".github/workflows/reusable-manual-collector-optional-exe-build.yml",
+          "step_or_action": "Verify checkout and FailureGates EXE harness patch",
+          "shell": "pwsh",
+          "line_start": 57,
+          "line_end": 71,
+          "command_sha256": "3f352628b7824e5d8efc4798d991de688acaee43939df9208d1cb6de4aeb9aa2",
+          "command_preview": "$head = git rev-parse HEAD\nWrite-Host \"CHECKED_OUT_COMMIT=$head\"\n$harnessPath = 'project_sources/collector/harness/run_DCOIR_Tests.generated.ps1'\nif (-not (Test-Path -LiteralPath $harnessPath)) {\n  throw \"Generated harness not found: $harne"
+        },
+        {
+          "source_file": ".github/workflows/reusable-manual-collector-optional-exe-build.yml",
+          "step_or_action": "Validate Python syntax",
+          "shell": "pwsh",
+          "line_start": 78,
+          "line_end": 96,
+          "command_sha256": "b2978a4f2e4855ec5f7b99bc173ef0497884f5715bffe23090bbb64c361032ba",
+          "command_preview": "$pyFiles = @(\n  'project_sources/collector/tools/build_dcoir_collector_runtime_package.py',\n  'project_sources/collector/tools/validate_dcoir_collector_runtime_package.py',\n  'project_sources/collector/tools/compile_dcoir_collector_runtime."
+        },
+        {
+          "source_file": ".github/workflows/reusable-manual-collector-optional-exe-build.yml",
+          "step_or_action": "Normalize FailureGates EXE runtime-error guard",
+          "shell": "pwsh",
+          "line_start": 99,
+          "line_end": 114,
+          "command_sha256": "5c61aac868c07d933f2eb41e2242f1e80660849b32b29fc18211df07245c13b8",
+          "command_preview": "$path = 'project_sources/collector/harness/run_DCOIR_Tests.generated.ps1'\n$text = Get-Content -LiteralPath $path -Raw\n$old = '$observedExecutableRuntimeReject = $script:ResolvedCollectorInvocationMode -eq ''Executable'' -and $exitCode -ne 0"
+        },
+        {
+          "source_file": ".github/workflows/reusable-manual-collector-optional-exe-build.yml",
+          "step_or_action": "Validate PowerShell source syntax",
+          "shell": "pwsh",
+          "line_start": 116,
+          "line_end": 137,
+          "command_sha256": "5005e5e89c500d577462ce78def30867e89b9941064132cde9c73b8f5e7f8de3",
+          "command_preview": "$psFiles = @(\n  'project_sources/collector/source/DCOIR_Collector.ps1',\n  'project_sources/collector/harness/run_DCOIR_Tests.generated.ps1'\n)\nif (Test-Path -LiteralPath 'project_sources/collector/source/parts') {\n  $psFiles += Get-ChildItem"
+        },
+        {
+          "source_file": ".github/workflows/reusable-manual-collector-optional-exe-build.yml",
+          "step_or_action": "Build optional EXE variant from compiled collector runtime with embedded tools",
+          "shell": "pwsh",
+          "line_start": 139,
+          "line_end": 181,
+          "command_sha256": "1926e13e8df38b44b866f230cce33046df6b19047e0ac9c29d9b7e1abc80bdc4",
+          "command_preview": "Remove-Item -Recurse -Force project_sources/validation/out_optional_exe -ErrorAction SilentlyContinue\nNew-Item -ItemType Directory -Force -Path project_sources/validation/out_optional_exe | Out-Null\n$cmd = @(\n  'python',\n  'project_sources/"
+        },
+        {
+          "source_file": ".github/workflows/reusable-manual-collector-optional-exe-build.yml",
+          "step_or_action": "Run selected harness suite against optional EXE variant",
+          "shell": "pwsh",
+          "line_start": 183,
+          "line_end": 192,
+          "command_sha256": "502e11c58de5d7cb1c44aa2b1641903ce929bd7b1dbd4b89a0f154451658297d",
+          "command_preview": "$suite = $env:EXE_VALIDATION_SUITE\nif ([string]::IsNullOrWhiteSpace($suite)) { $suite = 'Core' }\npowershell.exe -NoProfile -ExecutionPolicy Bypass -File .\\collector\\harness\\run_DCOIR_Tests.generated.ps1 -CollectorPath $env:OPTIONAL_EXE_PATH"
+        },
+        {
+          "source_file": ".github/workflows/reusable-manual-collector-optional-exe-build.yml",
+          "step_or_action": "Write ChatGPT workflow report section",
+          "shell": "pwsh",
+          "line_start": 208,
+          "line_end": 227,
+          "command_sha256": "cdaab2d6364ded12f68e151461dae6eccc87bb5dd801b66438abbff7d33cb3af",
+          "command_preview": "New-Item -ItemType Directory -Force -Path chatgpt_workflow_report_section | Out-Null\n@\"\n## Optional EXE build summary\n\n- workflow: manual-collector-optional-exe-build\n- workflow_run_id: $env:GITHUB_RUN_ID\n- workflow_run_attempt: $env:GITHUB"
+        }
+      ],
+      "size_bytes": 11837,
+      "line_count": 235,
+      "sha256": "675c671ec624eda03debfbca0d9daac6e4286d3144bedbad7aba096c15824687"
+    },
+    {
+      "path": ".github/workflows/reusable-manual-github-artifact-readback.yml",
+      "category": "workflow_embedded_powershell",
+      "source_type": "workflow_yaml",
+      "status": "workflow_embedded",
+      "inclusion_decision": "reference",
+      "decision_reason": "Workflow or composite-action YAML embeds PowerShell and needs later snippet-aware handling.",
+      "exists": true,
+      "marker_lines": [
+        113,
+        141,
+        185,
+        255,
+        290
+      ],
+      "embedded_snippets": [
+        {
+          "source_file": ".github/workflows/reusable-manual-github-artifact-readback.yml",
+          "step_or_action": "Write heartbeat - request resolved",
+          "shell": "bash",
+          "line_start": 113,
+          "line_end": 138,
+          "command_sha256": "31574ea3e52a1c151573d5a0b9f323c5ea2c93ace3512dd8367a2144b15689ba",
+          "command_preview": "set -euo pipefail\npython .github/scripts/write_chatgpt_progress_report.py \\\n  --workflow chatgpt-github-artifact-readback \\\n  --request-id \"$REQUEST_ID\" \\\n  --request-path \"$REQUEST_PATH\" \\\n  --phase request-resolved \\\n  --result running \\\n"
+        },
+        {
+          "source_file": ".github/workflows/reusable-manual-github-artifact-readback.yml",
+          "step_or_action": "Write heartbeat - downloading artifact",
+          "shell": "bash",
+          "line_start": 141,
+          "line_end": 164,
+          "command_sha256": "e4357cbff76503952d9a12c0409dba644474ac11a0cba1867bd3593638a76304",
+          "command_preview": "set -euo pipefail\npython .github/scripts/write_chatgpt_progress_report.py \\\n  --workflow chatgpt-github-artifact-readback \\\n  --request-id \"$REQUEST_ID\" \\\n  --request-path \"$REQUEST_PATH\" \\\n  --phase downloading-artifact \\\n  --result runnin"
+        },
+        {
+          "source_file": ".github/workflows/reusable-manual-github-artifact-readback.yml",
+          "step_or_action": "Write heartbeat - artifact downloaded",
+          "shell": "bash",
+          "line_start": 185,
+          "line_end": 204,
+          "command_sha256": "574899856a7368d4f6db3c2059431a0744ffa28a6e3913c58c4f3b0441f9bf4c",
+          "command_preview": "set -euo pipefail\npython .github/scripts/write_chatgpt_progress_report.py \\\n  --workflow chatgpt-github-artifact-readback \\\n  --request-id \"$REQUEST_ID\" \\\n  --request-path \"$REQUEST_PATH\" \\\n  --phase artifact-downloaded \\\n  --result running"
+        },
+        {
+          "source_file": ".github/workflows/reusable-manual-github-artifact-readback.yml",
+          "step_or_action": "Commit staged artifact readback and report",
+          "shell": "bash",
+          "line_start": 255,
+          "line_end": 269,
+          "command_sha256": "67b75bd16070c1dbc7da455afe466a1e6d729f1443f06bf8bd01cdb3986529bd",
+          "command_preview": "set -euo pipefail\nif [[ -n \"$REQUEST_PATH\" ]]; then\n  rm -f \"$REQUEST_PATH\" || true\nfi\npwsh -NoProfile -File .github/scripts/Invoke-ChatGptReportPush.ps1 \\\n  -CommitMessage \"Stage GitHub artifact readback bundle and report [skip ci]\" \\\n  -P"
+        },
+        {
+          "source_file": ".github/workflows/reusable-manual-github-artifact-readback.yml",
+          "step_or_action": "Capture failure report",
+          "shell": "bash",
+          "line_start": 290,
+          "line_end": 309,
+          "command_sha256": "957609e1367df650352332c16a84497139ea19420e41ed2693887818c21e8add",
+          "command_preview": "set -euo pipefail\npython .github/scripts/write_github_artifact_readback_failure_report.py \\\n  --request-id \"$REQUEST_ID\" \\\n  --request-path \"$REQUEST_PATH\" \\\n  --source-run-id \"$SOURCE_RUN_ID\" \\\n  --artifact-name \"$ARTIFACT_NAME\" \\\n  --arti"
+        }
+      ],
+      "size_bytes": 14324,
+      "line_count": 309,
+      "sha256": "f58a1f1ffd6764cae7c5f8dc42415a91306e5f1c536ebad8fe6be12cb1df4459"
+    },
+    {
+      "path": ".github/workflows/reusable-manual-test-framework-validate.yml",
+      "category": "workflow_embedded_powershell",
+      "source_type": "workflow_yaml",
+      "status": "workflow_embedded",
+      "inclusion_decision": "reference",
+      "decision_reason": "Workflow or composite-action YAML embeds PowerShell and needs later snippet-aware handling.",
+      "exists": true,
+      "marker_lines": [
+        35,
+        49,
+        66,
+        90
+      ],
+      "embedded_snippets": [
+        {
+          "source_file": ".github/workflows/reusable-manual-test-framework-validate.yml",
+          "step_or_action": "Validate manual-test framework Python syntax",
+          "shell": "pwsh",
+          "line_start": 35,
+          "line_end": 47,
+          "command_sha256": "96ee503c5d877bdaf1b1f0b7f2376322fdd507110b35101f8e38623f5abe2b0e",
+          "command_preview": "$pyFiles = Get-ChildItem -LiteralPath project_sources/validation/manual_test_framework -File -Filter '*.py'\nif (-not $pyFiles) {\n  throw 'No manual-test framework Python files found.'\n}\nforeach ($file in $pyFiles) {\n  python -m py_compile $"
+        },
+        {
+          "source_file": ".github/workflows/reusable-manual-test-framework-validate.yml",
+          "step_or_action": "Validate manual-test framework PowerShell syntax",
+          "shell": "pwsh",
+          "line_start": 49,
+          "line_end": 64,
+          "command_sha256": "2e9c372e504eeb88a6567e120763f923f03be6233bc453097b492fa208448ac6",
+          "command_preview": "$psFiles = Get-ChildItem -LiteralPath project_sources/validation/manual_test_framework -File -Filter '*.ps1'\nif (-not $psFiles) {\n  throw 'No manual-test framework PowerShell files found.'\n}\nforeach ($file in $psFiles) {\n  $tokens = $null\n "
+        },
+        {
+          "source_file": ".github/workflows/reusable-manual-test-framework-validate.yml",
+          "step_or_action": "Build manual-test framework download bundle",
+          "shell": "pwsh",
+          "line_start": 66,
+          "line_end": 77,
+          "command_sha256": "7590e81698e4a5f36aac48f27ca2d6682211b325de42d652c3943909f6a03c46",
+          "command_preview": "Remove-Item -Recurse -Force project_sources/validation/manual_test_framework/out_manual_test_framework_bundle -ErrorAction SilentlyContinue\npython project_sources/validation/manual_test_framework/build_dcoir_manual_test_framework_bundle.py "
+        },
+        {
+          "source_file": ".github/workflows/reusable-manual-test-framework-validate.yml",
+          "step_or_action": "Write ChatGPT workflow report section",
+          "shell": "pwsh",
+          "line_start": 90,
+          "line_end": 107,
+          "command_sha256": "4489fed85aa73c1d50c0789d2f66f3959a540f44405437d79de9397b7ba44ab2",
+          "command_preview": "New-Item -ItemType Directory -Force -Path chatgpt_workflow_report_section | Out-Null\n@\"\n## Validation summary\n\n- workflow: manual-test-framework-validate\n- validation_scope: manual-test framework validation\n- workflow_run_id: $env:GITHUB_RU"
+        }
+      ],
+      "size_bytes": 5081,
+      "line_count": 115,
+      "sha256": "01c2d070e814e809876d0549962266e8ef64f987c7e28e60ef6b66f6d320c520"
+    },
+    {
+      "path": ".github/workflows/reusable-validate-on-pr.yml",
+      "category": "workflow_embedded_powershell",
+      "source_type": "workflow_yaml",
+      "status": "workflow_embedded",
+      "inclusion_decision": "reference",
+      "decision_reason": "Workflow or composite-action YAML embeds PowerShell and needs later snippet-aware handling.",
+      "exists": true,
+      "marker_lines": [
+        40,
+        48,
+        56,
+        100,
+        112,
+        118,
+        128,
+        158
+      ],
+      "embedded_snippets": [
+        {
+          "source_file": ".github/workflows/reusable-validate-on-pr.yml",
+          "step_or_action": "Validate GitHub intake taxonomy",
+          "shell": "pwsh",
+          "line_start": 40,
+          "line_end": 46,
+          "command_sha256": "7d90f31f077f630a76f0dee6c0354e82c0cffc60d2fa4ff36ff7c0d5fea81523",
+          "command_preview": "python project_sources/github_actions/tools/check_github_intake_taxonomy.py\nif ($LASTEXITCODE -ne 0) {\n  throw 'GitHub intake taxonomy validation failed.'\n}"
+        },
+        {
+          "source_file": ".github/workflows/reusable-validate-on-pr.yml",
+          "step_or_action": "Run documentation validator self-tests",
+          "shell": "pwsh",
+          "line_start": 48,
+          "line_end": 54,
+          "command_sha256": "bf539404366a01f6307d560cf9363abcfcadda9ad69f746a209573fc58399923",
+          "command_preview": "python project_sources/collector/tools/test_verify_collector_documentation_quality.py\nif ($LASTEXITCODE -ne 0) {\n  throw 'Documentation validator self-tests failed.'\n}"
+        },
+        {
+          "source_file": ".github/workflows/reusable-validate-on-pr.yml",
+          "step_or_action": "Run duplicate-function action contract tests",
+          "shell": "pwsh",
+          "line_start": 56,
+          "line_end": 62,
+          "command_sha256": "7a13f73b0c71e5317ec47ddacf539569536c0ec3be8b02a221ae5690db2387e3",
+          "command_preview": "python project_sources/github_actions/tools/test_duplicate_function_action_contract.py\nif ($LASTEXITCODE -ne 0) {\n  throw 'Duplicate-function action contract tests failed.'\n}"
+        },
+        {
+          "source_file": ".github/workflows/reusable-validate-on-pr.yml",
+          "step_or_action": "Validate duplicate-function reports",
+          "shell": "pwsh",
+          "line_start": 100,
+          "line_end": 106,
+          "command_sha256": "4425a02a5e75caf409324cc692e90672fc433741860d5cbdcf0beb911c9c48fc",
+          "command_preview": "python project_sources/github_actions/tools/validate_duplicate_function_reports.py\nif ($LASTEXITCODE -ne 0) {\n  throw 'Duplicate-function report validation failed.'\n}"
+        },
+        {
+          "source_file": ".github/workflows/reusable-validate-on-pr.yml",
+          "step_or_action": "Write review-assist report to job summary",
+          "shell": "pwsh",
+          "line_start": 112,
+          "line_end": 115,
+          "command_sha256": "38386ebaa478b84814e4bc2ac6b82dda62eed2843a1b8ce697388c98f4775f90",
+          "command_preview": "./.github/scripts/Add-PowerShellReviewAssistSummary.ps1"
+        },
+        {
+          "source_file": ".github/workflows/reusable-validate-on-pr.yml",
+          "step_or_action": "Enforce static analysis validation gates",
+          "shell": "pwsh",
+          "line_start": 118,
+          "line_end": 121,
+          "command_sha256": "a5a6f83db3666deceefab3c4fb03be6b81cb85507b83ca3576e17e38388e127c",
+          "command_preview": "./.github/scripts/Test-DcoirStaticAnalysisValidationGate.ps1"
+        },
+        {
+          "source_file": ".github/workflows/reusable-validate-on-pr.yml",
+          "step_or_action": "Run collector core pre-live suite",
+          "shell": "pwsh",
+          "line_start": 128,
+          "line_end": 135,
+          "command_sha256": "4b3fe558d1b5e2d8abf121acb02e1a8c2c8ab03d1eb6a36f177bb7017df591d5",
+          "command_preview": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\\collector\\harness\\run_DCOIR_Tests.generated.ps1 -CollectorPath $env:HARNESS_COLLECTOR_PATH -Suite Core -MasterZipPath $env:HARNESS_RUNTIME_ZIP\nif ($LASTEXITCODE -ne 0) {\n  throw 'Col"
+        },
+        {
+          "source_file": ".github/workflows/reusable-validate-on-pr.yml",
+          "step_or_action": "Write ChatGPT workflow report section",
+          "shell": "pwsh",
+          "line_start": 158,
+          "line_end": 179,
+          "command_sha256": "d379e56c1eedf67ba0e6b51cb616d34d4a2b868bd976ae42a07278fdaf27fbba",
+          "command_preview": "New-Item -ItemType Directory -Force -Path chatgpt_workflow_report_section | Out-Null\n@\"\n## Pull request validation summary\n\n- workflow: validate-on-pr\n- workflow_run_id: $env:GITHUB_RUN_ID\n- workflow_run_attempt: $env:GITHUB_RUN_ATTEMPT\n- h"
+        }
+      ],
+      "size_bytes": 8196,
+      "line_count": 187,
+      "sha256": "d1babce9d8278f7e422e1f624d023d055678c2903c3f9de5ca73f50d4bcaa178"
+    },
+    {
+      "path": ".github/workflows/reusable-validate-on-push.yml",
+      "category": "workflow_embedded_powershell",
+      "source_type": "workflow_yaml",
+      "status": "workflow_embedded",
+      "inclusion_decision": "reference",
+      "decision_reason": "Workflow or composite-action YAML embeds PowerShell and needs later snippet-aware handling.",
+      "exists": true,
+      "marker_lines": [
+        38,
+        46,
+        95,
+        107,
+        113,
+        139
+      ],
+      "embedded_snippets": [
+        {
+          "source_file": ".github/workflows/reusable-validate-on-push.yml",
+          "step_or_action": "Run documentation validator self-tests",
+          "shell": "pwsh",
+          "line_start": 38,
+          "line_end": 44,
+          "command_sha256": "bf539404366a01f6307d560cf9363abcfcadda9ad69f746a209573fc58399923",
+          "command_preview": "python project_sources/collector/tools/test_verify_collector_documentation_quality.py\nif ($LASTEXITCODE -ne 0) {\n  throw 'Documentation validator self-tests failed.'\n}"
+        },
+        {
+          "source_file": ".github/workflows/reusable-validate-on-push.yml",
+          "step_or_action": "Run duplicate-function action contract tests",
+          "shell": "pwsh",
+          "line_start": 46,
+          "line_end": 52,
+          "command_sha256": "7a13f73b0c71e5317ec47ddacf539569536c0ec3be8b02a221ae5690db2387e3",
+          "command_preview": "python project_sources/github_actions/tools/test_duplicate_function_action_contract.py\nif ($LASTEXITCODE -ne 0) {\n  throw 'Duplicate-function action contract tests failed.'\n}"
+        },
+        {
+          "source_file": ".github/workflows/reusable-validate-on-push.yml",
+          "step_or_action": "Validate duplicate-function reports",
+          "shell": "pwsh",
+          "line_start": 95,
+          "line_end": 101,
+          "command_sha256": "4425a02a5e75caf409324cc692e90672fc433741860d5cbdcf0beb911c9c48fc",
+          "command_preview": "python project_sources/github_actions/tools/validate_duplicate_function_reports.py\nif ($LASTEXITCODE -ne 0) {\n  throw 'Duplicate-function report validation failed.'\n}"
+        },
+        {
+          "source_file": ".github/workflows/reusable-validate-on-push.yml",
+          "step_or_action": "Write review-assist report to job summary",
+          "shell": "pwsh",
+          "line_start": 107,
+          "line_end": 110,
+          "command_sha256": "38386ebaa478b84814e4bc2ac6b82dda62eed2843a1b8ce697388c98f4775f90",
+          "command_preview": "./.github/scripts/Add-PowerShellReviewAssistSummary.ps1"
+        },
+        {
+          "source_file": ".github/workflows/reusable-validate-on-push.yml",
+          "step_or_action": "Enforce static analysis validation gates",
+          "shell": "pwsh",
+          "line_start": 113,
+          "line_end": 116,
+          "command_sha256": "a5a6f83db3666deceefab3c4fb03be6b81cb85507b83ca3576e17e38388e127c",
+          "command_preview": "./.github/scripts/Test-DcoirStaticAnalysisValidationGate.ps1"
+        },
+        {
+          "source_file": ".github/workflows/reusable-validate-on-push.yml",
+          "step_or_action": "Write ChatGPT workflow report section",
+          "shell": "pwsh",
+          "line_start": 139,
+          "line_end": 160,
+          "command_sha256": "4b01c16dcc3646ed9f91bb8398625d29e2358dd76915c7eab28975a30c279ca3",
+          "command_preview": "New-Item -ItemType Directory -Force -Path chatgpt_workflow_report_section | Out-Null\n@\"\n## Push validation summary\n\n- workflow: validate-on-push\n- workflow_run_id: $env:GITHUB_RUN_ID\n- workflow_run_attempt: $env:GITHUB_RUN_ATTEMPT\n- head_sh"
+        }
+      ],
+      "size_bytes": 7250,
+      "line_count": 168,
+      "sha256": "2342eb8bbe4db4dde0ec472e26ff1cb0755f954aac16311aab89f8ecd1df9fdb"
+    },
+    {
+      "path": ".github/workflows/reusable-windows-powershell-51.yml",
+      "category": "workflow_embedded_powershell",
+      "source_type": "workflow_yaml",
+      "status": "workflow_embedded",
+      "inclusion_decision": "reference",
+      "decision_reason": "Workflow or composite-action YAML embeds PowerShell and needs later snippet-aware handling.",
+      "exists": true,
+      "marker_lines": [
+        34,
+        47,
+        62
+      ],
+      "embedded_snippets": [
+        {
+          "source_file": ".github/workflows/reusable-windows-powershell-51.yml",
+          "step_or_action": "Confirm Windows PowerShell 5.1",
+          "shell": "powershell",
+          "line_start": 34,
+          "line_end": 45,
+          "command_sha256": "65967259a6d3349fc4bd43b5431f08607b4c1b637d9a4b9170c40e05e6abac45",
+          "command_preview": "$version = $PSVersionTable.PSVersion\n$edition = $PSVersionTable.PSEdition\nWrite-Host \"PowerShell version: $version\"\nWrite-Host \"PowerShell edition: $edition\"\nif ($version.Major -ne 5 -or $version.Minor -ne 1) {\n  throw \"Expected Windows Pow"
+        },
+        {
+          "source_file": ".github/workflows/reusable-windows-powershell-51.yml",
+          "step_or_action": "Validate Windows PowerShell 5.1 parser compatibility",
+          "shell": "powershell",
+          "line_start": 47,
+          "line_end": 52,
+          "command_sha256": "ace6e219f50f6f894339169324ce1eba425af3c460045875b1553a3698995b51",
+          "command_preview": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\\scripts\\validate-windows-powershell-51.ps1\nif ($LASTEXITCODE -ne 0) {\n  throw 'Windows PowerShell 5.1 validation failed.'\n}"
+        },
+        {
+          "source_file": ".github/workflows/reusable-windows-powershell-51.yml",
+          "step_or_action": "Write ChatGPT workflow report section",
+          "shell": "powershell",
+          "line_start": 62,
+          "line_end": 79,
+          "command_sha256": "85e5bea4270638408de6dc6c503347e9649f31f1720dcf2e9ebd0f4e54aa4711",
+          "command_preview": "New-Item -ItemType Directory -Force -Path chatgpt_workflow_report_section | Out-Null\n@\"\n## Windows PowerShell 5.1 validation summary\n\n- workflow: windows-powershell-51\n- validation_scope: Windows PowerShell 5.1 parser compatibility\n- workfl"
+        }
+      ],
+      "size_bytes": 3485,
+      "line_count": 87,
+      "sha256": "fa0fa0af91d55f40aca15873a6c0708e18aba02838732f93bf6b3336db8659c7"
+    },
+    {
+      "path": "chatgpt_staging/exec_scripts/airtable-total-count-corrected-20260521T100417Z.ps1",
+      "category": "staging_artifact",
+      "source_type": ".ps1",
+      "status": "staging",
+      "inclusion_decision": "exclude",
+      "decision_reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+      "exists": true,
+      "marker_lines": [],
+      "embedded_snippets": [],
+      "size_bytes": 6825,
+      "line_count": 150,
+      "sha256": "e76a40115e82029fe8c08c1ab349768af0bb44e3b7648ae598eb85c10f38f891"
+    },
+    {
+      "path": "chatgpt_staging/exec_scripts/dcoir-review-fix-guidance-normalization-20260627T120800Z.ps1",
+      "category": "staging_artifact",
+      "source_type": ".ps1",
+      "status": "staging",
+      "inclusion_decision": "exclude",
+      "decision_reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+      "exists": true,
+      "marker_lines": [],
+      "embedded_snippets": [],
+      "size_bytes": 11196,
+      "line_count": 248,
+      "sha256": "2355efda6852666e0b2298f22d65ae2d40f44db31f0868ce2b1e2a42e94fbb02"
+    },
+    {
+      "path": "chatgpt_staging/exec_scripts/dcoir-review-fix-guidance-normalization-20260627T121000Z.ps1",
+      "category": "staging_artifact",
+      "source_type": ".ps1",
+      "status": "staging",
+      "inclusion_decision": "exclude",
+      "decision_reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+      "exists": true,
+      "marker_lines": [],
+      "embedded_snippets": [],
+      "size_bytes": 12054,
+      "line_count": 262,
+      "sha256": "8e5807266881b4b4755c86e47ddbcffafb8e9547034f8bde189221e1c2743707"
+    },
+    {
+      "path": "chatgpt_staging/exec_scripts/dcoir-review-fix-guidance-normalization-20260627T121700Z.ps1",
+      "category": "staging_artifact",
+      "source_type": ".ps1",
+      "status": "staging",
+      "inclusion_decision": "exclude",
+      "decision_reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+      "exists": true,
+      "marker_lines": [],
+      "embedded_snippets": [],
+      "size_bytes": 12057,
+      "line_count": 275,
+      "sha256": "43d021f9645111aeffe07d3ad48627a07b7d874b8de3f9556d3526e3bd80893e"
+    },
+    {
+      "path": "chatgpt_staging/exec_scripts/dcoir-review-fix-guidance-normalization-20260627T122700Z.ps1",
+      "category": "staging_artifact",
+      "source_type": ".ps1",
+      "status": "staging",
+      "inclusion_decision": "exclude",
+      "decision_reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+      "exists": true,
+      "marker_lines": [],
+      "embedded_snippets": [],
+      "size_bytes": 14137,
+      "line_count": 325,
+      "sha256": "f4f674c90f472aa543ebee191b428a98540b71ea9593ac9533d8eacc7f20d070"
+    },
+    {
+      "path": "chatgpt_staging/exec_scripts/dcoir-review-fix-guidance-normalization-20260627T123500Z.ps1",
+      "category": "staging_artifact",
+      "source_type": ".ps1",
+      "status": "staging",
+      "inclusion_decision": "exclude",
+      "decision_reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+      "exists": true,
+      "marker_lines": [],
+      "embedded_snippets": [],
+      "size_bytes": 14125,
+      "line_count": 325,
+      "sha256": "2e102012625f091da628ae61e746bd175065fa993eaadef6314cd64396248b43"
+    },
+    {
+      "path": "chatgpt_staging/exec_scripts/dcoir-review-fix-guidance-normalization-20260627T124000Z.ps1",
+      "category": "staging_artifact",
+      "source_type": ".ps1",
+      "status": "staging",
+      "inclusion_decision": "exclude",
+      "decision_reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+      "exists": true,
+      "marker_lines": [],
+      "embedded_snippets": [],
+      "size_bytes": 340,
+      "line_count": 9,
+      "sha256": "96969a77081cc517eb6668aabaa677025c43830913ec69874e4ed64094c58efd"
+    },
+    {
+      "path": "chatgpt_staging/exec_scripts/exec-20260519-wbs04-four-table-export-002.ps1",
+      "category": "staging_artifact",
+      "source_type": ".ps1",
+      "status": "staging",
+      "inclusion_decision": "exclude",
+      "decision_reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+      "exists": true,
+      "marker_lines": [],
+      "embedded_snippets": [],
+      "size_bytes": 6208,
+      "line_count": 109,
+      "sha256": "3c4b0fc1ba80d30b0a476abc4fd60a3102fee15b81abe38f865495d81945f880"
+    },
+    {
+      "path": "chatgpt_staging/exec_scripts/exec-20260519-wbs04-four-table-export-003.ps1",
+      "category": "staging_artifact",
+      "source_type": ".ps1",
+      "status": "staging",
+      "inclusion_decision": "exclude",
+      "decision_reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+      "exists": true,
+      "marker_lines": [],
+      "embedded_snippets": [],
+      "size_bytes": 6806,
+      "line_count": 147,
+      "sha256": "9471bbdef8f5c6da8b88c046911c00f415bec150ccbfe8f1f3c429552a135f0f"
+    },
+    {
+      "path": "chatgpt_staging/exec_scripts/exec-20260519-wbs04-merge-delete-batch1-export-001.ps1",
+      "category": "staging_artifact",
+      "source_type": ".ps1",
+      "status": "staging",
+      "inclusion_decision": "exclude",
+      "decision_reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+      "exists": true,
+      "marker_lines": [],
+      "embedded_snippets": [],
+      "size_bytes": 7329,
+      "line_count": 152,
+      "sha256": "20ee34674b373c2e8f8f8c77d01212fa3ebfe91f3aebdea55a0b1f47cbfc1423"
+    },
+    {
+      "path": "chatgpt_staging/exec_scripts/exec-20260519-wbs04-next-cleanup-export-001.ps1",
+      "category": "staging_artifact",
+      "source_type": ".ps1",
+      "status": "staging",
+      "inclusion_decision": "exclude",
+      "decision_reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+      "exists": true,
+      "marker_lines": [],
+      "embedded_snippets": [],
+      "size_bytes": 7258,
+      "line_count": 149,
+      "sha256": "3875adaf6fe4b17b7f1d5e2453bdc6a16002a1e8cf659333dcb7b4f6116f6d26"
+    },
+    {
+      "path": "chatgpt_staging/exec_scripts/exec-20260519-wbs04-post-first-four-export-002.ps1",
+      "category": "staging_artifact",
+      "source_type": ".ps1",
+      "status": "staging",
+      "inclusion_decision": "exclude",
+      "decision_reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+      "exists": true,
+      "marker_lines": [],
+      "embedded_snippets": [],
+      "size_bytes": 7274,
+      "line_count": 149,
+      "sha256": "39d3549bd422da4255054ad510214a96b1efe5f2976004c06a46a2f9ba570468"
+    },
+    {
+      "path": "chatgpt_staging/exec_scripts/exec-20260519-wbs04-remaining-normalization-export-001.ps1",
+      "category": "staging_artifact",
+      "source_type": ".ps1",
+      "status": "staging",
+      "inclusion_decision": "exclude",
+      "decision_reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+      "exists": true,
+      "marker_lines": [],
+      "embedded_snippets": [],
+      "size_bytes": 7438,
+      "line_count": 149,
+      "sha256": "7ee55d8b720a7abdf1a5eb68ba33fc868c8cdc8b2d4e22706792abe0780271b1"
+    },
+    {
+      "path": "chatgpt_staging/exec_scripts/exec-20260520-wbs04-merge-delete-batch2-export-001.ps1",
+      "category": "staging_artifact",
+      "source_type": ".ps1",
+      "status": "staging",
+      "inclusion_decision": "exclude",
+      "decision_reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+      "exists": true,
+      "marker_lines": [],
+      "embedded_snippets": [],
+      "size_bytes": 7687,
+      "line_count": 154,
+      "sha256": "1592873920437b812d2d66bb30fcf41f6fb34962e3323754c70bac6a6edfbb57"
+    },
+    {
+      "path": "chatgpt_staging/exec_scripts/exec-20260520-wbs04-merge-delete-batch3-export-001.ps1",
+      "category": "staging_artifact",
+      "source_type": ".ps1",
+      "status": "staging",
+      "inclusion_decision": "exclude",
+      "decision_reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+      "exists": true,
+      "marker_lines": [],
+      "embedded_snippets": [],
+      "size_bytes": 7903,
+      "line_count": 154,
+      "sha256": "dc80a4a58039344386e52600b406203926052925512ae8fa388966185bb3b2a7"
+    },
+    {
+      "path": "chatgpt_staging/exec_scripts/exec-20260520-wbs06-aggressive-rename-candidates-batch2-001.ps1",
+      "category": "staging_artifact",
+      "source_type": ".ps1",
+      "status": "staging",
+      "inclusion_decision": "exclude",
+      "decision_reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+      "exists": true,
+      "marker_lines": [],
+      "embedded_snippets": [],
+      "size_bytes": 10161,
+      "line_count": 47,
+      "sha256": "eaeb0b58203a98e20985ee4ef63003f96b5241cdb0ef72987bce84ffa05b15a7"
+    },
+    {
+      "path": "chatgpt_staging/exec_scripts/exec-20260520-wbs06-aggressive-rename-candidates-batch3-001.ps1",
+      "category": "staging_artifact",
+      "source_type": ".ps1",
+      "status": "staging",
+      "inclusion_decision": "exclude",
+      "decision_reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+      "exists": true,
+      "marker_lines": [],
+      "embedded_snippets": [],
+      "size_bytes": 8520,
+      "line_count": 43,
+      "sha256": "82f8fd080b66700b954f3d50982955bb1e3edc4aa4a00ada1c4af34aac530191"
+    },
+    {
+      "path": "chatgpt_staging/exec_scripts/exec-20260520-wbs06-field-rename-apply-batch1-001.ps1",
+      "category": "staging_artifact",
+      "source_type": ".ps1",
+      "status": "staging",
+      "inclusion_decision": "exclude",
+      "decision_reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+      "exists": true,
+      "marker_lines": [],
+      "embedded_snippets": [],
+      "size_bytes": 10616,
+      "line_count": 232,
+      "sha256": "48bd3e21b040eaf61b06a24e3ccce312563fd4d7fff2277096e4242d7ec77777"
+    },
+    {
+      "path": "chatgpt_staging/exec_scripts/exec-20260520-wbs06-field-rename-apply-batch2-001.ps1",
+      "category": "staging_artifact",
+      "source_type": ".ps1",
+      "status": "staging",
+      "inclusion_decision": "exclude",
+      "decision_reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+      "exists": true,
+      "marker_lines": [],
+      "embedded_snippets": [],
+      "size_bytes": 7597,
+      "line_count": 35,
+      "sha256": "b12c36100f09d1730ee7dce777754298f0800bb34ccc114601995f6a52bd79d5"
+    },
+    {
+      "path": "chatgpt_staging/exec_scripts/exec-20260520-wbs06-final-verify-retirement-packet-001.ps1",
+      "category": "staging_artifact",
+      "source_type": ".ps1",
+      "status": "staging",
+      "inclusion_decision": "exclude",
+      "decision_reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+      "exists": true,
+      "marker_lines": [],
+      "embedded_snippets": [],
+      "size_bytes": 9890,
+      "line_count": 51,
+      "sha256": "d41f42f40381bc9a57976ba9432436e3ac3014515ae01a29ff9bf6c8f1c242ce"
+    },
+    {
+      "path": "chatgpt_staging/exec_scripts/exec-20260520-wbs06-rename-ledger-dryrun-001.ps1",
+      "category": "staging_artifact",
+      "source_type": ".ps1",
+      "status": "staging",
+      "inclusion_decision": "exclude",
+      "decision_reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+      "exists": true,
+      "marker_lines": [],
+      "embedded_snippets": [],
+      "size_bytes": 16022,
+      "line_count": 315,
+      "sha256": "588cee42e52cf29f0e9d24d962a1b896b684a5748086137a048e32e3ffad7bd4"
+    },
+    {
+      "path": "chatgpt_staging/exec_scripts/exec-20260618-pr281-codex-p1-redaction-001.ps1",
+      "category": "staging_artifact",
+      "source_type": ".ps1",
+      "status": "staging",
+      "inclusion_decision": "exclude",
+      "decision_reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+      "exists": true,
+      "marker_lines": [],
+      "embedded_snippets": [],
+      "size_bytes": 16077,
+      "line_count": 339,
+      "sha256": "f095e7a5756dc736cefa90972de98005a2a30184ec049e2fb197065d773a135b"
+    },
+    {
+      "path": "chatgpt_staging/exec_scripts/exec-20260618-pr281-codex-p1-redaction-002.ps1",
+      "category": "staging_artifact",
+      "source_type": ".ps1",
+      "status": "staging",
+      "inclusion_decision": "exclude",
+      "decision_reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+      "exists": true,
+      "marker_lines": [],
+      "embedded_snippets": [],
+      "size_bytes": 12705,
+      "line_count": 296,
+      "sha256": "a014e05abd93fa9f5431fc07e173ed50266cccef4222ea29c5deda8446ba5406"
+    },
+    {
