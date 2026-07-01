@@ -1,9 +1,0 @@
-{
-  "chunk_kind": "json_value",
-  "data": 260,
-  "json_pointer": "/parent_issue",
-  "report_id": "assembly_parity",
-  "schema_version": "dcoir_report_chunk_v1",
-  "source_report": "project_sources/collector/powershell_assembly_parity_report.json",
-  "source_sha256": "19949272884d3c597de3ddd7f50bfbf92eebceb70ea37c587f8ecf83f2d6c18d"
-}
