@@ -5,7 +5,7 @@
   "source_of_truth": "filesystem recursive scan fallback",
   "deterministic_report": true,
   "file_facts_policy": "text_bytes_with_line_endings_normalized_to_lf",
-  "discovery_command": "python project_sources/collector/tools/build_powershell_surface_inventory.py --repo-root . --json-output project_sources/collector/powershell_surface_inventory.json --markdown-output project_sources/collector/powershell_surface_inventory.md",
+  "discovery_command": "python project_sources/collector/tools/build_powershell_surface_inventory.py --repo-root . --json-output scratch_reports/powershell_surface_inventory.json --markdown-output scratch_reports/powershell_surface_inventory.md",
   "required_source_types": [
     ".ps1",
     ".psm1",
@@ -15,17 +15,17 @@
     "workflow_yaml"
   ],
   "outputs": {
-    "json": "project_sources/collector/powershell_surface_inventory.json",
-    "markdown": "project_sources/collector/powershell_surface_inventory.md"
+    "json": "scratch_reports/powershell_surface_inventory.json",
+    "markdown": "scratch_reports/powershell_surface_inventory.md"
   },
   "changed_file_dependency_expansion": null,
   "summary": {
-    "total_surfaces": 243,
+    "total_surfaces": 244,
     "by_category": {
       "archive_temp_vendor_artifact": 0,
       "collector_harness_script": 4,
       "collector_harness_source_part": 17,
-      "collector_runtime_source_part": 38,
+      "collector_runtime_source_part": 39,
       "collector_runtime_wrapper": 1,
       "collector_validation_tooling": 2,
       "fixture_or_example": 23,
@@ -42,7 +42,7 @@
       "workflow_embedded_powershell": 27
     },
     "by_source_type": {
-      ".ps1": 180,
+      ".ps1": 181,
       ".ps1.txt": 17,
       ".ps1xml": 0,
       ".psd1": 9,
@@ -51,7 +51,7 @@
     },
     "by_status": {
       "fixture": 23,
-      "source": 43,
+      "source": 44,
       "source_part": 17,
       "staging": 63,
       "tooling": 70,
@@ -59,7 +59,7 @@
     },
     "by_inclusion_decision": {
       "exclude": 63,
-      "include": 130,
+      "include": 131,
       "reference": 50
     },
     "embedded_snippet_count": 80
@@ -69,8 +69,8 @@
       "path": "project_sources/collector/manifests/Collector_Runtime_Package_Manifest.json",
       "exists": true,
       "error": null,
-      "expected_path_count": 39,
-      "present_path_count": 39,
+      "expected_path_count": 40,
+      "present_path_count": 40,
       "paths": [
         {
           "path": "project_sources/collector/source/DCOIR_Collector.ps1",
@@ -78,7 +78,7 @@
           "in_inventory": true,
           "category": "collector_runtime_wrapper",
           "expected_category": "collector_runtime_wrapper",
-          "size_bytes": 7085
+          "size_bytes": 7144
         },
         {
           "path": "project_sources/collector/source/parts/DCOIR_Collector.01A1_Core_Logging_And_Process_Capture.ps1",
@@ -313,12 +313,20 @@
           "size_bytes": 17049
         },
         {
-          "path": "project_sources/collector/source/parts/DCOIR_Collector.04G_PR186_External_Review_Fixes.ps1",
+          "path": "project_sources/collector/source/parts/DCOIR_Collector.04G1_PR186_External_Review_Fixes.ps1",
           "exists": true,
           "in_inventory": true,
           "category": "collector_runtime_source_part",
           "expected_category": "collector_runtime_source_part",
-          "size_bytes": 17925
+          "size_bytes": 10507
+        },
+        {
+          "path": "project_sources/collector/source/parts/DCOIR_Collector.04G2_PR186_External_Review_Fixes.ps1",
+          "exists": true,
+          "in_inventory": true,
+          "category": "collector_runtime_source_part",
+          "expected_category": "collector_runtime_source_part",
+          "size_bytes": 7939
         },
         {
           "path": "project_sources/collector/source/parts/DCOIR_Collector.04H1_PR212_Metadata_Finalization_Fixes.ps1",
@@ -921,9 +929,3 @@
         11
       ],
       "embedded_snippets": [
-        {
-          "source_file": ".github/actions/run-validate-dcoir-fixtures/action.yml",
-          "step_or_action": "Run validate_DCOIR_Run fixture tests",
-          "shell": "pwsh",
-          "line_start": 11,
-          "line_end": 17,
