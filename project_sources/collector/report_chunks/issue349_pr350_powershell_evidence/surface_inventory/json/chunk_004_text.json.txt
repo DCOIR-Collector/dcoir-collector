@@ -1,3 +1,14 @@
+      "sha256": "64f3fa65134e88fac81b1349e7539dd50a3644c6cf6f98963c584ecfdb39775c"
+    },
+    {
+      "path": "operator_tools/github_desktop_lane/scripts/Invoke-DcoirActionsWorkflowOrchestrator.ps1",
+      "category": "operator_tooling",
+      "source_type": ".ps1",
+      "status": "tooling",
+      "inclusion_decision": "include",
+      "decision_reason": "Operator tooling PowerShell is maintained repo tooling.",
+      "exists": true,
+      "marker_lines": [],
       "embedded_snippets": [],
       "size_bytes": 1933,
       "line_count": 55,
@@ -867,9 +878,9 @@
       "exists": true,
       "marker_lines": [],
       "embedded_snippets": [],
-      "size_bytes": 7085,
-      "line_count": 215,
-      "sha256": "dde0112918574d22d928dc47b54d6213f35160ed8fc2b473831f29b310b13c23"
+      "size_bytes": 7144,
+      "line_count": 216,
+      "sha256": "9d458695c9d6f44f7980ba392ed4ef58da2d47148bdbad0fe8e71204ac0d32bb"
     },
     {
       "path": "project_sources/collector/source/parts/DCOIR_Collector.01A1_Core_Logging_And_Process_Capture.ps1",
@@ -928,14 +939,3 @@
       "sha256": "89a518e11f13cce256bb054b6a34cfcbbcccc3d8faefc32e56f967da96e892fe"
     },
     {
-      "path": "project_sources/collector/source/parts/DCOIR_Collector.01C_Runtime_Paths_Artifacts_And_Reports.ps1",
-      "category": "collector_runtime_source_part",
-      "source_type": ".ps1",
-      "status": "source",
-      "inclusion_decision": "include",
-      "decision_reason": "Collector runtime source part is primary maintained PowerShell source.",
-      "exists": true,
-      "marker_lines": [],
-      "embedded_snippets": [],
-      "size_bytes": 10772,
-      "line_count": 413,
