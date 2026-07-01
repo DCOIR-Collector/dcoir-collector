@@ -121,7 +121,7 @@
           },
           "parse": {
             "errors": [],
-            "line_count": 9366,
+            "line_count": 9927,
             "method": "static_balance_check",
             "native_parser_available": false,
             "success": true
@@ -140,7 +140,7 @@
           },
           "parse": {
             "errors": [],
-            "line_count": 2936,
+            "line_count": 2943,
             "method": "static_balance_check",
             "native_parser_available": false,
             "success": true
@@ -151,15 +151,15 @@
       "source_issue": 265,
       "state": "success",
       "summary": {
-        "collector_source_part_count": 18,
+        "collector_source_part_count": 38,
         "generated_output_count": 2,
-        "harness_source_part_count": 12,
+        "harness_source_part_count": 15,
         "parity_status": "pass",
         "parity_success_count": 2,
         "parse_status": "pass",
         "parse_success_count": 2,
-        "source_input_count": 31,
-        "source_part_count": 30
+        "source_input_count": 54,
+        "source_part_count": 53
       }
     },
     "custom_checks": {
@@ -671,11 +671,11 @@
       "claim": "report-only reachability evidence; no function deletion readiness or runtime absence is claimed",
       "classification_counts": {
         "dynamic_invocation_uncertain": 4,
-        "literal_referenced": 155
+        "literal_referenced": 163
       },
       "coverage_state": "not_collected",
       "dynamic_invocation_site_count": 1,
-      "function_count": 159,
+      "function_count": 167,
       "parser_mode": "python_lexical_fallback",
       "path": "project_sources/collector/powershell_function_reachability_report.json",
       "source_issue": 306,
@@ -1519,7 +1519,7 @@
     }
   ],
   "generated_from": {
-    "generated_at_utc": "2026-06-24T08:37:03+00:00",
+    "generated_at_utc": "2026-06-30T18:51:20+00:00",
     "schema_contract": "project_sources/collector/powershell_review_assist_report.schema.json",
     "source_reports": [
       "project_sources/collector/powershell_surface_inventory.json",
@@ -1675,7 +1675,7 @@
       "absent_reason": null,
       "errors": [],
       "expected_schema_version": "dcoir_powershell_function_reachability_report_v1",
-      "finding_count": 159,
+      "finding_count": 167,
       "label": "#306 function reachability report",
       "path": "project_sources/collector/powershell_function_reachability_report.json",
       "present": true,
@@ -1730,6 +1730,48 @@
       {
         "category": "staging_artifact",
         "path": "chatgpt_staging/exec_scripts/airtable-total-count-corrected-20260521T100417Z.ps1",
+        "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+        "source_type": ".ps1",
+        "status": "staging"
+      },
+      {
+        "category": "staging_artifact",
+        "path": "chatgpt_staging/exec_scripts/dcoir-review-fix-guidance-normalization-20260627T120800Z.ps1",
+        "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+        "source_type": ".ps1",
+        "status": "staging"
+      },
+      {
+        "category": "staging_artifact",
+        "path": "chatgpt_staging/exec_scripts/dcoir-review-fix-guidance-normalization-20260627T121000Z.ps1",
+        "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+        "source_type": ".ps1",
+        "status": "staging"
+      },
+      {
+        "category": "staging_artifact",
+        "path": "chatgpt_staging/exec_scripts/dcoir-review-fix-guidance-normalization-20260627T121700Z.ps1",
+        "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+        "source_type": ".ps1",
+        "status": "staging"
+      },
+      {
+        "category": "staging_artifact",
+        "path": "chatgpt_staging/exec_scripts/dcoir-review-fix-guidance-normalization-20260627T122700Z.ps1",
+        "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+        "source_type": ".ps1",
+        "status": "staging"
+      },
+      {
+        "category": "staging_artifact",
+        "path": "chatgpt_staging/exec_scripts/dcoir-review-fix-guidance-normalization-20260627T123500Z.ps1",
+        "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+        "source_type": ".ps1",
+        "status": "staging"
+      },
+      {
+        "category": "staging_artifact",
+        "path": "chatgpt_staging/exec_scripts/dcoir-review-fix-guidance-normalization-20260627T124000Z.ps1",
         "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
         "source_type": ".ps1",
         "status": "staging"
@@ -1834,6 +1876,251 @@
       },
       {
         "category": "staging_artifact",
+        "path": "chatgpt_staging/exec_scripts/exec-20260618-pr281-codex-p1-redaction-001.ps1",
+        "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+        "source_type": ".ps1",
+        "status": "staging"
+      },
+      {
+        "category": "staging_artifact",
+        "path": "chatgpt_staging/exec_scripts/exec-20260618-pr281-codex-p1-redaction-002.ps1",
+        "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+        "source_type": ".ps1",
+        "status": "staging"
+      },
+      {
+        "category": "staging_artifact",
+        "path": "chatgpt_staging/exec_scripts/exec-20260618-pr281-codex-p1-redaction-003.ps1",
+        "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+        "source_type": ".ps1",
+        "status": "staging"
+      },
+      {
+        "category": "staging_artifact",
+        "path": "chatgpt_staging/exec_scripts/exec-20260618-pr281-codex-p1-redaction-004.ps1",
+        "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+        "source_type": ".ps1",
+        "status": "staging"
+      },
+      {
+        "category": "staging_artifact",
+        "path": "chatgpt_staging/exec_scripts/exec-20260618-pr281-codex-p1-redaction-005.ps1",
+        "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+        "source_type": ".ps1",
+        "status": "staging"
+      },
+      {
+        "category": "staging_artifact",
+        "path": "chatgpt_staging/exec_scripts/exec-20260618-pr281-codex-p1-redaction-006.ps1",
+        "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+        "source_type": ".ps1",
+        "status": "staging"
+      },
+      {
+        "category": "staging_artifact",
+        "path": "chatgpt_staging/exec_scripts/exec-20260618-pr281-codex-p1-redaction-008.ps1",
+        "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+        "source_type": ".ps1",
+        "status": "staging"
+      },
+      {
+        "category": "staging_artifact",
+        "path": "chatgpt_staging/exec_scripts/exec-20260618-pr281-codex-p1-redaction-009.ps1",
+        "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+        "source_type": ".ps1",
+        "status": "staging"
+      },
+      {
+        "category": "staging_artifact",
+        "path": "chatgpt_staging/exec_scripts/exec-20260618-pr281-codex-p1-redaction-010.ps1",
+        "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+        "source_type": ".ps1",
+        "status": "staging"
+      },
+      {
+        "category": "staging_artifact",
+        "path": "chatgpt_staging/exec_scripts/exec-20260618-pr281-codex-p1-redaction-011.ps1",
+        "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+        "source_type": ".ps1",
+        "status": "staging"
+      },
+      {
+        "category": "staging_artifact",
+        "path": "chatgpt_staging/exec_scripts/exec-20260624-issue306-function-reachability-001.ps1",
+        "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+        "source_type": ".ps1",
+        "status": "staging"
+      },
+      {
+        "category": "staging_artifact",
+        "path": "chatgpt_staging/exec_scripts/exec-20260624-issue306-function-reachability-002.ps1",
+        "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+        "source_type": ".ps1",
+        "status": "staging"
+      },
+      {
+        "category": "staging_artifact",
+        "path": "chatgpt_staging/exec_scripts/exec-20260625-pr312-dcoir-review-fixes-001.ps1",
+        "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+        "source_type": ".ps1",
+        "status": "staging"
+      },
+      {
+        "category": "staging_artifact",
+        "path": "chatgpt_staging/exec_scripts/exec-20260625-pr312-dcoir-review-fixes-002.ps1",
+        "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+        "source_type": ".ps1",
+        "status": "staging"
+      },
+      {
+        "category": "staging_artifact",
+        "path": "chatgpt_staging/exec_scripts/exec-20260625-pr312-dcoir-review-fixes-003.ps1",
+        "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+        "source_type": ".ps1",
+        "status": "staging"
+      },
+      {
+        "category": "staging_artifact",
+        "path": "chatgpt_staging/exec_scripts/exec-20260625-pr312-dcoir-review-fixes-004.ps1",
+        "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+        "source_type": ".ps1",
+        "status": "staging"
+      },
+      {
+        "category": "staging_artifact",
+        "path": "chatgpt_staging/exec_scripts/exec-20260625-pr312-dcoir-review-fixes-005.ps1",
+        "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+        "source_type": ".ps1",
+        "status": "staging"
+      },
+      {
+        "category": "staging_artifact",
+        "path": "chatgpt_staging/exec_scripts/exec-20260625-pr312-dcoir-review-fixes-006.ps1",
+        "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+        "source_type": ".ps1",
+        "status": "staging"
+      },
+      {
+        "category": "staging_artifact",
+        "path": "chatgpt_staging/exec_scripts/exec-20260625-pr312-dcoir-review-fixes-007.ps1",
+        "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+        "source_type": ".ps1",
+        "status": "staging"
+      },
+      {
+        "category": "staging_artifact",
+        "path": "chatgpt_staging/exec_scripts/exec-20260625-pr312-dcoir-review-fixes-008.ps1",
+        "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+        "source_type": ".ps1",
+        "status": "staging"
+      },
+      {
+        "category": "staging_artifact",
+        "path": "chatgpt_staging/exec_scripts/exec-20260626-dcoir-review-fix-synthesis-002.ps1",
+        "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+        "source_type": ".ps1",
+        "status": "staging"
+      },
+      {
+        "category": "staging_artifact",
+        "path": "chatgpt_staging/exec_scripts/exec-20260626-dcoir-review-fix-synthesis-003.ps1",
+        "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+        "source_type": ".ps1",
+        "status": "staging"
+      },
+      {
+        "category": "staging_artifact",
+        "path": "chatgpt_staging/exec_scripts/exec-20260626-dcoir-review-fix-synthesis-004.ps1",
+        "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+        "source_type": ".ps1",
+        "status": "staging"
+      },
+      {
+        "category": "staging_artifact",
+        "path": "chatgpt_staging/exec_scripts/exec-20260626-dcoir-review-fix-synthesis-005.ps1",
+        "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+        "source_type": ".ps1",
+        "status": "staging"
+      },
+      {
+        "category": "staging_artifact",
+        "path": "chatgpt_staging/exec_scripts/exec-20260626-dcoir-review-fix-synthesis-006.ps1",
+        "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+        "source_type": ".ps1",
+        "status": "staging"
+      },
+      {
+        "category": "staging_artifact",
+        "path": "chatgpt_staging/exec_scripts/exec-20260626-dcoir-review-hybrid-main-001.ps1",
+        "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+        "source_type": ".ps1",
+        "status": "staging"
+      },
+      {
+        "category": "staging_artifact",
+        "path": "chatgpt_staging/exec_scripts/exec-20260626-dcoir-review-hybrid-main-002.ps1",
+        "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+        "source_type": ".ps1",
+        "status": "staging"
+      },
+      {
+        "category": "staging_artifact",
+        "path": "chatgpt_staging/exec_scripts/exec-20260626-dcoir-review-hybrid-main-003.ps1",
+        "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+        "source_type": ".ps1",
+        "status": "staging"
+      },
+      {
+        "category": "staging_artifact",
+        "path": "chatgpt_staging/exec_scripts/exec-20260626-dcoir-review-hybrid-main-004.ps1",
+        "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+        "source_type": ".ps1",
+        "status": "staging"
+      },
+      {
+        "category": "staging_artifact",
+        "path": "chatgpt_staging/exec_scripts/exec-20260626-dcoir-review-hybrid-main-005.ps1",
+        "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+        "source_type": ".ps1",
+        "status": "staging"
+      },
+      {
+        "category": "staging_artifact",
+        "path": "chatgpt_staging/exec_scripts/exec-20260626-dcoir-review-hybrid-main-006.ps1",
+        "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+        "source_type": ".ps1",
+        "status": "staging"
+      },
+      {
+        "category": "staging_artifact",
+        "path": "chatgpt_staging/exec_scripts/exec-20260626-dcoir-review-hybrid-main-007.ps1",
+        "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+        "source_type": ".ps1",
+        "status": "staging"
+      },
+      {
+        "category": "staging_artifact",
+        "path": "chatgpt_staging/exec_scripts/exec-20260626-dcoir-review-hybrid-main-008.ps1",
+        "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+        "source_type": ".ps1",
+        "status": "staging"
+      },
+      {
+        "category": "staging_artifact",
+        "path": "chatgpt_staging/exec_scripts/exec-20260627-dcoir-review-summary-negation-main-001.ps1",
+        "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+        "source_type": ".ps1",
+        "status": "staging"
+      },
+      {
+        "category": "staging_artifact",
+        "path": "chatgpt_staging/exec_scripts/exec-20260627-pr316-dcoir-review-gate-fixes-001.ps1",
+        "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+        "source_type": ".ps1",
+        "status": "staging"
+      },
+      {
+        "category": "staging_artifact",
         "path": "chatgpt_staging/exec_scripts/gemini_generated_prime_migration_001.ps1",
         "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
         "source_type": ".ps1",
@@ -1848,6 +2135,34 @@
       },
       {
         "category": "staging_artifact",
+        "path": "chatgpt_staging/exec_scripts/pr281_escaped_quoted_auth_redaction_002.ps1",
+        "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+        "source_type": ".ps1",
+        "status": "staging"
+      },
+      {
+        "category": "staging_artifact",
+        "path": "chatgpt_staging/exec_scripts/pr281_escaped_quoted_auth_redaction_003.ps1",
+        "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+        "source_type": ".ps1",
+        "status": "staging"
+      },
+      {
+        "category": "staging_artifact",
+        "path": "chatgpt_staging/exec_scripts/pr281_escaped_quoted_auth_redaction_004.ps1",
+        "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+        "source_type": ".ps1",
+        "status": "staging"
+      },
+      {
+        "category": "staging_artifact",
+        "path": "chatgpt_staging/exec_scripts/pr281_escaped_quoted_auth_redaction_005.ps1",
+        "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
+        "source_type": ".ps1",
+        "status": "staging"
+      },
+      {
+        "category": "staging_artifact",
         "path": "chatgpt_staging/exec_scripts/update_gemini_prime_chunk_checksum_001.ps1",
         "reason": "ChatGPT staging scripts are historical execution artifacts, not maintained source.",
         "source_type": ".ps1",
@@ -1855,6 +2170,69 @@
       }
     ],
     "included_paths": [
+      {
+        "category": "validation_tooling",
+        "path": ".github/pester/CollectorHarnessAndPesterBoundary.Tests.ps1",
+        "reason": "GitHub Pester validation PowerShell is maintained repo tooling.",
+        "source_type": ".ps1",
+        "status": "tooling"
+      },
+      {
+        "category": "validation_tooling",
+        "path": ".github/pester/CollectorParserAndPublicContract.Tests.ps1",
+        "reason": "GitHub Pester validation PowerShell is maintained repo tooling.",
+        "source_type": ".ps1",
+        "status": "tooling"
+      },
+      {
+        "category": "validation_tooling",
+        "path": ".github/pester/CollectorRiskContracts.Tests.ps1",
+        "reason": "GitHub Pester validation PowerShell is maintained repo tooling.",
+        "source_type": ".ps1",
+        "status": "tooling"
+      },
+      {
+        "category": "validation_tooling",
+        "path": ".github/pester/CollectorRuntimeSmoke.Tests.ps1",
+        "reason": "GitHub Pester validation PowerShell is maintained repo tooling.",
+        "source_type": ".ps1",
+        "status": "tooling"
+      },
+      {
+        "category": "validation_tooling",
+        "path": ".github/pester/CollectorSourceStructure.Tests.ps1",
+        "reason": "GitHub Pester validation PowerShell is maintained repo tooling.",
+        "source_type": ".ps1",
+        "status": "tooling"
+      },
+      {
+        "category": "validation_tooling",
+        "path": ".github/pester/CollectorStaticSafety.Tests.ps1",
+        "reason": "GitHub Pester validation PowerShell is maintained repo tooling.",
+        "source_type": ".ps1",
+        "status": "tooling"
+      },
+      {
+        "category": "validation_tooling",
+        "path": ".github/pester/DcoirPester.Helpers.ps1",
+        "reason": "GitHub Pester validation PowerShell is maintained repo tooling.",
+        "source_type": ".ps1",
+        "status": "tooling"
+      },
+      {
+        "category": "validation_tooling",
+        "path": ".github/pester/Install-DcoirPesterPrereqs.ps1",
+        "reason": "GitHub Pester validation PowerShell is maintained repo tooling.",
+        "source_type": ".ps1",
+        "status": "tooling"
+      },
+      {
+        "category": "validation_tooling",
+        "path": ".github/pester/Invoke-DcoirPester.ps1",
+        "reason": "GitHub Pester validation PowerShell is maintained repo tooling.",
+        "source_type": ".ps1",
+        "status": "tooling"
+      },
       {
         "category": "github_workflow_support_script",
         "path": ".github/scripts/Invoke-ChatGptReportPush.ps1",
@@ -2297,6 +2675,27 @@
         "status": "source_part"
       },
       {
+        "category": "collector_harness_source_part",
+        "path": "project_sources/collector/harness/source/parts/run_DCOIR_Tests.part-012.ps1.txt",
+        "reason": "Collector harness source part is primary maintained PowerShell source.",
+        "source_type": ".ps1.txt",
+        "status": "source_part"
+      },
+      {
+        "category": "collector_harness_source_part",
+        "path": "project_sources/collector/harness/source/parts/run_DCOIR_Tests.part-013.ps1.txt",
+        "reason": "Collector harness source part is primary maintained PowerShell source.",
+        "source_type": ".ps1.txt",
+        "status": "source_part"
+      },
+      {
+        "category": "collector_harness_source_part",
+        "path": "project_sources/collector/harness/source/parts/run_DCOIR_Tests.part-014.ps1.txt",
+        "reason": "Collector harness source part is primary maintained PowerShell source.",
+        "source_type": ".ps1.txt",
+        "status": "source_part"
+      },
+      {
         "category": "collector_harness_script",
         "path": "project_sources/collector/harness/validate_DCOIR_Run.ps1",
         "reason": "Collector harness script is a primary maintained PowerShell surface.",
@@ -2312,14 +2711,28 @@
       },
       {
         "category": "collector_runtime_source_part",
-        "path": "project_sources/collector/source/parts/DCOIR_Collector.01A_Core_Logging_And_Process_Capture.ps1",
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.01A1_Core_Logging_And_Process_Capture.ps1",
         "reason": "Collector runtime source part is primary maintained PowerShell source.",
         "source_type": ".ps1",
         "status": "source"
       },
       {
         "category": "collector_runtime_source_part",
-        "path": "project_sources/collector/source/parts/DCOIR_Collector.01B_Json_State_And_Array_Utilities.ps1",
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.01A2_Core_Logging_And_Process_Capture.ps1",
+        "reason": "Collector runtime source part is primary maintained PowerShell source.",
+        "source_type": ".ps1",
+        "status": "source"
+      },
+      {
+        "category": "collector_runtime_source_part",
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.01B1_Json_State_And_Array_Utilities.ps1",
+        "reason": "Collector runtime source part is primary maintained PowerShell source.",
+        "source_type": ".ps1",
+        "status": "source"
+      },
+      {
+        "category": "collector_runtime_source_part",
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.01B2_Json_State_And_Array_Utilities.ps1",
         "reason": "Collector runtime source part is primary maintained PowerShell source.",
         "source_type": ".ps1",
         "status": "source"
@@ -2333,7 +2746,14 @@
       },
       {
         "category": "collector_runtime_source_part",
-        "path": "project_sources/collector/source/parts/DCOIR_Collector.01D_Process_Event_And_Baseline_Utilities.ps1",
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.01D1_Process_Event_And_Baseline_Utilities.ps1",
+        "reason": "Collector runtime source part is primary maintained PowerShell source.",
+        "source_type": ".ps1",
+        "status": "source"
+      },
+      {
+        "category": "collector_runtime_source_part",
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.01D2_Process_Event_And_Baseline_Utilities.ps1",
         "reason": "Collector runtime source part is primary maintained PowerShell source.",
         "source_type": ".ps1",
         "status": "source"
@@ -2347,7 +2767,42 @@
       },
       {
         "category": "collector_runtime_source_part",
-        "path": "project_sources/collector/source/parts/DCOIR_Collector.02_Baseline_Collection_And_Reports.ps1",
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.02A_Baseline_Collection_And_Reports.ps1",
+        "reason": "Collector runtime source part is primary maintained PowerShell source.",
+        "source_type": ".ps1",
+        "status": "source"
+      },
+      {
+        "category": "collector_runtime_source_part",
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.02B_Baseline_Collection_And_Reports.ps1",
+        "reason": "Collector runtime source part is primary maintained PowerShell source.",
+        "source_type": ".ps1",
+        "status": "source"
+      },
+      {
+        "category": "collector_runtime_source_part",
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.02C_Baseline_Collection_And_Reports.ps1",
+        "reason": "Collector runtime source part is primary maintained PowerShell source.",
+        "source_type": ".ps1",
+        "status": "source"
+      },
+      {
+        "category": "collector_runtime_source_part",
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.02D1A_Baseline_Collection_And_Reports.ps1",
+        "reason": "Collector runtime source part is primary maintained PowerShell source.",
+        "source_type": ".ps1",
+        "status": "source"
+      },
+      {
+        "category": "collector_runtime_source_part",
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.02D1B_Baseline_Collection_And_Reports.ps1",
+        "reason": "Collector runtime source part is primary maintained PowerShell source.",
+        "source_type": ".ps1",
+        "status": "source"
+      },
+      {
+        "category": "collector_runtime_source_part",
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.02D2_Baseline_Collection_And_Reports.ps1",
         "reason": "Collector runtime source part is primary maintained PowerShell source.",
         "source_type": ".ps1",
         "status": "source"
@@ -2375,7 +2830,35 @@
       },
       {
         "category": "collector_runtime_source_part",
-        "path": "project_sources/collector/source/parts/DCOIR_Collector.04B_Feature_Wave_Targeted_Collection.ps1",
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.04A1_Quick_Interface_And_Output.ps1",
+        "reason": "Collector runtime source part is primary maintained PowerShell source.",
+        "source_type": ".ps1",
+        "status": "source"
+      },
+      {
+        "category": "collector_runtime_source_part",
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.04A2_Quick_Interface_And_Output.ps1",
+        "reason": "Collector runtime source part is primary maintained PowerShell source.",
+        "source_type": ".ps1",
+        "status": "source"
+      },
+      {
+        "category": "collector_runtime_source_part",
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.04A3_Quick_Interface_And_Output.ps1",
+        "reason": "Collector runtime source part is primary maintained PowerShell source.",
+        "source_type": ".ps1",
+        "status": "source"
+      },
+      {
+        "category": "collector_runtime_source_part",
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.04B1_Feature_Wave_Targeted_Collection.ps1",
+        "reason": "Collector runtime source part is primary maintained PowerShell source.",
+        "source_type": ".ps1",
+        "status": "source"
+      },
+      {
+        "category": "collector_runtime_source_part",
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.04B2_Feature_Wave_Targeted_Collection.ps1",
         "reason": "Collector runtime source part is primary maintained PowerShell source.",
         "source_type": ".ps1",
         "status": "source"
@@ -2389,14 +2872,35 @@
       },
       {
         "category": "collector_runtime_source_part",
-        "path": "project_sources/collector/source/parts/DCOIR_Collector.04D_Bounded_Parallel_Runtime.ps1",
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.04D1_Bounded_Parallel_Runtime.ps1",
         "reason": "Collector runtime source part is primary maintained PowerShell source.",
         "source_type": ".ps1",
         "status": "source"
       },
       {
         "category": "collector_runtime_source_part",
-        "path": "project_sources/collector/source/parts/DCOIR_Collector.04E_Diagnostic_Context_Overrides.ps1",
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.04D2_Bounded_Parallel_Runtime.ps1",
+        "reason": "Collector runtime source part is primary maintained PowerShell source.",
+        "source_type": ".ps1",
+        "status": "source"
+      },
+      {
+        "category": "collector_runtime_source_part",
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.04D3_Bounded_Parallel_Runtime.ps1",
+        "reason": "Collector runtime source part is primary maintained PowerShell source.",
+        "source_type": ".ps1",
+        "status": "source"
+      },
+      {
+        "category": "collector_runtime_source_part",
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.04E1_Diagnostic_Context_Overrides.ps1",
+        "reason": "Collector runtime source part is primary maintained PowerShell source.",
+        "source_type": ".ps1",
+        "status": "source"
+      },
+      {
+        "category": "collector_runtime_source_part",
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.04E2_Diagnostic_Context_Overrides.ps1",
         "reason": "Collector runtime source part is primary maintained PowerShell source.",
         "source_type": ".ps1",
         "status": "source"
@@ -2417,14 +2921,49 @@
       },
       {
         "category": "collector_runtime_source_part",
-        "path": "project_sources/collector/source/parts/DCOIR_Collector.04H_PR212_Metadata_Finalization_Fixes.ps1",
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.04H1_PR212_Metadata_Finalization_Fixes.ps1",
         "reason": "Collector runtime source part is primary maintained PowerShell source.",
         "source_type": ".ps1",
         "status": "source"
       },
       {
         "category": "collector_runtime_source_part",
-        "path": "project_sources/collector/source/parts/DCOIR_Collector.04_Quick_Interface_And_Output.ps1",
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.04H2_PR212_Metadata_Finalization_Fixes.ps1",
+        "reason": "Collector runtime source part is primary maintained PowerShell source.",
+        "source_type": ".ps1",
+        "status": "source"
+      },
+      {
+        "category": "collector_runtime_source_part",
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.04H3_PR212_Metadata_Finalization_Fixes.ps1",
+        "reason": "Collector runtime source part is primary maintained PowerShell source.",
+        "source_type": ".ps1",
+        "status": "source"
+      },
+      {
+        "category": "collector_runtime_source_part",
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.05A1_Main_Entry.ps1",
+        "reason": "Collector runtime source part is primary maintained PowerShell source.",
+        "source_type": ".ps1",
+        "status": "source"
+      },
+      {
+        "category": "collector_runtime_source_part",
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.05A2_Main_Entry.ps1",
+        "reason": "Collector runtime source part is primary maintained PowerShell source.",
+        "source_type": ".ps1",
+        "status": "source"
+      },
+      {
+        "category": "collector_runtime_source_part",
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.05B_Main_Entry.ps1",
+        "reason": "Collector runtime source part is primary maintained PowerShell source.",
+        "source_type": ".ps1",
+        "status": "source"
+      },
+      {
+        "category": "collector_runtime_source_part",
+        "path": "project_sources/collector/source/parts/DCOIR_Collector.05C_Main_Entry.ps1",
         "reason": "Collector runtime source part is primary maintained PowerShell source.",
         "source_type": ".ps1",
         "status": "source"
@@ -2471,9 +3010,9 @@
       "markdown": "project_sources/collector/powershell_surface_inventory.md"
     },
     "path_decision_counts": {
-      "exclude": 18,
-      "include": 87,
-      "reference": 47,
+      "exclude": 63,
+      "include": 119,
+      "reference": 66,
       "skip": 0
     },
     "reference_paths": [
@@ -2501,6 +3040,27 @@
       {
         "category": "workflow_embedded_powershell",
         "path": ".github/actions/run-collector-runtime-package-validation/action.yml",
+        "reason": "Workflow or composite-action YAML embeds PowerShell and needs later snippet-aware handling.",
+        "source_type": "workflow_yaml",
+        "status": "workflow_embedded"
+      },
+      {
+        "category": "workflow_embedded_powershell",
+        "path": ".github/actions/run-duplicate-function-check/action.yml",
+        "reason": "Workflow or composite-action YAML embeds PowerShell and needs later snippet-aware handling.",
+        "source_type": "workflow_yaml",
+        "status": "workflow_embedded"
+      },
+      {
+        "category": "workflow_embedded_powershell",
+        "path": ".github/actions/run-powershell-review-assist/action.yml",
+        "reason": "Workflow or composite-action YAML embeds PowerShell and needs later snippet-aware handling.",
+        "source_type": "workflow_yaml",
+        "status": "workflow_embedded"
+      },
+      {
+        "category": "workflow_embedded_powershell",
+        "path": ".github/actions/run-psscriptanalyzer/action.yml",
         "reason": "Workflow or composite-action YAML embeds PowerShell and needs later snippet-aware handling.",
         "source_type": "workflow_yaml",
         "status": "workflow_embedded"
@@ -2626,6 +3186,13 @@
       },
       {
         "category": "workflow_embedded_powershell",
+        "path": ".github/workflows/reusable-openrouter-pr-review.yml",
+        "reason": "Workflow or composite-action YAML embeds PowerShell and needs later snippet-aware handling.",
+        "source_type": "workflow_yaml",
+        "status": "workflow_embedded"
+      },
+      {
+        "category": "workflow_embedded_powershell",
         "path": ".github/workflows/reusable-validate-on-pr.yml",
         "reason": "Workflow or composite-action YAML embeds PowerShell and needs later snippet-aware handling.",
         "source_type": "workflow_yaml",
@@ -2644,6 +3211,76 @@
         "reason": "Workflow or composite-action YAML embeds PowerShell and needs later snippet-aware handling.",
         "source_type": "workflow_yaml",
         "status": "workflow_embedded"
+      },
+      {
+        "category": "generated_or_assembled_output",
+        "path": "out/checkpoint59-compile-rerun/compiled_runtime/DCOIR_Collector.ps1",
+        "reason": "Generated or assembled output is covered as parity/reference evidence, not source truth.",
+        "source_type": ".ps1",
+        "status": "generated"
+      },
+      {
+        "category": "generated_or_assembled_output",
+        "path": "out/checkpoint59-compile/compiled_runtime/DCOIR_Collector.ps1",
+        "reason": "Generated or assembled output is covered as parity/reference evidence, not source truth.",
+        "source_type": ".ps1",
+        "status": "generated"
+      },
+      {
+        "category": "generated_or_assembled_output",
+        "path": "out/checkpoint59-package-rerun/compiled_runtime/DCOIR_Collector.ps1",
+        "reason": "Generated or assembled output is covered as parity/reference evidence, not source truth.",
+        "source_type": ".ps1",
+        "status": "generated"
+      },
+      {
+        "category": "generated_or_assembled_output",
+        "path": "out/checkpoint59-package/compiled_runtime/DCOIR_Collector.ps1",
+        "reason": "Generated or assembled output is covered as parity/reference evidence, not source truth.",
+        "source_type": ".ps1",
+        "status": "generated"
+      },
+      {
+        "category": "generated_or_assembled_output",
+        "path": "out/checkpoint70-compile-after-codi/compiled_runtime/DCOIR_Collector.ps1",
+        "reason": "Generated or assembled output is covered as parity/reference evidence, not source truth.",
+        "source_type": ".ps1",
+        "status": "generated"
+      },
+      {
+        "category": "generated_or_assembled_output",
+        "path": "out/checkpoint70-compile-rerun/compiled_runtime/DCOIR_Collector.ps1",
+        "reason": "Generated or assembled output is covered as parity/reference evidence, not source truth.",
+        "source_type": ".ps1",
+        "status": "generated"
+      },
+      {
+        "category": "generated_or_assembled_output",
+        "path": "out/checkpoint70-compile/compiled_runtime/DCOIR_Collector.ps1",
+        "reason": "Generated or assembled output is covered as parity/reference evidence, not source truth.",
+        "source_type": ".ps1",
+        "status": "generated"
+      },
+      {
+        "category": "generated_or_assembled_output",
+        "path": "out/checkpoint70-package-after-codi/compiled_runtime/DCOIR_Collector.ps1",
+        "reason": "Generated or assembled output is covered as parity/reference evidence, not source truth.",
+        "source_type": ".ps1",
+        "status": "generated"
+      },
+      {
+        "category": "generated_or_assembled_output",
+        "path": "out/checkpoint70-package/compiled_runtime/DCOIR_Collector.ps1",
+        "reason": "Generated or assembled output is covered as parity/reference evidence, not source truth.",
+        "source_type": ".ps1",
+        "status": "generated"
+      },
+      {
+        "category": "generated_or_assembled_output",
+        "path": "out/checkpoint72-compile/compiled_runtime/DCOIR_Collector.ps1",
+        "reason": "Generated or assembled output is covered as parity/reference evidence, not source truth.",
+        "source_type": ".ps1",
+        "status": "generated"
       },
       {
         "category": "fixture_or_example",
@@ -2805,6 +3442,41 @@
         "reason": "Fixture/example PowerShell is inventoried separately from maintained source targets.",
         "source_type": ".ps1",
         "status": "fixture"
+      },
+      {
+        "category": "generated_or_assembled_output",
+        "path": "project_sources/collector/out/recheck/compiled_runtime/DCOIR_Collector.ps1",
+        "reason": "Generated or assembled output is covered as parity/reference evidence, not source truth.",
+        "source_type": ".ps1",
+        "status": "generated"
+      },
+      {
+        "category": "generated_or_assembled_output",
+        "path": "project_sources/collector/out/recheck05-compile-final/compiled_runtime/DCOIR_Collector.ps1",
+        "reason": "Generated or assembled output is covered as parity/reference evidence, not source truth.",
+        "source_type": ".ps1",
+        "status": "generated"
+      },
+      {
+        "category": "generated_or_assembled_output",
+        "path": "project_sources/collector/out/recheck05-compile/compiled_runtime/DCOIR_Collector.ps1",
+        "reason": "Generated or assembled output is covered as parity/reference evidence, not source truth.",
+        "source_type": ".ps1",
+        "status": "generated"
+      },
+      {
+        "category": "generated_or_assembled_output",
+        "path": "project_sources/collector/out/recheck2/compiled_runtime/DCOIR_Collector.ps1",
+        "reason": "Generated or assembled output is covered as parity/reference evidence, not source truth.",
+        "source_type": ".ps1",
+        "status": "generated"
+      },
+      {
+        "category": "generated_or_assembled_output",
+        "path": "project_sources/collector/out/recheck3/compiled_runtime/DCOIR_Collector.ps1",
+        "reason": "Generated or assembled output is covered as parity/reference evidence, not source truth.",
+        "source_type": ".ps1",
+        "status": "generated"
       }
     ],
     "skipped_paths": [],
@@ -2812,46 +3484,47 @@
       "by_category": {
         "archive_temp_vendor_artifact": 0,
         "collector_harness_script": 4,
-        "collector_harness_source_part": 12,
-        "collector_runtime_source_part": 18,
+        "collector_harness_source_part": 15,
+        "collector_runtime_source_part": 38,
         "collector_runtime_wrapper": 1,
         "collector_validation_tooling": 2,
         "fixture_or_example": 23,
-        "generated_or_assembled_output": 0,
+        "generated_or_assembled_output": 15,
         "github_workflow_support_script": 2,
         "invalid_workflow_surface": 0,
         "missing_authoritative_surface": 0,
         "missing_changed_powershell_surface": 0,
         "missing_changed_workflow_surface": 0,
         "operator_tooling": 45,
-        "staging_artifact": 18,
+        "staging_artifact": 63,
         "unclassified_powershell_surface": 0,
-        "validation_tooling": 3,
-        "workflow_embedded_powershell": 24
+        "validation_tooling": 12,
+        "workflow_embedded_powershell": 28
       },
       "by_inclusion_decision": {
-        "exclude": 18,
-        "include": 87,
-        "reference": 47
+        "exclude": 63,
+        "include": 119,
+        "reference": 66
       },
       "by_source_type": {
-        ".ps1": 97,
-        ".ps1.txt": 12,
+        ".ps1": 186,
+        ".ps1.txt": 15,
         ".ps1xml": 0,
         ".psd1": 9,
         ".psm1": 10,
-        "workflow_yaml": 24
+        "workflow_yaml": 28
       },
       "by_status": {
         "fixture": 23,
-        "source": 23,
-        "source_part": 12,
-        "staging": 18,
-        "tooling": 52,
-        "workflow_embedded": 24
+        "generated": 15,
+        "source": 43,
+        "source_part": 15,
+        "staging": 63,
+        "tooling": 61,
+        "workflow_embedded": 28
       },
-      "embedded_snippet_count": 69,
-      "total_surfaces": 152
+      "embedded_snippet_count": 81,
+      "total_surfaces": 248
     }
   },
   "unclaimed_artifacts": [
